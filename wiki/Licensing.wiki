@@ -17,6 +17,7 @@ Add your content here.
 || jQuery || MIT ||
 || jQuery UI || MIT and GPL licences ||
 || DDLUtils || Apache Software Foundation (ASF) ||
-|| jQuery SVG || GPL ||
+|| jQuery SVG || Dual licensed under the [http://dev.jquery.com/browser/trunk/jquery/GPL-LICENSE.txt GPL] and [http://dev.jquery.com/browser/trunk/jquery/MIT-LICENSE.txt MIT]||
+> licenses. ||
 || Jackcess || GNU Lesser General Public Licence ||
 || Various small libraries (Apache Projects) || Apache Software Foundation (ASF) ||
