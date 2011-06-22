@@ -24,3 +24,9 @@ and build the image using as superuser
 {{{
 lb build
 }}}
+
+the resulting image can be booted as
+
+{{{
+kvm -cdrom binary-hybrid.iso
+}}}
