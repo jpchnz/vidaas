@@ -1,0 +1,26 @@
+#summary Build Installer CD using Debian Live
+
+= Introduction =
+
+
+
+
+= Details =
+
+Install `live-build` 
+
+{{{
+apt-get install live-build
+}}}
+
+check out the current config using
+
+{{{
+svn co https://vidaas.googlecode.com/svn/installer/trunk
+}}}
+
+and build the image using as superuser
+
+{{{
+lb build
+}}}
