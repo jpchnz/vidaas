@@ -1,0 +1,188 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:rich="http://richfaces.org/rich"
+    template="layout/template.xhtml">
+
+<ui:define name="body">
+
+    <rich:panel>
+        <f:facet name="header">Dataspace Details</f:facet>
+
+
+		<s:decorate id="databaseType" template="layout/display.xhtml">
+            <ui:define name="label">Database type</ui:define>
+            <h:outputText value="#{dataspaceHome.instance.databaseType}"/>
+        </s:decorate>
+        
+        <s:decorate id="dataspaceName" template="layout/display.xhtml">
+            <ui:define name="label">Dataspace name</ui:define>
+            <h:outputText value="#{dataspaceHome.instance.dataspaceName}"/>
+        </s:decorate>
+        
+        <s:decorate id="databaseDescription" template="layout/display.xhtml">
+            <ui:define name="label">Database description</ui:define>
+            <h:outputText value="#{dataspaceHome.instance.databaseDescription}"/>
+        </s:decorate>
+        
+        <s:decorate id="creationDate" template="layout/display.xhtml">
+            <ui:define name="label">Creation date</ui:define>
+            <h:outputText value="#{dataspaceHome.instance.creationDate}">
+                <s:convertDateTime type="date" dateStyle="short"/>
+            </h:outputText>
+        </s:decorate>
+		
+        <s:decorate id="databaseSize" template="layout/display.xhtml">
+            <ui:define name="label">Database size</ui:define>
+            <h:outputText value="#{dataspaceHome.instance.databaseSize}"/>
+        </s:decorate>
+        
+        <s:decorate id="databaseBackupPolicy" template="layout/display.xhtml">
+            <ui:define name="label">Database backup policy</ui:define>
+            <h:outputText value="#{dataspaceHome.instance.databaseBackupPolicy}"/>
+        </s:decorate>
+
+        <s:decorate id="databaseExpandablePolicy" template="layout/display.xhtml">
+            <ui:define name="label">Database expandable policy</ui:define>
+            <h:outputText value="#{dataspaceHome.instance.databaseExpandablePolicy}"/>
+        </s:decorate>
+
+        <s:decorate id="webApplicationName" template="layout/display.xhtml">
+            <ui:define name="label">Web application name</ui:define>
+            <h:outputText value="#{dataspaceHome.instance.webApplicationName}"/>
+        </s:decorate>
+
+        <div style="clear:both"/>
+
+    </rich:panel>
+
+    <div class="actionButtons">
+
+        <s:button view="/DataspaceEdit.xhtml"
+                    id="edit"
+                 value="Edit"/>
+
+        <s:button view="/#{empty dataspaceFrom ? 'DataspaceList' : dataspaceFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+
+    </div>
+
+    <rich:tabPanel switchType="ajax">
+
+    <rich:tab>
+        <f:facet name="label">
+            <h:panelGroup><h:graphicImage value="/img/manytoone.gif" style="vertical-align: middle; padding-right: 4px;"/>Project</h:panelGroup>
+        </f:facet>
+    <div class="association" id="projectParent">
+
+        <h:outputText value="There is no project associated with this dataspace."
+                   rendered="#{dataspaceHome.instance.project == null}"/>
+
+        <rich:dataTable var="_project"
+                   value="#{dataspaceHome.instance.project}"
+                rendered="#{dataspaceHome.instance.project != null}"
+              rowClasses="rvgRowOne,rvgRowTwo"
+                      id="projectTable">
+            <h:column>
+                <f:facet name="header">Project id</f:facet>
+                <h:outputText value="#{_project.projectId}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Description</f:facet>
+                <h:outputText value="#{_project.description}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">End date</f:facet>
+                <h:outputText value="#{_project.endDate}">
+                    <s:convertDateTime type="date" dateStyle="short"/>
+                </h:outputText>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Start date</f:facet>
+                <h:outputText value="#{_project.startDate}">
+                    <s:convertDateTime type="date" dateStyle="short"/>
+                </h:outputText>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Title</f:facet>
+                <h:outputText value="#{_project.title}"/>
+            </h:column>
+            <h:column styleClass="action">
+                <f:facet name="header">Action</f:facet>
+                <s:link id="viewproject"
+                     value="View"
+                      view="/Project.xhtml">
+                    <f:param name="projectProjectId"
+                           value="#{_project.projectId}"/>
+                </s:link>
+            </h:column>
+        </rich:dataTable>
+
+    </div>
+    </rich:tab>
+
+    <rich:tab>
+        <f:facet name="label">
+            <h:panelGroup><h:graphicImage value="/img/onetomany.gif" style="vertical-align: middle; padding-right: 4px;"/>Project databases</h:panelGroup>
+        </f:facet>
+    <h:form styleClass="association" id="projectDatabasesChildren">
+
+        <h:outputText value="There are no projectDatabases associated with this dataspace."
+                   rendered="#{empty dataspaceHome.projectDatabases}"/>
+
+        <rich:dataTable value="#{dataspaceHome.projectDatabases}"
+                       var="_projectDatabase"
+                  rendered="#{not empty dataspaceHome.projectDatabases}"
+                rowClasses="rvgRowOne,rvgRowTwo"
+                        id="projectDatabasesTable">
+            <rich:column sortBy="#{_projectDatabase.databaseId}">
+                <f:facet name="header">Database id</f:facet>
+                <h:outputText value="#{_projectDatabase.databaseId}"/>
+            </rich:column>
+            <rich:column sortBy="#{_projectDatabase.connectionString}">
+                <f:facet name="header">Connection string</f:facet>
+                <h:outputText value="#{_projectDatabase.connectionString}"/>
+            </rich:column>
+            <rich:column sortBy="#{_projectDatabase.creationDate}">
+                <f:facet name="header">Creation date</f:facet>
+                <h:outputText value="#{_projectDatabase.creationDate}">
+                    <s:convertDateTime type="date" dateStyle="short"/>
+                </h:outputText>
+            </rich:column>
+            <rich:column sortBy="#{_projectDatabase.databaseName}">
+                <f:facet name="header">Database name</f:facet>
+                <h:outputText value="#{_projectDatabase.databaseName}"/>
+            </rich:column>
+            <h:column>
+                <f:facet name="header">Action</f:facet>
+                <s:link id="selectprojectDatabase"
+                     value="Select"
+                      view="/ProjectDatabase.xhtml">
+                    <f:param name="projectDatabaseDatabaseId"
+                            value="#{_projectDatabase.databaseId}"/>
+                    <f:param name="projectDatabaseFrom" value="Dataspace"/>
+                </s:link>
+            </h:column>
+        </rich:dataTable>
+
+    </h:form>
+
+    <div class="actionButtons">
+        <s:button
+               value="Add projectDatabase"
+                view="/ProjectDatabaseEdit.xhtml">
+            <f:param name="dataspaceDataSpaceId"
+                    value="#{dataspaceHome.instance.dataSpaceId}"/>
+            <f:param name="projectDatabaseFrom" value="Dataspace"/>
+        </s:button>
+    </div>
+    </rich:tab>
+</rich:tabPanel>
+</ui:define>
+
+</ui:composition>

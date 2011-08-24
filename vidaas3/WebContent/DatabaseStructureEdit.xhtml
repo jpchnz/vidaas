@@ -1,0 +1,274 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    template="layout/template.xhtml">
+
+<ui:define name="body">
+
+    <h:form id="databaseStructure" styleClass="edit">
+
+        <rich:panel>
+            <f:facet name="header">#{databaseStructureHome.managed ? 'Edit' : 'Add'} Database structure</f:facet>
+
+
+
+            <s:decorate id="contentTypeField" template="layout/edit.xhtml">
+                <ui:define name="label">Content type</ui:define>
+                <h:inputTextarea id="contentType"
+                               cols="80"
+                               rows="3"
+                              value="#{databaseStructureHome.instance.contentType}"/>
+            </s:decorate>
+
+
+            <s:decorate id="creationDateField" template="layout/edit.xhtml">
+                <ui:define name="label">Creation date</ui:define>
+                <rich:calendar id="creationDate"
+                       required="true"
+                          value="#{databaseStructureHome.instance.creationDate}" datePattern="MM/dd/yyyy" />
+            </s:decorate>
+
+
+            <s:decorate id="csvDirectoryField" template="layout/edit.xhtml">
+                <ui:define name="label">Csv directory</ui:define>
+                <h:inputText id="csvDirectory"
+                       required="true"
+                           size="100"
+                      maxlength="145"
+                          value="#{databaseStructureHome.instance.csvDirectory}">
+                    <a:support event="onblur" reRender="csvDirectoryField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="dataField" template="layout/edit.xhtml">
+                <ui:define name="label">Data</ui:define>
+                <h:inputText id="data"
+                          value="#{databaseStructureHome.instance.data}">
+                    <a:support event="onblur" reRender="dataField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="databaseDirectoryField" template="layout/edit.xhtml">
+                <ui:define name="label">Database directory</ui:define>
+                <h:inputText id="databaseDirectory"
+                       required="true"
+                           size="100"
+                      maxlength="145"
+                          value="#{databaseStructureHome.instance.databaseDirectory}">
+                    <a:support event="onblur" reRender="databaseDirectoryField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="fileField" template="layout/edit.xhtml">
+                <ui:define name="label">File</ui:define>
+                <h:inputText id="file"
+                       required="true"
+                           size="100"
+                      maxlength="145"
+                          value="#{databaseStructureHome.instance.file}">
+                    <a:support event="onblur" reRender="fileField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="sizeField" template="layout/edit.xhtml">
+                <ui:define name="label">Size</ui:define>
+                <h:inputText id="size"
+                          value="#{databaseStructureHome.instance.size}">
+                    <a:support event="onblur" reRender="sizeField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="sqlDirectoryField" template="layout/edit.xhtml">
+                <ui:define name="label">Sql directory</ui:define>
+                <h:inputText id="sqlDirectory"
+                       required="true"
+                           size="100"
+                      maxlength="145"
+                          value="#{databaseStructureHome.instance.sqlDirectory}">
+                    <a:support event="onblur" reRender="sqlDirectoryField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="statusField" template="layout/edit.xhtml">
+                <ui:define name="label">Status</ui:define>
+                <h:inputTextarea id="status"
+                               cols="80"
+                               rows="3"
+                              value="#{databaseStructureHome.instance.status}"/>
+            </s:decorate>
+
+
+            <s:decorate id="schemaTypeField" template="layout/edit.xhtml">
+                <ui:define name="label">Schema type</ui:define>
+                <h:inputText id="schemaType"
+                       required="true"
+                           size="45"
+                      maxlength="45"
+                          value="#{databaseStructureHome.instance.schemaType}">
+                    <a:support event="onblur" reRender="schemaTypeField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="uploadTypeField" template="layout/edit.xhtml">
+                <ui:define name="label">Upload type</ui:define>
+                <h:inputTextarea id="uploadType"
+                               cols="80"
+                               rows="3"
+                              value="#{databaseStructureHome.instance.uploadType}"/>
+            </s:decorate>
+
+
+
+            <div style="clear:both">
+                <span class="required">*</span>
+                required fields
+            </div>
+
+        </rich:panel>
+
+        <div class="actionButtons">
+
+            <h:commandButton id="save"
+                          value="Save"
+                         action="#{databaseStructureHome.persist}"
+                       disabled="#{!databaseStructureHome.wired}"
+                       rendered="#{!databaseStructureHome.managed}"/>
+
+            <h:commandButton id="update"
+                          value="Save"
+                         action="#{databaseStructureHome.update}"
+                       rendered="#{databaseStructureHome.managed}"/>
+
+            <h:commandButton id="delete"
+                          value="Delete"
+                         action="#{databaseStructureHome.remove}"
+                      immediate="true"
+                       rendered="#{databaseStructureHome.managed}"/>
+
+            <s:button id="cancelEdit"
+                   value="Cancel"
+             propagation="end"
+                    view="/DatabaseStructure.xhtml"
+                rendered="#{databaseStructureHome.managed}"/>
+
+            <s:button id="cancelAdd"
+                   value="Cancel"
+             propagation="end"
+                    view="/#{empty databaseStructureFrom ? 'DatabaseStructureList' : databaseStructureFrom}.xhtml"
+                rendered="#{!databaseStructureHome.managed}"/>
+
+        </div>
+    </h:form>
+
+<rich:tabPanel switchType="ajax">
+
+    <rich:tab label="Project databases">
+        <h:form styleClass="association" id="projectDatabasesChildren">
+
+            <h:outputText value="There are no projectDatabases associated with this databaseStructure."
+                       rendered="#{empty databaseStructureHome.projectDatabases}"/>
+
+            <rich:dataTable value="#{databaseStructureHome.projectDatabases}"
+                           var="_projectDatabase"
+                      rendered="#{not empty databaseStructureHome.projectDatabases}"
+                    rowClasses="rvgRowOne,rvgRowTwo"
+                            id="projectDatabasesTable">
+                <rich:column sortBy="#{_projectDatabase.databaseId}">
+                    <f:facet name="header">Database id</f:facet>
+                    <h:outputText value="#{_projectDatabase.databaseId}"/>
+                </rich:column>
+                <rich:column sortBy="#{_projectDatabase.connectionString}">
+                    <f:facet name="header">Connection string</f:facet>
+                    <h:outputText value="#{_projectDatabase.connectionString}"/>
+                </rich:column>
+                <rich:column sortBy="#{_projectDatabase.creationDate}">
+                    <f:facet name="header">Creation date</f:facet>
+                    <h:outputText value="#{_projectDatabase.creationDate}">
+                        <s:convertDateTime type="date" dateStyle="short"/>
+                    </h:outputText>
+                </rich:column>
+                <rich:column sortBy="#{_projectDatabase.databaseName}">
+                    <f:facet name="header">Database name</f:facet>
+                    <h:outputText value="#{_projectDatabase.databaseName}"/>
+                </rich:column>
+            </rich:dataTable>
+
+        </h:form>
+
+        <f:subview rendered="#{databaseStructureHome.managed}" id="projectDatabases">
+        <div class="actionButtons">
+            <s:button id="addprojectDatabase"
+                   value="Add projectDatabase"
+                    view="/ProjectDatabaseEdit.xhtml"
+             propagation="none">
+                 <f:param name="databaseStructureStructureId"
+                         value="#{databaseStructureHome.instance.structureId}"/>
+                 <f:param name="projectDatabaseFrom" value="DatabaseStructure"/>
+            </s:button>
+        </div>
+        </f:subview>
+    </rich:tab>
+
+    <rich:tab label="Schema logs">
+        <h:form styleClass="association" id="schemaLogsChildren">
+
+            <h:outputText value="There are no schemaLogs associated with this databaseStructure."
+                       rendered="#{empty databaseStructureHome.schemaLogs}"/>
+
+            <rich:dataTable value="#{databaseStructureHome.schemaLogs}"
+                           var="_schemaLog"
+                      rendered="#{not empty databaseStructureHome.schemaLogs}"
+                    rowClasses="rvgRowOne,rvgRowTwo"
+                            id="schemaLogsTable">
+                <rich:column sortBy="#{_schemaLog.id.structureId}">
+                    <f:facet name="header">Structure id</f:facet>
+                    <h:outputText value="#{_schemaLog.id.structureId}"/>
+                </rich:column>
+                <rich:column sortBy="#{_schemaLog.id.userId}">
+                    <f:facet name="header">User id</f:facet>
+                    <h:outputText value="#{_schemaLog.id.userId}"/>
+                </rich:column>
+                <rich:column sortBy="#{_schemaLog.changeDate}">
+                    <f:facet name="header">Change date</f:facet>
+                    <h:outputText value="#{_schemaLog.changeDate}">
+                        <s:convertDateTime type="date" dateStyle="short"/>
+                    </h:outputText>
+                </rich:column>
+                <rich:column sortBy="#{_schemaLog.changeLog}">
+                    <f:facet name="header">Change log</f:facet>
+                    <h:outputText value="#{_schemaLog.changeLog}"/>
+                </rich:column>
+            </rich:dataTable>
+
+        </h:form>
+
+        <f:subview rendered="#{databaseStructureHome.managed}" id="schemaLogs">
+        <div class="actionButtons">
+            <s:button id="addschemaLog"
+                   value="Add schemaLog"
+                    view="/SchemaLogEdit.xhtml"
+             propagation="none">
+                 <f:param name="databaseStructureStructureId"
+                         value="#{databaseStructureHome.instance.structureId}"/>
+                 <f:param name="schemaLogFrom" value="DatabaseStructure"/>
+            </s:button>
+        </div>
+        </f:subview>
+    </rich:tab>
+</rich:tabPanel>
+</ui:define>
+
+</ui:composition>
