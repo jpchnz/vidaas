@@ -1,0 +1,48 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+	<a4j:form id="createDatabaseForm" 
+		reRender="createDatabasePanel, createDatabaseFormInclude"
+			enctype="multipart/form-data">
+		<s:validateAll>
+	        <h:panelGrid columns="3" columnClasses="name,value,errorMessage">
+	             	
+				<h:outputLabel for="databaseStructureUploadType">Upload Type</h:outputLabel>
+				<h:selectOneMenu value="#{databaseStructureHome.instance.uploadType}"
+					required="true" id="databaseStructureUploadType">
+					<f:selectItem id="item1" itemLabel="Acccess Database"
+						itemValue="mdb" />
+				<!-- 
+				  <f:selectItem id="item2" itemLabel="SQL Schema" itemValue="sqlSchema" itemDisabled="true"/>
+				  <f:selectItem id="item3" itemLabel="CSV" itemValue="csvFormat" itemDisabled="true"/>
+				  <f:selectItem id="item4" itemLabel="SQL Dump" itemValue="sqlDump" itemDisabled="true"/>
+				  <f:selectItem id="item5" itemLabel="XML" itemValue="xmlFormat" itemDisabled="true"/>
+				   -->
+				</h:selectOneMenu>
+				<rich:message for="databaseStructureUploadType"
+					style="width : 184px;" />
+	
+				<h:outputLabel for="fileUpload">Attachment</h:outputLabel>
+				<s:fileUpload id="fileUpload"
+					data="#{databaseStructureHome.instance.data}"
+					contentType="#{databaseStructureHome.instance.contentType}"
+					fileName="#{databaseStructureHome.instance.file}"
+					fileSize="#{databaseStructureHome.instance.size}" required="true" />
+				<rich:message for="fileUpload" style="width : 184px;" />      	
+	        	
+			</h:panelGrid>
+	        </s:validateAll>
+	    		<a4j:commandButton id="createDatabaseCancelButton" value="Cancel" style="float:left">
+			    	 <rich:componentControl for="createDatabasePanel" attachTo="createDatabaseCancelButton" operation="hide" event="onclick"/>
+			    </a4j:commandButton>
+			    
+			    <h:commandButton id="addSchemaButton" value="Upload Schema" action="#{createController.createDatabaseFromSchema}" 
+				    style="float:right">
+			    </h:commandButton>	
+    </a4j:form>
+</ui:composition>
