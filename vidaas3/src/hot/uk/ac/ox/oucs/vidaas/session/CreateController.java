@@ -15,6 +15,7 @@ import uk.ac.ox.oucs.vidaas.dao.DatabaseStructureHome;
 import uk.ac.ox.oucs.vidaas.dao.WebApplicationHome;
 import uk.ac.ox.oucs.vidaas.dao.UsersHome;
 import uk.ac.ox.oucs.vidaas.data.holder.DataHolder;
+import uk.ac.ox.oucs.vidaas.delete.DeleteDatabase;
 
 import uk.ac.ox.oucs.vidaas.manager.ConnectionManager;
 import uk.ac.ox.oucs.vidaas.session.NavigationController;
@@ -39,8 +40,10 @@ import uk.ac.ox.oucs.vidaas.entity.DatabaseStructure;
 import uk.ac.ox.oucs.vidaas.entity.WebApplication;
 import uk.ac.ox.oucs.vidaas.entity.UserProjectId;
 
+import java.util.regex.Pattern;
+
 @Name("createController")
-@Scope(ScopeType.SESSION)
+//@Scope(ScopeType.SESSION)
 @SuppressWarnings("unused")
 public class CreateController {
 
@@ -80,6 +83,8 @@ public class CreateController {
 	@In(create = true)
 	@Out(required = true)
 	ProjectDatabaseHome projectDatabaseHome;
+	
+	private String validationError = "";
 	
 	private boolean statusPanelOKButtonDisabled = true;
 	private String databaseSchemaFormStatus = "";
@@ -154,6 +159,14 @@ public class CreateController {
 		this.addProjectMemberConfirmationMessage = addProjectMemberConfirmationMessage;
 	}
 
+	public String getValidationError() {
+		return validationError;
+	}
+
+	public void setValidationError(String validationError) {
+		this.validationError = validationError;
+	}
+
 	public void createProject() {
 		new CreateProjectController().createProject(getUserMain(), projectHome,
 				userProjectHome, log);
@@ -166,27 +179,33 @@ public class CreateController {
 	}
 
 	public void createDataSpace(/* Integer projectIDValue */) {
-
-		List<UserProject> projectsList = userProjectHome
+		if(validateString(dataspaceHome.getInstance().getDataspaceName()) ){
+			if(validateString(dataspaceHome.getInstance().getWebApplicationName()) ){
+				List<UserProject> projectsList = userProjectHome
 				.findByUserIDAndProjectID(getUserMain().getUserId(),
 						currentProjectID);
-		log.info("projectsList.size() {0}", projectsList.size());
-		log.info("projectsList.get(0).getUserRole() {0}", projectsList.get(0)
-				.getUserRole());
+				log.info("projectsList.size() {0}", projectsList.size());
+				log.info("projectsList.get(0).getUserRole() {0}", projectsList.get(0)
+						.getUserRole());
+				
+				if (projectsList.get(0).getUserRole().equalsIgnoreCase("admin")) {
+					new CreateDataSpaceController().createDataSpace(getUserMain(),
+							projectsList.get(0).getProject(), dataspaceHome, log);
+				}
 		
-		if (projectsList.get(0).getUserRole().equalsIgnoreCase("admin")) {
-			new CreateDataSpaceController().createDataSpace(getUserMain(),
-					projectsList.get(0).getProject(), dataspaceHome, log);
+				createProjectDataspaceConfirmationMessage = "Data Space '"
+						+ dataspaceHome.getInstance().getDataspaceName()
+						+ "' for Project: '"
+						+ projectsList.get(0).getProject().getTitle()
+						+ "' is successfully created.";
+				((NavigationController) Contexts.getSessionContext().get(
+						"navigationController")).createProjectDataspaceConfirmation();
+			} else {
+				validationError = "Web Application Name should not contain special character or space";
+			}
+		} else {
+			validationError = "Dataspace Name should not contain special character or space";
 		}
-
-		createProjectDataspaceConfirmationMessage = "Data Space '"
-				+ dataspaceHome.getInstance().getDataspaceName()
-				+ "' for Project: '"
-				+ projectsList.get(0).getProject().getTitle()
-				+ "' is successfully created.";
-		((NavigationController) Contexts.getSessionContext().get(
-				"navigationController")).createProjectDataspaceConfirmation();
-
 	}
 
 	public void createDatabaseFromSchema() {
@@ -331,6 +350,11 @@ public class CreateController {
 		((NavigationController) Contexts.getSessionContext().get(
 			"navigationController")).addProjectMemberConfirmation();
 	}
+	
+	public void dropDatabase(String databaseName){
+		log.info("dropDatabase {0}", databaseName);
+		new DeleteDatabase(databaseName).DeleteDatabase();
+	}
 
 	public Users getUserMain() {
 		if (userMain == null) {
@@ -349,5 +373,22 @@ public class CreateController {
 	public void setCurrentProject(Integer currentProjectIDValue) {
 		this.currentProjectID = currentProjectIDValue;
 	}
+	
+	public void clearDataspaceMessages(){
+		log.info("clearDataspaceMessages()");
+		
+		//dataspaceHome.getInstance().setCreationDate(null);
+		//dataspaceHome.getInstance().setDataspaceName("");
+		dataspaceHome.setInstance(null);
+		createProjectDataspaceConfirmationMessage = "";
+		validationError = "";
+	}
+	
+	private boolean validateString(String enteredValue) {
+		Pattern alphaNumericPattern = Pattern.compile("^[A-Za-z0-9]+$");
+        return alphaNumericPattern.matcher(enteredValue).matches();
+    }
+	
+	
 
 }

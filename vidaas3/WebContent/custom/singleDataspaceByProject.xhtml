@@ -143,8 +143,14 @@
 						<a4j:commandLink value="Delete" rendered="#{_database.databaseStructure.status == 'Loaded'}">
 						</a4j:commandLink>
 					</h:panelGroup>
-
 				</h:panelGrid>
+				<a4j:form id="dataspaceButtonForm">
+					<div class="actionButtons">
+						<a4j:commandButton action="#{createController.dropDatabase(_database.databaseName)}" 
+							id="dropDatabaseButton" value="Drop Database" style="float:left">
+						</a4j:commandButton>
+					</div>
+				</a4j:form>
 			</rich:panel>
 		</h:panelGrid>
 	</rich:dataGrid>

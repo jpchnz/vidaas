@@ -23,12 +23,12 @@ public class CreateDatabase {
     public CreateDatabase(String databaseNameValue) {
         this.databaseName = databaseNameValue;
     }
-
+/*
     public String createDatabase(String databaseOwnerNameValue, String databaseOwnerPWValue) {
 
         return databaseConnectionString;
     }
-
+*/
     public String[] createDatabase() {
     	String tempDatabaseName = databaseName;
     	//System.out.println(" createDatabase()    " + tempDatabaseName + " " + databaseExist());
