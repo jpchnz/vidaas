@@ -82,11 +82,15 @@
 	        	<rich:message for="webApplicationName" style="width : 184px;" />
 
 			</h:panelGrid>
+			<h:outputText value="#{createController.validationError}" styleClass="errorMessage"></h:outputText>
 	        <div style="clear:both"/>
 
 	    	<div class="actionButtons">
-	    		<a4j:commandButton id="createDataSpaceCancelButton" value="Cancel" style="float:left">
+	    		<a4j:commandButton id="createDataSpaceCancelButton" value="Clear" style="float:left" action="#{createController.clearDataspaceMessages}" 
+	    			reRender="createDataSpaceFormInclude, homeMainPanel"> 
+	    			<!--  
 			    	 <rich:componentControl for="createDataSpacePanel" attachTo="createDataSpaceCancelButton" operation="hide" event="onclick"/>
+			    	 -->
 			    </a4j:commandButton>
 			    
 			    <a4j:commandButton id="createDataSpaceButton" value="Create DataSpace" action="#{createController.createDataSpace}" 
