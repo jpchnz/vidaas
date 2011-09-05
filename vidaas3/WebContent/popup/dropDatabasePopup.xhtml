@@ -1,0 +1,24 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+<rich:modalPanel id="dropDatabasePanel" width="465" autosized="true" showWhenRendered="#{navigationController.dropDatabaseFormRender}">
+		
+        <f:facet name="header">
+            <h:panelGroup>
+                <h:outputText value="Drop Database"></h:outputText>
+            </h:panelGroup>
+        </f:facet>
+        <f:facet name="controls">
+            <h:panelGroup>
+                <h:graphicImage value="/images/close.png" width="20px" styleClass="hidelink" id="dropDatabaseHidelink"/>
+                <rich:componentControl for="dropDatabasePanel" attachTo="dropDatabaseHidelink" operation="hide" event="onclick"/>
+            </h:panelGroup>
+        </f:facet>
+        <a4j:include id="dropDatabaseFormInclude" viewId="#{navigationController.dropDatabaseInclude}"/>
+	</rich:modalPanel>
+</ui:composition>

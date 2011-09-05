@@ -119,8 +119,8 @@ public class ProjectDatabase implements java.io.Serializable {
 		this.databaseStructure = databaseStructure;
 	}
 
-	@Column(name = "Connection_String", length = 45)
-	@Length(max = 45)
+	@Column(name = "Connection_String", length = 150)
+	@Length(max = 150)
 	public String getConnectionString() {
 		return this.connectionString;
 	}

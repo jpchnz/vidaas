@@ -60,11 +60,12 @@ public class CVSGenerator {
 		BufferedWriter outSQL = null;
 		try {
 			File databaseFile = new File(sourceMDBFilePathWithName);
-			database = Database.open(databaseFile);
+			database = Database.open(databaseFile, true);
 
 			Iterator<String> tableNamesIterator = database.getTableNames()
 					.iterator();
 			while (tableNamesIterator.hasNext()) {
+				try {
 				Table table = database.getTable(tableNamesIterator.next()
 						.toString());
 
@@ -92,6 +93,7 @@ public class CVSGenerator {
 					dataHolder.setCurrentStatus("\nIgnoring 'Table' "
 							+ table.getName() + dataHolder.getCurrentStatus());
 				}
+				} catch(Exception e) {}
 			}
 		} catch (IOException ex) {
 			return false;
@@ -135,7 +137,7 @@ public class CVSGenerator {
 					table.getName(), true);
 			for (Map<String, Object> row : Cursor.createCursor(table)) {
 				inside = false;
-				outSQL.write("INSERT INTO " + tableModifiedName + " VALUES(");
+				outSQL.write("INSERT INTO \"" + tableModifiedName + "\" VALUES(");
 				for (Map.Entry<String, Object> entry : row.entrySet()) {
 					Object v = entry.getValue();
 					if (!(entry.getKey().startsWith("s_") || entry.getKey()

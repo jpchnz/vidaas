@@ -3,7 +3,6 @@ package uk.ac.ox.oucs.vidaas.session;
 import java.sql.Connection;
 import java.util.List;
 
-
 import uk.ac.ox.oucs.vidaas.concurrency.DatabaseTablesCreatorThread;
 import uk.ac.ox.oucs.vidaas.concurrency.MDBParserThread;
 import uk.ac.ox.oucs.vidaas.concurrency.ParseCreateLoaderThread;
@@ -20,7 +19,8 @@ import uk.ac.ox.oucs.vidaas.delete.DeleteDatabase;
 import uk.ac.ox.oucs.vidaas.manager.ConnectionManager;
 import uk.ac.ox.oucs.vidaas.session.NavigationController;
 
-
+import org.hibernate.validator.InvalidStateException;
+import org.hibernate.validator.InvalidValue;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
@@ -43,9 +43,19 @@ import uk.ac.ox.oucs.vidaas.entity.UserProjectId;
 import java.util.regex.Pattern;
 
 @Name("createController")
-//@Scope(ScopeType.SESSION)
+@Scope(ScopeType.SESSION)
 @SuppressWarnings("unused")
 public class CreateController {
+
+	public String testString = "Test String";
+
+	public String getTestString() {
+		return testString;
+	}
+
+	public void setTestString(String testString) {
+		this.testString = testString;
+	}
 
 	private Users userMain;
 	private Logins loginMain;
@@ -53,13 +63,13 @@ public class CreateController {
 	@Logger
 	private Log log;
 
-	@In (required = true)
+	@In(required = true)
 	DataHolder dataHolder;
-	
+
 	@In(create = true)
 	@Out(required = true)
 	UsersHome usersHome;
-	
+
 	@In(create = true)
 	@Out(required = true)
 	ProjectHome projectHome;
@@ -75,27 +85,30 @@ public class CreateController {
 	@In(create = true)
 	@Out(required = true)
 	DatabaseStructureHome databaseStructureHome;
-	
+
 	@In(create = true)
 	@Out(required = true)
 	WebApplicationHome webApplicationHome;
-	
+
 	@In(create = true)
 	@Out(required = true)
 	ProjectDatabaseHome projectDatabaseHome;
-	
+
 	private String validationError = "";
-	
+
 	private boolean statusPanelOKButtonDisabled = true;
 	private String databaseSchemaFormStatus = "";
 	private String databaseSchemaShortStatus = "";
 
 	private Integer currentProjectID;
+	private Integer currentDataspaceID;
+	private Integer currentDatabaseID;
 
 	private String createProjectConfirmationMessage = "";
 	private String createProjectDataspaceConfirmationMessage = "";
 	private String createDatabaseConfirmationMessage = "";
 	private String addProjectMemberConfirmationMessage = "";
+	private String dropDatabaseConfirmationMessage = "";
 
 	public String getCreateProjectConfirmationMessage() {
 		return createProjectConfirmationMessage;
@@ -114,7 +127,7 @@ public class CreateController {
 			String createProjectDataspaceConfirmationMessage) {
 		this.createProjectDataspaceConfirmationMessage = createProjectDataspaceConfirmationMessage;
 	}
-	
+
 	public String getCreateDatabaseConfirmationMessage() {
 		return createDatabaseConfirmationMessage;
 	}
@@ -123,13 +136,15 @@ public class CreateController {
 			String createDatabaseConfirmationMessage) {
 		this.createDatabaseConfirmationMessage = createDatabaseConfirmationMessage;
 	}
-	
+
 	public boolean isStatusPanelOKButtonDisabled() {
-		System.out.println("isStatusPanelOKButtonDisabled(): " + dataHolder.isOkButton());
+		System.out.println("isStatusPanelOKButtonDisabled(): "
+				+ dataHolder.isOkButton());
 		return dataHolder.isOkButton();
 	}
 
-	public void setStatusPanelOKButtonDisabled(boolean statusPanelOKButtonDisabled) {
+	public void setStatusPanelOKButtonDisabled(
+			boolean statusPanelOKButtonDisabled) {
 		this.statusPanelOKButtonDisabled = statusPanelOKButtonDisabled;
 	}
 
@@ -141,7 +156,7 @@ public class CreateController {
 	public void setDatabaseSchemaFormStatus(String databaseSchemaFormStatus) {
 		this.databaseSchemaFormStatus = databaseSchemaFormStatus;
 	}
-	
+
 	public String getDatabaseSchemaShortStatus() {
 		return databaseSchemaShortStatus;
 	}
@@ -149,7 +164,7 @@ public class CreateController {
 	public void setDatabaseSchemaShortStatus(String databaseSchemaShortStatus) {
 		this.databaseSchemaShortStatus = databaseSchemaShortStatus;
 	}
-	
+
 	public String getAddProjectMemberConfirmationMessage() {
 		return addProjectMemberConfirmationMessage;
 	}
@@ -157,6 +172,15 @@ public class CreateController {
 	public void setAddProjectMemberConfirmationMessage(
 			String addProjectMemberConfirmationMessage) {
 		this.addProjectMemberConfirmationMessage = addProjectMemberConfirmationMessage;
+	}
+
+	public String getDropDatabaseConfirmationMessage() {
+		return dropDatabaseConfirmationMessage;
+	}
+
+	public void setDropDatabaseConfirmationMessage(
+			String dropDatabaseConfirmationMessage) {
+		this.dropDatabaseConfirmationMessage = dropDatabaseConfirmationMessage;
 	}
 
 	public String getValidationError() {
@@ -179,27 +203,35 @@ public class CreateController {
 	}
 
 	public void createDataSpace(/* Integer projectIDValue */) {
-		if(validateString(dataspaceHome.getInstance().getDataspaceName()) ){
-			if(validateString(dataspaceHome.getInstance().getWebApplicationName()) ){
+		if (validateString(dataspaceHome.getInstance().getDataspaceName())) {
+			if (validateString(dataspaceHome.getInstance()
+					.getWebApplicationName())) {
+
+				System.out.println(this.currentProjectID + "   "
+						+ getUserMain().getUserId());
+
 				List<UserProject> projectsList = userProjectHome
-				.findByUserIDAndProjectID(getUserMain().getUserId(),
-						currentProjectID);
+						.findByUserIDAndProjectID(getUserMain().getUserId(),
+								this.currentProjectID);
+
 				log.info("projectsList.size() {0}", projectsList.size());
-				log.info("projectsList.get(0).getUserRole() {0}", projectsList.get(0)
-						.getUserRole());
-				
+				log.info("projectsList.get(0).getUserRole() {0}", projectsList
+						.get(0).getUserRole());
+
 				if (projectsList.get(0).getUserRole().equalsIgnoreCase("admin")) {
-					new CreateDataSpaceController().createDataSpace(getUserMain(),
-							projectsList.get(0).getProject(), dataspaceHome, log);
+					new CreateDataSpaceController().createDataSpace(
+							getUserMain(), projectsList.get(0).getProject(),
+							dataspaceHome, log);
 				}
-		
+
 				createProjectDataspaceConfirmationMessage = "Data Space '"
 						+ dataspaceHome.getInstance().getDataspaceName()
 						+ "' for Project: '"
 						+ projectsList.get(0).getProject().getTitle()
 						+ "' is successfully created.";
 				((NavigationController) Contexts.getSessionContext().get(
-						"navigationController")).createProjectDataspaceConfirmation();
+						"navigationController"))
+						.createProjectDataspaceConfirmation();
 			} else {
 				validationError = "Web Application Name should not contain special character or space";
 			}
@@ -211,104 +243,175 @@ public class CreateController {
 	public void createDatabaseFromSchema() {
 		// log.info("createDatabase {0} {1}", projectIDValue, dataspaceIDValue);
 		dataHolder.setOkButton(true);
-		Project tempProject = ((Project) Contexts.getSessionContext().get("currentProject"));
-		Dataspace tempDataspace = ((Dataspace) Contexts.getSessionContext().get("currentDataspace"));
-		log.info("createDatabase {0} {1}", tempProject.getProjectId(), tempDataspace.getDataSpaceId());
-/**/
+		Project tempProject = ((Project) Contexts.getSessionContext().get(
+				"currentProject"));
+		Dataspace tempDataspace = ((Dataspace) Contexts.getSessionContext()
+				.get("currentDataspace"));
+		
+		log.info("createDatabase {0} {1}", tempProject.getProjectId(),
+				tempDataspace.getDataSpaceId());
+		/**/
 		DatabaseStructure tempDatabaseStructure = databaseStructureHome
 				.getInstance();
-		
-		new CreateDatabaseController().createDatabaseStructure(tempProject.getProjectId(), tempDataspace.getDataspaceName(), tempDatabaseStructure, log);
-		
-		String databasePersistString = databaseStructureHome.persist();
-		log.info("databasePersistString {0}", databasePersistString);
-		Contexts.getSessionContext().set("currentDatabaseStructure", tempDatabaseStructure);
-		
+
+		new CreateDatabaseController().createDatabaseStructure(
+				tempProject.getProjectId(), tempDataspace.getDataspaceName(),
+				tempDatabaseStructure, "main", log);
+
+		String databaseStructurePersistString = databaseStructureHome.persist();
+		log.info("databaseStructurePersistString {0}", databaseStructurePersistString);
+		Contexts.getSessionContext().set("currentDatabaseStructure",
+				tempDatabaseStructure);
+
 		WebApplication tempWebApplication = webApplicationHome.getInstance();
-		
+
 		String webApplicationPersistString = webApplicationHome.persist();
 		log.info("webApplicationPersistString {0}", webApplicationPersistString);
-		
+
 		ProjectDatabase tempProjectDatabase = projectDatabaseHome.getInstance();
-		new CreateDatabaseController().createDatabase(tempDataspace, tempDatabaseStructure, tempWebApplication, getLoginsMain(), 
-				tempProject.getTitle(), tempProjectDatabase, log);
+		new CreateDatabaseController().createDatabase(tempDataspace,
+				tempDatabaseStructure, tempWebApplication, getLoginsMain(),
+				tempProject.getTitle(), tempProjectDatabase, "main", log);
+
+		try {
+			String projectDatabasePersistString = projectDatabaseHome.persist();
 		
-		String projectDatabasePersistString = projectDatabaseHome.persist();
-		log.info("projectDatabasePersistString {0}", projectDatabasePersistString);
-		Contexts.getSessionContext().set("currentProjectDatabase", tempProjectDatabase);
+		log.info("projectDatabasePersistString {0}",
+				projectDatabasePersistString);
+		Contexts.getSessionContext().set("currentProjectDatabase",
+				tempProjectDatabase);
+		} catch (InvalidStateException ise) {
+			InvalidValue[] iv = ise.getInvalidValues();
+			for (int i = 0; i < iv.length; i++){
+				System.out.println("Property Name: " + iv[i].getPropertyName());
+				System.out.println("Property Name Message: " + iv[i].getMessage());
+			}
+		}
 		
 		createDatabaseConfirmationMessage = "Database Created";
 		/**/
 		((NavigationController) Contexts.getSessionContext().get(
-		"navigationController")).createDatabaseConfirmation();
-		
+				"navigationController")).createDatabaseConfirmation();
 	}
-	
-	public void parseDatabase(){
-		databaseSchemaShortStatus = "Not Yet Started ...!";
+
+	public void cloneDatabase(Integer currentDatabaseIDValue, String cloneType) {
+
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController"))
+				.setCurrentDatabase(currentDatabaseIDValue);
+
+		Project tempProject = ((Project) Contexts.getSessionContext().get(
+				"currentProject"));
+		
+		Dataspace tempDataspace = ((Dataspace) Contexts.getSessionContext()
+				.get("currentDataspace"));
+
+		ProjectDatabase tempOldDatabase = ((ProjectDatabase) Contexts
+				.getSessionContext().get("currentProjectDatabase"));
+
+		log.info("Project ID {0}, Dataspace ID {1}, Database ID {2}, old database name {3}",
+				tempProject.getProjectId(), tempDataspace.getDataSpaceId(),
+				tempOldDatabase.getDatabaseId(), tempOldDatabase.getDatabaseName());
+
+		DatabaseStructure tempDatabaseStructure = databaseStructureHome
+				.getInstance();
+		new CreateDatabaseController().cloneDatabaseStructure(
+				tempProject.getProjectId(), tempDataspace.getDataspaceName(),
+				tempDatabaseStructure, tempOldDatabase.getDatabaseStructure(), cloneType, log);
+
+		String databasePersistString = databaseStructureHome.persist();
+		log.info("databasePersistString {0}", databasePersistString);
+		
+		Contexts.getSessionContext().set("currentDatabaseStructure",
+				tempDatabaseStructure);
+
+		WebApplication tempWebApplication = webApplicationHome.getInstance();
+
+		String webApplicationPersistString = webApplicationHome.persist();
+		log.info("webApplicationPersistString {0}", webApplicationPersistString);
+		
+		/**/
+		projectDatabaseHome.clearInstance();
+		ProjectDatabase newProjectDatabase = projectDatabaseHome.getInstance();
+		new CreateDatabaseController().cloneDatabase(tempDataspace,
+				tempDatabaseStructure, tempWebApplication, getLoginsMain(),
+				tempProject.getTitle(), newProjectDatabase, tempOldDatabase, cloneType, log);
+		
+		/**/
+		String projectDatabasePersistString = projectDatabaseHome.persist();
+		log.info("projectDatabasePersistString {0}",
+				projectDatabasePersistString);	
+	}
+
+	public void parseDatabase() {
+		databaseSchemaShortStatus = "\n Not Yet Started ...!";
 		dataHolder.setOkButton(true);
 		((NavigationController) Contexts.getSessionContext().get(
-			"navigationController")).createDatabaseInitial();
+				"navigationController")).createDatabaseInitial();
 
-		
-		DatabaseStructure tempDatabaseStructure = (DatabaseStructure) Contexts.getSessionContext().get("currentDatabaseStructure");
-		ProjectDatabase tempProjectDatabase = (ProjectDatabase) Contexts.getSessionContext().get("currentProjectDatabase");
-		
+		DatabaseStructure tempDatabaseStructure = (DatabaseStructure) Contexts
+				.getSessionContext().get("currentDatabaseStructure");
+		ProjectDatabase tempProjectDatabase = (ProjectDatabase) Contexts
+				.getSessionContext().get("currentProjectDatabase");
+
 		databaseStructureHome.setId(tempDatabaseStructure.getStructureId());
-		tempDatabaseStructure = databaseStructureHome.getEntityManager().find(DatabaseStructure.class,
-				tempDatabaseStructure.getStructureId());
-		
+		tempDatabaseStructure = databaseStructureHome.getEntityManager()
+				.find(DatabaseStructure.class,
+						tempDatabaseStructure.getStructureId());
+
 		String rootDirectory = tempDatabaseStructure.getDatabaseDirectory();
 		String csvDataDirectory = tempDatabaseStructure.getCsvDirectory();
-		//String ddlDirecotry = tempDatabaseStructure.getSqlDirectory();		
+		// String ddlDirecotry = tempDatabaseStructure.getSqlDirectory();
 		String sqlDataDirecotry = rootDirectory + "data/sql/";
-		String databaseMDBFile = rootDirectory + tempDatabaseStructure.getFile();
-		
+		String databaseMDBFile = rootDirectory
+				+ tempDatabaseStructure.getFile();
+
 		String fileName = tempDatabaseStructure.getFile();
 		int index = fileName.indexOf('.');
-		
+
 		String databaseMDBFileWithoutExtension = fileName.substring(0, index);
-		String databaseSchemaFile = rootDirectory + databaseMDBFileWithoutExtension + ".sql";
-		
+		String databaseSchemaFile = rootDirectory
+				+ databaseMDBFileWithoutExtension + ".sql";
+
 		databaseSchemaShortStatus = "Starting Parsing: " + databaseMDBFile;
-		
+
 		ConnectionManager connectionManager = new ConnectionManager();
-		Connection connection = connectionManager.createConnection(
-				tempProjectDatabase.getDatabaseName()
+		Connection connection = connectionManager
+				.createConnection(tempProjectDatabase.getDatabaseName()
 						.toLowerCase());
 		dataHolder.setCurrentStatus("\nSuccessfully Connected with Database "
 				+ dataHolder.getCurrentStatus());
-		
-		try{
+
+		try {
 			ParseCreateLoaderThread parseCreateLoaderThread = new ParseCreateLoaderThread(
 					databaseMDBFile, databaseSchemaFile, sqlDataDirecotry,
 					csvDataDirectory, dataHolder, connection);
 			Thread parserThread = new Thread(parseCreateLoaderThread);
 			parserThread.start();
-			
-		}catch (Exception e){
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
+
 		tempDatabaseStructure.setStatus(new String("Database_Populated"));
-		tempDatabaseStructure.setData(new String("Database_Populated").getBytes());
+		tempDatabaseStructure.setData(new String("Database_Populated")
+				.getBytes());
 
 		// This should be Update
 		databaseStructureHome.setInstance(tempDatabaseStructure);
 		// databaseStructureHome.update();
-		
+
 		databaseStructureHome.persist();
-		
+
 		databaseSchemaShortStatus = "Not Yet Started ...!";
 	}
-	
+
 	public void createProjectMember() {
 		addProjectMemberConfirmationMessage = "";
 		/*
-		((NavigationController) Contexts.getSessionContext().get(
-				"navigationController")).homePageWelcome();
-				*/
+		 * ((NavigationController) Contexts.getSessionContext().get(
+		 * "navigationController")).homePageWelcome();
+		 */
 
 		Project tempProject = ((Project) Contexts.getSessionContext().get(
 				"currentProject"));
@@ -320,19 +423,19 @@ public class CreateController {
 		System.out.println("userList.size(): " + userList.size());
 		if (userList.size() == 0) {
 			// save the user from the form
-			
+
 			// I should just return .. if user doesn't exist
-			//usersHome.persist();
-			addProjectMemberConfirmationMessage = tempUser.getLastName() + ", " + tempUser.getFirstName() + " is not registered member";
-			//return;
+			// usersHome.persist();
+			addProjectMemberConfirmationMessage = tempUser.getLastName() + ", "
+					+ tempUser.getFirstName() + " is not registered member";
+			// return;
 		} else {
 			tempUser = userList.get(0);
-		
 
 			UserProjectId userProjectID = new UserProjectId();
 			userProjectID.setUserId(tempUser.getUserId());
 			userProjectID.setProjectId(tempProject.getProjectId());
-	
+
 			System.out.println(tempProject.getProjectId() + "  "
 					+ projectHome.getProjectProjectId() + "  "
 					+ getUserMain().getUserId());
@@ -340,20 +443,44 @@ public class CreateController {
 			userProject.setId(userProjectID);
 			userProject.setProject(tempProject);
 			userProject.setUsers(tempUser);
-			//userProject.setUserRole("newMemberRole");
-	
-			addProjectMemberConfirmationMessage = tempUser.getLastName() + ", " + tempUser.getFirstName() + " is added as project member";
+			// userProject.setUserRole("newMemberRole");
+
+			addProjectMemberConfirmationMessage = tempUser.getLastName() + ", "
+					+ tempUser.getFirstName() + " is added as project member";
 			userProjectHome.setInstance(userProject);
-			//userProject.
+			// userProject.
 			userProjectHome.persist();
 		}
 		((NavigationController) Contexts.getSessionContext().get(
-			"navigationController")).addProjectMemberConfirmation();
+				"navigationController")).addProjectMemberConfirmation();
 	}
-	
-	public void dropDatabase(String databaseName){
+
+	public void dropDatabase(String databaseName) {
 		log.info("dropDatabase {0}", databaseName);
 		new DeleteDatabase(databaseName).DeleteDatabase();
+
+		ProjectDatabase tempProjectDatabase = (ProjectDatabase) Contexts
+				.getSessionContext().get("currentProjectDatabase");
+		DatabaseStructure tempDatabaseStructure = tempProjectDatabase
+				.getDatabaseStructure();
+
+		projectDatabaseHome.setId(tempProjectDatabase.getDatabaseId());
+		projectDatabaseHome.find();
+		String projectDatabaseRemoveString = projectDatabaseHome.remove();
+
+		/**/
+		databaseStructureHome.setId(tempDatabaseStructure.getStructureId());
+		databaseStructureHome.find();
+		String databaseStructureRemoveString = databaseStructureHome.remove();
+
+		System.out.println(projectDatabaseRemoveString + "  "
+				+ databaseStructureRemoveString);
+
+		this.dropDatabaseConfirmationMessage = "The database with name '"
+				+ databaseName + "' successfully deleted.";
+
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController")).dropDatabaseConfirmation();
 	}
 
 	public Users getUserMain() {
@@ -362,33 +489,53 @@ public class CreateController {
 		}
 		return userMain;
 	}
-	
-	public Logins getLoginsMain(){
-		if(loginMain == null){
+
+	public Logins getLoginsMain() {
+		if (loginMain == null) {
 			loginMain = ((Logins) Contexts.getSessionContext().get("loginMain"));
 		}
 		return loginMain;
 	}
 
 	public void setCurrentProject(Integer currentProjectIDValue) {
+		System.out.println(" ********************     setCurrentProject: "
+				+ currentProjectIDValue);
 		this.currentProjectID = currentProjectIDValue;
 	}
-	
-	public void clearDataspaceMessages(){
+
+	public void setCurrentDataspace(Integer currentDataspaceIDValue) {
+		this.currentDataspaceID = currentDataspaceIDValue;
+	}
+
+	public void setCurrentDatabase(Integer currentDatabaseIDValue) {
+		this.currentDatabaseID = currentDatabaseIDValue;
+	}
+
+	public void setCurrentDataspaceAndDatabase(Integer currentDataspaceIDValue,
+			Integer currentDatabaseIDValue) {
+		this.currentDataspaceID = currentDataspaceIDValue;
+		this.currentDatabaseID = currentDatabaseIDValue;
+	}
+
+	public void clearDataspaceMessages() {
 		log.info("clearDataspaceMessages()");
-		
-		//dataspaceHome.getInstance().setCreationDate(null);
-		//dataspaceHome.getInstance().setDataspaceName("");
+
+		// dataspaceHome.getInstance().setCreationDate(null);
+		// dataspaceHome.getInstance().setDataspaceName("");
 		dataspaceHome.setInstance(null);
 		createProjectDataspaceConfirmationMessage = "";
 		validationError = "";
 	}
-	
+
 	private boolean validateString(String enteredValue) {
 		Pattern alphaNumericPattern = Pattern.compile("^[A-Za-z0-9]+$");
-        return alphaNumericPattern.matcher(enteredValue).matches();
-    }
-	
-	
+		return alphaNumericPattern.matcher(enteredValue).matches();
+	}
+
+	int counterTest = 100;
+
+	public void testingString() {
+		testString = testString + counterTest++;
+	}
 
 }

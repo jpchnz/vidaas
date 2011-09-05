@@ -26,6 +26,12 @@
 				</h:selectOneMenu>
 				<rich:message for="databaseStructureUploadType"
 					style="width : 184px;" />
+					
+				<h:outputLabel for="creationDate">Creation date</h:outputLabel>
+				<rich:calendar id="creationDate" required="true"
+					value="#{projectDatabaseHome.instance.creationDate}"
+					datePattern="MM/dd/yyyy" />
+				<rich:message for="creationDate" style="width : 184px;" />
 	
 				<h:outputLabel for="fileUpload">Attachment</h:outputLabel>
 				<s:fileUpload id="fileUpload"

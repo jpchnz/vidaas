@@ -31,7 +31,7 @@ public class TablesOrderingUtility {
         File databaseFile = new File(mdbFileURL);
         Database database = null;
         try {
-            database = Database.open(databaseFile);
+            database = Database.open(databaseFile, true);
         } catch (IOException e) {
             e.printStackTrace();
         }

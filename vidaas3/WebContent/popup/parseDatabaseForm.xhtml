@@ -13,12 +13,12 @@
 	<rich:panel>
 		 <a4j:region>
 		      <h:form>
-		            <a4j:poll id="pollForm" interval="100" reRender="pollForm, statusPanel, okButton" enabled="#{createController.statusPanelOKButtonDisabled}"/>
+		            <a4j:poll id="pollForm" interval="100" reRender="homeMainPanel, pollForm, statusPanel, okButtonParseDatabase" enabled="#{createController.statusPanelOKButtonDisabled}"/>
 		      </h:form>
 		</a4j:region>
 	   
-	    <!--  
-	     <a4j:form id="statusForm" ajaxSubmit="true">  </a4j:form>  -->
+	     
+	     <a4j:form id="parseConfirmationForm" ajaxSubmit="true">  
 		        <h:panelGrid columns="1" id="statusPanel">
 		                <!-- <h:outputLabel for="status">Status</h:outputLabel>	
 		                 	                
@@ -26,11 +26,18 @@
 		                -->
 		                <h:inputTextarea id="status" value="#{createController.databaseSchemaFormStatus}" disabled="true"
 		                rows="40" cols="80"/>	                
-		                 <h:commandButton id="okButton" disabled="#{createController.statusPanelOKButtonDisabled}"
-					    	value="OK" action="#{navigationController.createParseDatabaseInitial()}">					    	
-			   			</h:commandButton>
+		                 <a4j:commandButton id="okButtonParseDatabase" disabled="#{createController.statusPanelOKButtonDisabled}" 
+					    	value="OK" reRender="homeMainPanel, homePageMainBodyInclude" action="#{navigationController.listUserProjects()}">
+					    	 <rich:componentControl for="parseDatabasePanel" attachTo="okButtonParseDatabase" operation="hide" event="onclick"/>					    	
+			   			</a4j:commandButton>
+			   			<!--  
+			   			<a4j:commandLink id="okButtonParseDatabase2" disabled="#{createController.statusPanelOKButtonDisabled}" 
+					    	value="OK" reRender="homeMainPanel, homePageMainBodyInclude" action="#{navigationController.listUserProjects()}">
+					    	 <rich:componentControl for="parseDatabasePanel" attachTo="okButtonParseDatabase2" operation="hide" event="onclick"/>					    	
+			   			</a4j:commandLink>
+			   			-->
 		        </h:panelGrid>	        
-		    
+		    </a4j:form>  
     </rich:panel>
 
 	
