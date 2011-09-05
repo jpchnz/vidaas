@@ -1,14 +1,19 @@
 package uk.ac.ox.oucs.vidaas.session;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import org.jboss.seam.log.Log;
+
+import com.lowagie.text.pdf.codec.Base64.InputStream;
+import com.lowagie.text.pdf.codec.Base64.OutputStream;
 
 import uk.ac.ox.oucs.vidaas.create.CreateUser;
 import uk.ac.ox.oucs.vidaas.entity.DatabaseStructure;
@@ -19,31 +24,32 @@ import uk.ac.ox.oucs.vidaas.entity.Users;
 import uk.ac.ox.oucs.vidaas.entity.WebApplication;
 
 public class CreateDatabaseController {
-	
+
 	private final String rootStorageDirectory = "/opt/VIDaaSData/";
-	
-	public void createDatabaseStructure(Integer projectID, String databaseName, DatabaseStructure tempDatabaseStructure,
+
+	public void createDatabaseStructure(Integer projectID, String databaseName,
+			DatabaseStructure tempDatabaseStructure, String databaseVersion,
 			Log logger) {
 		logger.info("createDatabaseStructure() called");
-		
-		logger.info(Level.INFO,"tempDatabaseStructure.getFile(): "
+
+		logger.info(Level.INFO, "tempDatabaseStructure.getFile(): "
 				+ tempDatabaseStructure.getFile());
-		
+
 		logger.info("Upload Type {0}", tempDatabaseStructure.getUploadType());
-		
-		String projectName = "project_"	+ projectID;
-		
+
+		String projectName = "project_" + projectID;
+
 		// databaseDirectory = /opt/vidaasData/project_2/db_test/
 		String databaseDirectory = rootStorageDirectory + projectName + "/"
-				+ stringValidation(databaseName) + "/";
-		
+				+ stringValidation(databaseName) + "/" + databaseVersion + "/";
+
 		// schemaDirectory = /opt/vidaasData/project_2/db_test/
 		String schemaRootDirectory = databaseDirectory;
-		
+
 		// /opt/vidaasData/project_2/db_test/oxrep2003.mdb
 		String databaseMDBFile = schemaRootDirectory
 				+ tempDatabaseStructure.getFile();
-		
+
 		// SQL directory will contain Individual create table SQL
 		// can be avoided by clever logic to parse long stream of data
 		// Not used Yet ... can be useful in future
@@ -59,7 +65,7 @@ public class CreateDatabaseController {
 		// databaseCSVDirectory =
 		// /opt/vidaasData/project_2/db_test/data/csv/
 		String databaseCSVDataDirectory = databaseDataDirectory + "csv/";
-		
+
 		// DATA in insert SQL statement Format ....
 		// databaseDataDirectory =
 		// /opt/vidaasData/project_2/db_test/data/sql
@@ -69,7 +75,7 @@ public class CreateDatabaseController {
 		// String databaseCVSFile = databaseCVSDirectory +
 		// databaseMDBFileWithoutExtension + ".csv";
 
-		//this.databaseSchemaFormStatus = "Creating Directories";
+		// this.databaseSchemaFormStatus = "Creating Directories";
 
 		if (!(new File(databaseDirectory).exists())) {
 			new File(databaseDirectory).mkdirs();
@@ -79,9 +85,9 @@ public class CreateDatabaseController {
 		new File(databaseSchemaDirectory).mkdirs();
 		new File(databaseCSVDataDirectory).mkdirs();
 		new File(databaseSQLDataDirectory).mkdirs();
-		
+
 		try {
-			//this.databaseSchemaFormStatus = "Saving Uploaded Database";
+			// this.databaseSchemaFormStatus = "Saving Uploaded Database";
 			FileOutputStream fileOutputStream = new FileOutputStream(
 					databaseMDBFile);
 			fileOutputStream.write(tempDatabaseStructure.getData());
@@ -91,9 +97,9 @@ public class CreateDatabaseController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		tempDatabaseStructure.setCreationDate(new Date());
-		
+
 		tempDatabaseStructure.setDatabaseDirectory(schemaRootDirectory);
 		tempDatabaseStructure.setCsvDirectory(databaseCSVDataDirectory);
 		tempDatabaseStructure.setSqlDirectory(databaseSchemaDirectory);
@@ -101,68 +107,211 @@ public class CreateDatabaseController {
 
 		tempDatabaseStructure.setStatus(new String("Uploaded"));
 		tempDatabaseStructure.setData(new String("Uploaded").getBytes());
-		tempDatabaseStructure.setSchemaType(tempDatabaseStructure.getUploadType());
+		tempDatabaseStructure.setSchemaType(tempDatabaseStructure
+				.getUploadType());
 
-		//tempDatabaseStructure.setProjectDatabase(tempProjectDatabase);
-		//tempDatabaseStructure.setUsers(userMain);
+		// tempDatabaseStructure.setProjectDatabase(tempProjectDatabase);
+		// tempDatabaseStructure.setUsers(userMain);
 	}
-	
-	public void createDatabase(Dataspace tempDataSpace, DatabaseStructure tempDatabaseStructure, WebApplication tempWebApplication, Logins loginMain, String projectTitle, ProjectDatabase tempDatabase,
+
+	public void cloneDatabaseStructure(Integer projectID, String databaseName,
+			DatabaseStructure newDatabaseStructure,
+			DatabaseStructure oldDatabaseStructure, String databaseVersion,
 			Log logger) {
-		
+		logger.info("cloneDatabaseStructure() called");
+
+		String projectName = "project_" + projectID;
+
+		// databaseDirectory = /opt/vidaasData/project_2/db_test/
+		String databaseDirectory = rootStorageDirectory + projectName + "/"
+				+ stringValidation(databaseName) + "/" + databaseVersion + "/";
+
+		// schemaDirectory = /opt/vidaasData/project_2/db_test/
+		String schemaRootDirectory = databaseDirectory;
+
+		// /opt/vidaasData/project_2/db_test/oxrep2003.mdb
+		/**/
+		String databaseMDBFile = schemaRootDirectory
+				+ oldDatabaseStructure.getFile();
+
+		// SQL directory will contain Individual create table SQL
+		// can be avoided by clever logic to parse long stream of data
+		// Not used Yet ... can be useful in future
+		// databaseSchemaDirectory =
+		// /opt/vidaasData/project_2/db_test/ddl/
+		String databaseSchemaDirectory = schemaRootDirectory + "ddl/";
+
+		// data directory will contain Data used by insert type SQL statements
+		// databaseDataDirectory = /opt/vidaasData/project_2/db_test/Dummy/data/
+		String databaseDataDirectory = schemaRootDirectory + "data/";
+
+		// Data is CSV format
+		// databaseCSVDirectory =
+		// /opt/vidaasData/project_2/db_test/data/csv/
+		String databaseCSVDataDirectory = databaseDataDirectory + "csv/";
+
+		// DATA in insert SQL statement Format ....
+		// databaseDataDirectory =
+		// /opt/vidaasData/project_2/db_test/data/sql
+		String databaseSQLDataDirectory = databaseDataDirectory + "sql/";
+
+		// One Single CSV for whole database doesn't work ...!
+		// String databaseCVSFile = databaseCVSDirectory +
+		// databaseMDBFileWithoutExtension + ".csv";
+
+		// this.databaseSchemaFormStatus = "Creating Directories";
+
+		if (!(new File(databaseDirectory).exists())) {
+			new File(databaseDirectory).mkdirs();
+		}
+
+		new File(schemaRootDirectory).mkdirs();
+		new File(databaseSchemaDirectory).mkdirs();
+		new File(databaseCSVDataDirectory).mkdirs();
+		new File(databaseSQLDataDirectory).mkdirs();
+
+		try {
+			// this.databaseSchemaFormStatus = "Saving Uploaded Database";
+			File destination = new File(
+					databaseMDBFile);
+			File sourceFile = new File(rootStorageDirectory + projectName + "/"
+					+ stringValidation(databaseName) + "/main/" + oldDatabaseStructure.getFile());
+			
+			copy(sourceFile, destination);
+			/**/
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		newDatabaseStructure.setCreationDate(new Date());
+		newDatabaseStructure.setFile(oldDatabaseStructure.getFile());
+
+		newDatabaseStructure.setDatabaseDirectory(schemaRootDirectory);
+		newDatabaseStructure.setCsvDirectory(databaseCSVDataDirectory);
+		newDatabaseStructure.setSqlDirectory(databaseSchemaDirectory);
+		// tempDatabaseStructure.
+
+		newDatabaseStructure.setStatus(new String("Copied"));
+		newDatabaseStructure.setData(new String("Copied").getBytes());
+		newDatabaseStructure
+				.setSchemaType(oldDatabaseStructure.getUploadType());
+
+	}
+
+	public void createDatabase(Dataspace tempDataSpace,
+			DatabaseStructure tempDatabaseStructure,
+			WebApplication tempWebApplication, Logins loginMain,
+			String projectTitle, ProjectDatabase tempDatabase,
+			String databaseVersion, Log logger) {
+		Date todaysDate = new Date();
+
 		String tempProjectTitleNew = stringValidation(projectTitle);
-		String modifiedDatabaseName = tempProjectTitleNew + "_" + stringValidation(tempDataSpace.getDataspaceName());
-		
-		tempDatabase.setDatabaseName(modifiedDatabaseName);
-		
+		String modifiedDatabaseName = tempProjectTitleNew + "_"
+				+ stringValidation(tempDataSpace.getDataspaceName());
+
+		tempDatabase.setDatabaseName(modifiedDatabaseName.toLowerCase());
 
 		try {
 			/* */
 			uk.ac.ox.oucs.vidaas.create.CreateDatabase createDatabase = new uk.ac.ox.oucs.vidaas.create.CreateDatabase(
 					modifiedDatabaseName.toLowerCase());
 			String connectionString[] = createDatabase.createDatabase();
-			logger.info(Level.INFO, "*********** connectionString   " + connectionString[1]);
-					
-			/*
-			 * Database doesn't have connection String .. 
-			 * It is schema which will have connection String
+			logger.info(Level.INFO, "*********** connectionString   "
+					+ connectionString[1]);
+/*
 			tempDatabase.setConnectionString(connectionString[0]
-					+ connectionString[1]);*/
-
+					+ connectionString[1]);
+*/
 			// Database may be existing and CreateDatabase may change its name
-			tempDatabase.setDatabaseName(connectionString[1].toLowerCase());
-			
-			/* Database will have user name based on the User. 
-			 * One user will have same DB userName for each DB.
-			*/
-			//tempDatabase.setUserName(tempDatabase.getUserName().toLowerCase());
+			//tempDatabase.setDatabaseName(connectionString[1].toLowerCase());
+
+			/*
+			 * Database will have user name based on the User. One user will
+			 * have same DB userName for each DB.
+			 */
+			// tempDatabase.setUserName(tempDatabase.getUserName().toLowerCase());
 			CreateUser createUser = new CreateUser();
 			boolean userExists = createUser.userExist(loginMain.getUserName());
-			
-			logger.info(Level.INFO, " ++++++++++++++++++++++++++++++++++++++++++++++++++++   User Exists: " + userExists);
-			logger.info(Level.INFO, " ++++++++++++++++++++++++++++++++++++++++++++++++++++   Database Name: " + tempDatabase.getDatabaseName());
+
+			logger.info(Level.INFO,
+					" ++++++++++++++++++++++++++++++++++++++++++++++++++++   User Exists: "
+							+ userExists);
+			logger.info(Level.INFO,
+					" ++++++++++++++++++++++++++++++++++++++++++++++++++++   Database Name: "
+							+ tempDatabase.getDatabaseName());
 			/* */
-			if(userExists == false){
+			if (userExists == false) {
 				createUser = new CreateUser(loginMain.getUserName()
 						.toLowerCase(), loginMain.getPassword(),
 						tempDatabase.getDatabaseName());
 				createUser.createUser(true, false);
 			} else {
-				createUser.grantDatabaseAdmin(tempDatabase.getDatabaseName(), loginMain.getUserName().toLowerCase());
-				createUser.grantDatabaseOwnership(tempDatabase.getDatabaseName(), loginMain.getUserName().toLowerCase());
+				createUser.grantDatabaseAdmin(tempDatabase.getDatabaseName(),
+						loginMain.getUserName().toLowerCase());
+				createUser.grantDatabaseOwnership(tempDatabase
+						.getDatabaseName(), loginMain.getUserName()
+						.toLowerCase());
 			}
-			
+
 			tempDatabase.setDataspace(tempDataSpace);
 			tempDatabase.setDatabaseStructure(tempDatabaseStructure);
 			tempDatabase.setWebApplication(tempWebApplication);
-			tempDatabase.setDatabaseType(tempDataSpace.getDatabaseType());
-			tempDatabase.setCreationDate(new Date());
-			
+			tempDatabase.setDatabaseType(databaseVersion);
+			//tempDatabase.setCreationDate(todaysDate);
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		}		
+		}
 	}
-	
+
+	public void cloneDatabase(Dataspace tempDataSpace,
+			DatabaseStructure tempDatabaseStructure,
+			WebApplication tempWebApplication, Logins loginMain,
+			String projectTitle, ProjectDatabase newDatabase,
+			ProjectDatabase originalDatabase, String databaseVersion, Log logger) {
+
+		logger.info("Old Database Name {0}", originalDatabase.getDatabaseName());
+		String tempProjectTitleNew = stringValidation(projectTitle);
+		String modifiedDatabaseName = tempProjectTitleNew
+				+ "_"
+				+ stringValidation(tempDataSpace.getDataspaceName() + "_"
+						+ databaseVersion);
+
+		newDatabase.setDatabaseName(modifiedDatabaseName.toLowerCase());
+
+		try {
+			uk.ac.ox.oucs.vidaas.create.CreateDatabase createDatabase = new uk.ac.ox.oucs.vidaas.create.CreateDatabase(
+					modifiedDatabaseName.toLowerCase());
+			String connectionString[] = createDatabase.cloneDatabase(
+					modifiedDatabaseName.toLowerCase(),
+					originalDatabase.getDatabaseName());
+
+			newDatabase.setConnectionString(connectionString[0]
+					+ connectionString[1]);
+
+			// Database may be existing and CreateDatabase may change its name
+			newDatabase.setDatabaseName(connectionString[1].toLowerCase());
+
+			CreateUser createUser = new CreateUser();
+			createUser.grantDatabaseAdmin(newDatabase.getDatabaseName(),
+					loginMain.getUserName().toLowerCase());
+			createUser.grantDatabaseOwnership(newDatabase.getDatabaseName(),
+					loginMain.getUserName().toLowerCase());
+
+			newDatabase.setDataspace(tempDataSpace);
+			newDatabase.setDatabaseStructure(tempDatabaseStructure);
+			newDatabase.setWebApplication(tempWebApplication);
+			newDatabase.setDatabaseType(databaseVersion);
+			newDatabase.setCreationDate(new Date());
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		/**/
+	}
+
 	private String stringValidation(String input) {
 		Pattern escaper = Pattern.compile("(^[\\d]*)");
 		Pattern escaper2 = Pattern.compile("[^a-zA-z0-9]");
@@ -172,6 +321,14 @@ public class CreateDatabaseController {
 
 		return newString2;
 
+	}
+
+	private void copy(File src, File dst) throws IOException {
+		FileChannel in = (new FileInputStream(src)).getChannel();
+		FileChannel out = (new FileOutputStream(dst)).getChannel();
+		in.transferTo(0, src.length(), out);
+		in.close();
+		out.close();
 	}
 
 }

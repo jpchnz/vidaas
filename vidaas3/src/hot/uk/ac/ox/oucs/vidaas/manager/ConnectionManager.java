@@ -53,9 +53,7 @@ public class ConnectionManager {
         try {
             Class.forName(driverName);
 
-            // Only for testing purposes ...!
-            //con = DriverManager.getConnection("jdbc:postgresql:" + dbName, "postgres", "bna192");
-
+            
             connectionTemp = DriverManager.getConnection(databaseURL + databaseName, adminUserName, adminUserNamePW);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);

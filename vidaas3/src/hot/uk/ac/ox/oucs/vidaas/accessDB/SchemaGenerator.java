@@ -44,7 +44,7 @@ public class SchemaGenerator {
 		if (databaseFielURL != null) {
 			try {
 				File databaseFile = new File(databaseFielURL);
-				Database database = Database.open(databaseFile);
+				Database database = Database.open(databaseFile, true);
 
 				Set<String> tablesName = database.getTableNames();
 				Iterator<String> iterTablesName = tablesName.iterator();
@@ -54,8 +54,15 @@ public class SchemaGenerator {
 					dataHolder.setCurrentStatus("\nParsing Schema for "
 							+ tableName + dataHolder.getCurrentStatus());
 					// System.out.println();
-					Table table = database.getTable(tableName);
-					createTableStructure(table);
+
+					try {
+						Table table = database.getTable(tableName);
+						if (!table.getName().trim().startsWith("~TMP")) {
+							createTableStructure(table);
+						}
+					} catch (Exception e) {
+
+					}
 				}
 
 				getForeignKeys(database);
@@ -83,42 +90,54 @@ public class SchemaGenerator {
 
 		if (!table.getName().contains("_Conflict")) {
 			tableNamesList.add(table.getName());
-			stringBuffer.append("CREATE TABLE "
+			stringBuffer.append("CREATE TABLE \""
 					+ referenceKeyWordValidation(table.getName(), true)
-					+ " ( \n");
+					+ "\" ( \n");
 			for (Column column : table.getColumns()) {
 				if (!(column.getName().startsWith("s_") || column.getName()
 						.startsWith("Gen_"))) {
 					try {
 
 						if ((column.getType() == DataType.SHORT_DATE_TIME)) {
-							stringBuffer.append("\t" + referenceKeyWordValidation(column.getName(), false)
-									+ "  timestamp without time zone, \n");
+							stringBuffer.append("\t \""
+									+ referenceKeyWordValidation(
+											column.getName(), false)
+									+ "\"  timestamp without time zone, \n");
 							continue;
 						}
 						if ((column.getType() == DataType.LONG)) {
-							stringBuffer.append("\t" + referenceKeyWordValidation(column.getName(), false)
-									+ "  integer, \n");
+							stringBuffer.append("\t\""
+									+ referenceKeyWordValidation(
+											column.getName(), false)
+									+ "\"  integer, \n");
 							continue;
 						}
 						if ((column.getType() == DataType.TEXT)) {
-							stringBuffer.append("\t" + referenceKeyWordValidation(column.getName(), false)
-									+ "  character varying(255), \n");
+							stringBuffer.append("\t\""
+									+ referenceKeyWordValidation(
+											column.getName(), false)
+									+ "\"  character varying(255), \n");
 							continue;
 						}
 
 						if ((column.getType() == DataType.DOUBLE)) {
-							stringBuffer.append("\t" + referenceKeyWordValidation(column.getName(), false)
-									+ "  decimal, \n");
+							stringBuffer.append("\t\""
+									+ referenceKeyWordValidation(
+											column.getName(), false)
+									+ "\"  decimal, \n");
 							continue;
 						}
 						if ((column.getType() == DataType.MEMO)) {
-							stringBuffer.append("\t" + referenceKeyWordValidation(column.getName(), false)
-									+ "  text, \n");
+							stringBuffer.append("\t\""
+									+ referenceKeyWordValidation(
+											column.getName(), false)
+									+ "\"  text, \n");
 							continue;
 						}
 						if (!(column.getType() == DataType.GUID)) {
-							stringBuffer.append("\t" + referenceKeyWordValidation(column.getName(), false) + "  "
+							stringBuffer.append("\t\""
+									+ referenceKeyWordValidation(
+											column.getName(), false) + "\"  "
 									+ column.getType() + ", \n");
 							continue;
 						}
@@ -133,20 +152,22 @@ public class SchemaGenerator {
 			}
 			List<String> primaryKeyList = getPrimaryKeys(table);
 			if (primaryKeyList.isEmpty()) {
-				// the boundary of search from index 0 till second parameter (int/index) to the method
-				stringBuffer = stringBuffer.deleteCharAt(stringBuffer.lastIndexOf(",", stringBuffer.length()));
+				// the boundary of search from index 0 till second parameter
+				// (int/index) to the method
+				stringBuffer = stringBuffer.deleteCharAt(stringBuffer
+						.lastIndexOf(",", stringBuffer.length()));
 			} else {
 				for (int i = 0; i < primaryKeyList.size(); i++) {
 					String tempColumnName = primaryKeyList.get(i);
 					dataHolder.setCurrentStatus("\nCreating Primary Key  "
 							+ tempColumnName + dataHolder.getCurrentStatus());
 					if (i == (primaryKeyList.size() - 1)) {
-						stringBuffer.append("\tprimary key (" + tempColumnName
-								+ ") \n");
+						stringBuffer.append("\tprimary key (\""
+								+ tempColumnName + "\") \n");
 
 					} else {
-						stringBuffer.append("\tprimary key (" + tempColumnName
-								+ "), \n");
+						stringBuffer.append("\tprimary key (\""
+								+ tempColumnName + "\"), \n");
 
 					}
 				}
@@ -169,7 +190,8 @@ public class SchemaGenerator {
 					// tempColumn.getType() + "  ");
 					// System.out.print(index.isPrimaryKey() + "  " +
 					// index.isForeignKey() + " ");
-					primaryKeyList.add(referenceKeyWordValidation(tempColumn.getName(), false) );
+					primaryKeyList.add(referenceKeyWordValidation(
+							tempColumn.getName(), false));
 				}
 			}
 		}
@@ -216,10 +238,10 @@ public class SchemaGenerator {
 		while (keySetIterator.hasNext()) {
 			Relationship relationshipTemp = relationshipArray
 					.get(keySetIterator.next());
-			String fromColumn = referenceKeyWordValidation(relationshipTemp.getFromColumns().get(0)
-					.getName(), false);
-			String toColumn = referenceKeyWordValidation(relationshipTemp.getToColumns().get(0)
-					.getName(), false);
+			String fromColumn = referenceKeyWordValidation(relationshipTemp
+					.getFromColumns().get(0).getName(), false);
+			String toColumn = referenceKeyWordValidation(relationshipTemp
+					.getToColumns().get(0).getName(), false);
 			String fromTable = referenceKeyWordValidation(relationshipTemp
 					.getFromTable().getName(), true);
 			String toTable = referenceKeyWordValidation(relationshipTemp
@@ -228,10 +250,10 @@ public class SchemaGenerator {
 			// System.out.println(fromColumn + " " + toColumn + " " + fromTable
 			// + " " + toTable);
 			/**/
-			stringBuffer.append("Alter table " + toTable
-					+ " add  foreign key (" + toColumn + ") " + "references "
-					+ fromTable + " (" + fromColumn
-					+ ") ON UPDATE NO ACTION ON DELETE NO ACTION; \n");
+			stringBuffer.append("Alter table \"" + toTable
+					+ "\" add  foreign key (\"" + toColumn + "\") "
+					+ "references \"" + fromTable + "\" (\"" + fromColumn
+					+ "\") ON UPDATE NO ACTION ON DELETE NO ACTION; \n");
 		}
 		// System.out.println(stringBuffer);
 

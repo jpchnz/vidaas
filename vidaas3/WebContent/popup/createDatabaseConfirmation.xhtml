@@ -9,7 +9,7 @@
 	<a4j:form ajaxSubmit="true">
 		<h:outputText value="#{createController.createDatabaseConfirmationMessage}" />
 		<br/>
-		<a4j:commandLink value="Parse Database" reRender="createDatabaseFormInclude, homeMainPanel" 
+		<a4j:commandLink value="Parse Database" reRender="homePageMainBodyInclude, createDatabaseFormInclude, homeMainPanel" 
 			action="#{createController.parseDatabase()}" 
 			id="createDatabaseConfirmationOKLink">
 			 <rich:componentControl for="createDatabasePanel" attachTo="createDatabaseConfirmationOKLink" operation="hide" event="onclick"/>

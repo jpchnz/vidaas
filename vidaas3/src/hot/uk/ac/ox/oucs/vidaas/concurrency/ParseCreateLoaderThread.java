@@ -55,26 +55,29 @@ public class ParseCreateLoaderThread implements Runnable {
 					sqlDataDirecotry, csvDataDirectory, dataHolder);
 			cvsGenerator.getCVSFromAcessMDB();
 
-			dataHolder.setCurrentStatus("\nFinished Parsing"
+			dataHolder.setCurrentStatus("\nFinished Creating CSV Data and Insert SQL"
 					+ dataHolder.getCurrentStatus());
 			dataHolder.setMdbParser(true);
 			// System.out.println("MDBParserThread finished");
-
-			dataHolder.setCurrentStatus("\nStart Parsing Schema File"
+			
+			
+			dataHolder.setCurrentStatus("\n Creating Tables"
 					+ dataHolder.getCurrentStatus());
 			CreateTables createTables = new CreateTables(generatedSchemaFile,
 					connection, dataHolder);
 			createTables.createTables();
 
+			
 			System.out
 					.println("**************                      TableCreatorThread finished");
 
-			dataHolder.setCurrentStatus("\nFinished Parsing Schema File"
+			dataHolder.setCurrentStatus("\nFinished Creating Tables"
 					+ dataHolder.getCurrentStatus());
 			// dataHolder.setOkButton(false);
 			dataHolder.setTableCreator(true);
 
-			dataHolder.setCurrentStatus("\nStart Parsing Data Files"
+			
+			dataHolder.setCurrentStatus("\n Start Loading Data for Tables"
 					+ dataHolder.getCurrentStatus());
 
 			List<String> orderedTables = TablesOrderingUtility
@@ -86,7 +89,8 @@ public class ParseCreateLoaderThread implements Runnable {
 
 			System.out
 					.println("*****************                            DataLoaderThread finished");
-			dataHolder.setCurrentStatus("\nFinished Parsing Data Files"
+			/*		*/
+			dataHolder.setCurrentStatus("\nLoading Data for Tables"
 					+ dataHolder.getCurrentStatus());
 			dataHolder.setOkButton(false);
 
@@ -108,6 +112,5 @@ public class ParseCreateLoaderThread implements Runnable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
 	}
 }

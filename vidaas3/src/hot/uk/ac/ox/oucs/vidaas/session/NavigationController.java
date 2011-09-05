@@ -46,12 +46,18 @@ public class NavigationController {
 	
 	private Project currentProject;
 	private Dataspace currentDataspace;
+	private ProjectDatabase currentProjectDatabase;
 	
 	@RequestParameter("projectIDValue")
 	private Integer projectIDValue;
 	
 	@RequestParameter("dataspaceIDValue")
 	private Integer dataspaceIDValue;
+	
+	/*
+	@RequestParameter("dataspaceIDValue")
+	private Integer projectDatabaseIDValue;
+	*/
 	
 	private String homePageMainBodyNavigation = "homeWelcome.xhtml";
 	private String homePageNavigation = "empty.xhtml";
@@ -64,6 +70,9 @@ public class NavigationController {
 	
 	private String createDatabaseInclude = "/popup/createDatabaseForm.xhtml";
 	private boolean databaseFormRender = false;
+	
+	private String dropDatabaseInclude = "/popup/dropDatabaseForm.xhtml";
+	private boolean dropDatabaseFormRender = false;
 	
 	private String parseDatabaseInclude = "/popup/parseDatabaseForm.xhtml";
 	private boolean parseDatabaseFormRender = false;
@@ -177,6 +186,22 @@ public class NavigationController {
 		this.projectMemberFormRender = projectMemberFormRender;
 	}
 
+	public String getDropDatabaseInclude() {
+		return dropDatabaseInclude;
+	}
+
+	public void setDropDatabaseInclude(String dropDatabaseInclude) {
+		this.dropDatabaseInclude = dropDatabaseInclude;
+	}
+
+	public boolean isDropDatabaseFormRender() {
+		return dropDatabaseFormRender;
+	}
+
+	public void setDropDatabaseFormRender(boolean dropDatabaseFormRender) {
+		this.dropDatabaseFormRender = dropDatabaseFormRender;
+	}
+
 	public Users getUserMain() {
 		if(userMain == null){
 			userMain = ((Users) Contexts.getSessionContext().get(
@@ -275,13 +300,18 @@ public class NavigationController {
 		createDatabaseInclude = "/popup/createDatabaseConfirmation.xhtml";
 	}
 	
-	public void createParseDatabaseInitial(){
-		
+	public void dropDatabaseInitial(){
+		this.dropDatabaseFormRender = false;
+		dropDatabaseInclude = "/popup/dropDatabaseForm.xhtml";
+		homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
 	}
 	
-	public void createParseDatabaseConfirmation(){
-		
+	public void dropDatabaseConfirmation(){
+		System.out.println("dropDatabaseConfirmation: ");
+		this.dropDatabaseFormRender = true;
+		dropDatabaseInclude = "/popup/dropDatabaseConfirmation.xhtml";
 	}	
+	
 	public void singleDataspaceDisplayPage(){
 		log.info("singleDatabaseDisplayPage ***************************************   dataspaceIDValue: " + dataspaceIDValue);
 		log.info("singleDatabaseDisplayPage ***************************************   projectIDValue: " + projectIDValue);
@@ -311,5 +341,12 @@ public class NavigationController {
 		//homePageMainBodyNavigation = "/custom/createUserForm.xhtml";
 	}
 	
+	public void setCurrentDatabase(Integer currentDatabaseIDValue) {
+		log.info("setCurrentDatabase ***************************************   currentDatabaseIDValue: " + currentDatabaseIDValue);
+		projectDatabaseHome.setId(currentDatabaseIDValue);
+		this.currentProjectDatabase = projectDatabaseHome.getInstance();
+		
+		Contexts.getSessionContext().set("currentProjectDatabase", currentProjectDatabase);
+	}
 	
 }
