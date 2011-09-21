@@ -26,11 +26,13 @@ public class DeleteDatabase {
 		if (databaseName == null)
 			return;
 
-		connection = ConnectionManager.getConnection();
+		connection = new ConnectionManager().getConnection();
 
 		if (databaseExist(databaseName)) {
 			try {
 				statement = connection.createStatement();
+				statement.executeQuery("SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE datname = '"+ databaseName + "'");
+				
 				statement.executeUpdate("DROP DATABASE " + databaseName);
 				// connection.close();
 			} catch (SQLException ex) {
@@ -38,13 +40,21 @@ public class DeleteDatabase {
 						Level.SEVERE, null, ex);
 
 			}
+			try {
+				if (!connection.isClosed()) {
+					connection.close();
+					connection = null;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	public boolean databaseExist(String databaseNameVal) {
 		// System.out.println("                                                                              databaseExist()    ");
 		if (connection == null) {
-			connection = ConnectionManager.getConnection();
+			connection = new ConnectionManager().getConnection();
 		}
 		PreparedStatement statementTemp;
 		try {

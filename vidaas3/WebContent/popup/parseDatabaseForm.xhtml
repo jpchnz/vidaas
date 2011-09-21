@@ -27,7 +27,7 @@
 		                <h:inputTextarea id="status" value="#{createController.databaseSchemaFormStatus}" disabled="true"
 		                rows="40" cols="80"/>	                
 		                 <a4j:commandButton id="okButtonParseDatabase" disabled="#{createController.statusPanelOKButtonDisabled}" 
-					    	value="OK" reRender="homeMainPanel, homePageMainBodyInclude" action="#{navigationController.listUserProjects()}">
+					    	value="OK" reRender="homeMainPanel, homePageMainBodyInclude">
 					    	 <rich:componentControl for="parseDatabasePanel" attachTo="okButtonParseDatabase" operation="hide" event="onclick"/>					    	
 			   			</a4j:commandButton>
 			   			<!--  

@@ -98,7 +98,7 @@
 		width="1105px">
 		<f:facet name="header">
 			<h:outputText
-				value="Detailed summary of database of '#{currentDataspace.dataspaceName}'"></h:outputText>
+				value="Detailed summary of database"></h:outputText>
 		</f:facet>
 		<h:panelGrid id="databasePanel" columns="3" border="1">
 			<rich:panel>
@@ -161,16 +161,28 @@
 								attachTo="dropDatabaseButton" operation="show" event="onclick" />
 						</a4j:commandButton>
 						
-						<a4j:commandButton action="#{createController.cloneDatabase(_database.databaseId, 'test')}" rendered="#{_database.databaseType=='main'}"
-							id="testDatabaseButton" value="Create Test Database">							
+						<a4j:commandButton rendered="#{_database.databaseType=='main' and createController.hasTestDatabase(_database.databaseId)}" 
+							action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
+							id="testDatabaseButton" value="Create Test Database">
+								<rich:componentControl for="testDatabasePanel"
+									attachTo="testDatabaseButton" operation="show" event="onclick" />						
 						</a4j:commandButton>
 						
-						<a4j:commandButton action="#{createController.cloneDatabase(_database.databaseId, 'old')}" rendered="#{_database.databaseType=='main'}"
-							id="backupDatabaseButton" value="Backup Database">							
+						<a4j:commandButton rendered="#{_database.databaseType=='main'  and createController.hasBackupDatabase(_database.databaseId)}" 
+							action="#{navigationController.setCurrentDatabase(_database.databaseId)}" 
+							id="backupDatabaseButton" value="Backup Database">	
+							<rich:componentControl for="backupDatabasePanel"
+									attachTo="backupDatabaseButton" operation="show" event="onclick" />							
 						</a4j:commandButton>
 						
+						<a4j:commandButton rendered="#{_database.databaseType!='main'  and createController.hasMainDatabase(_database.databaseId)}" 
+							action="#{navigationController.setCurrentDatabase(_database.databaseId)}" 
+							id="restoreDatabaseButton" value="Restore Database">	
+							<rich:componentControl for="backupDatabasePanel"
+									attachTo="restoreDatabaseButton" operation="show" event="onclick" />							
+						</a4j:commandButton>						
 					</div>
-				</a4j:form>
+				</a4j:form>				
 			</rich:panel>
 		</h:panelGrid>
 	</rich:dataGrid>

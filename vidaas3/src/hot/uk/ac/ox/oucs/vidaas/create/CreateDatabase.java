@@ -36,7 +36,7 @@ public class CreateDatabase {
 		// databaseExist());
 
 		/**/
-		connection = ConnectionManager.getConnection();
+		connection = new ConnectionManager().getConnection();
 
 		/**/
 		if (databaseExist(tempDatabaseName)) {
@@ -86,7 +86,7 @@ public class CreateDatabase {
 		System.out.println(newDatabase + " Old Database: " + oldDatabase);
 		
 		String tempDatabaseName = databaseName;
-		connection = ConnectionManager.getConnection();
+		connection = new ConnectionManager().getConnection();
 
 		try {
 			statement = connection.createStatement();
@@ -113,7 +113,7 @@ public class CreateDatabase {
 	public boolean databaseExist(String databaseNameVal) {
 		// System.out.println("                                                                              databaseExist()    ");
 		if (connection == null) {
-			connection = ConnectionManager.getConnection();
+			connection = new ConnectionManager().getConnection();
 		}
 		PreparedStatement statementTemp;
 		try {
@@ -140,12 +140,23 @@ public class CreateDatabase {
 		}
 		return false;
 	}
+	
+	public void closeConnection(){
+		try {
+			if (!connection.isClosed()) {
+				connection.close();
+				connection = null;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
-	public static Connection getConnection() {
+	public Connection getConnection() {
 		return connection;
 	}
 
-	public static void setConnection(Connection connection) {
+	public void setConnection(Connection connection) {
 		CreateDatabase.connection = connection;
 	}
 

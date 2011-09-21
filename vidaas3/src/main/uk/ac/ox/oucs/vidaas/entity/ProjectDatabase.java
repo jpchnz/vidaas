@@ -32,7 +32,8 @@ import org.hibernate.validator.NotNull;
     @NamedQuery(name = "ProjectDatabase.findByDatabaseID", query = "SELECT p FROM ProjectDatabase p WHERE p.databaseId = :databaseID"),
     @NamedQuery(name = "ProjectDatabase.findByConnectionString", query = "SELECT p FROM ProjectDatabase p WHERE p.connectionString = :connectionString"),
     @NamedQuery(name = "ProjectDatabase.findByCreationDate", query = "SELECT p FROM ProjectDatabase p WHERE p.creationDate = :creationDate"),
-    @NamedQuery(name = "ProjectDatabase.findByDatabaseName", query = "SELECT p FROM ProjectDatabase p WHERE p.databaseName = :databaseName")})
+    @NamedQuery(name = "ProjectDatabase.findByDatabaseName", query = "SELECT p FROM ProjectDatabase p WHERE p.databaseName = :databaseName"),
+    @NamedQuery(name = "ProjectDatabase.findByDataspaceID", query = "SELECT p FROM ProjectDatabase p WHERE p.dataspace.dataSpaceId = :dataSpaceID")})
 public class ProjectDatabase implements java.io.Serializable {
 
 	/**

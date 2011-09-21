@@ -12,6 +12,7 @@ import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.log.Log;
 
 @Name("registration")
@@ -187,7 +188,10 @@ public class RegistrationBean {
 
 	public boolean registrationLevel1() {
 		level1Registration = true;
-
+		
+		((NavigationController) Contexts.getSessionContext().get(
+		"navigationController")).defaultHomePage();
+		
 		if (usersHome.findUserByEmail(email).isEmpty()) {
 
 			user = usersHome.getInstance();
@@ -219,6 +223,9 @@ public class RegistrationBean {
 	}
 
 	public boolean registrationLevel2() {
+		((NavigationController) Contexts.getSessionContext().get(
+		"navigationController")).defaultHomePage();
+		
 		if (loginsHome.findByUserName(userName).isEmpty()) {
 			if (password.equals(password2)) {
 				logins = loginsHome.getInstance();

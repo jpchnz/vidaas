@@ -19,7 +19,7 @@ public class ConnectionManager {
     private String databaseName = null; // "sudamihtestdb";
     private String driverName = null; // "org.postgresql.Driver";
     private String databaseURL = null;
-    private static Connection connection = null;
+    private Connection connection = null;
     private ResultSet rs = null;
     private Statement st = null;
 
@@ -51,9 +51,7 @@ public class ConnectionManager {
         Connection connectionTemp= null;
         readPropertiesFile();
         try {
-            Class.forName(driverName);
-
-            
+            Class.forName(driverName);    
             connectionTemp = DriverManager.getConnection(databaseURL + databaseName, adminUserName, adminUserNamePW);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -110,9 +108,9 @@ public class ConnectionManager {
         return connectionTemp;
     }
 
-    public static Connection getConnection(){
+    public Connection getConnection(){
         if (connection == null){
-            connection = new ConnectionManager().createConnection();
+            connection = createConnection();
         }
         return connection;
     }
@@ -128,8 +126,9 @@ public class ConnectionManager {
 
  
     public static void main(String argv[]) {
-        new ConnectionManager().getConnection();
-         if (connection != null){
+    	ConnectionManager cm = new ConnectionManager();
+        cm.getConnection();
+         if (cm.connection != null){
              System.out.println("Connection created Successfully ...!");
          }
     }

@@ -56,7 +56,7 @@ public class CreateTables {
 		this.dataHolder = dataHolderValue;
 	}
 
-	public void createTables() {
+	public boolean createTables() {
 		if (ddlFileWithURL != null && connection != null) {
 			InputStream inputStream = null;
 			Statement statement = null;
@@ -65,8 +65,10 @@ public class CreateTables {
 				inputStream = new FileInputStream(ddlFileWithURL);
 			} catch (SQLException e1) {
 				e1.printStackTrace();
+				return false;
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
+				return false;
 			}
 			InputStreamReader reader = new InputStreamReader(inputStream);
 			BufferedReader buffered = new BufferedReader(reader);
@@ -92,11 +94,13 @@ public class CreateTables {
 				buffered.close();
 			} catch (IOException e) {
 				e.printStackTrace();
+				return false;
 			}
 		}
+		return true;
 	}
 	
-	public void populateTables(){
+	public boolean populateTables(){
 		try {
 			if (dataSQLDirectory != null && !connection.isClosed() && orderedTableNames != null) {
 				InputStream inputStream = null;
@@ -109,8 +113,10 @@ public class CreateTables {
 								dataHolder.getCurrentStatus());	
 					} catch (SQLException e1) {
 						e1.printStackTrace();
+						return false;
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
+						return false;
 					}
 					
 					InputStreamReader reader = new InputStreamReader(inputStream);
@@ -120,13 +126,13 @@ public class CreateTables {
 					try {
 						while ((line = buffered.readLine()) != null) {
 							mainStatement = mainStatement + line + "\n";
-							// System.out.println("Line: \n" + line);
+							System.out.println("Line: \n" + line);
 							if (line.endsWith(";") || line.contains(";")) {
 								try {
 									statement.executeUpdate(mainStatement);
 								} catch (SQLException e) {
 									System.out.println("Error in Statement: " + mainStatement);
-									//e.printStackTrace();
+									e.printStackTrace();
 								}
 								// System.out.println("Main Statement \n" +
 								// mainStatement);
@@ -141,10 +147,11 @@ public class CreateTables {
 				
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		}
-		
+		return true;
 	}
+	
 
 }
