@@ -80,6 +80,12 @@ public class NavigationController {
 	private String addProjectMemberInclude = "/popup/addProjectMemberForm.xhtml";
 	private boolean projectMemberFormRender = false;
 	
+	private String backupDatabaseInclude = "/popup/backupDatabaseForm.xhtml";
+	private boolean backupDatabaseFormRender = false;
+	
+	private String testDatabaseInclude = "/popup/testDatabaseForm.xhtml";
+	private boolean testDatabaseFormRender = false;
+	
 	public String getHomePageMainBodyNavigation() {
 		return homePageMainBodyNavigation;
 	}
@@ -202,6 +208,38 @@ public class NavigationController {
 		this.dropDatabaseFormRender = dropDatabaseFormRender;
 	}
 
+	public String getBackupDatabaseInclude() {
+		return backupDatabaseInclude;
+	}
+
+	public void setBackupDatabaseInclude(String backupDatabaseInclude) {
+		this.backupDatabaseInclude = backupDatabaseInclude;
+	}
+
+	public boolean isBackupDatabaseFormRender() {
+		return backupDatabaseFormRender;
+	}
+
+	public void setBackupDatabaseFormRender(boolean backupDatabaseFormRender) {
+		this.backupDatabaseFormRender = backupDatabaseFormRender;
+	}
+
+	public String getTestDatabaseInclude() {
+		return testDatabaseInclude;
+	}
+
+	public void setTestDatabaseInclude(String testDatabaseInclude) {
+		this.testDatabaseInclude = testDatabaseInclude;
+	}
+
+	public boolean isTestDatabaseFormRender() {
+		return testDatabaseFormRender;
+	}
+
+	public void setTestDatabaseFormRender(boolean testDatabaseFormRender) {
+		this.testDatabaseFormRender = testDatabaseFormRender;
+	}
+
 	public Users getUserMain() {
 		if(userMain == null){
 			userMain = ((Users) Contexts.getSessionContext().get(
@@ -210,29 +248,46 @@ public class NavigationController {
 		return userMain;
 	}
 
-	public Logins getLoginMain() {
-		
+	public Logins getLoginMain() {		
 		return loginMain;
 	}
 
+	public void defaultHomePage(){
+		homePageMainBodyNavigation = "homeWelcome.xhtml";
+		homePageNavigation = "empty.xhtml";
+	}
 	public void welcomePage(){
 		homePageMainBodyNavigation = "homeWelcome.xhtml";
+		homePageNavigation = "empty.xhtml";
 	}
 	
-
 	public void listUserProjects(){
-		homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
+		log.info("listUserProjects {0}", homePageMainBodyNavigation);
+		if(getUserMain() != null){
+			homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
+		} else {
+			homePageMainBodyNavigation = "homeWelcome.xhtml";
+		}
+		log.info("listUserProjects {0}", homePageMainBodyNavigation);
 	}
 	
 	public List<UserProject> userProjectsList() {
-		return userProjectHome.findByUserID(getUserMain().getUserId());
+		List<UserProject> userProjectsList = null;
+		if(getUserMain() != null){
+			userProjectsList = userProjectHome.findByUserID(getUserMain().getUserId());
+		}
+		if(userProjectsList == null){
+			userProjectsList = new ArrayList<UserProject>();
+		}
+		return userProjectsList;
 	}
 	
+	/* Projects don't have Databases
 	public List<ProjectDatabase> listProjectDatabase(Integer projectIDValue){
 		return projectDatabaseHome.findByProjectID(projectIDValue);
 		// currentDataspace
 	}
-	
+	*/
 	
 	public List<ProjectDatabase> listDatabaseByDataspace(){
 		Set<ProjectDatabase> tempProjectDatabaseSet  = currentDataspace.getProjectDatabases();
@@ -311,6 +366,28 @@ public class NavigationController {
 		this.dropDatabaseFormRender = true;
 		dropDatabaseInclude = "/popup/dropDatabaseConfirmation.xhtml";
 	}	
+	
+	public void backupDatabaseInitial(){
+		backupDatabaseFormRender = false;
+		backupDatabaseInclude = "/popup/backupDatabaseForm.xhtml";	
+		homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
+	}
+	
+	public void backupDatabaseConfirmation(){
+		backupDatabaseFormRender = true;
+		backupDatabaseInclude = "/popup/backupDatabaseConfirmation.xhtml";		
+	}
+	
+	public void testDatabaseInitial(){
+		testDatabaseFormRender = false;
+		testDatabaseInclude = "/popup/testDatabaseForm.xhtml";	
+		homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
+	}
+	
+	public void testDatabaseConfirmation(){
+		testDatabaseFormRender = true;
+		testDatabaseInclude = "/popup/testDatabaseConfirmation.xhtml";		
+	}
 	
 	public void singleDataspaceDisplayPage(){
 		log.info("singleDatabaseDisplayPage ***************************************   dataspaceIDValue: " + dataspaceIDValue);

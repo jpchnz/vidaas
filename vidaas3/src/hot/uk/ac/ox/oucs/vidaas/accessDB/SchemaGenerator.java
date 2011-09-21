@@ -61,7 +61,8 @@ public class SchemaGenerator {
 							createTableStructure(table);
 						}
 					} catch (Exception e) {
-
+						e.printStackTrace();
+						return false;
 					}
 				}
 
@@ -97,7 +98,7 @@ public class SchemaGenerator {
 				if (!(column.getName().startsWith("s_") || column.getName()
 						.startsWith("Gen_"))) {
 					try {
-
+						//DataType.
 						if ((column.getType() == DataType.SHORT_DATE_TIME)) {
 							stringBuffer.append("\t \""
 									+ referenceKeyWordValidation(
@@ -157,17 +158,18 @@ public class SchemaGenerator {
 				stringBuffer = stringBuffer.deleteCharAt(stringBuffer
 						.lastIndexOf(",", stringBuffer.length()));
 			} else {
+				stringBuffer.append("\tprimary key (");
 				for (int i = 0; i < primaryKeyList.size(); i++) {
 					String tempColumnName = primaryKeyList.get(i);
 					dataHolder.setCurrentStatus("\nCreating Primary Key  "
 							+ tempColumnName + dataHolder.getCurrentStatus());
 					if (i == (primaryKeyList.size() - 1)) {
-						stringBuffer.append("\tprimary key (\""
-								+ tempColumnName + "\") \n");
+						stringBuffer.append("\""
+								+ tempColumnName + "\")\n");
 
 					} else {
-						stringBuffer.append("\tprimary key (\""
-								+ tempColumnName + "\"), \n");
+						stringBuffer.append("\""
+								+ tempColumnName + "\",");
 
 					}
 				}
@@ -198,7 +200,7 @@ public class SchemaGenerator {
 		return primaryKeyList;
 	}
 
-	private void getForeignKeys(Database database) {
+	private boolean getForeignKeys(Database database) {
 		dataHolder.setCurrentStatus("\nAdding Foreign Key Constraints"
 				+ dataHolder.getCurrentStatus());
 		// System.out.println(tableNamesList.size());
@@ -225,12 +227,14 @@ public class SchemaGenerator {
 					}
 				} catch (Exception exp) {
 					exp.printStackTrace();
+					return false;
 				}
 			}
 		}
 		// System.out.println("Relationship Array Size: " +
 		// relationshipArray.size());
 		createForeignKeyRelation();
+		return true;
 	}
 
 	private void createForeignKeyRelation() {

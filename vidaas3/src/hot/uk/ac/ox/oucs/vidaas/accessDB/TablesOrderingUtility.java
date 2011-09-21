@@ -34,6 +34,7 @@ public class TablesOrderingUtility {
             database = Database.open(databaseFile, true);
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
 
         Set<String> tablesName = null;
@@ -42,6 +43,7 @@ public class TablesOrderingUtility {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null;
 		}
         List<String> tableNamesList = new ArrayList<String>();
 
@@ -57,7 +59,7 @@ public class TablesOrderingUtility {
 
         for (int i = 0; i < tableNamesList.size(); i++) {
             for (int j = 0; j < tableNamesList.size(); j++) {
-                //System.out.println("In While Condition");
+                System.out.println("In While Condition: " + tableNamesList.get(j) + "  " + tableNamesList.get(j));
                 try {
                     Table tempTable1 = database.getTable(tableNamesList.get(i));
                     Table tempTable2 = database.getTable(tableNamesList.get(j));
@@ -73,6 +75,7 @@ public class TablesOrderingUtility {
                     }
                 } catch (Exception exp) {
                     exp.printStackTrace();
+                    return null;
                 }
             }
         }

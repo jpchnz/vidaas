@@ -106,12 +106,14 @@ public class CreateUser {
             
              System.out.println(this.userExist(tempUserName));
              connection.close();
+             connection = null;
             return true;
 
         } catch (SQLException ex) {
             Logger.getLogger(CreateUser.class.getName()).log(Level.SEVERE, null, ex);
             try {
 				connection.close();
+				connection = null;
 			} catch (SQLException e) {			
 				e.printStackTrace();
 			}
@@ -128,6 +130,7 @@ public class CreateUser {
             Logger.getLogger(CreateUser.class.getName()).log(Level.SEVERE, null, ex);
             try {
 				connection.close();
+				connection = null;
 			} catch (SQLException e) {			
 				e.printStackTrace();
 			}
@@ -143,6 +146,7 @@ public class CreateUser {
             Logger.getLogger(CreateUser.class.getName()).log(Level.SEVERE, null, ex);
             try {
 				connection.close();
+				connection = null;
 			} catch (SQLException e) {			
 				e.printStackTrace();
 			}
@@ -151,7 +155,7 @@ public class CreateUser {
 
     public boolean userExist(String userNameVal){
         if(connection == null){
-            connection = ConnectionManager.getConnection();
+            connection = new ConnectionManager().getConnection();
         }
         
         try {

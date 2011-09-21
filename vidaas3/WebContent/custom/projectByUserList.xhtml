@@ -70,7 +70,7 @@
 											
 					</rich:column>
 				</rich:dataTable>
-				<a4j:commandLink id="createDataspaceLink" value="Create Data Space"
+				<a4j:commandLink id="createDataspaceLink" value="Create Data Space" rendered="#{createController.addNewDataspaceAllowed(_userProject.id.projectId)}"
 							action="#{createController.setCurrentProject(_userProject.id.projectId)}" style="float:right">
 							<f:param name="projectIDValue" value="#{_userProject.id.projectId}" />
 							<rich:componentControl for="createDataSpacePanel"

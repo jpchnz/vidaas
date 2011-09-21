@@ -4,6 +4,7 @@ import uk.ac.ox.oucs.vidaas.entity.Logins;
 import uk.ac.ox.oucs.vidaas.entity.Users;
 import uk.ac.ox.oucs.vidaas.dao.LoginsHome;
 import uk.ac.ox.oucs.vidaas.dao.UsersHome;
+
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
@@ -12,6 +13,7 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.log.Log;
 import org.jboss.seam.security.Credentials;
 import org.jboss.seam.security.Identity;
+import org.jboss.seam.web.Session;
 
 @Name("authenticator")
 public class Authenticator
@@ -65,6 +67,9 @@ public class Authenticator
 
 	public boolean authenticate()
     {
+		((NavigationController) Contexts.getSessionContext().get(
+		"navigationController")).defaultHomePage();
+		
 		disableLogin = true;
 		loginFailed = "";
 		loginAttemptedAndSuccessful = false;
@@ -106,6 +111,16 @@ public class Authenticator
         }
         //disableLogin = false;
         return false;
+    }
+	
+	public void logout()
+    {
+    	log.info("Authenticator Logout called", "");
+    	((NavigationController)Contexts.getSessionContext().get("navigationController")).defaultHomePage();
+    	Session session = Session.instance();
+    	session.invalidate();
+    	identity.logout();
+    	//return result;        
     }
 
 }

@@ -93,7 +93,10 @@ public class CVSGenerator {
 					dataHolder.setCurrentStatus("\nIgnoring 'Table' "
 							+ table.getName() + dataHolder.getCurrentStatus());
 				}
-				} catch(Exception e) {}
+				} catch(Exception e) {
+					e.printStackTrace();
+					return false;
+				}
 			}
 		} catch (IOException ex) {
 			return false;
@@ -104,6 +107,7 @@ public class CVSGenerator {
 				out.close();
 			} catch (Exception ex) {
 				ex.printStackTrace();
+				return false;
 			}
 		}
 		dataHolder

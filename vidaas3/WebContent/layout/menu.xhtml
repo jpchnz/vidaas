@@ -21,8 +21,9 @@
 			    <h:outputLink value="#" id="registrationLink" rendered="#{not identity.loggedIn}" style="font-size:14px; color:white">Register
 			        <rich:componentControl for="registrationPanel-1" attachTo="registrationLink" operation="show" event="onclick"/>
 			    </h:outputLink>
-			    <s:link id="menuLogoutId" view="/home.xhtml" action="#{identity.logout}" value="Logout" rendered="#{identity.loggedIn}" 
-        			propagation="none" style="font-size:14px; color:white"/>
+			    <h:outputLink id="menuLogoutId" value="#" rendered="#{identity.loggedIn}" style="font-size:14px; color:white" view="/home.xhtml">Logout
+			    	<rich:componentControl for="logoutPanel" attachTo="menuLogoutId" operation="show" event="onclick"/>
+        		</h:outputLink>
 		    </rich:toolBarGroup>
 	    </rich:toolBar>
     </a4j:form>
@@ -55,7 +56,7 @@
 				<rich:spacer width="20" height="10"/>
 				
 		       	<a4j:commandLink action="#{navigationController.listUserProjects()}" reRender="homeMainPanel, homePageMainBodyInclude"
-					value="List Projects" 	style="font-size:14px; color:white" />
+					value="List Projects" 	style="font-size:14px; color:white"/>
     	</a4j:form>
 	    </rich:toolBarGroup>
     </rich:toolBar>

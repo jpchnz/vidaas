@@ -82,9 +82,26 @@ public class ProjectDatabaseHome extends EntityHome<ProjectDatabase> {
 				getInstance().getUserDatabases());
 	}
 	
+	/*
+	 * Projects don't have Direct Databases
 	public List<ProjectDatabase> findByProjectID(int projectIDValue){
 		Query query = this.getEntityManager().createNamedQuery("ProjectDatabase.findByProjectID");
 		query.setParameter("projectId", new Integer(projectIDValue));		
+		List<ProjectDatabase> projectDatabaseList = query.getResultList();
+		return projectDatabaseList;
+	}
+	*/
+	
+	public List<ProjectDatabase> findByDatabaseID(int databaseIDValue){
+		Query query = this.getEntityManager().createNamedQuery("ProjectDatabase.findByDatabaseID");
+		query.setParameter("databaseID", new Integer(databaseIDValue));		
+		List<ProjectDatabase> projectDatabaseList = query.getResultList();
+		return projectDatabaseList;
+	}
+	
+	public List<ProjectDatabase> findByDataspaceID(int dataspaceIDValue){
+		Query query = this.getEntityManager().createNamedQuery("ProjectDatabase.findByDataspaceID");
+		query.setParameter("dataSpaceID", new Integer(dataspaceIDValue));		
 		List<ProjectDatabase> projectDatabaseList = query.getResultList();
 		return projectDatabaseList;
 	}
