@@ -1,0 +1,22 @@
+#summary How to set up development environment for the VM Catalog
+
+= Introduction =
+
+The VM Catalog is part to VIDaaS and manages VMs using VMwares vCloud SDK (interface to REST interface)
+
+VMware should not be a requirement for the final release, but we will use it right now since the infrastructure available at Oxford is based on VMware. Any virtualisation solution supporting OVF should work with VMCatalog.
+
+= Details =
+
+== Eclipse Indigo ==
+
+ * Install subclipse via eclipse marketplace
+   * Sources are hosted here: https://code.google.com/p/vidaas/source/checkout
+ * Install m2e via eclipse marketplace
+ * Install Google Plugin for Eclipse
+
+== VCloud SDK ==
+
+see http://communities.vmware.com/community/vmtn/developer/forums/vcloudsdkjava/
+
+Currently we use the 1.0.1 SDK because the 1.5 SDK is not compatible with the current vmware deployment in Oxford. We plan to switch to the 1.5 SDK soon.
