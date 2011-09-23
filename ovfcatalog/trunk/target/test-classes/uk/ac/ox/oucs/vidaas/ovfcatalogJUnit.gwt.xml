@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module>
-  <!-- Inherit our applications main module.                      -->
-  <inherits name='uk.ac.ox.oucs.vidaas.ovfcatalog' />
-
-  <!-- Specify the path to any remote services.                   -->
-  <servlet path="/ovfcatalog/greet" class="uk.ac.ox.oucs.vidaas.server.GreetingServiceImpl" />
-
-</module>
