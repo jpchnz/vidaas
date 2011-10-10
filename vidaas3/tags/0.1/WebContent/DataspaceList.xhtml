@@ -1,0 +1,247 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:rich="http://richfaces.org/rich"
+    template="layout/template.xhtml">
+
+<ui:define name="body">
+
+    <h:form id="dataspaceSearch" styleClass="edit">
+
+        <rich:simpleTogglePanel label="Dataspace Search Filter" switchType="ajax">
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Database backup policy</ui:define>
+                <h:inputText id="databaseBackupPolicy" value="#{dataspaceList.dataspace.databaseBackupPolicy}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Database description</ui:define>
+                <h:inputText id="databaseDescription" value="#{dataspaceList.dataspace.databaseDescription}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Database expandable policy</ui:define>
+                <h:inputText id="databaseExpandablePolicy" value="#{dataspaceList.dataspace.databaseExpandablePolicy}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Database type</ui:define>
+                <h:inputText id="databaseType" value="#{dataspaceList.dataspace.databaseType}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Dataspace name</ui:define>
+                <h:inputText id="dataspaceName" value="#{dataspaceList.dataspace.dataspaceName}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Web application name</ui:define>
+                <h:inputText id="webApplicationName" value="#{dataspaceList.dataspace.webApplicationName}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Match</ui:define>
+                <h:selectOneRadio id="logic" value="#{dataspaceList.restrictionLogicOperator}" styleClass="radio">
+                    <f:selectItem itemLabel="All" itemValue="and"/>
+                    <f:selectItem itemLabel="Any" itemValue="or"/>
+                </h:selectOneRadio>
+            </s:decorate>
+
+        </rich:simpleTogglePanel>
+
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/DataspaceList.xhtml"/>
+            <s:button id="reset" value="Reset" includePageParams="false"/>
+        </div>
+
+    </h:form>
+
+    <rich:panel>
+        <f:facet name="header">Dataspace Search Results (#{empty dataspaceList.resultList ? 0 : (dataspaceList.paginated ? dataspaceList.resultCount : dataspaceList.resultList.size)})</f:facet>
+    <div class="results" id="dataspaceList">
+
+    <h:outputText value="The dataspace search returned no results."
+               rendered="#{empty dataspaceList.resultList}"/>
+
+    <rich:dataTable id="dataspaceList"
+                var="_dataspace"
+              value="#{dataspaceList.resultList}"
+           rendered="#{not empty dataspaceList.resultList}">
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{dataspaceList}"/>
+                    <ui:param name="propertyLabel" value="Data space id"/>
+                    <ui:param name="propertyPath" value="dataspace.dataSpaceId"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_dataspace.dataSpaceId}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{dataspaceList}"/>
+                    <ui:param name="propertyLabel" value="Project project id"/>
+                    <ui:param name="propertyPath" value="dataspace.project.projectId"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_dataspace.project.projectId}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{dataspaceList}"/>
+                    <ui:param name="propertyLabel" value="Creation date"/>
+                    <ui:param name="propertyPath" value="dataspace.creationDate"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_dataspace.creationDate}">
+                <s:convertDateTime type="date" dateStyle="short"/>
+            </h:outputText>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{dataspaceList}"/>
+                    <ui:param name="propertyLabel" value="Database backup policy"/>
+                    <ui:param name="propertyPath" value="dataspace.databaseBackupPolicy"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_dataspace.databaseBackupPolicy}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{dataspaceList}"/>
+                    <ui:param name="propertyLabel" value="Database description"/>
+                    <ui:param name="propertyPath" value="dataspace.databaseDescription"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_dataspace.databaseDescription}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{dataspaceList}"/>
+                    <ui:param name="propertyLabel" value="Database expandable policy"/>
+                    <ui:param name="propertyPath" value="dataspace.databaseExpandablePolicy"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_dataspace.databaseExpandablePolicy}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{dataspaceList}"/>
+                    <ui:param name="propertyLabel" value="Database size"/>
+                    <ui:param name="propertyPath" value="dataspace.databaseSize"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_dataspace.databaseSize}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{dataspaceList}"/>
+                    <ui:param name="propertyLabel" value="Database type"/>
+                    <ui:param name="propertyPath" value="dataspace.databaseType"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_dataspace.databaseType}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{dataspaceList}"/>
+                    <ui:param name="propertyLabel" value="Dataspace name"/>
+                    <ui:param name="propertyPath" value="dataspace.dataspaceName"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_dataspace.dataspaceName}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{dataspaceList}"/>
+                    <ui:param name="propertyLabel" value="Web application name"/>
+                    <ui:param name="propertyPath" value="dataspace.webApplicationName"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_dataspace.webApplicationName}"/>
+        </h:column>
+        <rich:column styleClass="action">
+            <f:facet name="header">Action</f:facet>
+            <s:link view="/#{empty from ? 'Dataspace' : from}.xhtml"
+                   value="#{empty from ? 'View' : 'Select'}"
+             propagation="#{empty from ? 'none' : 'default'}"
+                      id="dataspaceViewId">
+                <f:param name="dataspaceDataSpaceId"
+                        value="#{_dataspace.dataSpaceId}"/>
+            </s:link>
+            #{' '}
+            <s:link view="/DataspaceEdit.xhtml"
+                   value="Edit"
+             propagation="none"
+                      id="dataspaceEdit"
+                rendered="#{empty from}">
+                <f:param name="dataspaceDataSpaceId"
+                        value="#{_dataspace.dataSpaceId}"/>
+            </s:link>
+        </rich:column>
+    </rich:dataTable>
+
+    </div>
+    </rich:panel>
+
+    <div class="tableControl">
+
+        <s:link view="/DataspaceList.xhtml"
+            rendered="#{dataspaceList.previousExists}"
+               value="#{messages.left}#{messages.left} First Page"
+                  id="firstPage">
+          <f:param name="firstResult" value="0"/>
+        </s:link>
+
+        <s:link view="/DataspaceList.xhtml"
+            rendered="#{dataspaceList.previousExists}"
+               value="#{messages.left} Previous Page"
+                  id="previousPage">
+            <f:param name="firstResult"
+                    value="#{dataspaceList.previousFirstResult}"/>
+        </s:link>
+
+        <s:link view="/DataspaceList.xhtml"
+            rendered="#{dataspaceList.nextExists}"
+               value="Next Page #{messages.right}"
+                  id="nextPage">
+            <f:param name="firstResult"
+                    value="#{dataspaceList.nextFirstResult}"/>
+        </s:link>
+
+        <s:link view="/DataspaceList.xhtml"
+            rendered="#{dataspaceList.nextExists}"
+               value="Last Page #{messages.right}#{messages.right}"
+                  id="lastPage">
+            <f:param name="firstResult"
+                    value="#{dataspaceList.lastFirstResult}"/>
+        </s:link>
+
+    </div>
+
+    <s:div styleClass="actionButtons" rendered="#{empty from}">
+        <s:button view="/DataspaceEdit.xhtml"
+                    id="create"
+           propagation="none"
+                 value="Create dataspace">
+            <f:param name="dataspaceDataSpaceId"/>
+        </s:button>
+    </s:div>
+
+</ui:define>
+
+</ui:composition>
