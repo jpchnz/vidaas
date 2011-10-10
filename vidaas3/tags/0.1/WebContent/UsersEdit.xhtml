@@ -1,0 +1,305 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    template="layout/template.xhtml">
+
+<ui:define name="body">
+
+    <h:form id="users" styleClass="edit">
+
+        <rich:panel>
+            <f:facet name="header">#{usersHome.managed ? 'Edit' : 'Add'} Users</f:facet>
+
+
+
+            <s:decorate id="departmentField" template="layout/edit.xhtml">
+                <ui:define name="label">Department</ui:define>
+                <h:inputText id="department"
+                       required="true"
+                           size="45"
+                      maxlength="45"
+                          value="#{usersHome.instance.department}">
+                    <a:support event="onblur" reRender="departmentField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="emailField" template="layout/edit.xhtml">
+                <ui:define name="label">Email</ui:define>
+                <h:inputText id="email"
+                       required="true"
+                           size="100"
+                      maxlength="120"
+                          value="#{usersHome.instance.email}">
+                    <a:support event="onblur" reRender="emailField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="firstNameField" template="layout/edit.xhtml">
+                <ui:define name="label">First name</ui:define>
+                <h:inputText id="firstName"
+                       required="true"
+                           size="45"
+                      maxlength="45"
+                          value="#{usersHome.instance.firstName}">
+                    <a:support event="onblur" reRender="firstNameField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="grpField" template="layout/edit.xhtml">
+                <ui:define name="label">Grp</ui:define>
+                <h:inputText id="grp"
+                           size="20"
+                      maxlength="20"
+                          value="#{usersHome.instance.grp}">
+                    <a:support event="onblur" reRender="grpField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="lastNameField" template="layout/edit.xhtml">
+                <ui:define name="label">Last name</ui:define>
+                <h:inputText id="lastName"
+                       required="true"
+                           size="45"
+                      maxlength="45"
+                          value="#{usersHome.instance.lastName}">
+                    <a:support event="onblur" reRender="lastNameField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="positionField" template="layout/edit.xhtml">
+                <ui:define name="label">Position</ui:define>
+                <h:inputText id="position"
+                           size="20"
+                      maxlength="20"
+                          value="#{usersHome.instance.position}">
+                    <a:support event="onblur" reRender="positionField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+
+
+
+            <div style="clear:both">
+                <span class="required">*</span>
+                required fields
+            </div>
+
+        </rich:panel>
+
+        <div class="actionButtons">
+
+            <h:commandButton id="save"
+                          value="Save"
+                         action="#{usersHome.persist}"
+                       disabled="#{!usersHome.wired}"
+                       rendered="#{!usersHome.managed}"/>
+
+            <h:commandButton id="update"
+                          value="Save"
+                         action="#{usersHome.update}"
+                       rendered="#{usersHome.managed}"/>
+
+            <h:commandButton id="delete"
+                          value="Delete"
+                         action="#{usersHome.remove}"
+                      immediate="true"
+                       rendered="#{usersHome.managed}"/>
+
+            <s:button id="cancelEdit"
+                   value="Cancel"
+             propagation="end"
+                    view="/Users.xhtml"
+                rendered="#{usersHome.managed}"/>
+
+            <s:button id="cancelAdd"
+                   value="Cancel"
+             propagation="end"
+                    view="/#{empty usersFrom ? 'UsersList' : usersFrom}.xhtml"
+                rendered="#{!usersHome.managed}"/>
+
+        </div>
+    </h:form>
+
+<rich:tabPanel switchType="ajax">
+
+    <rich:tab label="User databases">
+        <h:form styleClass="association" id="userDatabasesChildren">
+
+            <h:outputText value="There are no userDatabases associated with this users."
+                       rendered="#{empty usersHome.userDatabases}"/>
+
+            <rich:dataTable value="#{usersHome.userDatabases}"
+                           var="_userDatabase"
+                      rendered="#{not empty usersHome.userDatabases}"
+                    rowClasses="rvgRowOne,rvgRowTwo"
+                            id="userDatabasesTable">
+                <rich:column sortBy="#{_userDatabase.id.databaseId}">
+                    <f:facet name="header">Database id</f:facet>
+                    <h:outputText value="#{_userDatabase.id.databaseId}"/>
+                </rich:column>
+                <rich:column sortBy="#{_userDatabase.id.userId}">
+                    <f:facet name="header">User id</f:facet>
+                    <h:outputText value="#{_userDatabase.id.userId}"/>
+                </rich:column>
+                <rich:column sortBy="#{_userDatabase.userRole}">
+                    <f:facet name="header">User role</f:facet>
+                    <h:outputText value="#{_userDatabase.userRole}"/>
+                </rich:column>
+            </rich:dataTable>
+
+        </h:form>
+
+        <f:subview rendered="#{usersHome.managed}" id="userDatabases">
+        <div class="actionButtons">
+            <s:button id="adduserDatabase"
+                   value="Add userDatabase"
+                    view="/UserDatabaseEdit.xhtml"
+             propagation="none">
+                 <f:param name="usersUserId"
+                         value="#{usersHome.instance.userId}"/>
+                 <f:param name="userDatabaseFrom" value="Users"/>
+            </s:button>
+        </div>
+        </f:subview>
+    </rich:tab>
+
+    <rich:tab label="Loginses">
+        <h:form styleClass="association" id="loginsesChildren">
+
+            <h:outputText value="There are no loginses associated with this users."
+                       rendered="#{empty usersHome.loginses}"/>
+
+            <rich:dataTable value="#{usersHome.loginses}"
+                           var="_logins"
+                      rendered="#{not empty usersHome.loginses}"
+                    rowClasses="rvgRowOne,rvgRowTwo"
+                            id="loginsesTable">
+                <rich:column sortBy="#{_logins.userName}">
+                    <f:facet name="header">User name</f:facet>
+                    <h:outputText value="#{_logins.userName}"/>
+                </rich:column>
+                <rich:column sortBy="#{_logins.password}">
+                    <f:facet name="header">Password</f:facet>
+                    <h:outputText value="#{_logins.password}"/>
+                </rich:column>
+            </rich:dataTable>
+
+        </h:form>
+
+        <f:subview rendered="#{usersHome.managed}" id="loginses">
+        <div class="actionButtons">
+            <s:button id="addlogins"
+                   value="Add logins"
+                    view="/LoginsEdit.xhtml"
+             propagation="none">
+                 <f:param name="usersUserId"
+                         value="#{usersHome.instance.userId}"/>
+                 <f:param name="loginsFrom" value="Users"/>
+            </s:button>
+        </div>
+        </f:subview>
+    </rich:tab>
+
+    <rich:tab label="User projects">
+        <h:form styleClass="association" id="userProjectsChildren">
+
+            <h:outputText value="There are no userProjects associated with this users."
+                       rendered="#{empty usersHome.userProjects}"/>
+
+            <rich:dataTable value="#{usersHome.userProjects}"
+                           var="_userProject"
+                      rendered="#{not empty usersHome.userProjects}"
+                    rowClasses="rvgRowOne,rvgRowTwo"
+                            id="userProjectsTable">
+                <rich:column sortBy="#{_userProject.id.projectId}">
+                    <f:facet name="header">Project id</f:facet>
+                    <h:outputText value="#{_userProject.id.projectId}"/>
+                </rich:column>
+                <rich:column sortBy="#{_userProject.id.userId}">
+                    <f:facet name="header">User id</f:facet>
+                    <h:outputText value="#{_userProject.id.userId}"/>
+                </rich:column>
+                <rich:column sortBy="#{_userProject.userRole}">
+                    <f:facet name="header">User role</f:facet>
+                    <h:outputText value="#{_userProject.userRole}"/>
+                </rich:column>
+            </rich:dataTable>
+
+        </h:form>
+
+        <f:subview rendered="#{usersHome.managed}" id="userProjects">
+        <div class="actionButtons">
+            <s:button id="adduserProject"
+                   value="Add userProject"
+                    view="/UserProjectEdit.xhtml"
+             propagation="none">
+                 <f:param name="usersUserId"
+                         value="#{usersHome.instance.userId}"/>
+                 <f:param name="userProjectFrom" value="Users"/>
+            </s:button>
+        </div>
+        </f:subview>
+    </rich:tab>
+
+    <rich:tab label="Schema logs">
+        <h:form styleClass="association" id="schemaLogsChildren">
+
+            <h:outputText value="There are no schemaLogs associated with this users."
+                       rendered="#{empty usersHome.schemaLogs}"/>
+
+            <rich:dataTable value="#{usersHome.schemaLogs}"
+                           var="_schemaLog"
+                      rendered="#{not empty usersHome.schemaLogs}"
+                    rowClasses="rvgRowOne,rvgRowTwo"
+                            id="schemaLogsTable">
+                <rich:column sortBy="#{_schemaLog.id.structureId}">
+                    <f:facet name="header">Structure id</f:facet>
+                    <h:outputText value="#{_schemaLog.id.structureId}"/>
+                </rich:column>
+                <rich:column sortBy="#{_schemaLog.id.userId}">
+                    <f:facet name="header">User id</f:facet>
+                    <h:outputText value="#{_schemaLog.id.userId}"/>
+                </rich:column>
+                <rich:column sortBy="#{_schemaLog.changeDate}">
+                    <f:facet name="header">Change date</f:facet>
+                    <h:outputText value="#{_schemaLog.changeDate}">
+                        <s:convertDateTime type="date" dateStyle="short"/>
+                    </h:outputText>
+                </rich:column>
+                <rich:column sortBy="#{_schemaLog.changeLog}">
+                    <f:facet name="header">Change log</f:facet>
+                    <h:outputText value="#{_schemaLog.changeLog}"/>
+                </rich:column>
+            </rich:dataTable>
+
+        </h:form>
+
+        <f:subview rendered="#{usersHome.managed}" id="schemaLogs">
+        <div class="actionButtons">
+            <s:button id="addschemaLog"
+                   value="Add schemaLog"
+                    view="/SchemaLogEdit.xhtml"
+             propagation="none">
+                 <f:param name="usersUserId"
+                         value="#{usersHome.instance.userId}"/>
+                 <f:param name="schemaLogFrom" value="Users"/>
+            </s:button>
+        </div>
+        </f:subview>
+    </rich:tab>
+</rich:tabPanel>
+</ui:define>
+
+</ui:composition>

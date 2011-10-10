@@ -1,0 +1,229 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    template="layout/template.xhtml">
+
+<ui:define name="body">
+
+    <h:form id="schemaLog" styleClass="edit">
+
+        <rich:panel>
+            <f:facet name="header">#{schemaLogHome.managed ? 'Edit' : 'Add'} Schema log</f:facet>
+
+
+            <s:decorate id="structureIdField" template="layout/edit.xhtml">
+                <ui:define name="label">Structure id</ui:define>
+                <h:inputText id="structureId"
+                       required="true"
+                       disabled="#{schemaLogHome.managed}"
+                          value="#{schemaLogHome.instance.id.structureId}">
+                    <a:support event="onblur" reRender="structureIdField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+            <s:decorate id="userIdField" template="layout/edit.xhtml">
+                <ui:define name="label">User id</ui:define>
+                <h:inputText id="userId"
+                       required="true"
+                       disabled="#{schemaLogHome.managed}"
+                          value="#{schemaLogHome.instance.id.userId}">
+                    <a:support event="onblur" reRender="userIdField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+
+
+            <s:decorate id="changeDateField" template="layout/edit.xhtml">
+                <ui:define name="label">Change date</ui:define>
+                <rich:calendar id="changeDate"
+                       required="true"
+                          value="#{schemaLogHome.instance.changeDate}" datePattern="MM/dd/yyyy" />
+            </s:decorate>
+
+
+            <s:decorate id="changeLogField" template="layout/edit.xhtml">
+                <ui:define name="label">Change log</ui:define>
+                <h:inputTextarea id="changeLog"
+                               cols="80"
+                               rows="3"
+                           required="true"
+                              value="#{schemaLogHome.instance.changeLog}"/>
+            </s:decorate>
+
+            <div style="clear:both">
+                <span class="required">*</span>
+                required fields
+            </div>
+
+        </rich:panel>
+
+        <div class="actionButtons">
+
+            <h:commandButton id="save"
+                          value="Save"
+                         action="#{schemaLogHome.persist}"
+                       disabled="#{!schemaLogHome.wired}"
+                       rendered="#{!schemaLogHome.managed}"/>
+
+            <h:commandButton id="update"
+                          value="Save"
+                         action="#{schemaLogHome.update}"
+                       rendered="#{schemaLogHome.managed}"/>
+
+            <h:commandButton id="delete"
+                          value="Delete"
+                         action="#{schemaLogHome.remove}"
+                      immediate="true"
+                       rendered="#{schemaLogHome.managed}"/>
+
+            <s:button id="cancelEdit"
+                   value="Cancel"
+             propagation="end"
+                    view="/SchemaLog.xhtml"
+                rendered="#{schemaLogHome.managed}"/>
+
+            <s:button id="cancelAdd"
+                   value="Cancel"
+             propagation="end"
+                    view="/#{empty schemaLogFrom ? 'SchemaLogList' : schemaLogFrom}.xhtml"
+                rendered="#{!schemaLogHome.managed}"/>
+
+        </div>
+    </h:form>
+
+<rich:tabPanel switchType="ajax">
+
+    <rich:tab label="Users *" labelClass="required">
+    <div class="association" id="usersParent">
+
+        <h:outputText value="There is no users associated with this schemaLog."
+                   rendered="#{schemaLogHome.instance.users == null}"/>
+
+        <rich:dataTable var="_users"
+                   value="#{schemaLogHome.instance.users}"
+                rendered="#{schemaLogHome.instance.users != null}"
+              rowClasses="rvgRowOne,rvgRowTwo"
+                      id="usersTable">
+            <h:column>
+                <f:facet name="header">User id</f:facet>
+                <h:outputText value="#{_users.userId}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Department</f:facet>
+                <h:outputText value="#{_users.department}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Email</f:facet>
+                <h:outputText value="#{_users.email}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">First name</f:facet>
+                <h:outputText value="#{_users.firstName}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Grp</f:facet>
+                <h:outputText value="#{_users.grp}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Last name</f:facet>
+                <h:outputText value="#{_users.lastName}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Position</f:facet>
+                <h:outputText value="#{_users.position}"/>
+            </h:column>
+        </rich:dataTable>
+
+        <div class="actionButtons">
+            <s:button id="#{schemaLogHome.instance.users != null ? 'changeParent' : 'selectParent'}" value="#{schemaLogHome.instance.users != null ? 'Change' : 'Select'} users"
+                       view="/UsersList.xhtml">
+                <f:param name="from" value="SchemaLogEdit"/>
+            </s:button>
+        </div>
+
+    </div>
+    </rich:tab>
+
+    <rich:tab label="Database structure *" labelClass="required">
+    <div class="association" id="databaseStructureParent">
+
+        <h:outputText value="There is no databaseStructure associated with this schemaLog."
+                   rendered="#{schemaLogHome.instance.databaseStructure == null}"/>
+
+        <rich:dataTable var="_databaseStructure"
+                   value="#{schemaLogHome.instance.databaseStructure}"
+                rendered="#{schemaLogHome.instance.databaseStructure != null}"
+              rowClasses="rvgRowOne,rvgRowTwo"
+                      id="databaseStructureTable">
+            <h:column>
+                <f:facet name="header">Structure id</f:facet>
+                <h:outputText value="#{_databaseStructure.structureId}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Content type</f:facet>
+                <h:outputText value="#{_databaseStructure.contentType}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Creation date</f:facet>
+                <h:outputText value="#{_databaseStructure.creationDate}">
+                    <s:convertDateTime type="date" dateStyle="short"/>
+                </h:outputText>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Csv directory</f:facet>
+                <h:outputText value="#{_databaseStructure.csvDirectory}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Data</f:facet>
+                <h:outputText value="#{_databaseStructure.data}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Database directory</f:facet>
+                <h:outputText value="#{_databaseStructure.databaseDirectory}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">File</f:facet>
+                <h:outputText value="#{_databaseStructure.file}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Size</f:facet>
+                <h:outputText value="#{_databaseStructure.size}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Sql directory</f:facet>
+                <h:outputText value="#{_databaseStructure.sqlDirectory}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Status</f:facet>
+                <h:outputText value="#{_databaseStructure.status}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Schema type</f:facet>
+                <h:outputText value="#{_databaseStructure.schemaType}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Upload type</f:facet>
+                <h:outputText value="#{_databaseStructure.uploadType}"/>
+            </h:column>
+        </rich:dataTable>
+
+        <div class="actionButtons">
+            <s:button id="#{schemaLogHome.instance.databaseStructure != null ? 'changeParent' : 'selectParent'}" value="#{schemaLogHome.instance.databaseStructure != null ? 'Change' : 'Select'} databaseStructure"
+                       view="/DatabaseStructureList.xhtml">
+                <f:param name="from" value="SchemaLogEdit"/>
+            </s:button>
+        </div>
+
+    </div>
+    </rich:tab>
+</rich:tabPanel>
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,44 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+                      
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	
+	<!--   --> 
+	<rich:panel>
+		 <a4j:region>
+		      <h:form>
+		            <a4j:poll id="pollForm" interval="100" reRender="homeMainPanel, pollForm, statusPanel, okButtonParseDatabase" enabled="#{createController.statusPanelOKButtonDisabled}"/>
+		      </h:form>
+		</a4j:region>
+	   
+	     
+	     <a4j:form id="parseConfirmationForm" ajaxSubmit="true">  
+		        <h:panelGrid columns="1" id="statusPanel">
+		                <!-- <h:outputLabel for="status">Status</h:outputLabel>	
+		                 	                
+		                	<h:outputLabel id="shortStatus"  value="#{createController.databaseSchemaShortStatus}"/> 	
+		                -->
+		                <h:inputTextarea id="status" value="#{createController.databaseSchemaFormStatus}" disabled="true"
+		                rows="40" cols="80"/>	                
+		                 <a4j:commandButton id="okButtonParseDatabase" disabled="#{createController.statusPanelOKButtonDisabled}" 
+					    	value="OK" reRender="homeMainPanel, homePageMainBodyInclude">
+					    	 <rich:componentControl for="parseDatabasePanel" attachTo="okButtonParseDatabase" operation="hide" event="onclick"/>					    	
+			   			</a4j:commandButton>
+			   			<!--  
+			   			<a4j:commandLink id="okButtonParseDatabase2" disabled="#{createController.statusPanelOKButtonDisabled}" 
+					    	value="OK" reRender="homeMainPanel, homePageMainBodyInclude" action="#{navigationController.listUserProjects()}">
+					    	 <rich:componentControl for="parseDatabasePanel" attachTo="okButtonParseDatabase2" operation="hide" event="onclick"/>					    	
+			   			</a4j:commandLink>
+			   			-->
+		        </h:panelGrid>	        
+		    </a4j:form>  
+    </rich:panel>
+
+	
+</ui:composition>

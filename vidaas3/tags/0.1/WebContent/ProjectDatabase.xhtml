@@ -1,0 +1,291 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:rich="http://richfaces.org/rich"
+    template="layout/template.xhtml">
+
+<ui:define name="body">
+
+    <rich:panel>
+        <f:facet name="header">Project database Details</f:facet>
+
+
+        <s:decorate id="connectionString" template="layout/display.xhtml">
+            <ui:define name="label">Connection string</ui:define>
+            <h:outputText value="#{projectDatabaseHome.instance.connectionString}"/>
+        </s:decorate>
+
+        <s:decorate id="creationDate" template="layout/display.xhtml">
+            <ui:define name="label">Creation date</ui:define>
+            <h:outputText value="#{projectDatabaseHome.instance.creationDate}">
+                <s:convertDateTime type="date" dateStyle="short"/>
+            </h:outputText>
+        </s:decorate>
+
+        <s:decorate id="databaseName" template="layout/display.xhtml">
+            <ui:define name="label">Database name</ui:define>
+            <h:outputText value="#{projectDatabaseHome.instance.databaseName}"/>
+        </s:decorate>
+
+        <div style="clear:both"/>
+
+    </rich:panel>
+
+    <div class="actionButtons">
+
+        <s:button view="/ProjectDatabaseEdit.xhtml"
+                    id="edit"
+                 value="Edit"/>
+
+        <s:button view="/#{empty projectDatabaseFrom ? 'ProjectDatabaseList' : projectDatabaseFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+
+    </div>
+
+    <rich:tabPanel switchType="ajax">
+
+    <rich:tab>
+        <f:facet name="label">
+            <h:panelGroup><h:graphicImage value="/img/manytoone.gif" style="vertical-align: middle; padding-right: 4px;"/>Dataspace</h:panelGroup>
+        </f:facet>
+    <div class="association" id="dataspaceParent">
+
+        <h:outputText value="There is no dataspace associated with this projectDatabase."
+                   rendered="#{projectDatabaseHome.instance.dataspace == null}"/>
+
+        <rich:dataTable var="_dataspace"
+                   value="#{projectDatabaseHome.instance.dataspace}"
+                rendered="#{projectDatabaseHome.instance.dataspace != null}"
+              rowClasses="rvgRowOne,rvgRowTwo"
+                      id="dataspaceTable">
+            <h:column>
+                <f:facet name="header">Data space id</f:facet>
+                <h:outputText value="#{_dataspace.dataSpaceId}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Project project id</f:facet>
+                <h:outputText value="#{_dataspace.project.projectId}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Creation date</f:facet>
+                <h:outputText value="#{_dataspace.creationDate}">
+                    <s:convertDateTime type="date" dateStyle="short"/>
+                </h:outputText>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Database backup policy</f:facet>
+                <h:outputText value="#{_dataspace.databaseBackupPolicy}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Database description</f:facet>
+                <h:outputText value="#{_dataspace.databaseDescription}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Database expandable policy</f:facet>
+                <h:outputText value="#{_dataspace.databaseExpandablePolicy}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Database size</f:facet>
+                <h:outputText value="#{_dataspace.databaseSize}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Database type</f:facet>
+                <h:outputText value="#{_dataspace.databaseType}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Dataspace name</f:facet>
+                <h:outputText value="#{_dataspace.dataspaceName}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Web application name</f:facet>
+                <h:outputText value="#{_dataspace.webApplicationName}"/>
+            </h:column>
+            <h:column styleClass="action">
+                <f:facet name="header">Action</f:facet>
+                <s:link id="viewdataspace"
+                     value="View"
+                      view="/Dataspace.xhtml">
+                    <f:param name="dataspaceDataSpaceId"
+                           value="#{_dataspace.dataSpaceId}"/>
+                </s:link>
+            </h:column>
+        </rich:dataTable>
+
+    </div>
+    </rich:tab>
+
+    <rich:tab>
+        <f:facet name="label">
+            <h:panelGroup><h:graphicImage value="/img/manytoone.gif" style="vertical-align: middle; padding-right: 4px;"/>Web application</h:panelGroup>
+        </f:facet>
+    <div class="association" id="webApplicationParent">
+
+        <h:outputText value="There is no webApplication associated with this projectDatabase."
+                   rendered="#{projectDatabaseHome.instance.webApplication == null}"/>
+
+        <rich:dataTable var="_webApplication"
+                   value="#{projectDatabaseHome.instance.webApplication}"
+                rendered="#{projectDatabaseHome.instance.webApplication != null}"
+              rowClasses="rvgRowOne,rvgRowTwo"
+                      id="webApplicationTable">
+            <h:column>
+                <f:facet name="header">Web id</f:facet>
+                <h:outputText value="#{_webApplication.webId}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Url</f:facet>
+                <h:outputText value="#{_webApplication.url}"/>
+            </h:column>
+            <h:column styleClass="action">
+                <f:facet name="header">Action</f:facet>
+                <s:link id="viewwebApplication"
+                     value="View"
+                      view="/WebApplication.xhtml">
+                    <f:param name="webApplicationWebId"
+                           value="#{_webApplication.webId}"/>
+                </s:link>
+            </h:column>
+        </rich:dataTable>
+
+    </div>
+    </rich:tab>
+
+    <rich:tab>
+        <f:facet name="label">
+            <h:panelGroup><h:graphicImage value="/img/manytoone.gif" style="vertical-align: middle; padding-right: 4px;"/>Database structure</h:panelGroup>
+        </f:facet>
+    <div class="association" id="databaseStructureParent">
+
+        <h:outputText value="There is no databaseStructure associated with this projectDatabase."
+                   rendered="#{projectDatabaseHome.instance.databaseStructure == null}"/>
+
+        <rich:dataTable var="_databaseStructure"
+                   value="#{projectDatabaseHome.instance.databaseStructure}"
+                rendered="#{projectDatabaseHome.instance.databaseStructure != null}"
+              rowClasses="rvgRowOne,rvgRowTwo"
+                      id="databaseStructureTable">
+            <h:column>
+                <f:facet name="header">Structure id</f:facet>
+                <h:outputText value="#{_databaseStructure.structureId}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Content type</f:facet>
+                <h:outputText value="#{_databaseStructure.contentType}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Creation date</f:facet>
+                <h:outputText value="#{_databaseStructure.creationDate}">
+                    <s:convertDateTime type="date" dateStyle="short"/>
+                </h:outputText>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Csv directory</f:facet>
+                <h:outputText value="#{_databaseStructure.csvDirectory}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Data</f:facet>
+                <h:outputText value="#{_databaseStructure.data}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Database directory</f:facet>
+                <h:outputText value="#{_databaseStructure.databaseDirectory}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">File</f:facet>
+                <h:outputText value="#{_databaseStructure.file}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Size</f:facet>
+                <h:outputText value="#{_databaseStructure.size}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Sql directory</f:facet>
+                <h:outputText value="#{_databaseStructure.sqlDirectory}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Status</f:facet>
+                <h:outputText value="#{_databaseStructure.status}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Schema type</f:facet>
+                <h:outputText value="#{_databaseStructure.schemaType}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Upload type</f:facet>
+                <h:outputText value="#{_databaseStructure.uploadType}"/>
+            </h:column>
+            <h:column styleClass="action">
+                <f:facet name="header">Action</f:facet>
+                <s:link id="viewdatabaseStructure"
+                     value="View"
+                      view="/DatabaseStructure.xhtml">
+                    <f:param name="databaseStructureStructureId"
+                           value="#{_databaseStructure.structureId}"/>
+                </s:link>
+            </h:column>
+        </rich:dataTable>
+
+    </div>
+    </rich:tab>
+
+    <rich:tab>
+        <f:facet name="label">
+            <h:panelGroup><h:graphicImage value="/img/onetomany.gif" style="vertical-align: middle; padding-right: 4px;"/>User databases</h:panelGroup>
+        </f:facet>
+    <h:form styleClass="association" id="userDatabasesChildren">
+
+        <h:outputText value="There are no userDatabases associated with this projectDatabase."
+                   rendered="#{empty projectDatabaseHome.userDatabases}"/>
+
+        <rich:dataTable value="#{projectDatabaseHome.userDatabases}"
+                       var="_userDatabase"
+                  rendered="#{not empty projectDatabaseHome.userDatabases}"
+                rowClasses="rvgRowOne,rvgRowTwo"
+                        id="userDatabasesTable">
+            <rich:column sortBy="#{_userDatabase.id.databaseId}">
+                <f:facet name="header">Database id</f:facet>
+                <h:outputText value="#{_userDatabase.id.databaseId}"/>
+            </rich:column>
+            <rich:column sortBy="#{_userDatabase.id.userId}">
+                <f:facet name="header">User id</f:facet>
+                <h:outputText value="#{_userDatabase.id.userId}"/>
+            </rich:column>
+            <rich:column sortBy="#{_userDatabase.userRole}">
+                <f:facet name="header">User role</f:facet>
+                <h:outputText value="#{_userDatabase.userRole}"/>
+            </rich:column>
+            <h:column>
+                <f:facet name="header">Action</f:facet>
+                <s:link id="selectuserDatabase"
+                     value="Select"
+                      view="/UserDatabase.xhtml">
+                    <f:param name="userDatabaseDatabaseId"
+                            value="#{_userDatabase.id.databaseId}"/>
+                    <f:param name="userDatabaseUserId"
+                            value="#{_userDatabase.id.userId}"/>
+                    <f:param name="userDatabaseFrom" value="ProjectDatabase"/>
+                </s:link>
+            </h:column>
+        </rich:dataTable>
+
+    </h:form>
+
+    <div class="actionButtons">
+        <s:button
+               value="Add userDatabase"
+                view="/UserDatabaseEdit.xhtml">
+            <f:param name="projectDatabaseDatabaseId"
+                    value="#{projectDatabaseHome.instance.databaseId}"/>
+            <f:param name="userDatabaseFrom" value="ProjectDatabase"/>
+        </s:button>
+    </div>
+    </rich:tab>
+</rich:tabPanel>
+</ui:define>
+
+</ui:composition>
