@@ -15,8 +15,10 @@ straightforward maven based build
 {{{
 unzip jboss-as-distribution-6.0.0.Final-src.zip
 export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/
-./build.sh (sets up env, mvn install or $MVN_GOAL)
+./build.sh  #(sets up env and then runs `mvn install` (default) or `mvn $MVN_GOAL`)
 }}}
+
+
 
 the application server directory `JBOSS_HOME` ends up in `jboss-6.0.0.Final-src/build/target/jboss-6.0.0.Final/`
 
