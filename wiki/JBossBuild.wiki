@@ -1,0 +1,53 @@
+#summary Buidling JBoss 5.1 and 6.0
+
+= Introduction =
+
+JBoss 6 can be built using maven without any difficulties.
+
+JBoss 5.1 can be downloaded (binary and source) but it's not possible to build it since dependencies are no longer publicly available.
+
+
+= JBoss 6 =
+
+JBoss6
+straightforward maven based build
+
+{{{
+unzip jboss-as-distribution-6.0.0.Final-src.zip
+export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/
+./build.sh (sets up env, mvn install or $MVN_GOAL)
+}}}
+
+the application server directory `JBOSS_HOME` ends up in `jboss-6.0.0.Final-src/build/target/jboss-6.0.0.Final/`
+
+= Jboss 5.1 =
+
+This is how far I got, but come dependencies are no longer available on the internet.
+
+`export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/`
+
+install the following missing jars from the binary distribution:
+
+{{{
+mvn install:install-file -DgroupId=org.jboss.bootstrap -DartifactId=jboss-bootstrap -Dversion=1.0.0-Beta-3 -Dpackaging=jar -Dfile=../jboss-5.1.0.GA/lib/jboss-bootstrap.jar
+mvn install:install-file -DgroupId=org.jboss.logbridge -DartifactId=jboss-logbridge -Dversion=1.0.0.GA -Dpackaging=jar -Dfile=../jboss-5.1.0.GA/lib/jboss-logbridge.jar
+mvn install:install-file -DgroupId=org.jboss -DartifactId=jboss-common-core -Dversion=2.2.14.GA -Dpackaging=jar -Dfile=../jboss-5.1.0.GA/lib/jboss-common-core.jar
+mvn install:install-file -DgroupId=org.jboss.integration -DartifactId=jboss-classloading-spi -Dversion=5.1.0.GA -Dpackaging=jar -Dfile=../jboss-5.1.0.GA/lib/jboss-classloading-spi.jar
+wget https://repository.jboss.org/nexus/content/repositories/thirdparty-uploads/apache-xerces/xml-apis/2.9.1/xml-apis-2.9.1.jar
+mvn install:install-file -DgroupId=apache-xerces -DartifactId=xml-apis -Dversion=2.9.1 -Dpackaging=jar -Dfile=xml-apis-2.9.1.jar
+rm xml-apis-2.9.1.jar
+
+wget https://oss.sonatype.org/content/repositories/JBoss/1.0.2.GA/jboss-server-manager-1.0.2.GA.jar
+mvn install:install-file -DgroupId=org.jboss -DartifactId=jbossxb -Dversion=2.0.1.GA -Dpackaging=jar -Dfile=jboss-server-manager-1.0.2.GA.jar
+rm jboss-server-manager-1.0.2.GA.jar
+
+
+mvn install:install-file -DgroupId=org.jboss.jbossas -DartifactId=jboss-server-manager -Dversion=1.0.2.GA -Dpackaging=jar -Dfile=
+
+mvn install:install-file -DgroupId=org.jboss -DartifactId=jbossxb -Dversion=2.0.1.GA -Dpackaging=jar -Dfile=
+
+
+https://oss.sonatype.org/content/repositories/JBoss
+
+mvn package
+}}}
