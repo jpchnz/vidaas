@@ -6,6 +6,18 @@ Documentation work in progress
 
 = Details =
 
+== Fix VMware image wiredness ==
+
+remove `deb cdrom` entry from sources.list
+
+== Build requirements ==
+
+{{{
+apt-get install openjdk-6-jdk maven2 subversion
+}}}
+
+== Runtime setup ==
+
 {{{
 createuser -U postgres -s -E -P sudamihAdmin
 createdb -U sudamihAdmin -O sudamihAdmin -E UTF8 sudamihtestdb
