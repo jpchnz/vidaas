@@ -13,6 +13,7 @@ JBoss6
 straightforward maven based build
 
 {{{
+wget http://download.jboss.org/jbossas/6.1/jboss-as-distribution-6.1.0.Final-src.zip
 unzip jboss-as-distribution-6.0.0.Final-src.zip
 export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/
 ./build.sh  #(sets up env and then runs `mvn install` (default) or `mvn $MVN_GOAL`)
