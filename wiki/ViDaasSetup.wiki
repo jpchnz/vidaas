@@ -1,0 +1,19 @@
+#summary ViDaas manual setup instructions
+
+= Introduction =
+
+Documentation work in progress
+
+= Details =
+
+{{{
+createuser -U postgres -s -E -P sudamihAdmin
+createdb -U sudamihAdmin -O sudamihAdmin -E UTF8 sudamihtestdb
+
+dropuser sudamihAdmin
+dropdb sudamihtestdb
+
+mysql -u root -p
+drop database vidaas_v3;
+create database vidaas_v3;
+}}}
