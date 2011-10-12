@@ -1,4 +1,4 @@
-#summary Buidling JBoss 5.1 and 6.0
+#summary Building 6.1 from sources manually
 
 = Introduction =
 
@@ -14,11 +14,10 @@ straightforward maven based build
 
 {{{
 wget http://download.jboss.org/jbossas/6.1/jboss-as-distribution-6.1.0.Final-src.zip
-unzip jboss-as-distribution-6.0.0.Final-src.zip
+unzip jboss-as-distribution-6.1.0.Final-src.zip
 export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/
 ./build.sh  #(sets up env and then runs `mvn install` (default) or `mvn $MVN_GOAL`)
 }}}
-
 
 
 the application server directory `JBOSS_HOME` ends up in `jboss-6.0.0.Final-src/build/target/jboss-6.0.0.Final/`
