@@ -18,7 +18,7 @@ apt-get install openjdk-6-jdk maven2 subversion
 
 == Runtime setup ==
 
-Install JBossBuild 
+Install [JBossBuild]
 
 {{{
 createuser -U postgres -s -E -P sudamihAdmin
