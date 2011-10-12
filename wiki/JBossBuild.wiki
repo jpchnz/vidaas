@@ -1,4 +1,4 @@
-#summary Building 6.1 from sources manually
+#summary Building JBossAS 6.1 from sources manually
 
 = Introduction =
 
