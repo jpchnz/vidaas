@@ -37,7 +37,6 @@ Deploy app
 {{{
 deploy/vidaas3-ds.xml
 deploy/vidaas-0.3.war
-lib/mysql.jar #(optional)
-lib/postgresql.jar #(optional)
-lib/commons-lang.jar #(optional)
+lib/mysql.jar
+lib/postgresql.jar
 }}}
