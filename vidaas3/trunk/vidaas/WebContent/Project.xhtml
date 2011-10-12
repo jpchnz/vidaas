@@ -1,0 +1,191 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:rich="http://richfaces.org/rich"
+    template="layout/template.xhtml">
+
+<ui:define name="body">
+
+    <rich:panel>
+        <f:facet name="header">Project Details</f:facet>
+
+
+        <s:decorate id="description" template="layout/display.xhtml">
+            <ui:define name="label">Description</ui:define>
+            <h:outputText value="#{projectHome.instance.description}"/>
+        </s:decorate>
+
+        <s:decorate id="endDate" template="layout/display.xhtml">
+            <ui:define name="label">End date</ui:define>
+            <h:outputText value="#{projectHome.instance.endDate}">
+                <s:convertDateTime type="date" dateStyle="short"/>
+            </h:outputText>
+        </s:decorate>
+
+        <s:decorate id="startDate" template="layout/display.xhtml">
+            <ui:define name="label">Start date</ui:define>
+            <h:outputText value="#{projectHome.instance.startDate}">
+                <s:convertDateTime type="date" dateStyle="short"/>
+            </h:outputText>
+        </s:decorate>
+
+        <s:decorate id="title" template="layout/display.xhtml">
+            <ui:define name="label">Title</ui:define>
+            <h:outputText value="#{projectHome.instance.title}"/>
+        </s:decorate>
+
+        <div style="clear:both"/>
+
+    </rich:panel>
+
+    <div class="actionButtons">
+
+        <s:button view="/ProjectEdit.xhtml"
+                    id="edit"
+                 value="Edit"/>
+
+        <s:button view="/#{empty projectFrom ? 'ProjectList' : projectFrom}.xhtml"
+                    id="done"
+                 value="Done"/>
+
+    </div>
+
+    <rich:tabPanel switchType="ajax">
+
+    <rich:tab>
+        <f:facet name="label">
+            <h:panelGroup><h:graphicImage value="/img/onetomany.gif" style="vertical-align: middle; padding-right: 4px;"/>Dataspaces</h:panelGroup>
+        </f:facet>
+    <h:form styleClass="association" id="dataspacesChildren">
+
+        <h:outputText value="There are no dataspaces associated with this project."
+                   rendered="#{empty projectHome.dataspaces}"/>
+
+        <rich:dataTable value="#{projectHome.dataspaces}"
+                       var="_dataspace"
+                  rendered="#{not empty projectHome.dataspaces}"
+                rowClasses="rvgRowOne,rvgRowTwo"
+                        id="dataspacesTable">
+            <rich:column sortBy="#{_dataspace.dataSpaceId}">
+                <f:facet name="header">Data space id</f:facet>
+                <h:outputText value="#{_dataspace.dataSpaceId}"/>
+            </rich:column>
+            <rich:column sortBy="#{_dataspace.creationDate}">
+                <f:facet name="header">Creation date</f:facet>
+                <h:outputText value="#{_dataspace.creationDate}">
+                    <s:convertDateTime type="date" dateStyle="short"/>
+                </h:outputText>
+            </rich:column>
+            <rich:column sortBy="#{_dataspace.databaseBackupPolicy}">
+                <f:facet name="header">Database backup policy</f:facet>
+                <h:outputText value="#{_dataspace.databaseBackupPolicy}"/>
+            </rich:column>
+            <rich:column sortBy="#{_dataspace.databaseDescription}">
+                <f:facet name="header">Database description</f:facet>
+                <h:outputText value="#{_dataspace.databaseDescription}"/>
+            </rich:column>
+            <rich:column sortBy="#{_dataspace.databaseExpandablePolicy}">
+                <f:facet name="header">Database expandable policy</f:facet>
+                <h:outputText value="#{_dataspace.databaseExpandablePolicy}"/>
+            </rich:column>
+            <rich:column sortBy="#{_dataspace.databaseSize}">
+                <f:facet name="header">Database size</f:facet>
+                <h:outputText value="#{_dataspace.databaseSize}"/>
+            </rich:column>
+            <rich:column sortBy="#{_dataspace.databaseType}">
+                <f:facet name="header">Database type</f:facet>
+                <h:outputText value="#{_dataspace.databaseType}"/>
+            </rich:column>
+            <rich:column sortBy="#{_dataspace.dataspaceName}">
+                <f:facet name="header">Dataspace name</f:facet>
+                <h:outputText value="#{_dataspace.dataspaceName}"/>
+            </rich:column>
+            <rich:column sortBy="#{_dataspace.webApplicationName}">
+                <f:facet name="header">Web application name</f:facet>
+                <h:outputText value="#{_dataspace.webApplicationName}"/>
+            </rich:column>
+            <h:column>
+                <f:facet name="header">Action</f:facet>
+                <s:link id="selectdataspace"
+                     value="Select"
+                      view="/Dataspace.xhtml">
+                    <f:param name="dataspaceDataSpaceId"
+                            value="#{_dataspace.dataSpaceId}"/>
+                    <f:param name="dataspaceFrom" value="Project"/>
+                </s:link>
+            </h:column>
+        </rich:dataTable>
+
+    </h:form>
+
+    <div class="actionButtons">
+        <s:button
+               value="Add dataspace"
+                view="/DataspaceEdit.xhtml">
+            <f:param name="projectProjectId"
+                    value="#{projectHome.instance.projectId}"/>
+            <f:param name="dataspaceFrom" value="Project"/>
+        </s:button>
+    </div>
+    </rich:tab>
+
+    <rich:tab>
+        <f:facet name="label">
+            <h:panelGroup><h:graphicImage value="/img/onetomany.gif" style="vertical-align: middle; padding-right: 4px;"/>User projects</h:panelGroup>
+        </f:facet>
+    <h:form styleClass="association" id="userProjectsChildren">
+
+        <h:outputText value="There are no userProjects associated with this project."
+                   rendered="#{empty projectHome.userProjects}"/>
+
+        <rich:dataTable value="#{projectHome.userProjects}"
+                       var="_userProject"
+                  rendered="#{not empty projectHome.userProjects}"
+                rowClasses="rvgRowOne,rvgRowTwo"
+                        id="userProjectsTable">
+            <rich:column sortBy="#{_userProject.id.projectId}">
+                <f:facet name="header">Project id</f:facet>
+                <h:outputText value="#{_userProject.id.projectId}"/>
+            </rich:column>
+            <rich:column sortBy="#{_userProject.id.userId}">
+                <f:facet name="header">User id</f:facet>
+                <h:outputText value="#{_userProject.id.userId}"/>
+            </rich:column>
+            <rich:column sortBy="#{_userProject.userRole}">
+                <f:facet name="header">User role</f:facet>
+                <h:outputText value="#{_userProject.userRole}"/>
+            </rich:column>
+            <h:column>
+                <f:facet name="header">Action</f:facet>
+                <s:link id="selectuserProject"
+                     value="Select"
+                      view="/UserProject.xhtml">
+                    <f:param name="userProjectProjectId"
+                            value="#{_userProject.id.projectId}"/>
+                    <f:param name="userProjectUserId"
+                            value="#{_userProject.id.userId}"/>
+                    <f:param name="userProjectFrom" value="Project"/>
+                </s:link>
+            </h:column>
+        </rich:dataTable>
+
+    </h:form>
+
+    <div class="actionButtons">
+        <s:button
+               value="Add userProject"
+                view="/UserProjectEdit.xhtml">
+            <f:param name="projectProjectId"
+                    value="#{projectHome.instance.projectId}"/>
+            <f:param name="userProjectFrom" value="Project"/>
+        </s:button>
+    </div>
+    </rich:tab>
+</rich:tabPanel>
+</ui:define>
+
+</ui:composition>

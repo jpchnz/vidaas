@@ -1,0 +1,277 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:rich="http://richfaces.org/rich"
+    template="layout/template.xhtml">
+
+<ui:define name="body">
+
+    <h:form id="databaseStructureSearch" styleClass="edit">
+
+        <rich:simpleTogglePanel label="DatabaseStructure Search Filter" switchType="ajax">
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Content type</ui:define>
+                <h:inputText id="contentType" value="#{databaseStructureList.databaseStructure.contentType}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Csv directory</ui:define>
+                <h:inputText id="csvDirectory" value="#{databaseStructureList.databaseStructure.csvDirectory}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Database directory</ui:define>
+                <h:inputText id="databaseDirectory" value="#{databaseStructureList.databaseStructure.databaseDirectory}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">File</ui:define>
+                <h:inputText id="file" value="#{databaseStructureList.databaseStructure.file}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Sql directory</ui:define>
+                <h:inputText id="sqlDirectory" value="#{databaseStructureList.databaseStructure.sqlDirectory}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Status</ui:define>
+                <h:inputText id="status" value="#{databaseStructureList.databaseStructure.status}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Schema type</ui:define>
+                <h:inputText id="schemaType" value="#{databaseStructureList.databaseStructure.schemaType}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Upload type</ui:define>
+                <h:inputText id="uploadType" value="#{databaseStructureList.databaseStructure.uploadType}"/>
+            </s:decorate>
+
+            <s:decorate template="layout/display.xhtml">
+                <ui:define name="label">Match</ui:define>
+                <h:selectOneRadio id="logic" value="#{databaseStructureList.restrictionLogicOperator}" styleClass="radio">
+                    <f:selectItem itemLabel="All" itemValue="and"/>
+                    <f:selectItem itemLabel="Any" itemValue="or"/>
+                </h:selectOneRadio>
+            </s:decorate>
+
+        </rich:simpleTogglePanel>
+
+        <div class="actionButtons">
+            <h:commandButton id="search" value="Search" action="/DatabaseStructureList.xhtml"/>
+            <s:button id="reset" value="Reset" includePageParams="false"/>
+        </div>
+
+    </h:form>
+
+    <rich:panel>
+        <f:facet name="header">DatabaseStructure Search Results (#{empty databaseStructureList.resultList ? 0 : (databaseStructureList.paginated ? databaseStructureList.resultCount : databaseStructureList.resultList.size)})</f:facet>
+    <div class="results" id="databaseStructureList">
+
+    <h:outputText value="The databaseStructure search returned no results."
+               rendered="#{empty databaseStructureList.resultList}"/>
+
+    <rich:dataTable id="databaseStructureList"
+                var="_databaseStructure"
+              value="#{databaseStructureList.resultList}"
+           rendered="#{not empty databaseStructureList.resultList}">
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{databaseStructureList}"/>
+                    <ui:param name="propertyLabel" value="Structure id"/>
+                    <ui:param name="propertyPath" value="databaseStructure.structureId"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_databaseStructure.structureId}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{databaseStructureList}"/>
+                    <ui:param name="propertyLabel" value="Content type"/>
+                    <ui:param name="propertyPath" value="databaseStructure.contentType"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_databaseStructure.contentType}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{databaseStructureList}"/>
+                    <ui:param name="propertyLabel" value="Creation date"/>
+                    <ui:param name="propertyPath" value="databaseStructure.creationDate"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_databaseStructure.creationDate}">
+                <s:convertDateTime type="date" dateStyle="short"/>
+            </h:outputText>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{databaseStructureList}"/>
+                    <ui:param name="propertyLabel" value="Csv directory"/>
+                    <ui:param name="propertyPath" value="databaseStructure.csvDirectory"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_databaseStructure.csvDirectory}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{databaseStructureList}"/>
+                    <ui:param name="propertyLabel" value="Data"/>
+                    <ui:param name="propertyPath" value="databaseStructure.data"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_databaseStructure.data}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{databaseStructureList}"/>
+                    <ui:param name="propertyLabel" value="Database directory"/>
+                    <ui:param name="propertyPath" value="databaseStructure.databaseDirectory"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_databaseStructure.databaseDirectory}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{databaseStructureList}"/>
+                    <ui:param name="propertyLabel" value="File"/>
+                    <ui:param name="propertyPath" value="databaseStructure.file"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_databaseStructure.file}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{databaseStructureList}"/>
+                    <ui:param name="propertyLabel" value="Size"/>
+                    <ui:param name="propertyPath" value="databaseStructure.size"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_databaseStructure.size}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{databaseStructureList}"/>
+                    <ui:param name="propertyLabel" value="Sql directory"/>
+                    <ui:param name="propertyPath" value="databaseStructure.sqlDirectory"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_databaseStructure.sqlDirectory}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{databaseStructureList}"/>
+                    <ui:param name="propertyLabel" value="Status"/>
+                    <ui:param name="propertyPath" value="databaseStructure.status"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_databaseStructure.status}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{databaseStructureList}"/>
+                    <ui:param name="propertyLabel" value="Schema type"/>
+                    <ui:param name="propertyPath" value="databaseStructure.schemaType"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_databaseStructure.schemaType}"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <ui:include src="layout/sort.xhtml">
+                    <ui:param name="entityList" value="#{databaseStructureList}"/>
+                    <ui:param name="propertyLabel" value="Upload type"/>
+                    <ui:param name="propertyPath" value="databaseStructure.uploadType"/>
+                </ui:include>
+            </f:facet>
+            <h:outputText value="#{_databaseStructure.uploadType}"/>
+        </h:column>
+        <rich:column styleClass="action">
+            <f:facet name="header">Action</f:facet>
+            <s:link view="/#{empty from ? 'DatabaseStructure' : from}.xhtml"
+                   value="#{empty from ? 'View' : 'Select'}"
+             propagation="#{empty from ? 'none' : 'default'}"
+                      id="databaseStructureViewId">
+                <f:param name="databaseStructureStructureId"
+                        value="#{_databaseStructure.structureId}"/>
+            </s:link>
+            #{' '}
+            <s:link view="/DatabaseStructureEdit.xhtml"
+                   value="Edit"
+             propagation="none"
+                      id="databaseStructureEdit"
+                rendered="#{empty from}">
+                <f:param name="databaseStructureStructureId"
+                        value="#{_databaseStructure.structureId}"/>
+            </s:link>
+        </rich:column>
+    </rich:dataTable>
+
+    </div>
+    </rich:panel>
+
+    <div class="tableControl">
+
+        <s:link view="/DatabaseStructureList.xhtml"
+            rendered="#{databaseStructureList.previousExists}"
+               value="#{messages.left}#{messages.left} First Page"
+                  id="firstPage">
+          <f:param name="firstResult" value="0"/>
+        </s:link>
+
+        <s:link view="/DatabaseStructureList.xhtml"
+            rendered="#{databaseStructureList.previousExists}"
+               value="#{messages.left} Previous Page"
+                  id="previousPage">
+            <f:param name="firstResult"
+                    value="#{databaseStructureList.previousFirstResult}"/>
+        </s:link>
+
+        <s:link view="/DatabaseStructureList.xhtml"
+            rendered="#{databaseStructureList.nextExists}"
+               value="Next Page #{messages.right}"
+                  id="nextPage">
+            <f:param name="firstResult"
+                    value="#{databaseStructureList.nextFirstResult}"/>
+        </s:link>
+
+        <s:link view="/DatabaseStructureList.xhtml"
+            rendered="#{databaseStructureList.nextExists}"
+               value="Last Page #{messages.right}#{messages.right}"
+                  id="lastPage">
+            <f:param name="firstResult"
+                    value="#{databaseStructureList.lastFirstResult}"/>
+        </s:link>
+
+    </div>
+
+    <s:div styleClass="actionButtons" rendered="#{empty from}">
+        <s:button view="/DatabaseStructureEdit.xhtml"
+                    id="create"
+           propagation="none"
+                 value="Create databaseStructure">
+            <f:param name="databaseStructureStructureId"/>
+        </s:button>
+    </s:div>
+
+</ui:define>
+
+</ui:composition>
