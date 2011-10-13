@@ -52,6 +52,21 @@
       <classifier>sources</classifier>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>uk.ac.ox.oucs.vidaas</groupId>
+    	<artifactId>vcloud-java-sdk</artifactId>
+    	<version>1.0.1</version>
+    </dependency>
+    <dependency>
+    	<groupId>uk.ac.ox.oucs.vidaas</groupId>
+    	<artifactId>rest-api-schemas</artifactId>
+    	<version>1.0.1</version>
+    </dependency>
+    <dependency>
+    	<groupId>commons-httpclient</groupId>
+    	<artifactId>commons-httpclient</artifactId>
+    	<version>3.1</version>
+    </dependency>
   </dependencies>
 
   <build>
