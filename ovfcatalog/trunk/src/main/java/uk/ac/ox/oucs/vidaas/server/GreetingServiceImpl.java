@@ -1,8 +1,21 @@
 package uk.ac.ox.oucs.vidaas.server;
 
+import java.util.HashMap;
+import java.util.Set;
+
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
+
 import uk.ac.ox.oucs.vidaas.client.GreetingService;
 import uk.ac.ox.oucs.vidaas.shared.FieldVerifier;
+import uk.ac.ox.oucs.vidaas.shared.OvfCatalogException;
+
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.vmware.vcloud.api.rest.schema.ReferenceType;
+import com.vmware.vcloud.sdk.Organization;
+import com.vmware.vcloud.sdk.VCloudException;
+import com.vmware.vcloud.sdk.VcloudClient;
+import com.vmware.vcloud.sdk.Vdc;
 
 /**
  * The server side implementation of the RPC service.
@@ -10,25 +23,69 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class GreetingServiceImpl extends RemoteServiceServlet implements
     GreetingService {
+	
+	static VcloudClient client;
+	
+	/**
+	 * Static initialisation
+	 * 
+	 * 1) Authenticate to vcloud API
+	 */
+	{
+		String URL = "https://vcloud2.nsms.ox.ac.uk/api/versions";
+		String username = "chris@VIDaaS";
+		String password = "ch37*27aB5(";
+		String version = "1.0";
 
-  public String greetServer(String input) throws IllegalArgumentException {
-    // Verify that the input is valid.
-    if (!FieldVerifier.isValidName(input)) {
-      // If the input is not valid, throw an IllegalArgumentException back to
-      // the client.
-      throw new IllegalArgumentException(
-          "Name must be at least 4 characters long");
+		try {
+			// Setting up for SSL access. Do not use it production environment
+			Protocol https = new Protocol("https",
+					(ProtocolSocketFactory) new FakeSSLSocketFactory(), 443);
+			Protocol.registerProtocol("https", https);
+	
+			client = new VcloudClient(URL);
+			// Client login
+
+			HashMap<String, ReferenceType> orgsList = client.login(username,
+					password, client.getSupportedVersions().get(version));
+		} catch (Exception e) {
+			client = null;
+		}
+	}
+	
+	/**
+	 * Retrieves a list of Vapps
+	 * @return
+	 */
+	public Set<String> getVMs() throws OvfCatalogException {
+		try {
+			HashMap<String, ReferenceType> orgsList = client.getOrgRefsByName();
+			
+			//iterate vOrgs
+			for (String vOrg : orgsList.keySet()) {
+				ReferenceType orgRef = orgsList.get(vOrg);
+				Organization org = Organization.getOrganizationByReference(client, orgRef);
+				
+				//iterate VDCs
+				for(ReferenceType vdcRef : org.getVdcRefs()) {
+					Vdc vdc = Vdc.getVdcByReference(client, vdcRef);
+					
+					return vdc.getVappRefsByName().keySet();
+				}
+			}
+			return null;
+		} catch (VCloudException e) {
+			throw new OvfCatalogException(e.getMessage());
+		}
+	}
+
+  public String greetServer() throws OvfCatalogException {
+
+    String response = "";
+    for ( String vm : getVMs() ) {
+    	response = response + escapeHtml(vm) + "<br/>";
     }
-
-    String serverInfo = getServletContext().getServerInfo();
-    String userAgent = getThreadLocalRequest().getHeader("User-Agent");
-
-    // Escape data from the client to avoid cross-site script vulnerabilities.
-    input = escapeHtml(input);
-    userAgent = escapeHtml(userAgent);
-
-    return "Hello, " + input + "!<br><br>I am running " + serverInfo
-        + ".<br><br>It looks like you are using:<br>" + userAgent;
+    return response;
   }
 
   /**
@@ -45,4 +102,5 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
     return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(
         ">", "&gt;");
   }
+
 }
