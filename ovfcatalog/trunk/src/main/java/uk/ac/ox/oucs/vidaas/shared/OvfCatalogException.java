@@ -14,6 +14,13 @@ public class OvfCatalogException extends Exception {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * Default constructor
+	 */
+	public OvfCatalogException() {
+		super();
+	}
+	
+	/**
 	 * Constructor
 	 * 
 	 * @param message message
