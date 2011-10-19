@@ -1,9 +1,12 @@
 package uk.ac.ox.oucs.vidaas.server;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
@@ -40,12 +43,17 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 	 * 1) Authenticate to vcloud API
 	 */
 	{
-		String URL = "https://vcloud2.nsms.ox.ac.uk/api/versions";
-		String username = "chris@VIDaaS";
-		String password = "ch37*27aB5(";
-		String version = "1.0";
+		InputStream in = this.getClass().getResourceAsStream("vmware.properties");
+		Properties props = new Properties();
 
 		try {
+			//load properties
+			props.load(in);
+			String password = props.getProperty("vidaas.vmware.password");
+			String URL = props.getProperty("vidaas.vmware.URL");
+			String username = props.getProperty("vidaas.vmware.username");
+			String version = props.getProperty("vidaas.vmware.version");
+			
 			// Setting up for SSL access. Do not use it production environment
 			Protocol https = new Protocol("https",
 					(ProtocolSocketFactory) new FakeSSLSocketFactory(), 443);
