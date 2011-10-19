@@ -1,6 +1,5 @@
 package uk.ac.ox.oucs.vidaas.server;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
