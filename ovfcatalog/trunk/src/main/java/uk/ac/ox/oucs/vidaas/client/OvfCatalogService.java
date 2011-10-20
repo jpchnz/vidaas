@@ -9,8 +9,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 /**
  * The client side stub for the RPC service.
  */
-@RemoteServiceRelativePath("greet")
-public interface GreetingService extends RemoteService {
+@RemoteServiceRelativePath("ovfcatalog")
+public interface OvfCatalogService extends RemoteService {
   VmValue[] getVMs() throws OvfCatalogException;
   VmValue[] getTemplates() throws OvfCatalogException;
 }

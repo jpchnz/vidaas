@@ -19,18 +19,17 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class ovfcatalog implements EntryPoint {
 
 	/**
-	 * Create a remote service proxy to talk to the server-side Greeting
-	 * service.
+	 * Create a remote service proxy to talk to the server-side service.
 	 */
-	private final GreetingServiceAsync greetingService = GWT
-			.create(GreetingService.class);
+	private final OvfCatalogServiceAsync ovfcatalogService = GWT
+			.create(OvfCatalogService.class);
 
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
 
-		greetingService.getVMs(new AsyncCallback<VmValue[]>() {
+		ovfcatalogService.getVMs(new AsyncCallback<VmValue[]>() {
 
 			@Override
 			public void onFailure(Throwable arg0) {
@@ -44,7 +43,7 @@ public class ovfcatalog implements EntryPoint {
 
 		});
 		
-		greetingService.getTemplates(new AsyncCallback<VmValue[]>() {
+		ovfcatalogService.getTemplates(new AsyncCallback<VmValue[]>() {
 
 			@Override
 			public void onFailure(Throwable arg0) {
