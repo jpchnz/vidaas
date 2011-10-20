@@ -10,7 +10,7 @@ import java.util.Properties;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 
-import uk.ac.ox.oucs.vidaas.client.GreetingService;
+import uk.ac.ox.oucs.vidaas.client.OvfCatalogService;
 import uk.ac.ox.oucs.vidaas.shared.OvfCatalogException;
 import uk.ac.ox.oucs.vidaas.shared.VmValue;
 
@@ -31,8 +31,8 @@ import com.vmware.vcloud.sdk.Vdc;
  * The server side implementation of the RPC service.
  */
 @SuppressWarnings("serial")
-public class GreetingServiceImpl extends RemoteServiceServlet implements
-    GreetingService {
+public class OvfCatalogServiceImpl extends RemoteServiceServlet implements
+    OvfCatalogService {
 	
 	static VcloudClient client;
 	
