@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.2.xsd">
+
+   <param name="firstResult" value="#{databaseStructureList.firstResult}"/>
+   <param name="sort" value="#{databaseStructureList.orderColumn}"/>
+   <param name="dir" value="#{databaseStructureList.orderDirection}"/>
+   <param name="logic" value="#{databaseStructureList.restrictionLogicOperator}"/>
+
+   <param name="from"/>
+   <param name="contentType" value="#{databaseStructureList.databaseStructure.contentType}"/>
+   <param name="csvDirectory" value="#{databaseStructureList.databaseStructure.csvDirectory}"/>
+   <param name="databaseDirectory" value="#{databaseStructureList.databaseStructure.databaseDirectory}"/>
+   <param name="file" value="#{databaseStructureList.databaseStructure.file}"/>
+   <param name="sqlDirectory" value="#{databaseStructureList.databaseStructure.sqlDirectory}"/>
+   <param name="status" value="#{databaseStructureList.databaseStructure.status}"/>
+   <param name="schemaType" value="#{databaseStructureList.databaseStructure.schemaType}"/>
+   <param name="uploadType" value="#{databaseStructureList.databaseStructure.uploadType}"/>
+
+</page>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.2.xsd"
+      no-conversation-view-id="/UserProjectList.xhtml"
+      login-required="true">
+
+   <begin-conversation join="true" flush-mode="MANUAL"/>
+
+   <action execute="#{userProjectHome.wire}"/>
+
+   <param name="userProjectFrom"/>
+   <param name="userProjectProjectId" value="#{userProjectHome.userProjectId.projectId}"/>
+   <param name="userProjectUserId" value="#{userProjectHome.userProjectId.userId}"/>
+   <param name="usersFrom"/>
+   <param name="usersUserId" value="#{usersHome.usersUserId}"/>
+
+   <param name="projectFrom"/>
+   <param name="projectProjectId" value="#{projectHome.projectProjectId}"/>
+
+
+
+   <navigation from-action="#{userProjectHome.persist}">
+      <rule if-outcome="persisted">
+         <end-conversation/>
+         <redirect view-id="/UserProject.xhtml"/>
+      </rule>
+   </navigation>
+
+   <navigation from-action="#{userProjectHome.update}">
+      <rule if-outcome="updated">
+         <end-conversation/>
+         <redirect view-id="/UserProject.xhtml"/>
+      </rule>
+   </navigation>
+
+   <navigation from-action="#{userProjectHome.remove}">
+      <rule if-outcome="removed">
+         <end-conversation/>
+         <redirect view-id="/UserProjectList.xhtml"/>
+      </rule>
+   </navigation>
+
+</page>

@@ -1,0 +1,251 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    template="layout/template.xhtml">
+
+<ui:define name="body">
+
+    <h:form id="dataspace" styleClass="edit">
+
+        <rich:panel>
+            <f:facet name="header">#{dataspaceHome.managed ? 'Edit' : 'Add'} Dataspace</f:facet>
+
+
+
+
+            <s:decorate id="creationDateField" template="layout/edit.xhtml">
+                <ui:define name="label">Creation date</ui:define>
+                <rich:calendar id="creationDate"
+                       required="true"
+                          value="#{dataspaceHome.instance.creationDate}" datePattern="MM/dd/yyyy" />
+            </s:decorate>
+
+
+            <s:decorate id="databaseBackupPolicyField" template="layout/edit.xhtml">
+                <ui:define name="label">Database backup policy</ui:define>
+                <h:inputText id="databaseBackupPolicy"
+                       required="true"
+                           size="45"
+                      maxlength="45"
+                          value="#{dataspaceHome.instance.databaseBackupPolicy}">
+                    <a:support event="onblur" reRender="databaseBackupPolicyField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="databaseDescriptionField" template="layout/edit.xhtml">
+                <ui:define name="label">Database description</ui:define>
+                <h:inputText id="databaseDescription"
+                       required="true"
+                           size="100"
+                      maxlength="150"
+                          value="#{dataspaceHome.instance.databaseDescription}">
+                    <a:support event="onblur" reRender="databaseDescriptionField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="databaseExpandablePolicyField" template="layout/edit.xhtml">
+                <ui:define name="label">Database expandable policy</ui:define>
+                <h:inputText id="databaseExpandablePolicy"
+                       required="true"
+                           size="45"
+                      maxlength="45"
+                          value="#{dataspaceHome.instance.databaseExpandablePolicy}">
+                    <a:support event="onblur" reRender="databaseExpandablePolicyField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="databaseSizeField" template="layout/edit.xhtml">
+                <ui:define name="label">Database size</ui:define>
+                <h:inputText id="databaseSize"
+                       required="true"
+                          value="#{dataspaceHome.instance.databaseSize}">
+                    <a:support event="onblur" reRender="databaseSizeField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="databaseTypeField" template="layout/edit.xhtml">
+                <ui:define name="label">Database type</ui:define>
+                <h:inputText id="databaseType"
+                       required="true"
+                           size="45"
+                      maxlength="45"
+                          value="#{dataspaceHome.instance.databaseType}">
+                    <a:support event="onblur" reRender="databaseTypeField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="dataspaceNameField" template="layout/edit.xhtml">
+                <ui:define name="label">Dataspace name</ui:define>
+                <h:inputText id="dataspaceName"
+                       required="true"
+                           size="50"
+                      maxlength="50"
+                          value="#{dataspaceHome.instance.dataspaceName}">
+                    <a:support event="onblur" reRender="dataspaceNameField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <s:decorate id="webApplicationNameField" template="layout/edit.xhtml">
+                <ui:define name="label">Web application name</ui:define>
+                <h:inputText id="webApplicationName"
+                       required="true"
+                           size="45"
+                      maxlength="45"
+                          value="#{dataspaceHome.instance.webApplicationName}">
+                    <a:support event="onblur" reRender="webApplicationNameField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <div style="clear:both">
+                <span class="required">*</span>
+                required fields
+            </div>
+
+        </rich:panel>
+
+        <div class="actionButtons">
+
+            <h:commandButton id="save"
+                          value="Save"
+                         action="#{dataspaceHome.persist}"
+                       disabled="#{!dataspaceHome.wired}"
+                       rendered="#{!dataspaceHome.managed}"/>
+
+            <h:commandButton id="update"
+                          value="Save"
+                         action="#{dataspaceHome.update}"
+                       rendered="#{dataspaceHome.managed}"/>
+
+            <h:commandButton id="delete"
+                          value="Delete"
+                         action="#{dataspaceHome.remove}"
+                      immediate="true"
+                       rendered="#{dataspaceHome.managed}"/>
+
+            <s:button id="cancelEdit"
+                   value="Cancel"
+             propagation="end"
+                    view="/Dataspace.xhtml"
+                rendered="#{dataspaceHome.managed}"/>
+
+            <s:button id="cancelAdd"
+                   value="Cancel"
+             propagation="end"
+                    view="/#{empty dataspaceFrom ? 'DataspaceList' : dataspaceFrom}.xhtml"
+                rendered="#{!dataspaceHome.managed}"/>
+
+        </div>
+    </h:form>
+
+<rich:tabPanel switchType="ajax">
+
+    <rich:tab label="Project *" labelClass="required">
+    <div class="association" id="projectParent">
+
+        <h:outputText value="There is no project associated with this dataspace."
+                   rendered="#{dataspaceHome.instance.project == null}"/>
+
+        <rich:dataTable var="_project"
+                   value="#{dataspaceHome.instance.project}"
+                rendered="#{dataspaceHome.instance.project != null}"
+              rowClasses="rvgRowOne,rvgRowTwo"
+                      id="projectTable">
+            <h:column>
+                <f:facet name="header">Project id</f:facet>
+                <h:outputText value="#{_project.projectId}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Description</f:facet>
+                <h:outputText value="#{_project.description}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">End date</f:facet>
+                <h:outputText value="#{_project.endDate}">
+                    <s:convertDateTime type="date" dateStyle="short"/>
+                </h:outputText>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Start date</f:facet>
+                <h:outputText value="#{_project.startDate}">
+                    <s:convertDateTime type="date" dateStyle="short"/>
+                </h:outputText>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Title</f:facet>
+                <h:outputText value="#{_project.title}"/>
+            </h:column>
+        </rich:dataTable>
+
+        <div class="actionButtons">
+            <s:button id="#{dataspaceHome.instance.project != null ? 'changeParent' : 'selectParent'}" value="#{dataspaceHome.instance.project != null ? 'Change' : 'Select'} project"
+                       view="/ProjectList.xhtml">
+                <f:param name="from" value="DataspaceEdit"/>
+            </s:button>
+        </div>
+
+    </div>
+    </rich:tab>
+
+    <rich:tab label="Project databases">
+        <h:form styleClass="association" id="projectDatabasesChildren">
+
+            <h:outputText value="There are no projectDatabases associated with this dataspace."
+                       rendered="#{empty dataspaceHome.projectDatabases}"/>
+
+            <rich:dataTable value="#{dataspaceHome.projectDatabases}"
+                           var="_projectDatabase"
+                      rendered="#{not empty dataspaceHome.projectDatabases}"
+                    rowClasses="rvgRowOne,rvgRowTwo"
+                            id="projectDatabasesTable">
+                <rich:column sortBy="#{_projectDatabase.databaseId}">
+                    <f:facet name="header">Database id</f:facet>
+                    <h:outputText value="#{_projectDatabase.databaseId}"/>
+                </rich:column>
+                <rich:column sortBy="#{_projectDatabase.connectionString}">
+                    <f:facet name="header">Connection string</f:facet>
+                    <h:outputText value="#{_projectDatabase.connectionString}"/>
+                </rich:column>
+                <rich:column sortBy="#{_projectDatabase.creationDate}">
+                    <f:facet name="header">Creation date</f:facet>
+                    <h:outputText value="#{_projectDatabase.creationDate}">
+                        <s:convertDateTime type="date" dateStyle="short"/>
+                    </h:outputText>
+                </rich:column>
+                <rich:column sortBy="#{_projectDatabase.databaseName}">
+                    <f:facet name="header">Database name</f:facet>
+                    <h:outputText value="#{_projectDatabase.databaseName}"/>
+                </rich:column>
+            </rich:dataTable>
+
+        </h:form>
+
+        <f:subview rendered="#{dataspaceHome.managed}" id="projectDatabases">
+        <div class="actionButtons">
+            <s:button id="addprojectDatabase"
+                   value="Add projectDatabase"
+                    view="/ProjectDatabaseEdit.xhtml"
+             propagation="none">
+                 <f:param name="dataspaceDataSpaceId"
+                         value="#{dataspaceHome.instance.dataSpaceId}"/>
+                 <f:param name="projectDatabaseFrom" value="Dataspace"/>
+            </s:button>
+        </div>
+        </f:subview>
+    </rich:tab>
+</rich:tabPanel>
+</ui:define>
+
+</ui:composition>
