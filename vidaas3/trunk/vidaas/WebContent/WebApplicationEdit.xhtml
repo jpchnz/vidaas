@@ -1,0 +1,125 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    template="layout/template.xhtml">
+
+<ui:define name="body">
+
+    <h:form id="webApplication" styleClass="edit">
+
+        <rich:panel>
+            <f:facet name="header">#{webApplicationHome.managed ? 'Edit' : 'Add'} Web application</f:facet>
+
+
+
+
+            <s:decorate id="urlField" template="layout/edit.xhtml">
+                <ui:define name="label">Url</ui:define>
+                <h:inputText id="url"
+                           size="100"
+                      maxlength="145"
+                          value="#{webApplicationHome.instance.url}">
+                    <a:support event="onblur" reRender="urlField" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+            </s:decorate>
+
+
+            <div style="clear:both">
+                <span class="required">*</span>
+                required fields
+            </div>
+
+        </rich:panel>
+
+        <div class="actionButtons">
+
+            <h:commandButton id="save"
+                          value="Save"
+                         action="#{webApplicationHome.persist}"
+                       disabled="#{!webApplicationHome.wired}"
+                       rendered="#{!webApplicationHome.managed}"/>
+
+            <h:commandButton id="update"
+                          value="Save"
+                         action="#{webApplicationHome.update}"
+                       rendered="#{webApplicationHome.managed}"/>
+
+            <h:commandButton id="delete"
+                          value="Delete"
+                         action="#{webApplicationHome.remove}"
+                      immediate="true"
+                       rendered="#{webApplicationHome.managed}"/>
+
+            <s:button id="cancelEdit"
+                   value="Cancel"
+             propagation="end"
+                    view="/WebApplication.xhtml"
+                rendered="#{webApplicationHome.managed}"/>
+
+            <s:button id="cancelAdd"
+                   value="Cancel"
+             propagation="end"
+                    view="/#{empty webApplicationFrom ? 'WebApplicationList' : webApplicationFrom}.xhtml"
+                rendered="#{!webApplicationHome.managed}"/>
+
+        </div>
+    </h:form>
+
+<rich:tabPanel switchType="ajax">
+
+    <rich:tab label="Project databases">
+        <h:form styleClass="association" id="projectDatabasesChildren">
+
+            <h:outputText value="There are no projectDatabases associated with this webApplication."
+                       rendered="#{empty webApplicationHome.projectDatabases}"/>
+
+            <rich:dataTable value="#{webApplicationHome.projectDatabases}"
+                           var="_projectDatabase"
+                      rendered="#{not empty webApplicationHome.projectDatabases}"
+                    rowClasses="rvgRowOne,rvgRowTwo"
+                            id="projectDatabasesTable">
+                <rich:column sortBy="#{_projectDatabase.databaseId}">
+                    <f:facet name="header">Database id</f:facet>
+                    <h:outputText value="#{_projectDatabase.databaseId}"/>
+                </rich:column>
+                <rich:column sortBy="#{_projectDatabase.connectionString}">
+                    <f:facet name="header">Connection string</f:facet>
+                    <h:outputText value="#{_projectDatabase.connectionString}"/>
+                </rich:column>
+                <rich:column sortBy="#{_projectDatabase.creationDate}">
+                    <f:facet name="header">Creation date</f:facet>
+                    <h:outputText value="#{_projectDatabase.creationDate}">
+                        <s:convertDateTime type="date" dateStyle="short"/>
+                    </h:outputText>
+                </rich:column>
+                <rich:column sortBy="#{_projectDatabase.databaseName}">
+                    <f:facet name="header">Database name</f:facet>
+                    <h:outputText value="#{_projectDatabase.databaseName}"/>
+                </rich:column>
+            </rich:dataTable>
+
+        </h:form>
+
+        <f:subview rendered="#{webApplicationHome.managed}" id="projectDatabases">
+        <div class="actionButtons">
+            <s:button id="addprojectDatabase"
+                   value="Add projectDatabase"
+                    view="/ProjectDatabaseEdit.xhtml"
+             propagation="none">
+                 <f:param name="webApplicationWebId"
+                         value="#{webApplicationHome.instance.webId}"/>
+                 <f:param name="projectDatabaseFrom" value="WebApplication"/>
+            </s:button>
+        </div>
+        </f:subview>
+    </rich:tab>
+</rich:tabPanel>
+</ui:define>
+
+</ui:composition>
