@@ -1,0 +1,49 @@
+<f:subview xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<rich:modalPanel id="logoutPanel" width="350" autosized="true"
+		onhide="window.location.reload()">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="Logout"></h:outputText>
+			</h:panelGroup>
+		</f:facet>
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="/images/close.png" width="20px"
+					styleClass="hidelink" id="hideLogoutLink" />
+				<rich:componentControl for="logoutPanel" attachTo="hideLogoutLink"
+					operation="hide" event="onclick" />
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="logoutForm">
+			<h:outputText value="#{userMain.lastName}, #{userMain.firstName} are you sure you want to logout"></h:outputText>			
+			<div class="actionButtons">
+			
+			<a4j:commandButton
+			id="logoutCancelButton" value="Cancel" style="float:left">
+			<rich:componentControl for="logoutPanel"
+				attachTo="logoutCancelButton" operation="hide" event="onclick" />
+		</a4j:commandButton> 		
+			<a4j:commandButton id="submit"
+				value="Logout" action="#{authenticator.logout}"
+				reRender="logoutForm, topToolBarForm, rightTopToolBarGroup"
+				onclick="this.disabled=true" status="submitStatus" style="float:right"
+				oncomplete="Richfaces.hideModalPanel('logoutPanel')"/>
+
+			<a4j:region>
+				<a4j:status id="submitStatus">
+					<f:facet name="start">
+						<h:graphicImage value="/img/wait.gif" height="28px" width="28px" style="float:right"/>
+					</f:facet>
+				</a4j:status>
+			</a4j:region></div>
+		</a4j:form>
+
+	</rich:modalPanel>
+
+</f:subview>

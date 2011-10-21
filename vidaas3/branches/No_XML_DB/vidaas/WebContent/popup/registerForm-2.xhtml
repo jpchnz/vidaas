@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+	
+	<a4j:form ajaxSubmit="true" id="registrationLevel2">
+		<h:outputText value="User #{registration.lastName}, #{registration.firstName} successfully created"/>
+		
+		
+		<div>
+		<h:outputText value="Please provide username/login to complete registration"/>
+			<h:panelGrid columns="3" rowClasses="prop" columnClasses="name,value">
+	                    <h:outputLabel for="userName">User Name</h:outputLabel>
+	                    <h:inputText id="userName" 
+	                              value="#{registration.userName}" required="true"/>
+	                     <rich:message for="userName" style="width : 184px;" />
+	                     
+	                    <h:outputLabel for="password">Password</h:outputLabel>
+	                    <h:inputSecret id="password" 
+	                                value="#{registration.password}" required="true"/>	                     
+						<rich:message for="password" style="width : 184px;" />
+						
+						<h:outputLabel for="password2">Password Again</h:outputLabel>
+	                    <h:inputSecret id="password2" 
+	                                value="#{registration.password2}" required="true"/>	                     
+						<rich:message for="password2" style="width : 184px;" />	                    
+	                </h:panelGrid>
+	            </div>       
+		<div>
+			
+		</div>
+		<div class="actionButtons">
+			<h:outputLabel value="#{registration.registrationMessage2}" styleClass="errorMessage"/>
+			<a4j:commandButton value="Next" action="#{registration.registrationLevel2()}" 
+				reRender="registrationFormInclude"/>
+		</div> 
+
+	</a4j:form>
+
+
+</ui:composition>
