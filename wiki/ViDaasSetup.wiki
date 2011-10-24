@@ -30,6 +30,8 @@ dropdb sudamihtestdb
 mysql -u root -p
 drop database vidaas_v3;
 create database vidaas_v3;
+
+mkdir /opt/VIDaaSData  #to be removed, reported as issue
 }}}
 
 Deploy app
