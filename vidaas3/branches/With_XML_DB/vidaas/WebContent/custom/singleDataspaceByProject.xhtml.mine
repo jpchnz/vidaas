@@ -1,0 +1,133 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	
+	<!--  
+	<a4j:form id="testForm" ajaxSubmit="true">
+		<a4j:commandLink action="#{createController.testingString()}" reRender="homePageMainBodyInclude, homeMainPanel"
+				id="testButton" value="Test String" style="float:left"/>
+	</a4j:form>
+-->
+	<rich:panel>
+		<f:facet name="header">
+			<h:outputText
+				value="Detailed summary of project of '#{currentProject.title}'"></h:outputText>
+		</f:facet>
+		<h:panelGrid id="projectPanel" columns="1">
+		<!--  
+			<h:outputText
+				value="Test String: '#{createController.testString}'"></h:outputText> -->
+			<h:panelGroup>
+				<h:outputLabel value="Project Title: " />
+				<h:outputLabel value="#{currentProject.title}" />
+			</h:panelGroup>
+			<h:panelGroup>
+				<h:outputLabel value="Project Description: " />
+				<h:outputLabel value="#{currentProject.description}" />
+			</h:panelGroup>
+			<h:panelGroup>
+				<h:outputLabel value="Start Date: " />
+				<h:outputLabel value="#{currentProject.startDate}" />
+			</h:panelGroup>
+			<h:panelGroup>
+				<h:outputLabel value="End Date: " />
+				<h:outputLabel value="#{currentProject.endDate}" />
+			</h:panelGroup>
+		</h:panelGrid>
+	</rich:panel>
+
+	<rich:panel>
+		<f:facet name="header">
+			<h:outputText
+				value="Detailed summary of database of '#{currentDataspace.dataspaceName}'"></h:outputText>
+		</f:facet>
+		<h:panelGrid id="dataspacePanel" columns="4" border="1" width="1105px">
+			<h:panelGroup>
+				<h:outputLabel value="Data Space Name: " />
+				<h:outputLabel value="#{currentDataspace.dataspaceName}" />
+			</h:panelGroup>
+			<h:panelGroup>
+				<h:outputLabel value="Database Creation Date: " />
+				<h:outputLabel value="#{currentDataspace.creationDate}" />
+			</h:panelGroup>
+			<h:panelGroup>
+				<h:outputLabel value="Database Type: " />
+				<h:outputLabel value="#{currentDataspace.databaseType}" />
+			</h:panelGroup>
+			<h:panelGroup>
+				<h:outputLabel value="Database Size: " />
+				<h:outputLabel value="#{currentDataspace.databaseSize} gb" />
+			</h:panelGroup>
+		</h:panelGrid>
+	</rich:panel>
+	
+	<h:panelGrid id="dataspaceButtonPanel" columns="1" width="1105px"
+		rendered="#{empty navigationController.listDatabaseByDataspace()}">
+		
+		<h:panelGroup rendered="#{currentDataspace.databaseType =='relational'}">
+			<a4j:form id="dataspaceSQLButtonForm" ajaxSubmit="true">
+				<div class="actionButtons"><a4j:commandLink
+					id="createDatabaseFromSchemaButton"
+					value="Create Database from Schema"
+					style="float:left">
+					<rich:componentControl for="createDatabasePanel"
+						attachTo="createDatabaseFromSchemaButton" operation="show" event="onclick" />
+				</a4j:commandLink> 
+				<a4j:commandButton id="createDatabaseByDesignButton"
+					value="Design Database" status="submitStatus" style="float:right"
+					disabled="true">
+				</a4j:commandButton> <a4j:region>
+					<a4j:status id="submitStatus">
+						<f:facet name="start">
+							<h:graphicImage value="/img/wait.gif" height="28px" width="28px"
+								style="float:right" />
+						</f:facet>
+					</a4j:status>
+				</a4j:region></div>
+			</a4j:form>
+		</h:panelGroup>				
+		
+		<h:panelGroup rendered="#{currentDataspace.databaseType =='xml'}">
+			<a4j:form id="dataspaceXMLButtonForm" ajaxSubmit="true">
+				<div class="actionButtons"><a4j:commandLink
+					id="createDatabaseFromXMLButton"
+					value="Create XML Database"
+					style="float:left">
+					<rich:componentControl for="createXMLDatabasePanel"
+						attachTo="createDatabaseFromXMLButton" operation="show" event="onclick" />
+				</a4j:commandLink> 
+				<a4j:commandButton id="createXMLDatabaseByDesignButton"
+					value="Design XML Database" status="submitStatusXML" style="float:right"
+					disabled="true">
+				</a4j:commandButton> <a4j:region>
+					<a4j:status id="submitStatusXML">
+						<f:facet name="start">
+							<h:graphicImage value="/img/wait.gif" height="28px" width="28px"
+								style="float:right" />
+						</f:facet>
+					</a4j:status>
+				</a4j:region></div>
+			</a4j:form>
+		</h:panelGroup>
+	</h:panelGrid>
+
+	<rich:dataGrid id="datbasesDataGrid"
+		value="#{navigationController.listDatabaseByDataspace()}"
+		var="_database" columns="3" elements="9"
+		rendered="#{not empty navigationController.listDatabaseByDataspace()}"
+		width="1105px">
+		<f:facet name="header">
+			<h:outputText
+				value="Detailed summary of database"></h:outputText>
+		</f:facet>
+		<h:panelGrid id="databasePanel" columns="3" border="1">
+			<a4j:include viewId="/include/relationalDatabase.xhtml" rendered="#{currentDataspace.databaseType =='relational'}"></a4j:include>
+			<a4j:include viewId="/include/xmlDatabase.xhtml" rendered="#{currentDataspace.databaseType =='xml'}"></a4j:include>
+		</h:panelGrid>
+	</rich:dataGrid>
+
+</ui:composition>
