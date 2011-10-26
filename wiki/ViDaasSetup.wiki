@@ -18,11 +18,16 @@ apt-get install openjdk-6-jdk maven2 subversion
 
 == Runtime setup ==
 
+{{{
+apt-get install postgresql mysql-server libmysql-java libpg-java
+}}}
+
 Install [JBossBuild]
 
 {{{
+su postgres
 createuser -U postgres -s -E -P sudamihAdmin
-createdb -U sudamihAdmin -O sudamihAdmin -E UTF8 sudamihtestdb
+createdb  -O sudamihAdmin -E UTF8 sudamihtestdb #-U sudamihAdmin
 
 dropuser sudamihAdmin
 dropdb sudamihtestdb
@@ -34,11 +39,43 @@ create database vidaas_v3;
 mkdir /opt/VIDaaSData  #to be removed, reported as issue
 }}}
 
+Build vidaas
+
+{{{
+svn checkout https://vidaas.googlecode.com/svn/vidaas3/branches/No_XML_DB
+cd No_XML_DB/vidaas
+mvn package
+}}}
+
 Deploy app
 
 {{{
 deploy/vidaas3-ds.xml
 deploy/vidaas-0.3.war
-lib/mysql.jar
-lib/postgresql.jar
+}}}
+
+Database drivers
+
+{{{
+cd $JBOSS_HOME/server/default/lib/
+ln -s /usr/share/java/mysql.jar mysql.jar
+ln -s /usr/share/java/postgresql.jar postgresql.jar
+}}}
+
+----
+Example vidaas3-ds.xml
+{{{
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+   
+   <local-tx-datasource>
+      <jndi-name>vidaasDatasource</jndi-name>
+      <use-java-context>true</use-java-context>
+      <connection-url>jdbc:mysql://localhost:3306/vidaas_v3</connection-url>
+      <driver-class>com.mysql.jdbc.Driver</driver-class>
+      <user-name>root</user-name>
+      <password>password</password>
+   </local-tx-datasource>
+    
+</datasources>
 }}}
