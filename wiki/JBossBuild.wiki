@@ -21,7 +21,12 @@ cd jboss-6.1.0.Final-src
 }}}
 
 
-the application server directory `JBOSS_HOME` ends up in `jboss-6.0.0.Final-src/build/target/jboss-6.0.0.Final/`
+the application server directory `JBOSS_HOME` ends up in `jboss-6.1.0.Final-src/build/target/jboss-6.1.0.Final/`. Once suggestion would be to relocate this to a more generic directory, for example
+
+{{{
+mv jboss-6.1.0.Final-src/build/target/jboss-6.1.0.Final /opt
+ln -fs /opt/jboss-6.1.0.Final /opt/jboss
+}}}
 
 = Jboss 5.1 =
 
