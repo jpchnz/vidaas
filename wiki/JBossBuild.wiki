@@ -24,7 +24,7 @@ the application server directory `JBOSS_HOME` ends up in `jboss-6.0.0.Final-src/
 
 = Jboss 5.1 =
 
-This is how far I got, but come dependencies are no longer available on the internet.
+This is how far I got, but some dependencies are no longer available on the internet.
 
 `export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/`
 
