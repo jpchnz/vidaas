@@ -19,6 +19,8 @@ apt-get install postgresql mysql-server libmysql-java libpg-java
 
 Install [JBossBuild]
 
+Configure PostgreSQL and MySql. First, create a new PostgreSQL user (sudamihAdmin) and then have it own a new database, sudamihtestdb. Then create a new MySql database (vidaas_v3).
+
 {{{
 su postgres
 createuser -U postgres -s -E -P sudamihAdmin
