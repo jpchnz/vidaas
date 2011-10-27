@@ -9,12 +9,7 @@ Documentation work in progress
 == Fix VMware image wiredness ==
 
 remove `deb cdrom` entry from sources.list
-
-== Build requirements ==
-
-{{{
-apt-get install openjdk-6-jdk maven2 subversion
-}}}
+nullmailer
 
 == Runtime setup ==
 
@@ -27,27 +22,34 @@ Install [JBossBuild]
 {{{
 su postgres
 createuser -U postgres -s -E -P sudamihAdmin
+#dropuser sudamihAdmin
+
 createdb  -O sudamihAdmin -E UTF8 sudamihtestdb #-U sudamihAdmin
 
-dropuser sudamihAdmin
-dropdb sudamihtestdb
+#dropdb sudamihtestdb
 
 mysql -u root -p
-drop database vidaas_v3;
 create database vidaas_v3;
+#drop database vidaas_v3;
 
 mkdir /opt/VIDaaSData  #to be removed, reported as issue
 }}}
 
-Build vidaas
+== Build vidaas ==
+Build requirements
 
+{{{
+apt-get install openjdk-6-jdk maven2 subversion
+}}}
+
+Build ViDaaS
 {{{
 svn checkout https://vidaas.googlecode.com/svn/vidaas3/branches/No_XML_DB
 cd No_XML_DB/vidaas
 mvn package
 }}}
 
-Deploy app
+== Deployment ==
 
 {{{
 deploy/vidaas3-ds.xml
@@ -63,7 +65,7 @@ ln -s /usr/share/java/postgresql.jar postgresql.jar
 }}}
 
 ----
-Example vidaas3-ds.xml
+Example vidaas3-ds.xml (replace $PASSWORD$ with your mysql password chosen earlier)
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
 <datasources>
@@ -74,7 +76,7 @@ Example vidaas3-ds.xml
       <connection-url>jdbc:mysql://localhost:3306/vidaas_v3</connection-url>
       <driver-class>com.mysql.jdbc.Driver</driver-class>
       <user-name>root</user-name>
-      <password>password</password>
+      <password>$PASSWORD$</password>
    </local-tx-datasource>
     
 </datasources>
