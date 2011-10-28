@@ -48,6 +48,7 @@ Build ViDaaS
 {{{
 svn checkout https://vidaas.googlecode.com/svn/vidaas3/branches/No_XML_DB
 cd No_XML_DB/vidaas
+vi src/hot/uk/ac/ox/oucs/vidaas/manager/sudamih.properties #update uk.ac.ox.oucs.sudamih.adminUserNamePW
 mvn package
 }}}
 
