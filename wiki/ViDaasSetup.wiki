@@ -53,20 +53,11 @@ mvn package
 
 == Deployment ==
 
-Two files are required for deployment. These are
+Two files are required for deployment and need to be copied to the $JBOSS_HOME/server/default/deploy directory.
 {{{
-vidaas/resources/vidaas-ds.xml
-vidaas/target/vidaas-0.3.war
+cp resources/vidaas-ds.xml $JBOSS_HOME/server/default/deploy
+cp target/vidaas-0.3.war $JBOSS_HOME/server/default/deploy
 }}}
-
-Database drivers
-
-{{{
-cd $JBOSS_HOME/server/default/lib/
-ln -s /usr/share/java/mysql.jar mysql.jar
-ln -s /usr/share/java/postgresql.jar postgresql.jar
-}}}
-
 ----
 Example vidaas3-ds.xml (replace $PASSWORD$ with your mysql password chosen earlier)
 {{{
@@ -83,4 +74,23 @@ Example vidaas3-ds.xml (replace $PASSWORD$ with your mysql password chosen earli
    </local-tx-datasource>
     
 </datasources>
+}}}
+----
+
+The database drivers need to be installed to JBoss using the following instructions:
+
+{{{
+cd $JBOSS_HOME/server/default/lib/
+ln -s /usr/share/java/mysql.jar mysql.jar
+ln -s /usr/share/java/postgresql.jar postgresql.jar
+}}}
+
+JBoss is now ready to be started
+{{{
+$JBOSS_HOME/bin/run.sh
+}}}
+
+Assuming JBoss is using standard configuration, it is now possible to view the Vidaas home page by navigating a browser to
+{{{
+http://localhost:8080/vidaas-0.3
 }}}
