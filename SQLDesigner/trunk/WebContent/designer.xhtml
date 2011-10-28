@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:s="http://jboss.com/products/seam/taglib">
+
+<head>
+
+<title>JQuery SQL Designer</title>
+
+<link rel="stylesheet" href="css/themes/base/jquery.ui.all.css" />
+<link rel="stylesheet" href="css/demos.css" />
+<link rel="stylesheet" href="css/designer/designer.css" />
+<link rel="stylesheet" type="text/css"
+	href="css/tooltip/jquery.tooltip.css" />
+<link type="text/css" href="css/jquery.jscrollpane.css" rel="stylesheet" media="all" />
+
+<script src="js/jquery-1.4.4.js" type="text/javascript"></script>
+
+<script src="js/external/jquery.bgiframe-2.1.2.js"
+	type="text/javascript"></script>
+
+<script src="js/ui/jquery.ui.core.js" type="text/javascript"></script>
+
+<script src="js/ui/jquery.ui.widget.js" type="text/javascript"></script>
+
+<script src="js/ui/jquery.ui.mouse.js" type="text/javascript"></script>
+
+<script src="js/ui/jquery.ui.draggable.js" type="text/javascript"></script>
+
+<script src="js/ui/jquery.ui.droppable.js" type="text/javascript"></script>
+
+<script src="js/ui/jquery.ui.position.js" type="text/javascript"></script>
+
+<script src="js/ui/jquery.ui.resizable.js" type="text/javascript"></script>
+
+<script src="js/ui/jquery.ui.dialog.js" type="text/javascript"></script>
+
+<script src="js/ui/jquery.effects.core.js" type="text/javascript"></script>
+
+<script type="text/javascript" src="js/svg/jquery.svg.js"></script>
+<script type="text/javascript" src="js/svg/jquery.svganim.js"></script>
+
+<script src="js/designer/designer.js" type="text/javascript"></script>
+<script src="js/designer/controller.js" type="text/javascript"></script>
+<script src="js/designer/XMLParser.js" type="text/javascript"></script>
+
+<script type="text/javascript" src="js/tooltip/jquery.tooltip.js"></script>
+
+<!-- the mousewheel plugin - optional to provide mousewheel support -->
+    <script type="text/javascript" src="js/jquery.mousewheel.js"></script>
+
+    <!-- the jScrollPane script -->
+    <script type="text/javascript" src="js/jquery.jscrollpane.min.js"></script>
+
+</head>
+<body>
+
+ 	<s:remote include="dbConnectionAction, dbConnection"/>
+  
+  <script type="text/javascript"> 
+
+  function showAndProcessDatabaseConnectionForm(){
+      var dbConnectionValuesArray = new Array();
+      
+      $("#externalHtml").load('dialog/remoteDBConnectionForm.html').dialog({
+           title: "Remote Database Connection Properties",
+              modal: true,
+              autoOpen: true,
+              height: 418,
+              width: 335,
+              draggable: false,
+              resizable: false,
+              buttons: {
+                  "Conenct": function() {
+                  
+                      // Retrieve the value entered by User in the form               
+                     dbConnectionValuesArray[0] = $("#dataBaseType option:selected").val();
+                      
+                      dbConnectionValuesArray[1] = $('[name=dbHostURL]').val();
+                      dbConnectionValuesArray[2] = $('[name=dbPort]').val();
+                      dbConnectionValuesArray[3] = $('[name=dbName]').val();
+                      
+                      dbConnectionValuesArray[4] = $('[name=dbUserName]').val();                    
+                      dbConnectionValuesArray[5] = $('[name=dbPassword]').val();
+                      
+                      $( this ).dialog( "close" );
+                      getRemoteDatabaseParameters(dbConnectionValuesArray);
+              }
+          }
+     });
+     //return dbConnectionValuesArray;
+  }
+  
+  	
+    function getRemoteDatabaseParameters(dbConnectionValuesArray) {
+    	//var dbConnectionValuesArray = showAndProcessDatabaseConnectionForm();
+    	//alert(dbConnectionValuesArray.length);
+    	var callback = function(result) { alert("Data Dictionary successfully retrieved" ); 
+    		setTimeout("doNothing()", 100);
+    		loadSQLWithFileName(result);
+    	};
+    	
+    	var dbConnection = Seam.Component.getInstance("dbConnection");
+    	if(dbConnectionValuesArray.length == 6){}
+    		dbConnection.databaseType = dbConnectionValuesArray[0];
+    		dbConnection.connectionURL = dbConnectionValuesArray[1];
+    		dbConnection.portNumber = dbConnectionValuesArray[2];
+    		dbConnection.databaseName = dbConnectionValuesArray[3];
+    		dbConnection.userName = dbConnectionValuesArray[4];
+    		dbConnection.password = dbConnectionValuesArray[5];
+
+	      	Seam.Component.getInstance("dbConnectionAction").getDBMetaData(dbConnection, callback);
+    	
+
+      //alert(generateSQL());
+      
+      
+      
+      //customer.sayHello(name, callback);
+    }
+
+    function doNothing(){
+        }
+    </script>    
+<div id="droppable"></div>
+
+<!-- Don't Remove this div ... it is for Popup Dialog -->
+<div id="externalHtml"></div>
+<div>
+<div id='tableDrag' style="top: 30px; left: 10px"><img
+	src='images/TableButton3.png' alt='Table' width='40px' height='40px'
+	title="Drage 'Table' icon to design canvas to create new table." /></div>
+<div id="columnDrag" style="top: 75px; left: 10px"><img
+	src='images/ColumnButton.png' alt='Column' width='40px' height='40px'
+	title="Drag 'Column' icon to existing table to add new column." /></div>
+<div id="oneToOne" style="top: 120px; left: 10px"><img
+	id="oneToOneImg" src='images/1-2-1-Original.png' alt='1-2-1'
+	width='40px' height='40px'
+	title="Click '1-1 Identifying Relation' butotn to activate it. Now first DOUBLE Click the header of Primary table and then DOUBLE Click the the header of Secondary table." />
+</div>
+<div id="oneToOneNon" style="top: 165px; left: 10px"><img
+	id="oneToOneNonImg" src='images/1-2-1-Original-Non.png' alt='1-2-1'
+	width='40px' height='40px'
+	title="Click '1-1 Non-Identifying Relation' butotn to activate it. Now first DOUBLE Click the header of Primary table and then DOUBLE Click the the header of Secondary table." />
+</div>
+<div id="oneToMany" style="top: 210px; left: 10px"><img
+	id="oneToManyImg" src='images/1-2-M-Original.png' alt='1-2-1'
+	width='40px' height='40px'
+	title="Click '1-M Identifying Relation' butotn to activate it. Now first DOUBLE Click the header of Primary table and then DOUBLE Click the the header of Secondary table." />
+</div>
+<div id="oneToManyNon" style="top: 255px; left: 10px"><img
+	id="oneToManyNonImg" src='images/1-2-M-Original-Non.png' alt='1-2-1'
+	width='40px' height='40px'
+	title="Click '1-M Non-Identifying Relation' butotn to activate it. Now first DOUBLE Click the header of Primary table and then DOUBLE Click the the header of Secondary table." />
+</div>
+<div id="manyToMany" style="top: 300px; left: 10px"><img
+	id="manyToManyImg" src='images/M-2-M-Original.png' alt='1-2-1'
+	width='40px' height='40px'
+	title="Click 'M-M Relation' butotn to activate it. Now first DOUBLE Click the header of Primary table and then DOUBLE Click the the header of Secondary table." />
+</div>
+<!--
+        <div id="manyToManyNon" style="top: 345px; left: 10px">
+            <img id="manyToManyNonImg" src='images/M-2-M-Original-Non.png' alt='1-2-1' width='40px' height='40px' 
+                title="Click '1-1 Identifying' butotn to activate it. Now first DOUBLE Click the header of Primary table and then double click the the header of Secondary table."/>
+        </div> 
+        -->
+<div id="sql" style="top: 410px; left: 10px"><img id="sqlImg"
+	src='images/icon_sql.jpg' alt='generate SQL' width='40px' height='40px'
+	onclick="generateSQL()" title="Generate SQL for the database." /></div>
+<div id="loadLocal" style="top: 460px; left: 10px"><img id="Img1"
+	src='images/load.png' alt='Load SQL' width='45px' height='45px'
+	onclick="loadSQL()" title="Load SQL from the database or XML file." />
+</div>
+
+<div id="loadRemote" style="top: 530px; left: 10px">
+	    	<button onclick="javascript:showAndProcessDatabaseConnectionForm()" >Load Live Database</button>	    	
+	    </div>
+</div>
+   
+	<h6 align="right">Visitor Counter:  </h6>
+	<!-- Start of StatCounter Code -->
+	  <script type="text/javascript">
+	  var sc_project=6858404; 
+	  var sc_invisible=0; 
+	  var sc_security="bd5b4514"; 
+	  var sc_text=2; 
+	  </script>
+
+	  <script type="text/javascript"
+	  src="http://www.statcounter.com/counter/counter_xhtml.js"></script><noscript><div
+	  class="statcounter"><a title="counter for vBulletin"
+	  class="statcounter"
+	  href="http://statcounter.com/vbulletin/">Visitor Counter: <img
+	  class="statcounter"
+	  src="http://c.statcounter.com/6858404/0/bd5b4514/0/"
+	  alt="counter for vBulletin" /></a></div></noscript>
+<!-- End of StatCounter Code -->
+
+</body>
+</html>
