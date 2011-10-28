@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:ui="http://java.sun.com/jsf/facelets"
+   xmlns:f="http://java.sun.com/jsf/core"
+   xmlns:h="http://java.sun.com/jsf/html"
+   xmlns:a="http://richfaces.org/a4j"
+   xmlns:s="http://jboss.com/products/seam/taglib"
+   contentType="text/html">
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+      <title>jQuery SQL Designer</title>
+      <link rel="shortcut icon" href="#{request.contextPath}/favicon.ico"/>
+      <a:loadStyle src="/stylesheet/theme.xcss"/>
+      <a:loadStyle src="/stylesheet/theme.css"/>
+      <ui:insert name="head"/>
+   </head>
+   <body>
+      <ui:include src="menu.xhtml">
+         <ui:param name="projectName" value="jQuery SQL Designer"/>
+      </ui:include>
+      <div class="body">
+         <h:messages id="messages" globalOnly="true" styleClass="message"
+            errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg"
+            rendered="#{showGlobalMessages != 'false'}"/>
+         <ui:insert name="body"/>
+      </div>
+      <div class="footer">
+         <p>Powered mainly by <a href="http://seamframework.org">Seam</a>,<a href="http://jquery.com/"> jQuery</a>and <a href="http://www.jboss.org/jbossrichfaces">RichFaces</a>.</p>
+         
+         <p>
+            For suggestions, bug report or features request email us "jquery dot sql dot designer at hotmail dot co dot uk". Looking forward to form developer/user community for jQuery SQL Designer.
+         </p>
+         
+		<!-- Start of StatCounter Code -->
+		  <script type="text/javascript">
+		  var sc_project=6858404; 
+		  var sc_invisible=0; 
+		  var sc_security="bd5b4514"; 
+		  var sc_text=2; 
+		  </script>
+			Visitor Counter: 
+		  <script type="text/javascript"
+		  src="http://www.statcounter.com/counter/counter_xhtml.js"></script><noscript><div
+		  class="statcounter"><a title="counter for vBulletin"
+		  class="statcounter"
+		  href="http://statcounter.com/vbulletin/"><img
+		  class="statcounter"
+		  src="http://c.statcounter.com/6858404/0/bd5b4514/0/"
+		  alt="counter for vBulletin" /></a></div></noscript>
+	<!-- End of StatCounter Code -->
+      </div>
+   </body>
+</html>
+</f:view>

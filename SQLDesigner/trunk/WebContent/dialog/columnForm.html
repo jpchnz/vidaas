@@ -1,0 +1,109 @@
+<script type="text/javascript">
+    //$("#length").hide();
+    $('#columnForm').keypress(function (event){    
+         var keycode = (event.keyCode ? event.keyCode : (event.which ? event.which : event.charCode));
+         if (keycode == 13) {
+            return false;
+         }
+    });
+    
+    $("#columnType").change(function() { 
+        //$("#columnOptional").show();
+        if( $("#columnType option:selected").val() == "float4" || $("#columnType option:selected").val() == "float8" || $("#columnType option:selected").val() == "varchar" || $("#columnType option:selected").val() == "char") {
+             $("#length").removeAttr('disabled');
+             $("#length").val("");
+             //$("#length").show();
+        } else {
+            $("#length").attr('disabled', 'disabled');
+            $("#length").val("Disabled");
+            //$("#length").css('background-color', '#FFFF9C');
+            //$("#length").hide();
+        }
+        if( $("#columnType option:selected").val() == "float4" || $("#columnType option:selected").val() == "float8"){
+            $("#scale").removeAttr('disabled');
+             $("#scale").val("");
+        } else {
+            $("#scale").attr('disabled', 'disabled');
+            $("#scale").val("Disabled");
+        }
+    });
+    
+    $("#columnPrimaryKey").change(function() { 
+        if( $("#columnPrimaryKey option:selected").val() == "Primary") {
+            $('#columnUnique').attr('selectedIndex', 1);
+            $('#columnUnique').attr('disabled', 'disabled');
+            
+            $('#columnOptional').attr('selectedIndex', 2);
+            $('#columnOptional').attr('disabled', 'disabled');
+        } else {
+            $('#columnUnique').attr('selectedIndex', 0);
+            $('#columnUnique').removeAttr('disabled');
+            
+            $('#columnOptional').attr('selectedIndex', 0);
+            $('#columnOptional').removeAttr('disabled');
+        }        
+    });
+</script>
+
+<form visible='false' id="columnForm">
+<fieldset>
+    <label for="columnName">
+        Column Name</label>
+    <input type="text" name="columnName" id="name" class="text ui-widget-content ui-corner-all" />
+    <p>
+        <label for="columnType">
+            Column Type</label>
+        <select name="columnType" id="columnType" class="select ui-widget-content ui-corner-all"
+            style="font-size: 12px; padding: 3px 2px 3px 3px; width: 98%">
+            <option value="int4">Select Column Type (default INTEGER)</option>
+            <option value="int2">INTEGER (2)</option>
+            <option value="integer">INTEGER (4)</option>
+            <option value="int8">BIG INTEGER (8)</option>
+            <option value="float4">FLOAT (4)</option>
+            <option value="float8">FLOAT (8)</option>
+            <option value="money">MONEY</option>
+            <option value="char">CHARACTER (n), char (n)</option>
+            <option value="varchar">VARCHAR (n)</option>
+            <option value="text">TEXT</option>
+            <option value="bool">BOOLEAN</option>
+            <option value="date">DATE</option>
+        </select>
+    </p>
+    
+    <label for="columnLength">
+        Data Length</label>
+    <input type="text" name="columnLength" id="length" value="Disabled" class="text ui-widget-content ui-corner-all" DISABLED/>
+    
+    <label for="columnLength">
+        Scale (Digits after decimal)</label>
+    <input type="text" name="scaleLength" id="scale" value="Disabled" class="text ui-widget-content ui-corner-all" DISABLED/>
+    
+    <p>
+        <select name="columnPrimaryKey" id="columnPrimaryKey" class="ui-widget-content ui-corner-all"
+            style="font-size: 12px; padding: 3px 2px 3px 3px; width: 98%" visible="false">
+            <option value="Ordinary">Is column a Primary Key?</option>
+            <option value="Primary">Primary Key</option>
+            <option value="Ordinary">Not Primary Key</option>
+        </select>
+    </p>
+    <p>
+        <select name="columnOptional" id="columnOptional" class="ui-widget-content ui-corner-all"
+            style="font-size: 12px; padding: 3px 2px 3px 3px; width: 98%" visible="false">
+            <option value="null">Can column be NULL? (default NULL)</option>
+            <option value="null">Null</option>
+            <option value="notNull">Not Null</option>
+        </select>
+    </p>
+    <p>
+        <select name="columnUnique" id="columnUnique" class="ui-widget-content ui-corner-all"
+            style="font-size: 12px; padding: 3px 2px 3px 3px; width: 98%" visible="false">
+            <option value="unique">Is column Unique? (default Unique)</option>
+            <option value="unique">Unique</option>
+            <option value="notUnique">Not Unique</option>
+        </select>
+    </p>
+    <label for="description">
+        Description</label>
+    <textarea name="description" cols="40" rows="5" class="text ui-widget-content ui-corner-all" />
+</fieldset>
+</form>
