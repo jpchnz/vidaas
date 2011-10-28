@@ -93,5 +93,23 @@ $JBOSS_HOME/bin/run.sh
 
 Assuming JBoss is using standard configuration, it is now possible to view the Vidaas home page by navigating a browser to
 {{{
-http://localhost:8080/vidaas-0.3
+http://localhost:8080/vidaas-0.3/
+}}}
+
+----
+
+== Example Apache mod_jk config ==
+
+apt-get install 
+
+add to global apache config
+{{{
+JkWorkerProperty worker.list=vidaas
+JkWorkerProperty worker.vidaas.port=8009
+}}}
+
+add to vhost
+{{{
+        JkMount /vidaas-0.3/ vidaas
+        JkMount /vidaas-0.3/* vidaas
 }}}
