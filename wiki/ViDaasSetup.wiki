@@ -100,7 +100,12 @@ http://localhost:8080/vidaas-0.3/
 
 == Example Apache mod_jk config ==
 
-apt-get install 
+apt-get install apache2 libapache2-mod-jk
+
+run in shell
+{{{
+cd /etc/apache2/mods-enabled && ln -s ../mods-available/rewrite.load rewrite.load
+}}}
 
 add to global apache config
 {{{
@@ -110,6 +115,11 @@ JkWorkerProperty worker.vidaas.port=8009
 
 add to vhost
 {{{
+        #redirect docroot
+        RewriteEngine on
+        RewriteRule ^/$ /vidaas-0.3/ [R]
+
+        #mount vidaas
         JkMount /vidaas-0.3/ vidaas
         JkMount /vidaas-0.3/* vidaas
 }}}
