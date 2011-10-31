@@ -14,9 +14,11 @@ If the version of PostgreSQL is <x> then the following file needs to be edited
 }}}
 
 This file deals with how clients are able to connect with the PostgreSQL server. Seek out the local host line and ensure it looks thus:
-from
+
 {{{
-local    all         all          md5
+host	all	all	127.0.0.1/32	md5
 }}}
 
 This will require the client to supply an MD5-encrypted password for authentication.
+
+Then restart PostgreSQL using /etc/init.d/postgres restart
