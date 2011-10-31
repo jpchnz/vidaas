@@ -17,6 +17,8 @@ nullmailer
 apt-get install postgresql mysql-server libmysql-java libpg-java
 }}}
 
+Configure [PostgreSQL]
+
 Install [JBossBuild]
 
 Currently, there is the possibility of using MySQL and/or PostgreSQL for the underlying database services. To aid with testing (and partly due to historical reasons), MySQL is used on the Controller Node and PostgreSQL is used on the Project Node (for relational database data). Thus, both PostgreSQL and MySql need to be configured. First, create a new PostgreSQL user (sudamihAdmin) and then have it own a new database, sudamihtestdb. Then create a new MySql database (vidaas_v3).
