@@ -9,14 +9,14 @@ public class VmValue implements Serializable {
 	private String name;
 	private Integer status;
 	private String[] ipAddresses;
-	private String[] files;
+	//private String[] files;
 	boolean createable = false;
 	
 	public VmValue() {
 
 	}
 	
-	public VmValue(String name, Integer status, Collection<String> ipAddresses, Collection<String> files) {
+	public VmValue(String name, Integer status, Collection<String> ipAddresses/*, Collection<String> files*/) {
 		this.name = name;
 		this.status = status;
 		if(ipAddresses != null) {
@@ -26,13 +26,13 @@ public class VmValue implements Serializable {
 				this.ipAddresses[i] = ip;
 			}
 		}
-		if(files != null) {
+		/*if(files != null) {
 			this.files = new String[files.size()];
 			int i = 0;
 			for(String file : files) {
 				this.files[i] = file;
 			}
-		}
+		}*/
 	}
 
 	public String getName() {
@@ -47,9 +47,9 @@ public class VmValue implements Serializable {
 		return ipAddresses;
 	}
 	
-	public String[] getFiles() {
+	/*public String[] getFiles() {
 		return files;
-	}
+	}*/
 	
 	public boolean isCreateable() {
 		return createable;
@@ -57,6 +57,18 @@ public class VmValue implements Serializable {
 	
 	public void setCreateable(boolean b) {
 		createable = b;
+	}
+
+	public boolean isStoppable() {
+		// TODO find out about status constants
+		if(status==null) return false;
+		return status==4;
+	}
+	
+	public boolean isStartable() {
+		// TODO find out about status constants
+		if(status==null) return false;
+		return status==8;
 	}
 
 }
