@@ -13,4 +13,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface OvfCatalogService extends RemoteService {
   VmValue[] getVMs() throws OvfCatalogException;
   VmValue[] getTemplates() throws OvfCatalogException;
+  void stopVM(String name) throws OvfCatalogException;
+  void startVM(String name) throws OvfCatalogException;
+  void createVM(String templateName, String vmName) throws OvfCatalogException;
 }
