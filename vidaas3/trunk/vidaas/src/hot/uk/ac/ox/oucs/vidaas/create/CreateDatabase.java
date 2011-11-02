@@ -17,10 +17,11 @@ public class CreateDatabase {
 	private String databaseConnectionString = null;
 	private static Connection connection = null;
 	private Statement statement = null;
-
+	private Logger logger = Logger.getLogger(CreateDatabase.class.getName());
 	private int counter = 0;
 
 	public CreateDatabase(String databaseNameValue) {
+		logger.fine("Create database constructor called with " + databaseNameValue);
 		this.databaseName = databaseNameValue;
 	}
 
@@ -31,6 +32,8 @@ public class CreateDatabase {
 	 * return databaseConnectionString; }
 	 */
 	public String[] createDatabase() {
+		logger.info("createDatabase called");
+		
 		String tempDatabaseName = databaseName;
 		// System.out.println(" createDatabase()    " + tempDatabaseName + " " +
 		// databaseExist());
@@ -40,12 +43,14 @@ public class CreateDatabase {
 
 		/**/
 		if (databaseExist(tempDatabaseName)) {
+			logger.info("Database exists - try with a new name");
 			int randomNumber = (int) ((Math.random() * 1000) + 100);
 			tempDatabaseName = databaseName + randomNumber;
 			// System.out.println("If .... createDatabase()    " +
 			// tempDatabaseName + " " + databaseExist());
 		}
 		try {
+			logger.info("About to create database " + tempDatabaseName);
 			statement = connection.createStatement();
 
 			statement.executeUpdate("CREATE DATABASE " + tempDatabaseName

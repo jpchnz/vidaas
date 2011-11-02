@@ -1,7 +1,6 @@
 package uk.ac.ox.oucs.vidaas.create;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -21,15 +20,17 @@ public class CreateUser {
     private String databaseName = null;
     private static Connection connection = null;
     private Statement statement = null;
+    private Logger logger = Logger.getLogger(CreateUser.class.getName());
 
     public CreateUser(){
-    	
+    	logger.fine("CreateUser default constructor");
     }
     
     public CreateUser(String userNameValue, String userPasswordValue, String databaseNameValue) {
         this.userName = userNameValue.toLowerCase();
         this.userPassword = userPasswordValue;
         this.databaseName = databaseNameValue.toLowerCase();
+        logger.fine(String.format("CreateUser constructor(%s, ..., %s)", userNameValue, databaseNameValue));
     }
 
     /**
@@ -127,7 +128,7 @@ public class CreateUser {
             statement = connection.createStatement();
             statement.executeUpdate("ALTER DATABASE " + databaseNameVal + " OWNER TO " + userNameVal);
     	} catch (SQLException ex) {
-            Logger.getLogger(CreateUser.class.getName()).log(Level.SEVERE, null, ex);
+    		logger.log(Level.SEVERE, null, ex);
             try {
 				connection.close();
 				connection = null;
