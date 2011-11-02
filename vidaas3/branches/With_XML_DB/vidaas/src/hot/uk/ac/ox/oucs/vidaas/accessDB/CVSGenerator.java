@@ -1,25 +1,22 @@
 package uk.ac.ox.oucs.vidaas.accessDB;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import uk.ac.ox.oucs.vidaas.data.holder.DataHolder;
+
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Cursor;
 import com.healthmarketscience.jackcess.DataType;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Index;
 import com.healthmarketscience.jackcess.Table;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import uk.ac.ox.oucs.vidaas.data.holder.DataHolder;
 
 public class CVSGenerator {
 
@@ -66,34 +63,35 @@ public class CVSGenerator {
 					.iterator();
 			while (tableNamesIterator.hasNext()) {
 				try {
-				Table table = database.getTable(tableNamesIterator.next()
-						.toString());
+					Table table = database.getTable(tableNamesIterator.next()
+							.toString());
 
-				if (!table.getName().contains("_Conflict")) {
-					dataHolder
-							.setCurrentStatus("\nCreating Data File for 'Table' "
-									+ table.getName()
-									+ dataHolder.getCurrentStatus());
-					String tableModifiedName = referenceKeyWordValidation(
-							table.getName(), true);
-					FileWriter fstream = new FileWriter(csvDirectoryURL
-							+ tableModifiedName + ".csv");
-					FileWriter fstreamSQL = new FileWriter(
-							databaseSchemaDirectory + tableModifiedName
-									+ ".sql");
+					if (!table.getName().contains("_Conflict")) {
+						dataHolder
+								.setCurrentStatus("\nCreating Data File for 'Table' "
+										+ table.getName()
+										+ dataHolder.getCurrentStatus());
+						String tableModifiedName = referenceKeyWordValidation(
+								table.getName(), true);
+						FileWriter fstream = new FileWriter(csvDirectoryURL
+								+ tableModifiedName + ".csv");
+						FileWriter fstreamSQL = new FileWriter(
+								databaseSchemaDirectory + tableModifiedName
+										+ ".sql");
 
-					out = new BufferedWriter(fstream);
-					outSQL = new BufferedWriter(fstreamSQL);
+						out = new BufferedWriter(fstream);
+						outSQL = new BufferedWriter(fstreamSQL);
 
-					dumpTable(table, out, outSQL);
+						dumpTable(table, out, outSQL);
 
-					out.close();
-					outSQL.close();
-				} else {
-					dataHolder.setCurrentStatus("\nIgnoring 'Table' "
-							+ table.getName() + dataHolder.getCurrentStatus());
-				}
-				} catch(Exception e) {
+						out.close();
+						outSQL.close();
+					} else {
+						dataHolder.setCurrentStatus("\nIgnoring 'Table' "
+								+ table.getName()
+								+ dataHolder.getCurrentStatus());
+					}
+				} catch (Exception e) {
 					e.printStackTrace();
 					return false;
 				}
@@ -225,9 +223,9 @@ public class CVSGenerator {
 	}
 
 	private String referenceKeyWordValidation(String name, boolean table) {
-		name = name.replaceAll("[^a-zA-Z 0-9 _]+","");
+		name = name.replaceAll("[^a-zA-Z 0-9 _]+", "");
 		name = name.replaceAll("\\s+", "_");
-		
+
 		if (keyWordsList.contains(name.toUpperCase())) {
 			if (table) {
 				name = name + "_Tab";
@@ -235,8 +233,7 @@ public class CVSGenerator {
 				name = name + "_Col";
 			}
 		}
-		
-		
+
 		return name.toLowerCase();
 	}
 
