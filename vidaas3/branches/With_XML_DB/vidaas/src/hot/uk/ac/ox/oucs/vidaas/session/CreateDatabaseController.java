@@ -1,12 +1,12 @@
 package uk.ac.ox.oucs.vidaas.session;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -22,7 +22,6 @@ import uk.ac.ox.oucs.vidaas.entity.DatabaseStructure;
 import uk.ac.ox.oucs.vidaas.entity.Dataspace;
 import uk.ac.ox.oucs.vidaas.entity.Logins;
 import uk.ac.ox.oucs.vidaas.entity.ProjectDatabase;
-import uk.ac.ox.oucs.vidaas.entity.Users;
 import uk.ac.ox.oucs.vidaas.entity.WebApplication;
 
 public class CreateDatabaseController {
@@ -207,8 +206,6 @@ public class CreateDatabaseController {
 			WebApplication tempWebApplication, Logins loginMain,
 			String projectTitle, ProjectDatabase tempDatabase,
 			String databaseVersion, Log logger) {
-		Date todaysDate = new Date();
-
 		String tempProjectTitleNew = stringValidation(projectTitle);
 		String modifiedDatabaseName = tempProjectTitleNew + "_"
 				+ stringValidation(tempDataSpace.getDataspaceName());
@@ -275,7 +272,7 @@ public class CreateDatabaseController {
 			ProjectDatabase originalDatabase, String databaseVersion, Log logger) {
 
 		logger.info("Old Database Name {0}", originalDatabase.getDatabaseName());
-		
+
 		String tempProjectTitleNew = stringValidation(projectTitle);
 		String modifiedDatabaseName = tempProjectTitleNew
 				+ "_"
@@ -287,22 +284,22 @@ public class CreateDatabaseController {
 		try {
 			uk.ac.ox.oucs.vidaas.create.CreateDatabase createDatabase = new uk.ac.ox.oucs.vidaas.create.CreateDatabase(
 					modifiedDatabaseName.toLowerCase());
-			
+
 			String connectionString[] = createDatabase.createDatabase();
 			createDatabase.closeConnection();
-			
-			dumpDatabase(
-					tempDatabaseStructure.getDatabaseDirectory() + modifiedDatabaseName +".sql", originalDatabase.getDatabaseName());
-			restoreDatabase(
-					tempDatabaseStructure.getDatabaseDirectory() + modifiedDatabaseName +".sql",
-					modifiedDatabaseName);
-			
-			/*
-			String connectionString[] = createDatabase.cloneDatabase(
-					modifiedDatabaseName.toLowerCase(),
+
+			dumpDatabase(tempDatabaseStructure.getDatabaseDirectory()
+					+ modifiedDatabaseName + ".sql",
 					originalDatabase.getDatabaseName());
-			*/
-			
+			restoreDatabase(tempDatabaseStructure.getDatabaseDirectory()
+					+ modifiedDatabaseName + ".sql", modifiedDatabaseName);
+
+			/*
+			 * String connectionString[] = createDatabase.cloneDatabase(
+			 * modifiedDatabaseName.toLowerCase(),
+			 * originalDatabase.getDatabaseName());
+			 */
+
 			newDatabase.setConnectionString(connectionString[0]
 					+ connectionString[1]);
 
@@ -328,97 +325,97 @@ public class CreateDatabaseController {
 	}
 
 	public void dumpDatabase(String dumpFileNameValue, String databaseName) {
-		System.out.println(dumpFileNameValue + "  " +  databaseName);
-		try {	
+		System.out.println(dumpFileNameValue + "  " + databaseName);
+		try {
 			Process p;
-            ProcessBuilder pb;
-            
-            List<String> cmds = new ArrayList<String>();
-            cmds.add("/usr/bin/pg_dump");
-            cmds.add("-i");
-            cmds.add("-h");
-            cmds.add("localhost");
-            cmds.add("-p");
-            cmds.add("5432");
-            cmds.add("-U");
-            cmds.add("sudamihAdmin");
-            cmds.add("-F");
-            cmds.add("c");
-            cmds.add("-b");
-            cmds.add("-v");
-            cmds.add("-f");
-            cmds.add(dumpFileNameValue);
-            cmds.add(databaseName);
-            
-            pb = new ProcessBuilder(cmds);
-            pb.environment().put("PGPASSWORD", "sudamihAdminPW");
-            //pb.redirectErrorStream(true);
-            p = pb.start();
-            try {
-                InputStream is = p.getInputStream();
-                InputStreamReader isr = new InputStreamReader(is);
-                BufferedReader br = new BufferedReader(isr);
-                String ll;
-                while ((ll = br.readLine()) != null) {
-                    System.out.println(ll);
-                }
-                InputStream isE = p.getErrorStream();
-                InputStreamReader isrE = new InputStreamReader(isE);
-                BufferedReader brE = new BufferedReader(isrE);
-                String llE;
-                while ((llE = brE.readLine()) != null) {
-                    System.out.println(llE);
-                }
-            } catch (IOException e) {
-                System.out.println(e);
-                //log("ERROR "+e.getMessage());
-            }
+			ProcessBuilder pb;
+
+			List<String> cmds = new ArrayList<String>();
+			cmds.add("/usr/bin/pg_dump");
+			cmds.add("-i");
+			cmds.add("-h");
+			cmds.add("localhost");
+			cmds.add("-p");
+			cmds.add("5432");
+			cmds.add("-U");
+			cmds.add("sudamihAdmin");
+			cmds.add("-F");
+			cmds.add("c");
+			cmds.add("-b");
+			cmds.add("-v");
+			cmds.add("-f");
+			cmds.add(dumpFileNameValue);
+			cmds.add(databaseName);
+
+			pb = new ProcessBuilder(cmds);
+			pb.environment().put("PGPASSWORD", "sudamihAdminPW");
+			// pb.redirectErrorStream(true);
+			p = pb.start();
+			try {
+				InputStream is = p.getInputStream();
+				InputStreamReader isr = new InputStreamReader(is);
+				BufferedReader br = new BufferedReader(isr);
+				String ll;
+				while ((ll = br.readLine()) != null) {
+					System.out.println(ll);
+				}
+				InputStream isE = p.getErrorStream();
+				InputStreamReader isrE = new InputStreamReader(isE);
+				BufferedReader brE = new BufferedReader(isrE);
+				String llE;
+				while ((llE = brE.readLine()) != null) {
+					System.out.println(llE);
+				}
+			} catch (IOException e) {
+				System.out.println(e);
+				// log("ERROR "+e.getMessage());
+			}
 
 		} catch (Exception e) {
 
 		}
 	}
-	
-	public void restoreDatabase(String dumpFileNameValue, String newDatabaseName){
-		System.out.println(dumpFileNameValue + "  " +  newDatabaseName);
+
+	public void restoreDatabase(String dumpFileNameValue, String newDatabaseName) {
+		System.out.println(dumpFileNameValue + "  " + newDatabaseName);
 		try {
 			Process p;
-            ProcessBuilder pb;
-            
-            List<String> cmds = new ArrayList<String>();
-            cmds.add("/usr/bin/pg_restore");            
-            cmds.add("-h");
-            cmds.add("localhost");
-            cmds.add("-p");
-            cmds.add("5432");
-            cmds.add("-U");
-            cmds.add("sudamihAdmin");
-            cmds.add("-d");
-            cmds.add(newDatabaseName);
-            cmds.add(dumpFileNameValue);
-            pb = new ProcessBuilder(cmds);
-            pb.environment().put("PGPASSWORD", "sudamihAdminPW");
-            //pb.redirectErrorStream(true);
-            p = pb.start();
-            try {
-                InputStream is = p.getInputStream();
-                InputStreamReader isr = new InputStreamReader(is);
-                BufferedReader br = new BufferedReader(isr);
-                String ll;
-                while ((ll = br.readLine()) != null) {
-                    System.out.println(ll);
-                }
-                InputStream isE = p.getErrorStream();
-                InputStreamReader isrE = new InputStreamReader(isE);
-                BufferedReader brE = new BufferedReader(isrE);
-                String llE;
-                while ((llE = brE.readLine()) != null) {
-                    System.out.println(llE);
-                }
-            } catch (IOException e) {
-                System.out.println(e);
-                //log("ERROR "+e.getMessage());
-            }
+			ProcessBuilder pb;
+
+			List<String> cmds = new ArrayList<String>();
+			cmds.add("/usr/bin/pg_restore");
+			cmds.add("-h");
+			cmds.add("localhost");
+			cmds.add("-p");
+			cmds.add("5432");
+			cmds.add("-U");
+			cmds.add("sudamihAdmin");
+			cmds.add("-d");
+			cmds.add(newDatabaseName);
+			cmds.add(dumpFileNameValue);
+			pb = new ProcessBuilder(cmds);
+			pb.environment().put("PGPASSWORD", "sudamihAdminPW");
+			// pb.redirectErrorStream(true);
+			p = pb.start();
+			try {
+				InputStream is = p.getInputStream();
+				InputStreamReader isr = new InputStreamReader(is);
+				BufferedReader br = new BufferedReader(isr);
+				String ll;
+				while ((ll = br.readLine()) != null) {
+					System.out.println(ll);
+				}
+				InputStream isE = p.getErrorStream();
+				InputStreamReader isrE = new InputStreamReader(isE);
+				BufferedReader brE = new BufferedReader(isrE);
+				String llE;
+				while ((llE = brE.readLine()) != null) {
+					System.out.println(llE);
+				}
+			} catch (IOException e) {
+				System.out.println(e);
+				// log("ERROR "+e.getMessage());
+			}
 
 		} catch (Exception e) {
 
