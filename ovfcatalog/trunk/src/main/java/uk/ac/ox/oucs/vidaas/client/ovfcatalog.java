@@ -9,9 +9,12 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -63,10 +66,12 @@ public class ovfcatalog implements EntryPoint {
 		FlexTable flexTableVmlist = new FlexTable();
 		RootPanel.get(list).add(flexTableVmlist);
 		int i = 0;
-		for (VmValue vm : vms) {
+		for (final VmValue vm : vms) {
 			int j = 0;
 			flexTableVmlist.setText(i, j++, vm.getName());
-			flexTableVmlist.setText(i, j++, "" + vm.getStatus());
+			if(vm.getStatus()!=null) {
+				flexTableVmlist.setText(i, j++, "" + vm.getStatus());
+			}
 
 			String[] ips = vm.getIpAddresses();
 			if(ips != null) {
@@ -74,19 +79,92 @@ public class ovfcatalog implements EntryPoint {
 					flexTableVmlist.setWidget(i, j++, new Anchor(ip, "http://" + ip + "/"));
 				}
 			}
-			String[] files = vm.getFiles();
+			/*String[] files = vm.getFiles();
 			if(files !=null) {
 				for (String file : files) {
 					flexTableVmlist.setWidget(i, j++, new Label(file));
 				}
-			}
+			}*/
 			if(vm.isCreateable()) {
-				flexTableVmlist.setWidget(i, j++, new Button("buy", new ClickHandler() {
+				flexTableVmlist.setWidget(i, j++, new Button("Buy", new ClickHandler() {
 					
 					@Override
 					public void onClick(ClickEvent arg0) {
-						// TODO Auto-generated method stub
 						
+						final DialogBox dialogBox = new DialogBox(true, true);
+						VerticalPanel vp = new VerticalPanel();
+						vp.add(new Label("Please enter a name for your new VM:"));
+						final TextBox vmName = new TextBox();
+						vp.add(vmName);
+						Button okButton = new Button("Create", new ClickHandler() {
+							
+							@Override
+							public void onClick(ClickEvent arg0) {
+								ovfcatalogService.createVM(vm.getName(), vmName.getText(), new AsyncCallback<Void>() {
+									
+									@Override
+									public void onSuccess(Void arg0) {
+										dialogBox.hide();
+									}
+									
+									@Override
+									public void onFailure(Throwable arg0) {
+										arg0.printStackTrace();
+									}
+								});
+							}
+						});
+						vp.add(okButton);
+						dialogBox.add(vp);
+						dialogBox.center();
+						dialogBox.show();
+						
+
+					}
+				}));
+			}
+			if(vm.isStoppable()) {
+				
+				flexTableVmlist.setWidget(i, j++, new Button("Stop", new ClickHandler() {
+					
+					@Override
+					public void onClick(ClickEvent arg0) {
+						
+						ovfcatalogService.stopVM(vm.getName(), new AsyncCallback<Void>()  {
+
+							@Override
+							public void onFailure(Throwable arg0) {
+								arg0.printStackTrace();
+							}
+
+							@Override
+							public void onSuccess(Void arg0) {
+								// TODO Auto-generated method stub
+								
+							}
+						});
+					}
+				}));
+			}
+			if(vm.isStartable()) {
+				flexTableVmlist.setWidget(i, j++, new Button("Start", new ClickHandler() {
+					
+					@Override
+					public void onClick(ClickEvent arg0) {
+						
+						ovfcatalogService.startVM(vm.getName(), new AsyncCallback<Void>()  {
+
+							@Override
+							public void onFailure(Throwable arg0) {
+								arg0.printStackTrace();
+							}
+
+							@Override
+							public void onSuccess(Void arg0) {
+								// TODO Auto-generated method stub
+								
+							}
+						});
 					}
 				}));
 			}
