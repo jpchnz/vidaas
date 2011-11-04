@@ -588,7 +588,7 @@ public class CreateController {
 
 	public void dropDatabase(String databaseName) {
 		log.info("dropDatabase {0}", databaseName);
-		new DeleteDatabase(databaseName).DeleteDatabase();
+		new DeleteDatabase(databaseName).deleteDatabase();
 
 		ProjectDatabase tempProjectDatabase = (ProjectDatabase) Contexts
 				.getSessionContext().get("currentProjectDatabase");
