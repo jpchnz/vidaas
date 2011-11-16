@@ -212,7 +212,6 @@ public class OvfCatalogServiceImpl extends RemoteServiceServlet implements
 				if(vmName.equals(name)) {
 					Vapp vApp = Vapp.getVappByReference(client, vmRefs.get(vmName));
 					if(start==true) {
-						System.out.println("	Configuring VM Ip Addressing Mode");
 						List<Vapp> childVms = vApp.getChildrenVms();
 						for (Vapp childVm : childVms) {
 							NetworkConnectionSectionType networkConnectionSectionType = childVm
@@ -229,10 +228,6 @@ public class OvfCatalogServiceImpl extends RemoteServiceServlet implements
 							}
 							Task t = childVm.updateSection(networkConnectionSectionType);
 							waitForTaskCompletion(client, t, 10000);
-							for (String ip : Vapp.getVappByReference(client,
-									childVm.getReference()).getIpAddresses()) {
-								System.out.println("		" + ip);
-							}
 						}
 						Task t = vApp.powerOn();
 						waitForTaskCompletion(client, t, 100);
