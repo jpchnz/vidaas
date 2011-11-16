@@ -117,22 +117,18 @@ public class OvfCatalogServiceImpl extends RemoteServiceServlet implements
 					
 					List<Vapp> vms = vApp.getChildrenVms();
 					HashSet<String> ips = new HashSet<String>();
+					int busy = 0;
 					for (Vapp vm : vms) {
 						ips.addAll(vm.getIpAddresses());
+						busy = vm.getTasks().size();
 					}
 					
-					vmValue[i++] = new VmValue(vmName, vApp.getVappStatus(), ips);
+					vmValue[i++] = new VmValue(vmName, vApp.getVappStatus(), ips, busy);
 				}
 				return vmValue;
 			}
-			return null;
+			return new VmValue[0]; //return empty list
 		} catch (VCloudException e) {
-			ErrorType vCloudError = e.getVcloudError();
-			if(vCloudError.getMajorErrorCode()==403) {
-				//possible session timeout, reauthenticate
-				client = null;
-				return getVMs();
-			}
 			throw new OvfCatalogException(e.getMessage());
 		}
 	}
@@ -159,9 +155,9 @@ public class OvfCatalogServiceImpl extends RemoteServiceServlet implements
 					Task task = vappTemplate.enableDownload();
 					VmValue vm;
 					if(waitForTaskCompletion(client, task, 100)) {
-						vm = new VmValue(catName, vappTemplRef.getStatus(), null);
+						vm = new VmValue(catName, vappTemplRef.getStatus(), null, vappTemplate.getTasks().size());
 					} else {
-						vm = new VmValue(catName, vappTemplRef.getStatus(), null);
+						vm = new VmValue(catName, vappTemplRef.getStatus(), null, vappTemplate.getTasks().size());
 					}
 					vm.setCreateable(true);
 					vmValue[i++] = vm;
@@ -229,6 +225,7 @@ public class OvfCatalogServiceImpl extends RemoteServiceServlet implements
 								ReferenceType parentNetwork = vdc.getAvailableNetworkRefs().iterator().next();
 								String parentNetworkName = parentNetwork.getName();
 								networkConnection.setNetwork(parentNetworkName);
+								networkConnection.setIsConnected(true);
 							}
 							Task t = childVm.updateSection(networkConnectionSectionType);
 							waitForTaskCompletion(client, t, 10000);
@@ -381,6 +378,7 @@ public class OvfCatalogServiceImpl extends RemoteServiceServlet implements
 	 * Waiting for a successful task
 	 *
 	 * @throws VCloudException
+	 * 
 	 */
 	public static boolean waitForTaskCompletion(VcloudClient client, Task task, int maxMillis)
 			throws VCloudException {
