@@ -11,12 +11,13 @@ public class VmValue implements Serializable {
 	private String[] ipAddresses;
 	//private String[] files;
 	boolean createable = false;
+	private Integer busy;
 	
 	public VmValue() {
 
 	}
 	
-	public VmValue(String name, Integer status, Collection<String> ipAddresses/*, Collection<String> files*/) {
+	public VmValue(String name, Integer status, Collection<String> ipAddresses, int busy) {
 		this.name = name;
 		this.status = status;
 		if(ipAddresses != null) {
@@ -26,13 +27,7 @@ public class VmValue implements Serializable {
 				this.ipAddresses[i] = ip;
 			}
 		}
-		/*if(files != null) {
-			this.files = new String[files.size()];
-			int i = 0;
-			for(String file : files) {
-				this.files[i] = file;
-			}
-		}*/
+		this.busy = new Integer(busy);
 	}
 
 	public String getName() {
@@ -69,6 +64,10 @@ public class VmValue implements Serializable {
 		// TODO find out about status constants
 		if(status==null) return false;
 		return status==8;
+	}
+	
+	public Integer isBusy() {
+		return busy;
 	}
 
 }
