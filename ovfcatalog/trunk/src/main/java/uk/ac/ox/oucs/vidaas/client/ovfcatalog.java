@@ -6,6 +6,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -64,6 +65,9 @@ public class ovfcatalog implements EntryPoint {
 
 	private void updateList(String list, VmValue[] vms) {
 		FlexTable flexTableVmlist = new FlexTable();
+		if(RootPanel.get(list).getWidgetCount()>0) {
+			RootPanel.get(list).getWidget(0).removeFromParent();
+		}
 		RootPanel.get(list).add(flexTableVmlist);
 		int i = 0;
 		for (final VmValue vm : vms) {
@@ -168,7 +172,34 @@ public class ovfcatalog implements EntryPoint {
 					}
 				}));
 			}
+			if((new Integer(0)).compareTo(vm.isBusy())>0) {
+				flexTableVmlist.setWidget(i, j++, new Label("busy (" + vm.isBusy() + " Tasks)..."));
+			}
 			i++;
+		}
+		if("vmlistContainer".equals(list)) {
+			Timer t = new Timer() {
+
+				@Override
+				public void run() {
+					ovfcatalogService.getVMs(new AsyncCallback<VmValue[]>() {
+
+						@Override
+						public void onFailure(Throwable arg0) {
+							// TODO Auto-generated method stub
+							
+						}
+
+						@Override
+						public void onSuccess(VmValue[] vms) {
+							updateList("vmlistContainer", vms);
+						}
+					});
+					
+				}
+				
+			};
+			t.schedule(5000);
 		}
 	}
 	
