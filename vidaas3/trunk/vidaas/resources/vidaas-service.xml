@@ -1,0 +1,10 @@
+<mbean code="org.jboss.varia.property.SystemPropertiesService" name="jboss.util:type=Service,name=VIDaaSProperties">
+  <attribute name="Properties">
+    seamLocaion=/opt/Seam/jboss-seam-2.2.2.Final
+    serverLocation=/opt/IDE/JBDevStudio_4_0/jboss-eap/jboss-as
+    serverURL=http://localhost:8080/
+    VIDaaSDataLocation=/opt/VIDaaSData
+    jdbcDriverJar=/opt/DatabaseDrivers/postgresql-8.4-702.jdbc4.jar
+ </attribute>
+</mbean>
+
