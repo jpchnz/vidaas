@@ -60,6 +60,7 @@ Two files are required for deployment and need to be copied to the $JBOSS_HOME/s
 {{{
 cp resources/vidaas-ds.xml $JBOSS_HOME/server/default/deploy
 cp target/vidaas-0.3.war $JBOSS_HOME/server/default/deploy
+cp resources/vidaas-service.xml $JBOSS_HOME/server/default/deploy #serverURL has to be updated but this parameter will be removed
 }}}
 ----
 Example vidaas3-ds.xml (replace $PASSWORD$ with your mysql password chosen earlier)
