@@ -22,7 +22,6 @@
 		</f:facet>
 
 		<a4j:form id="loginForm">
-			<h:outputText value="#{authenticator.loginFailed}"></h:outputText>
 			<div class="dialog"><h:panelGrid columns="2" rowClasses="prop"
 				columnClasses="name,value">
 				<h:outputLabel for="username">Username</h:outputLabel>
@@ -33,6 +32,7 @@
 				<h:selectBooleanCheckbox id="rememberMe"
 					value="#{rememberMe.enabled}" />
 			</h:panelGrid></div>
+			<h:outputText value="#{authenticator.loginFailed}" styleClass="errorMessage"></h:outputText>
 			<div class="actionButtons"><a4j:commandButton id="submit"
 				value="Login" action="#{identity.login}"
 				reRender="loginForm, topToolBarForm, rightTopToolBarGroup"
@@ -47,6 +47,10 @@
 				</a4j:status>
 			</a4j:region></div>
 		</a4j:form>
+		
+		<rich:hotKey key="return"
+    		handler="#{rich:element('submit')}.click()"
+    			selector="#password"/>
 
 	</rich:modalPanel>
 

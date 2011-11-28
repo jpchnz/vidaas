@@ -12,7 +12,7 @@
 		        <h:outputText value="#{projectName}"/>
 		    </rich:toolBarGroup>
 		    <rich:toolBarGroup location="right" id="rightTopToolBarGroup">
-		        <h:outputText id="menuWelcomeId" value="Welcome: #{credentials.username}!" rendered="#{identity.loggedIn}" 
+		        <h:outputText id="menuWelcomeId" value="Welcome: #{userMain.lastName}, #{userMain.firstName}!" rendered="#{identity.loggedIn}" 
 		        	style="font-size:14px; color:white"/>
 		        	
 		        <h:outputLink value="#" id="loginLink" rendered="#{not identity.loggedIn}" style="font-size:14px; color:white">Login
@@ -35,7 +35,7 @@
 			<div id="company-logo"><img src="images/oxlogo.png"
 				alt="Oxford University" id="logo" /> 
 		
-				<h2>art of Database Virtualization</h2>
+				<h2> art of Database Virtualization</h2>
 			</div>
 		</div>
 	</div>

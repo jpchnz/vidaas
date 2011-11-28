@@ -45,7 +45,7 @@
 			<h:outputText
 				value="Detailed summary of database of '#{currentDataspace.dataspaceName}'"></h:outputText>
 		</f:facet>
-		<h:panelGrid id="dataspacePanel" columns="4" border="1" width="1105px">
+		<h:panelGrid id="dataspacePanel" columns="4" border="1" width="100%">
 			<h:panelGroup>
 				<h:outputLabel value="Data Space Name: " />
 				<h:outputLabel value="#{currentDataspace.dataspaceName}" />
@@ -64,6 +64,7 @@
 			</h:panelGroup>
 		</h:panelGrid>
 	</rich:panel>
+	
 	<h:panelGrid id="dataspaceButtonPanel" columns="1" width="1105px"
 		rendered="#{empty navigationController.listDatabaseByDataspace()}">
 		
@@ -124,108 +125,9 @@
 				value="Detailed summary of database"></h:outputText>
 		</f:facet>
 		<h:panelGrid id="databasePanel" columns="3" border="1">
-			<rich:panel>
-				<f:facet name="header">
-					<h:outputText
-						value="Detailed summary of database of '#{currentDataspace.dataspaceName}'"></h:outputText>
-				</f:facet>
-				<h:panelGrid id="databaseStructurePanel_1" columns="1" border="1"
-					width="100%">
-					<h:panelGroup>
-						<h:outputLabel value="Database Name: " />
-						<h:outputLabel value="#{_database.databaseName}" />
-					</h:panelGroup>
 
-					<h:panelGroup>
-						<h:outputLabel value="Database ID: " />
-						<h:outputLabel value="#{_database.databaseId}" />
-					</h:panelGroup>
-					
-					<h:panelGroup>
-						<h:outputLabel value="Content Type: " />
-						<h:outputLabel value="#{_database.getDatabaseStructure().getContentType()}" />
-					</h:panelGroup>
-					
-					<h:panelGroup>
-						<h:outputLabel value="Status: " />
-						<h:outputLabel value="#{_database.databaseStructure.status}" />
-					</h:panelGroup>
-					
-					<h:panelGroup>
-						<h:outputLabel value="Uploaded File: " />
-						<h:outputLabel value="#{_database.databaseStructure.file}" />
-					</h:panelGroup>
-					
-					<h:panelGroup>
-						<h:outputLabel value="Upload Type: " />
-						<h:outputLabel value="#{_database.databaseStructure.schemaType}" />
-					</h:panelGroup>
-					
-					<h:panelGroup>
-						<h:outputLabel value="Database Size: " />
-						<h:outputLabel value="#{_database.databaseStructure.size} bytes" />
-					</h:panelGroup>
-					
-					<h:panelGroup rendered="#{_database.databaseStructure.status == 'Uploaded'}">
-						<a4j:commandLink value="Parse It" rendered="#{_database.databaseStructure.status == 'Uploaded'}">
-						</a4j:commandLink>
-					</h:panelGroup>
-					
-					<h:panelGroup rendered="#{_database.databaseStructure.status == 'Loaded'}">
-						<a4j:commandLink value="Delete" rendered="#{_database.databaseStructure.status == 'Loaded'}">
-						</a4j:commandLink>
-					</h:panelGroup>
-					
-					<a4j:form id="webApplicationButtonForm" ajaxSubmit="true">
-					<div class="actionButtons">
-						<a4j:commandButton rendered="#{_database.webApplication.status=='NotDeployed'}" 
-						action="#{createController.createWebApplication(_database.databaseId)}"
-							id="createWebApplicationButton" value="Create Web Application" style="float:left">
-							<rich:componentControl for=""
-								attachTo="createWebApplicationButton" operation="show" event="onclick" />
-						</a4j:commandButton>
-						<a4j:commandButton rendered="#{_database.webApplication.status=='Deployed'}" 
-						action="#{createController.removeWebApplication(_database.databaseId)}"
-							id="removeWebApplicationButton" value="Remove Web Application" style="float:right">
-							<rich:componentControl for=""
-								attachTo="removeWebApplicationButton" operation="show" event="onclick" />
-						</a4j:commandButton>
-					</div>
-				</a4j:form>
-				<a4j:form id="databaseButtonForm" ajaxSubmit="true">
-					<div class="actionButtons">
-						<a4j:commandButton action="#{navigationController.setCurrentDatabase(_database.databaseId)}" 
-							id="dropDatabaseButton" value="Drop Database" style="float:left">
-							<rich:componentControl for="dropDatabasePanel"
-								attachTo="dropDatabaseButton" operation="show" event="onclick" />
-						</a4j:commandButton>
-						
-						<a4j:commandButton rendered="#{_database.databaseType=='main' and createController.hasTestDatabase(_database.databaseId)}" 
-							action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
-							id="testDatabaseButton" value="Create Test Database">
-								<rich:componentControl for="testDatabasePanel"
-									attachTo="testDatabaseButton" operation="show" event="onclick" />						
-						</a4j:commandButton>
-						
-						<a4j:commandButton rendered="#{_database.databaseType=='main'  and createController.hasBackupDatabase(_database.databaseId)}" 
-							action="#{navigationController.setCurrentDatabase(_database.databaseId)}" 
-							id="backupDatabaseButton" value="Backup Database">	
-							<rich:componentControl for="backupDatabasePanel"
-									attachTo="backupDatabaseButton" operation="show" event="onclick" />							
-						</a4j:commandButton>
-						
-						<a4j:commandButton rendered="#{_database.databaseType!='main'  and createController.hasMainDatabase(_database.databaseId)}" 
-							action="#{navigationController.setCurrentDatabase(_database.databaseId)}" 
-							id="restoreDatabaseButton" value="Restore Database">	
-							<rich:componentControl for="backupDatabasePanel"
-									attachTo="restoreDatabaseButton" operation="show" event="onclick" />							
-						</a4j:commandButton>						
-					</div>
-				</a4j:form>				
-				</h:panelGrid>
-				
-				
-			</rich:panel>
+			<a4j:include viewId="/include/relationalDatabase.xhtml" rendered="#{currentDataspace.databaseType =='relational'}"></a4j:include>
+			<a4j:include viewId="/include/xmlDatabase.xhtml" rendered="#{currentDataspace.databaseType =='xml'}"></a4j:include>
 		</h:panelGrid>
 	</rich:dataGrid>
 
