@@ -10,42 +10,102 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import uk.ac.ox.oucs.vidaas.data.holder.DataHolder;
 import uk.ac.ox.oucs.vidaas.utility.SystemCommandExecutor;
 
 public class CreateWebApplication {
+	private DataHolder dataHolder = null;
 	
 	public void createWebApplication(String webApplicationName, String webApplicationLocation, 
-			String databaseName, String userName, String password){
-		copySeamDir(webApplicationName, webApplicationLocation);
+			String databaseName, String userName, String password, DataHolder dataHolderValue){
+		
+		dataHolder = dataHolderValue;
+		
+		String seamLocaionTemp = System.getProperty("seamLocaion");
+		String serverLocationTemp = System.getProperty("serverLocation");
+		String jdbcDriverJarTemp = System.getProperty("jdbcDriverJar");	
+		
+		//System.out.println(seamLocaionTemp + "  " + serverLocationTemp +  "  " +  jdbcDriverJarTemp);
+		
+		dataHolder.setCurrentStatus("Building Environment");
+		copySeamDir(webApplicationName, webApplicationLocation, seamLocaionTemp);
+		
+		// Deploy Directory is webApplicationLocation + /seamProject
+		dataHolder.setCurrentStatus("Creating Web Application Direcotry");
 		createDeployDirectory(webApplicationLocation);
 		
 		String tempDirectoryName = webApplicationLocation + webApplicationName;
 		Properties properties = new Properties();
 
+		dataHolder.setCurrentStatus("Reading Default Settings");
         readPropertiesFile(properties, tempDirectoryName);
 
+        dataHolder.setCurrentStatus("Updating Default Settings");
+        
         updatePropertiesFile(properties, "project.name", webApplicationName);
         updatePropertiesFile(properties, "workspace.home", webApplicationLocation + "seamProject");
+        
+        updatePropertiesFile(properties, "driver.jar", jdbcDriverJarTemp);
+        updatePropertiesFile(properties, "jboss.home", serverLocationTemp);
+        
         updatePropertiesFile(properties, "hibernate.connection.username", userName);
         updatePropertiesFile(properties, "hibernate.connection.password", password);
         updatePropertiesFile(properties, "hibernate.connection.url", "jdbc:postgresql://localhost/"+ databaseName);
 		
         writePropertiesFile(properties, tempDirectoryName);
         
+        dataHolder.setCurrentStatus("Creating Web Application. Be patient it may take few minutes.");
+        runSeamCommandsSingleStep(tempDirectoryName);
+        
+        /*
         runSeamCommandCreateProject(tempDirectoryName);
+        
+        try {
+        	Thread.sleep(10000);
+        } catch (Exception ex){
+        	
+        }
+        
+        // Hack to remove 
+        removeMenuPage(webApplicationName, webApplicationLocation);
+        try {
+        	Thread.sleep(5000);
+        } catch (Exception ex){
+        	
+        }
+        dataHolder.setCurrentStatus("Reverse Engineering From Database");
         runSeamCommandGenerateEntities(tempDirectoryName);
+        
+        try {
+        	Thread.sleep(5000);
+        } catch (Exception ex){
+        	
+        }
+        dataHolder.setCurrentStatus("Deploying Web Application");
         runSeamCommandExplodeProject(tempDirectoryName);
         
+        try {
+        	Thread.sleep(500);
+        } catch (Exception ex){
+        	
+        }
+        */
+        dataHolder.setCurrentStatus("Removing Temporary Files");
         removeSeamDir(webApplicationName, webApplicationLocation);
         removeProjectDir(webApplicationLocation);
+        
+        //dataHolder.setOkButton(false);
 	}
 	
-	private int copySeamDir(String webApplicationName, String webApplicationLocation) {
+	// Content of jboss-seam-2.2.2.Final dir will be copied to
+	// /opt/VIDaaSData/project_1/Rivers/main/romanrivers
+	// romanriver is webApplicationName
+	private int copySeamDir(String webApplicationName, String webApplicationLocation, String seamLocation) {
         int result = -99;
         List<String> command = new ArrayList<String>();
         command.add("cp");
         command.add("-r");
-        command.add("/opt/Seam/jboss-seam-2.2.2.Final");
+        command.add(seamLocation);
         command.add(webApplicationLocation + webApplicationName);
 
         SystemCommandExecutor commandExecutor = new SystemCommandExecutor(command);
@@ -55,11 +115,14 @@ public class CreateWebApplication {
             StringBuilder stderr = commandExecutor.getStandardErrorFromCommand();
 
             // print the output from the command
+            /*
             System.out.println("STDOUT");
             System.out.println(stdout);
             System.out.println("STDERR");
-            System.out.println(stderr);
+            System.out.println(stderr);*/
         } catch (Exception e) {
+        	dataHolder.setCurrentStatus("Failed to Build Environment");
+        	//dataHolder.setOkButton(false);
         }
         return result;
     }
@@ -69,6 +132,33 @@ public class CreateWebApplication {
 	    status = new File(webApplicationLocation + "seamProject").mkdir();
 	    
 	    return status;
+	}
+	
+	private int runSeamCommandsSingleStep(String tempDirectoryNameWithPath){
+		int result = -99;
+		
+		List<String> command = new ArrayList<String>();
+        command.add(tempDirectoryNameWithPath + "/VIDaaS-SeamScript.sh");
+        command.add(tempDirectoryNameWithPath);
+        
+        SystemCommandExecutor commandExecutor = new SystemCommandExecutor(command);
+        try {
+        	result = commandExecutor.executeCommand();
+            StringBuilder stdout = commandExecutor.getStandardOutputFromCommand();
+            StringBuilder stderr = commandExecutor.getStandardErrorFromCommand();
+
+            // print the output from the command
+            
+            System.out.println("STDOUT");
+            System.out.println(stdout);
+            System.out.println("STDERR");
+            System.out.println(stderr);
+        } catch (Exception e){
+        	dataHolder.setCurrentStatus("Failed to Gerate Web Application");
+        }
+        
+        System.out.println("Process Result: " + result);
+		return result;
 	}
 	
 	private int runSeamCommandCreateProject(String tempDirectoryNameWithPath) {
@@ -84,11 +174,14 @@ public class CreateWebApplication {
             StringBuilder stderr = commandExecutor.getStandardErrorFromCommand();
 
             // print the output from the command
+            
             System.out.println("STDOUT");
             System.out.println(stdout);
             System.out.println("STDERR");
             System.out.println(stderr);
         } catch (Exception e) {
+        	dataHolder.setCurrentStatus("Failed to create Project");
+        	//dataHolder.setOkButton(false);
         }
         return result;
     }
@@ -106,11 +199,14 @@ public class CreateWebApplication {
             StringBuilder stderr = commandExecutor.getStandardErrorFromCommand();
 
             // print the output from the command
+            
             System.out.println("STDOUT");
             System.out.println(stdout);
             System.out.println("STDERR");
             System.out.println(stderr);
         } catch (Exception e) {
+        	dataHolder.setCurrentStatus("Failed to do Reverse Engineering");
+        	//dataHolder.setOkButton(false);
         }
         return result;
     }
@@ -128,11 +224,14 @@ public class CreateWebApplication {
             StringBuilder stderr = commandExecutor.getStandardErrorFromCommand();
 
             // print the output from the command
+            /*
             System.out.println("STDOUT");
             System.out.println(stdout);
             System.out.println("STDERR");
-            System.out.println(stderr);
+            System.out.println(stderr);*/
         } catch (Exception e) {
+        	dataHolder.setCurrentStatus("Failed to Deploy Project");
+        	//dataHolder.setOkButton(false);
         }
         return result;
     }
@@ -156,10 +255,40 @@ public class CreateWebApplication {
             System.out.println("STDERR");
             System.out.println(stderr);
         } catch (Exception e) {
+        	dataHolder.setCurrentStatus("Failed to remove Temportay Directory and Files");
+        	//dataHolder.setOkButton(false);
         }
         return result;
     }
-    
+    private int removeMenuPage(String webApplicationName, String webApplicationLocation){
+    	int result = -99;
+    	 List<String> command = new ArrayList<String>();
+         command.add("rm");
+         //command.add("*");
+         System.out.println(webApplicationLocation + "seamProject/" + webApplicationName + "/exploded-archives/" +webApplicationName + ".war/layout/*");
+         
+         dataHolder.setCurrentStatus(webApplicationLocation + "seamProject/" + webApplicationName + "/exploded-archives/" +webApplicationName + ".war/layout/*");
+         
+         command.add(webApplicationLocation + webApplicationName + "/exploded-archives/" +webApplicationName + ".war/layout");
+         SystemCommandExecutor commandExecutor = new SystemCommandExecutor(command);
+         try {
+             result = commandExecutor.executeCommand();
+             StringBuilder stdout = commandExecutor.getStandardOutputFromCommand();
+             StringBuilder stderr = commandExecutor.getStandardErrorFromCommand();
+
+             // print the output from the command
+             System.out.println("STDOUT");
+             System.out.println(stdout);
+             System.out.println("STDERR");
+             System.out.println(stderr);
+         } catch (Exception e) {
+        	 e.printStackTrace();
+         	//dataHolder.setCurrentStatus("Failed to remove Temportay Directory and Files");
+         	//dataHolder.setOkButton(false);
+         }
+         
+    	return result;
+    }
     private int removeProjectDir(String webApplicationLocation) {
         int result = -99;
         List<String> command = new ArrayList<String>();
@@ -179,6 +308,8 @@ public class CreateWebApplication {
             System.out.println("STDERR");
             System.out.println(stderr);
         } catch (Exception e) {
+        	dataHolder.setCurrentStatus("Failed to remove Temportay Directory and Files");
+        	//dataHolder.setOkButton(false);
         }
         return result;
     }
@@ -192,6 +323,8 @@ public class CreateWebApplication {
         try {
             properties.store(new FileOutputStream(tempDirectoryNameWithPath + "/seam-gen/build.properties"), null);
         } catch (IOException e) {
+        	dataHolder.setCurrentStatus("Failed to update Default Configuration");
+        	//dataHolder.setOkButton(false);
             e.printStackTrace();
         }
     }
@@ -200,6 +333,8 @@ public class CreateWebApplication {
         try {
             properties.load(new FileInputStream(tempDirectoryNameWithPath + "/seam-gen/build.properties"));
         } catch (IOException e) {
+        	dataHolder.setCurrentStatus("Failed to read Default Configuration");
+        	//dataHolder.setOkButton(false);
         }
 
         Set<String> propertiesEntryList = properties.stringPropertyNames();

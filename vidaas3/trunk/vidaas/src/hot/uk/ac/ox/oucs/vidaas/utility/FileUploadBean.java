@@ -13,11 +13,8 @@ import java.io.IOException;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.contexts.Contexts;
 
-/**
- * @author Ilya Shaikovsky
- *
- */
 @Name("fileUploadBean")
 public class FileUploadBean{
     
@@ -46,6 +43,11 @@ public class FileUploadBean{
         
         System.out.println(file.length());
         System.out.println(file.getAbsolutePath());
+        
+         ((uk.ac.ox.oucs.vidaas.session.CreateController) Contexts.getSessionContext().get(
+		  "createController")).createXMLDatabase(item.getFileName(), file.getAbsolutePath(), file.length() );
+		 
+        
         /*
         String FILENAME = "binary.dat";
         DataOutputStream os = new DataOutputStream(new FileOutputStream(

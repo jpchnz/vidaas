@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 import uk.ac.ox.oucs.vidaas.create.CreateDatabase;
 import uk.ac.ox.oucs.vidaas.manager.ConnectionManager;
-import uk.ac.ox.oucs.vidaas.utility.DatabaseUtilities;
 
 public class DeleteDatabase {
 
@@ -23,14 +22,13 @@ public class DeleteDatabase {
 		this.databaseName = databaseNameValue;
 	}
 
-	public void deleteDatabase() {
-		if (databaseName == null) {
+	public void DeleteDatabase() {
+		if (databaseName == null)
 			return;
-		}
 
 		connection = new ConnectionManager().getConnection();
 
-		if (DatabaseUtilities.doesDatabaseExist(databaseName, connection)) {
+		if (databaseExist(databaseName)) {
 			try {
 				statement = connection.createStatement();
 				statement.executeQuery("SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE datname = '"+ databaseName + "'");
@@ -53,5 +51,34 @@ public class DeleteDatabase {
 		}
 	}
 
-	
+	public boolean databaseExist(String databaseNameVal) {
+		// System.out.println("                                                                              databaseExist()    ");
+		if (connection == null) {
+			connection = new ConnectionManager().getConnection();
+		}
+		PreparedStatement statementTemp;
+		try {
+			statementTemp = connection
+					.prepareStatement("SELECT count(*) FROM pg_catalog.pg_database WHERE datname = ?");
+			statementTemp.setString(1, databaseNameVal);
+			ResultSet rs = statementTemp.executeQuery();
+			// System.out.println("                                                                              Before If    ");
+			if (rs.next()) {
+				/*
+				 * postgres=# SELECT count(*) FROM pg_catalog.pg_database WHERE
+				 * datname = 'testdb'; count ------- 1 (1 row)
+				 */
+				int rowsReturned = Integer.parseInt(rs.getString(1));
+				System.out
+						.println("                                                                              rowsReturned    "
+								+ rs.getString(1));
+				if (rowsReturned > 0)
+					return true;
+			}
+		} catch (SQLException ex) {
+			Logger.getLogger(CreateDatabase.class.getName()).log(Level.SEVERE,
+					null, ex);
+		}
+		return false;
+	}
 }

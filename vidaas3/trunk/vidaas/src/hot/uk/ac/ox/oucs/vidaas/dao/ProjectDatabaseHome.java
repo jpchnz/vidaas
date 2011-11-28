@@ -105,5 +105,12 @@ public class ProjectDatabaseHome extends EntityHome<ProjectDatabase> {
 		List<ProjectDatabase> projectDatabaseList = query.getResultList();
 		return projectDatabaseList;
 	}
-
+	
+	//ProjectDatabase.findByDatabaseName
+	public List<ProjectDatabase> findByDatabaseName(String databaseNameValue){
+		Query query = this.getEntityManager().createNamedQuery("ProjectDatabase.findByDatabaseName");
+		query.setParameter("databaseName", new String(databaseNameValue));		
+		List<ProjectDatabase> projectDatabaseList = query.getResultList();
+		return projectDatabaseList;
+	}
 }

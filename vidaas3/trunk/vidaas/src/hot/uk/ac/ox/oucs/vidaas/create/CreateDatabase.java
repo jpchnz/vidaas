@@ -11,17 +11,16 @@ import uk.ac.ox.oucs.vidaas.manager.ConnectionManager;
  * @author Asif Akram
  */
 public class CreateDatabase {
+
 	private String databaseName = null;
 	private String databasePassword = null;
 	private String databaseConnectionString = null;
 	private static Connection connection = null;
 	private Statement statement = null;
-	private Logger logger = Logger.getLogger(CreateDatabase.class.getName());
+
 	private int counter = 0;
 
 	public CreateDatabase(String databaseNameValue) {
-		logger.fine("Create database constructor called with "
-				+ databaseNameValue);
 		this.databaseName = databaseNameValue;
 	}
 
@@ -32,8 +31,6 @@ public class CreateDatabase {
 	 * return databaseConnectionString; }
 	 */
 	public String[] createDatabase() {
-		logger.info("createDatabase called");
-
 		String tempDatabaseName = databaseName;
 		// System.out.println(" createDatabase()    " + tempDatabaseName + " " +
 		// databaseExist());
@@ -43,14 +40,12 @@ public class CreateDatabase {
 
 		/**/
 		if (databaseExist(tempDatabaseName)) {
-			logger.info("Database exists - try with a new name");
 			int randomNumber = (int) ((Math.random() * 1000) + 100);
 			tempDatabaseName = databaseName + randomNumber;
 			// System.out.println("If .... createDatabase()    " +
 			// tempDatabaseName + " " + databaseExist());
 		}
 		try {
-			logger.info("About to create database " + tempDatabaseName);
 			statement = connection.createStatement();
 
 			statement.executeUpdate("CREATE DATABASE " + tempDatabaseName
@@ -59,19 +54,29 @@ public class CreateDatabase {
 			databaseConnectionString = "jdbc:postgresql://daas.oucs.ox.ac.uk:5432/"
 					+ tempDatabaseName;
 
-			// connection.close();
+			//connection.close();
 		} catch (SQLException ex) {
-			logger.log(Level.SEVERE, "SQLException", ex);
+			Logger.getLogger(CreateDatabase.class.getName()).log(Level.SEVERE,
+					null, ex);
 			int randomNumber = (int) ((Math.random() * 1000) + 100);
 			databaseName = databaseName + randomNumber;
 			createDatabase();
+		} /*finally {
+			try {
+				if (!connection.isClosed()) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		/*
-		 * finally { try { if (!connection.isClosed()) { connection.close(); } }
-		 * catch (SQLException e) { e.printStackTrace(); } } try { if
-		 * (!connection.isClosed()) { connection.close(); } } catch
-		 * (SQLException e) { e.printStackTrace(); }
-		 */
+		try {
+			if (!connection.isClosed()) {
+				connection.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}*/
 
 		return new String[] { "jdbc:postgresql://localhost:5432/",
 				tempDatabaseName };
@@ -79,7 +84,7 @@ public class CreateDatabase {
 
 	public String[] cloneDatabase(String newDatabase, String oldDatabase) {
 		System.out.println(newDatabase + " Old Database: " + oldDatabase);
-
+		
 		String tempDatabaseName = databaseName;
 		connection = new ConnectionManager().getConnection();
 
@@ -94,7 +99,8 @@ public class CreateDatabase {
 
 			// connection.close();
 		} catch (SQLException ex) {
-			logger.log(Level.SEVERE, "SQLException", ex);
+			Logger.getLogger(CreateDatabase.class.getName()).log(Level.SEVERE,
+					null, ex);
 			int randomNumber = (int) ((Math.random() * 1000) + 100);
 			databaseName = databaseName + randomNumber;
 			createDatabase();
@@ -129,20 +135,20 @@ public class CreateDatabase {
 					return true;
 			}
 		} catch (SQLException ex) {
-			logger.log(Level.SEVERE, "SQLException", ex);
+			Logger.getLogger(CreateDatabase.class.getName()).log(Level.SEVERE,
+					null, ex);
 		}
-
 		return false;
 	}
-
-	public void closeConnection() {
+	
+	public void closeConnection(){
 		try {
 			if (!connection.isClosed()) {
 				connection.close();
 				connection = null;
 			}
-		} catch (SQLException ex) {
-			logger.log(Level.SEVERE, "SQLException", ex);
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 

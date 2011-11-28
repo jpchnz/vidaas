@@ -22,10 +22,9 @@ public class ConnectionManager {
     private Connection connection = null;
     private ResultSet rs = null;
     private Statement st = null;
-    private Logger logger = Logger.getLogger(ConnectionManager.class.getName());
 
-    public ConnectionManager() {
-    	logger.fine("Default Constructor called");
+    public ConnectionManager(){
+        Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, "Default Constructor called");
     }
 
     private void readPropertiesFile() {
@@ -40,10 +39,10 @@ public class ConnectionManager {
             this.driverName = props.getProperty("uk.ac.ox.oucs.sudamih.driverName");
             this.databaseURL = props.getProperty("uk.ac.ox.oucs.sudamih.databaseURL");
         } catch (IOException ex) {
-        	logger.log(Level.SEVERE, "IOException", ex);
+            Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        logger.fine(this.adminUserName + " " + this.adminUserNamePW
+        System.out.println(this.adminUserName + " " + this.adminUserNamePW
                 + " " + this.databaseName + " " + this.driverName + " " + this.databaseURL);
 
     }
@@ -55,9 +54,9 @@ public class ConnectionManager {
             Class.forName(driverName);    
             connectionTemp = DriverManager.getConnection(databaseURL + databaseName, adminUserName, adminUserNamePW);
         } catch (ClassNotFoundException ex) {
-            logger.log(Level.SEVERE, "ClassNotFoundException", ex);
+            Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            logger.log(Level.SEVERE, "SQLException", ex);
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
 
         return connectionTemp;
@@ -68,8 +67,7 @@ public class ConnectionManager {
         Connection connectionTemp= null;
         readPropertiesFile();
         this.databaseName = databaseNameValue;
-
-        logger.fine(this.adminUserName + " " + this.adminUserNamePW
+        System.out.println(this.adminUserName + " " + this.adminUserNamePW
                 + " " + this.databaseName + " " + this.driverName + " " + this.databaseURL);
         try {
             Class.forName(driverName);
@@ -79,9 +77,9 @@ public class ConnectionManager {
 
             connectionTemp = DriverManager.getConnection(databaseURL + databaseName, adminUserName, adminUserNamePW);
         } catch (ClassNotFoundException ex) {
-        	logger.log(Level.SEVERE, "ClassNotFoundException", ex);
+            Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-        	logger.log(Level.SEVERE, "SQLException", ex);
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
 
         return connectionTemp;
@@ -102,9 +100,9 @@ public class ConnectionManager {
 
             connectionTemp = DriverManager.getConnection(databaseURL + databaseNameValue, userNameValue, passwordValue);
         } catch (ClassNotFoundException ex) {
-        	logger.log(Level.SEVERE, "ClassNotFoundException", ex);
+            Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-        	logger.log(Level.SEVERE, "SQLException", ex);
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
 
         return connectionTemp;
@@ -130,7 +128,7 @@ public class ConnectionManager {
     public static void main(String argv[]) {
     	ConnectionManager cm = new ConnectionManager();
         cm.getConnection();
-         if (cm.connection != null) {
+         if (cm.connection != null){
              System.out.println("Connection created Successfully ...!");
          }
     }

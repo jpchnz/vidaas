@@ -6,6 +6,7 @@ import uk.ac.ox.oucs.vidaas.dao.UsersHome;
 import uk.ac.ox.oucs.vidaas.entity.Logins;
 import uk.ac.ox.oucs.vidaas.entity.Users;
 
+import org.hibernate.validator.Email;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
@@ -43,6 +44,8 @@ public class RegistrationBean {
 	private String postion;
 	private String department;
 	private String grp;
+	
+	@Email
 	private String email;
 
 	@In(create = true)
@@ -249,8 +252,7 @@ public class RegistrationBean {
 					registrationFormInclude = "/popup/registerForm-3.xhtml";
 				}
 			} else {
-				registrationMessage2 = "'" + password + "' doesn't match '"
-						+ password2 + "'";
+				registrationMessage2 = "'Both passwords don't match.' Please Try again.";
 			}
 		} else {
 			registrationMessage2 = "'" + userName + "' already exists";
