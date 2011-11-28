@@ -100,7 +100,14 @@ cd $JBOSS_HOME/server/default/lib/
 ln -s /usr/share/java/mysql.jar mysql.jar
 ln -s /usr/share/java/postgresql.jar postgresql.jar
 }}}
-
+----
+Seam needs to be installed (for seam gen)
+{{{
+wget http://downloads.sourceforge.net/project/jboss/JBoss%20Seam/2.2.2.Final/jboss-seam-2.2.2.Final.tar.gz
+install into /opt/seam (or symlink)
+cp seam/VIDaaS-SeamScript.sh /opt/seam #will be replaced with patch
+}}}
+----
 JBoss is now ready to be started
 {{{
 $JBOSS_HOME/bin/run.sh
