@@ -61,8 +61,6 @@ public class DataHolder {
 
 	public void setDataLoader(boolean dataLoader) {
 		this.dataLoader = dataLoader;
-	}
-	
-	
+	}	
 
 }

@@ -1,11 +1,24 @@
 package uk.ac.ox.oucs.vidaas.session;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.sql.Connection;
+import java.util.Date;
 import java.util.List;
 
+import uk.ac.ox.oucs.vidaas.concurrency.CreateWebApplicationThread;
 import uk.ac.ox.oucs.vidaas.concurrency.DatabaseTablesCreatorThread;
 import uk.ac.ox.oucs.vidaas.concurrency.MDBParserThread;
 import uk.ac.ox.oucs.vidaas.concurrency.ParseCreateLoaderThread;
+import uk.ac.ox.oucs.vidaas.concurrency.CreateBerkeleyXMLDatabaseThread;
+import uk.ac.ox.oucs.vidaas.create.CreateBerkeleyXMLDatabase;
 import uk.ac.ox.oucs.vidaas.create.CreateWebApplication;
 import uk.ac.ox.oucs.vidaas.dao.ProjectDatabaseHome;
 import uk.ac.ox.oucs.vidaas.dao.ProjectHome;
@@ -14,12 +27,15 @@ import uk.ac.ox.oucs.vidaas.dao.DataspaceHome;
 import uk.ac.ox.oucs.vidaas.dao.DatabaseStructureHome;
 import uk.ac.ox.oucs.vidaas.dao.WebApplicationHome;
 import uk.ac.ox.oucs.vidaas.dao.UsersHome;
+import uk.ac.ox.oucs.vidaas.dao.XMLFilesHome;
 import uk.ac.ox.oucs.vidaas.data.holder.DataHolder;
 import uk.ac.ox.oucs.vidaas.delete.DeleteDatabase;
+import uk.ac.ox.oucs.vidaas.delete.DeleteWebApplication;
+import uk.ac.ox.oucs.vidaas.delete.DeleteXMLFileFromDatabase;
 
 import uk.ac.ox.oucs.vidaas.manager.ConnectionManager;
 import uk.ac.ox.oucs.vidaas.session.NavigationController;
-//import uk.ac.ox.oucs.vidaas.utility.LoadXMLContainer;
+import uk.ac.ox.oucs.vidaas.utility.LoadXMLContainer;
 
 import org.hibernate.validator.InvalidStateException;
 import org.hibernate.validator.InvalidValue;
@@ -41,6 +57,7 @@ import uk.ac.ox.oucs.vidaas.entity.Project;
 import uk.ac.ox.oucs.vidaas.entity.DatabaseStructure;
 import uk.ac.ox.oucs.vidaas.entity.WebApplication;
 import uk.ac.ox.oucs.vidaas.entity.UserProjectId;
+import uk.ac.ox.oucs.vidaas.entity.XMLFiles;
 
 import java.util.regex.Pattern;
 
@@ -69,6 +86,7 @@ public class CreateController {
 	DataHolder dataHolder;
 
 	private ParseCreateLoaderThread parseCreateLoaderThread = null;
+	private CreateWebApplicationThread createWebApplicationThread = null;
 
 	@In(create = true)
 	@Out(required = true)
@@ -98,6 +116,12 @@ public class CreateController {
 	@Out(required = true)
 	ProjectDatabaseHome projectDatabaseHome;
 
+	@In(create = true)
+	@Out(required = true)
+	XMLFilesHome xmlFilesHome;
+
+	private CreateBerkeleyXMLDatabaseThread createBerkeleyXMLDatabaseThread;
+
 	private String validationError = "";
 
 	private boolean statusPanelOKButtonDisabled = true;
@@ -114,6 +138,8 @@ public class CreateController {
 	private String addProjectMemberConfirmationMessage = "";
 	private String dropDatabaseConfirmationMessage = "";
 	private String backupDatabaseConfirmationMessage = "";
+	private String restoreDatabaseConfirmationMessage = "";
+	private String deleteWebApplicationConfirmationMessage = "";
 
 	public String getCreateProjectConfirmationMessage() {
 		return createProjectConfirmationMessage;
@@ -195,6 +221,24 @@ public class CreateController {
 	public void setBackupDatabaseConfirmationMessage(
 			String backupDatabaseConfirmationMessage) {
 		this.backupDatabaseConfirmationMessage = backupDatabaseConfirmationMessage;
+	}
+
+	public String getRestoreDatabaseConfirmationMessage() {
+		return restoreDatabaseConfirmationMessage;
+	}
+
+	public void setRestoreDatabaseConfirmationMessage(
+			String restoreDatabaseConfirmationMessage) {
+		this.restoreDatabaseConfirmationMessage = restoreDatabaseConfirmationMessage;
+	}
+
+	public String getDeleteWebApplicationConfirmationMessage() {
+		return deleteWebApplicationConfirmationMessage;
+	}
+
+	public void setDeleteWebApplicationConfirmationMessage(
+			String deleteWebApplicationConfirmationMessage) {
+		this.deleteWebApplicationConfirmationMessage = deleteWebApplicationConfirmationMessage;
 	}
 
 	public String getValidationError() {
@@ -342,12 +386,6 @@ public class CreateController {
 
 		String databaseStructurePersistString = databaseStructureHome.persist();
 		log.info("databasePersistString {0}", databaseStructurePersistString);
-		/*
-		 * new CreateDatabaseController().dumpDatabase(
-		 * tempDatabaseStructure.getDatabaseDirectory() +
-		 * tempOldDatabase.getDatabaseName() +".sql",
-		 * tempOldDatabase.getDatabaseName());
-		 */
 
 		Contexts.getSessionContext().set("currentDatabaseStructure",
 				tempDatabaseStructure);
@@ -378,9 +416,12 @@ public class CreateController {
 		if (cloneType.equalsIgnoreCase("old")) {
 			((NavigationController) Contexts.getSessionContext().get(
 					"navigationController")).backupDatabaseConfirmation();
-		} else {
+		} else if (cloneType.equalsIgnoreCase("test")) {
 			((NavigationController) Contexts.getSessionContext().get(
 					"navigationController")).testDatabaseConfirmation();
+		} else {
+			((NavigationController) Contexts.getSessionContext().get(
+					"navigationController")).restoreDatabaseConfirmation();
 		}
 		/*		*/
 	}
@@ -394,6 +435,7 @@ public class CreateController {
 
 		DatabaseStructure tempDatabaseStructure = (DatabaseStructure) Contexts
 				.getSessionContext().get("currentDatabaseStructure");
+
 		ProjectDatabase tempProjectDatabase = (ProjectDatabase) Contexts
 				.getSessionContext().get("currentProjectDatabase");
 
@@ -419,9 +461,9 @@ public class CreateController {
 		databaseSchemaShortStatus = "Starting Parsing: " + databaseMDBFile;
 
 		ConnectionManager connectionManager = new ConnectionManager();
-		Connection connection = connectionManager
-				.createConnection(tempProjectDatabase.getDatabaseName()
-						.toLowerCase());
+		Connection connection = connectionManager.createConnection(
+				tempProjectDatabase.getDatabaseName().toLowerCase(),
+				getLoginsMain().getUserName(), getLoginsMain().getPassword());
 		dataHolder.setCurrentStatus("\nSuccessfully Connected with Database "
 				+ dataHolder.getCurrentStatus());
 
@@ -431,34 +473,10 @@ public class CreateController {
 					csvDataDirectory, dataHolder, connection);
 			Thread parserThread = new Thread(parseCreateLoaderThread);
 			parserThread.start();
-			/*
-			 * while (parserThread.isAlive()){
-			 * 
-			 * }
-			 */
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		/*
-		 * // if(parseCreateLoaderThread.isParsingStatus() == true){
-		 * tempDatabaseStructure.setStatus(new String("Database_Populated"));
-		 * tempDatabaseStructure.setData(new String("Database_Populated")
-		 * .getBytes());
-		 * 
-		 * // This should be Update
-		 * databaseStructureHome.setInstance(tempDatabaseStructure); //
-		 * databaseStructureHome.update();
-		 * 
-		 * databaseStructureHome.persist(); // } else { //
-		 * databaseStructureHome.setInstance(tempDatabaseStructure); //
-		 * databaseStructureHome.remove();
-		 * 
-		 * // dropDatabase(tempProjectDatabase.getDatabaseName());
-		 * 
-		 * // }
-		 * 
-		 * databaseSchemaShortStatus = "Not Yet Started ...!";
-		 */
 	}
 
 	public void finishParseDatabase() {
@@ -488,53 +506,106 @@ public class CreateController {
 	}
 
 	public void createWebApplication(Integer projectDatabaseIDValue) {
+		dataHolder.setOkButton(true);
+		dataHolder.currentStatus = "";
+
+		String serverURLTemp = System.getProperty("serverURL");
+		
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController")).createWebApplicationConfirmation();
+
 		projectDatabaseHome.setId(projectDatabaseIDValue);
 		ProjectDatabase tempProjectDatabase = projectDatabaseHome.find();
-		
+
 		projectDatabaseHome.setInstance(tempProjectDatabase);
-		
-		String webApplicationName = tempProjectDatabase.getDataspace().getWebApplicationName();
-		String webApplicationLocation = tempProjectDatabase.getDatabaseStructure().getDatabaseDirectory();
+
+		String webApplicationName = tempProjectDatabase.getDataspace()
+				.getWebApplicationName();
+
+		if (tempProjectDatabase.getDatabaseType().equalsIgnoreCase("old")) {
+			webApplicationName = webApplicationName + "_old";
+		} else if (tempProjectDatabase.getDatabaseType().equalsIgnoreCase(
+				"test")) {
+			webApplicationName = webApplicationName + "_test";
+		}
+
+		String webApplicationLocation = tempProjectDatabase
+				.getDatabaseStructure().getDatabaseDirectory();
 		String databaseName = tempProjectDatabase.getDatabaseName();
-		
+
 		String userName = getLoginsMain().getUserName();
 		String password = getLoginsMain().getPassword();
-		
-		CreateWebApplication createWebApplication = new CreateWebApplication();
-		createWebApplication.createWebApplication(webApplicationName, webApplicationLocation, databaseName, userName, password);
-		
-		webApplicationHome.setId(tempProjectDatabase.getWebApplication().getWebId());
+
+		try {
+			createWebApplicationThread = new CreateWebApplicationThread(
+					webApplicationName, webApplicationLocation, databaseName,
+					userName, password, dataHolder);
+
+			Thread webApplicationCreaterThread = new Thread(
+					createWebApplicationThread);
+			webApplicationCreaterThread.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		webApplicationHome.setId(tempProjectDatabase.getWebApplication()
+				.getWebId());
 		WebApplication tempWebApplication = webApplicationHome.find();
-		
+
 		webApplicationHome.setInstance(tempWebApplication);
-		
+
 		tempWebApplication.setStatus("Deployed");
-		
+		tempWebApplication.setWebApplicationName(webApplicationName);
+
+		tempWebApplication
+				.setUrl(serverURLTemp + webApplicationName);
+
 		webApplicationHome.persist();
-		
+	}
+
+	public void finishCreateWebApplication() {
+		log.info("finishCreateWebApplication() called ");
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController")).createWebApplicationInitial();
 	}
 
 	public void removeWebApplication(Integer projectDatabaseIDValue) {
-		/*projectDatabaseHome.setId(projectDatabaseIDValue);
+
+		projectDatabaseHome.setId(projectDatabaseIDValue);
 		ProjectDatabase tempProjectDatabase = projectDatabaseHome.find();
-		
+
 		projectDatabaseHome.setInstance(tempProjectDatabase);
+
+		String webApplicationNameTemp = projectDatabaseHome.getInstance()
+				.getDataspace().getWebApplicationName();
+
+		if (new DeleteWebApplication()
+				.undeployWebApplication(webApplicationNameTemp)) {
+
+			webApplicationHome.setId(tempProjectDatabase.getWebApplication()
+					.getWebId());
+			WebApplication tempWebApplication = webApplicationHome.find();
+
+			webApplicationHome.setInstance(tempWebApplication);
+
+			tempWebApplication.setStatus("NotDeployed");
+
+			webApplicationHome.persist();
+			
+			deleteWebApplicationConfirmationMessage = "Web Application " + webApplicationNameTemp + " successfully removed";
+		} else {
+			deleteWebApplicationConfirmationMessage = "Failed to remove Web Application " + webApplicationNameTemp;
+		}
+
 		
-		webApplicationHome.setId(tempProjectDatabase.getWebApplication().getWebId());
-		WebApplication tempWebApplication = webApplicationHome.find();
-		
-		webApplicationHome.setInstance(tempWebApplication);
-		
-		tempWebApplication.setStatus("NotDeployed");
-		
-		webApplicationHome.persist();
-		*/
-		/*
-		try {
-			new LoadXMLContainer().loadXMLContainer();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}*/
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController")).removeWebApplicationConfirmation();
+
+	}
+
+	public void finishRemoveWebApplication() {
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController")).removeWebApplicationInitial();
 	}
 
 	public void createProjectMember() {
@@ -576,11 +647,20 @@ public class CreateController {
 			userProject.setUsers(tempUser);
 			// userProject.setUserRole("newMemberRole");
 
-			addProjectMemberConfirmationMessage = tempUser.getLastName() + ", "
-					+ tempUser.getFirstName() + " is added as project member";
-			userProjectHome.setInstance(userProject);
-			// userProject.
-			userProjectHome.persist();
+			try {
+				userProjectHome.setInstance(userProject);
+				// userProject.
+				userProjectHome.persist();
+				addProjectMemberConfirmationMessage = tempUser.getLastName()
+						+ ", " + tempUser.getFirstName()
+						+ " is added as project member";
+			} catch (Exception e) {
+				// org.hibernate.exception.ConstraintViolationException
+				addProjectMemberConfirmationMessage = tempUser.getLastName()
+						+ ", " + tempUser.getFirstName()
+						+ " is already project member";
+			}
+
 		}
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).addProjectMemberConfirmation();
@@ -588,7 +668,7 @@ public class CreateController {
 
 	public void dropDatabase(String databaseName) {
 		log.info("dropDatabase {0}", databaseName);
-		new DeleteDatabase(databaseName).deleteDatabase();
+		new DeleteDatabase(databaseName).DeleteDatabase();
 
 		ProjectDatabase tempProjectDatabase = (ProjectDatabase) Contexts
 				.getSessionContext().get("currentProjectDatabase");
@@ -618,6 +698,255 @@ public class CreateController {
 
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).dropDatabaseConfirmation();
+	}
+
+	public void createXMLDatabase(String fileName, String fileLocation,
+			long size) {
+
+		System.out.println(fileName + " " + fileLocation + " " + size);
+
+		List<ProjectDatabase> projectDatabaseList;
+		String xmlDatabaseRootDirectory;
+
+		Project tempProject = ((Project) Contexts.getSessionContext().get(
+				"currentProject"));
+
+		Dataspace tempDataspace = ((Dataspace) Contexts.getSessionContext()
+				.get("currentDataspace"));
+
+		String tempProjectTitleNew = stringValidation(tempProject.getTitle());
+		// It is important to save it in lower case ..
+		// lower case is used in Create Database controller ...!
+		String modifiedDatabaseName = (tempProjectTitleNew + "_" + stringValidation(tempDataspace
+				.getDataspaceName())).toLowerCase();
+		ProjectDatabase tempProjectDatabase = ((ProjectDatabase) Contexts
+				.getSessionContext().get("currentProjectDatabase"));
+
+		// Check if the currentProjectDatabase in session is the one required
+		if (tempProjectDatabase != null) {
+			if (tempProjectDatabase.getDatabaseName().equalsIgnoreCase(
+					modifiedDatabaseName)) {
+				// Do update ..
+				log.info("Project Database found: {0} in session",
+						tempProjectDatabase.getDatabaseName());
+			} else {
+				log.info(
+						"Appropriate Project Database Not found: {0} {1} in session",
+						tempProjectDatabase.getDatabaseName(),
+						modifiedDatabaseName);
+				// If Database is not in session!
+				// Find it in the VIDaaS Database
+
+				projectDatabaseList = projectDatabaseHome
+						.findByDatabaseName(modifiedDatabaseName);
+
+				// If not found in VIDaaS Database Create it ...!
+				if (projectDatabaseList.size() == 0) {
+					log.info("Project Database Not found: {0} in Database",
+							modifiedDatabaseName);
+					DatabaseStructure tempDatabaseStructure = databaseStructureHome
+							.getInstance();
+					// create Database Structure and persist it.
+					new CreateXMLDatabase().createDatabaseStructure(
+							tempProject.getProjectId(),
+							tempDataspace.getDataspaceName(),
+							tempDatabaseStructure, "main", log);
+
+					String databaseStructurePersistString = databaseStructureHome
+							.persist();
+					log.info("databaseStructurePersistString {0}",
+							databaseStructurePersistString);
+
+					WebApplication tempWebApplication = webApplicationHome
+							.getInstance();
+					tempWebApplication.setStatus("NotDeployed");
+
+					String webApplicationPersistString = webApplicationHome
+							.persist();
+					log.info("webApplicationPersistString {0}",
+							webApplicationPersistString);
+
+					tempProjectDatabase = projectDatabaseHome.getInstance();
+					new CreateXMLDatabase().createDatabase(tempDataspace,
+							tempDatabaseStructure, tempWebApplication,
+							getLoginsMain(), tempProject.getTitle(),
+							tempProjectDatabase, "main", log);
+
+					try {
+						String projectDatabasePersistString = projectDatabaseHome
+								.persist();
+
+						log.info("projectDatabasePersistString {0}",
+								projectDatabasePersistString);
+						Contexts.getSessionContext().set(
+								"currentProjectDatabase", tempProjectDatabase);
+					} catch (InvalidStateException ise) {
+						InvalidValue[] iv = ise.getInvalidValues();
+						for (int i = 0; i < iv.length; i++) {
+							System.out.println("Property Name: "
+									+ iv[i].getPropertyName());
+							System.out.println("Property Name Message: "
+									+ iv[i].getMessage());
+						}
+					}
+				} else {
+					// Found in VIDaaS Database ... update it
+					log.info("Project Database found: {0} in Database",
+							modifiedDatabaseName);
+					tempProjectDatabase = projectDatabaseHome
+							.findByDatabaseName(modifiedDatabaseName).get(0);
+				}
+			}
+		} else {
+			log.info("Project Database Not found in session: {0}",
+					modifiedDatabaseName);
+			projectDatabaseList = projectDatabaseHome
+					.findByDatabaseName(modifiedDatabaseName);
+
+			if (projectDatabaseList.size() == 0) {
+				DatabaseStructure tempDatabaseStructure = databaseStructureHome
+						.getInstance();
+				// create Database Structure and persist it.
+				new CreateXMLDatabase().createDatabaseStructure(
+						tempProject.getProjectId(),
+						tempDataspace.getDataspaceName(),
+						tempDatabaseStructure, "main", log);
+
+				String databaseStructurePersistString = databaseStructureHome
+						.persist();
+				log.info("databaseStructurePersistString {0}",
+						databaseStructurePersistString);
+
+				WebApplication tempWebApplication = webApplicationHome
+						.getInstance();
+				tempWebApplication.setStatus("NotDeployed");
+
+				String webApplicationPersistString = webApplicationHome
+						.persist();
+				log.info("webApplicationPersistString {0}",
+						webApplicationPersistString);
+
+				tempProjectDatabase = projectDatabaseHome.getInstance();
+				new CreateXMLDatabase().createDatabase(tempDataspace,
+						tempDatabaseStructure, tempWebApplication,
+						getLoginsMain(), tempProject.getTitle(),
+						tempProjectDatabase, "main", log);
+
+				try {
+					String projectDatabasePersistString = projectDatabaseHome
+							.persist();
+
+					log.info("projectDatabasePersistString {0}",
+							projectDatabasePersistString);
+					Contexts.getSessionContext().set("currentProjectDatabase",
+							tempProjectDatabase);
+				} catch (InvalidStateException ise) {
+					InvalidValue[] iv = ise.getInvalidValues();
+					for (int i = 0; i < iv.length; i++) {
+						System.out.println("Property Name: "
+								+ iv[i].getPropertyName());
+						System.out.println("Property Name Message: "
+								+ iv[i].getMessage());
+					}
+				}
+			} else if (projectDatabaseHome
+					.findByDatabaseName(modifiedDatabaseName) != null) {
+				// Found in VIDaaS Database ... update it
+				log.info("Project Database found: {0} in Database",
+						modifiedDatabaseName);
+				tempProjectDatabase = projectDatabaseHome.findByDatabaseName(
+						modifiedDatabaseName).get(0);
+			}
+		}
+
+		if (tempProjectDatabase != null
+				&& tempProjectDatabase.getDatabaseName().equalsIgnoreCase(
+						modifiedDatabaseName)) {
+			log.info("Project Database ID {0}",
+					tempProjectDatabase.getDatabaseId());
+			XMLFiles xmlFilesTemp = xmlFilesHome.getInstance();
+			xmlFilesTemp.setProjectDatabase(tempProjectDatabase);
+			xmlFilesTemp.setUsers(getUserMain());
+
+			xmlFilesTemp.setFileName(fileName);
+			xmlFilesTemp.setSize(size);
+
+			xmlFilesTemp.setUploadDate(new Date());
+
+			xmlFilesHome.persist();
+
+			xmlDatabaseRootDirectory = xmlFilesTemp.getProjectDatabase()
+					.getDatabaseStructure().getDatabaseDirectory();
+			copyFile(fileLocation, xmlDatabaseRootDirectory + fileName);
+
+			try {
+				BufferedWriter out = new BufferedWriter(new FileWriter(
+						xmlDatabaseRootDirectory + fileName + ".txt"));
+				out.write("Start Loading File in BD XML Database" + "\n");
+
+				createBerkeleyXMLDatabaseThread = new CreateBerkeleyXMLDatabaseThread(
+						xmlDatabaseRootDirectory + "ddl/",
+						modifiedDatabaseName, xmlDatabaseRootDirectory,
+						fileName, out);
+
+				Thread xmlBDBThread = new Thread(
+						createBerkeleyXMLDatabaseThread);
+				xmlBDBThread.start();
+			} catch (Exception exp) {
+
+			}
+
+		} else {
+			log.info(
+					"Project Database found: {0} is not the one required {1} XML Files not created ...!",
+					tempProjectDatabase.getDatabaseName(), modifiedDatabaseName);
+		}
+
+	}
+
+	/*
+	 * public void dropXMLFile(int projectDatabaseIDValue, String fileNameValue)
+	 * { log.info("File Name {0}: Database ID: {1}", fileNameValue,
+	 * projectDatabaseIDValue);
+	 * 
+	 * // xmlFilesHome.findByFileNameAndDatabaseID(projectDatabaseIDValue, //
+	 * fileNameValue);
+	 * 
+	 * }
+	 */
+	public void dropXMLFile(int fileIDValue) {
+		log.info("File ID {0}: ", fileIDValue);
+
+		// xmlFilesHome.findByFileID(fileIDValue);
+		xmlFilesHome.setId(fileIDValue);
+
+		XMLFiles tempXMLFile = xmlFilesHome.getInstance();
+		String fileNameWithPath = tempXMLFile.getProjectDatabase()
+				.getDatabaseStructure().getDatabaseDirectory()
+				+ tempXMLFile.getFileName();
+
+		String databaseName = tempXMLFile.getProjectDatabase()
+				.getDatabaseName();
+		String containerPath = tempXMLFile.getProjectDatabase()
+				.getDatabaseStructure().getDatabaseDirectory()
+				+ "ddl/";
+
+		log.info("File Name {0}: ", fileNameWithPath);
+
+		File fileToDelete = new File(fileNameWithPath);
+		boolean success = fileToDelete.delete();
+		// xmlFilesHome.remove();
+
+		log.info("databaseName {0}: containerPath {1} ", databaseName,
+				containerPath);
+
+		new DeleteXMLFileFromDatabase().deleteXMLFileInContainer(containerPath,
+				"TestProject171011_TestXMLDB" + ".dbxml",
+				tempXMLFile.getFileName());
+	}
+
+	public void dropXMLDatabase(int databaseIDValue) {
+
 	}
 
 	public Users getUserMain() {
@@ -747,6 +1076,40 @@ public class CreateController {
 
 	public void testingString() {
 		testString = testString + counterTest++;
+	}
+
+	private String stringValidation(String input) {
+		Pattern escaper = Pattern.compile("(^[\\d]*)");
+		Pattern escaper2 = Pattern.compile("[^a-zA-z0-9]");
+
+		String newString = escaper.matcher(input).replaceAll("");
+		String newString2 = escaper2.matcher(newString).replaceAll("");
+
+		return newString2;
+
+	}
+
+	private void copyFile(String inputFileString, String outputFileString) {
+		File inputFile = new File(inputFileString);
+		File outputFile = new File(outputFileString);
+
+		try {
+			FileChannel inChannel = (new FileInputStream(inputFile))
+					.getChannel();
+			FileChannel outChannel = (new FileOutputStream(outputFile))
+					.getChannel();
+			inChannel.transferTo(0, inputFile.length(), outChannel);
+			inChannel.close();
+			outChannel.close();
+
+			inputFile.delete();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
