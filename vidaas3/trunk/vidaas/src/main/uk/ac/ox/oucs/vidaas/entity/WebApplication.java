@@ -36,6 +36,7 @@ public class WebApplication implements java.io.Serializable {
 	private Integer webId;
 	private Integer version;
 	private String url;
+	private String webApplicationName;
 	private String status;
 	private Set<ProjectDatabase> projectDatabases = new HashSet<ProjectDatabase>(
 			0);
@@ -87,6 +88,16 @@ public class WebApplication implements java.io.Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	
+	@Column(name = "WebApplicationName", length = 45)
+	@Length(max = 45)
+	public String getWebApplicationName() {
+		return webApplicationName;
+	}
+
+	public void setWebApplicationName(String webApplicationName) {
+		this.webApplicationName = webApplicationName;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "webApplication")

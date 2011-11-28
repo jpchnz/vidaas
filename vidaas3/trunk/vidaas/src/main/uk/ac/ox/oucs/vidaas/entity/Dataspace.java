@@ -58,6 +58,7 @@ public class Dataspace implements java.io.Serializable {
 	
 	private Set<ProjectDatabase> projectDatabases = new HashSet<ProjectDatabase>(
 			0);
+	
 	private Users users;
 
 	public Dataspace() {
