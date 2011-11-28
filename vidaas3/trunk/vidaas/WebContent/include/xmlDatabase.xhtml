@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<rich:panel>
+		<f:facet name="header">
+			<h:outputText
+				value="Detailed summary of database of '#{currentDataspace.dataspaceName}'"></h:outputText>
+		</f:facet>
+		<rich:dataGrid id="datbasesDataGrid"
+			value="#{navigationController.listXMLFilesByProjectDatabase(_database.databaseId)}"
+			var="_xmlFile" columns="1"
+			rendered="#{not empty navigationController.listXMLFilesByProjectDatabase(_database.databaseId)}">
+
+			<f:facet name="header">
+				<h:outputText value="List of Files"></h:outputText>
+			</f:facet>
+			<h:panelGrid id="xmlFilesPanel" columns="3">
+
+				<h:outputLabel value="File Name: " style="font-weight:bold" />
+				<rich:spacer width="10" />
+				<h:outputLabel value="#{_xmlFile.fileName}" />
+			</h:panelGrid>
+			<a4j:form ajaxSubmit="true">
+			<a4j:commandLink value="Delete" style="float:right" action="#{createController.dropXMLFile(_xmlFile.fileId)}"></a4j:commandLink>
+			</a4j:form>
+		</rich:dataGrid>
+
+
+		<a4j:form id="xmlDatabaseButtonForm" ajaxSubmit="true">
+			<div class="actionButtons"><a4j:commandLink
+				id="addXMLFilesButton" value="Add XML Files" style="float:left">
+				<rich:componentControl for="createXMLDatabasePanel"
+					attachTo="addXMLFilesButton" operation="show"
+					event="onclick" />
+			</a4j:commandLink> <a4j:region>
+				<a4j:status id="submitStatusXML">
+					<f:facet name="start">
+						<h:graphicImage value="/img/wait.gif" height="28px" width="28px"
+							style="float:right" />
+					</f:facet>
+				</a4j:status>
+			</a4j:region></div>
+		</a4j:form>
+
+	</rich:panel>
+
+</ui:composition>
