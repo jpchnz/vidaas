@@ -80,7 +80,19 @@ Example vidaas3-ds.xml (replace $PASSWORD$ with your mysql password chosen earli
 </datasources>
 }}}
 ----
-
+Example vidaas-service.xml
+{{{
+<mbean code="org.jboss.varia.property.SystemPropertiesService" name="jboss.util:type=Service,name=VIDaaSProperties">
+  <attribute name="Properties">
+    seamLocaion=/opt/seam/
+    serverLocation=/opt/jboss/
+    serverURL=http://163.1.13.219:8080/
+    VIDaaSDataLocation=/opt/VIDaaSData
+    jdbcDriverJar=/usr/share/java/postgresql.jar
+ </attribute>
+</mbean>
+}}}
+----
 The database drivers need to be installed to JBoss using the following instructions:
 
 {{{
