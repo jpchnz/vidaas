@@ -49,6 +49,7 @@ public class Users implements java.io.Serializable {
 	private Set<Dataspace> dataspaces = new HashSet<Dataspace>(0);
 	private Set<UserProject> userProjects = new HashSet<UserProject>(0);
 	private Set<SchemaLog> schemaLogs = new HashSet<SchemaLog>(0);
+	private Set<XMLFiles> xmlFiles = new HashSet<XMLFiles>(0);
 
 	public Users() {
 	}
@@ -195,6 +196,15 @@ public class Users implements java.io.Serializable {
 
 	public void setSchemaLogs(Set<SchemaLog> schemaLogs) {
 		this.schemaLogs = schemaLogs;
+	}
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
+	public Set<XMLFiles> getXmlFiles() {
+		return xmlFiles;
+	}
+
+	public void setXmlFiles(Set<XMLFiles> xmlFiles) {
+		this.xmlFiles = xmlFiles;
 	}
 
 }

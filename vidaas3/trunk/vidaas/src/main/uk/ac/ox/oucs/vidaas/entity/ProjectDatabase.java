@@ -49,6 +49,8 @@ public class ProjectDatabase implements java.io.Serializable {
 	private Date creationDate;
 	private String databaseName;
 	private Set<UserDatabase> userDatabases = new HashSet<UserDatabase>(0);
+	private Set<XMLFiles> xmlFiles = new HashSet<XMLFiles>(
+			0);
 
 	public ProjectDatabase() {
 	}
@@ -170,5 +172,14 @@ public class ProjectDatabase implements java.io.Serializable {
 
 	public void setDatabaseType(String databaseType) {
 		this.databaseType = databaseType;
+	}
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "projectDatabase")
+	public Set<XMLFiles> getXmlFiles() {
+		return xmlFiles;
+	}
+
+	public void setXmlFiles(Set<XMLFiles> xmlFiles) {
+		this.xmlFiles = xmlFiles;
 	}
 }
