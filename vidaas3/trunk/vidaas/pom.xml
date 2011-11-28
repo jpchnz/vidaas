@@ -162,5 +162,20 @@
   		<artifactId>mysql-connector-java</artifactId>
   		<version>5.1.16</version>
   	</dependency>
+  	<!-- This is working .... -->
+  	<dependency>
+  		<groupId>DB</groupId>
+  		<artifactId>DB</artifactId>
+  		<version>DB</version>
+  		<scope>system</scope>
+  		<systemPath>${basedir}/WebContent/WEB-INF/lib/db.jar</systemPath>
+  	</dependency>
+  	<dependency>
+  		<groupId>DBXML</groupId>
+  		<artifactId>DBXML</artifactId>
+  		<version>DBXML</version>
+  		<scope>system</scope>
+  		<systemPath>${basedir}/WebContent/WEB-INF/lib/dbxml.jar</systemPath>
+  	</dependency>
   </dependencies>
 </project>
