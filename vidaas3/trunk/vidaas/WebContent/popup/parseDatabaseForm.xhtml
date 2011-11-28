@@ -13,7 +13,8 @@
 	<rich:panel>
 		 <a4j:region>
 		      <h:form>
-		            <a4j:poll id="pollForm" interval="100" reRender="homeMainPanel, pollForm, statusPanel, okButtonParseDatabase" enabled="#{createController.statusPanelOKButtonDisabled}"/>
+		            <a4j:poll id="pollForm" interval="100" 
+		            reRender="homeMainPanel, pollForm, statusPanel, okButtonParseDatabase" enabled="#{createController.statusPanelOKButtonDisabled}"/>
 		      </h:form>
 		</a4j:region>	   
 	     
@@ -23,12 +24,18 @@
 		                 	                
 		                	<h:outputLabel id="shortStatus"  value="#{createController.databaseSchemaShortStatus}"/> 	
 		                -->
+		                <h:outputLabel value="Parsing the uploaded file will take time" rendered="#{createController.statusPanelOKButtonDisabled}"/>
+		                <h:outputLabel value="Please, click button 'OK' to continue" rendered="#{not createController.statusPanelOKButtonDisabled}" 
+		                	styleClass="errorMessage" />
 		                <h:inputTextarea id="status" value="#{createController.databaseSchemaFormStatus}" disabled="true"
-		                rows="40" cols="80"/>	                
+		                rows="40" cols="80"/>	
+		                <h:panelGroup>            
 		                 <a4j:commandButton id="okButtonParseDatabase" disabled="#{createController.statusPanelOKButtonDisabled}" 
 					    	value="OK" reRender="homeMainPanel, homePageMainBodyInclude" action="#{createController.finishParseDatabase()}">
 					    	 <rich:componentControl for="parseDatabasePanel" attachTo="okButtonParseDatabase" operation="hide" event="onclick"/>					    	
-			   			</a4j:commandButton>
+			   			</a4j:commandButton> 
+			   			
+			   			</h:panelGroup>    
 			   			<!--  
 			   			<a4j:commandLink id="okButtonParseDatabase2" disabled="#{createController.statusPanelOKButtonDisabled}" 
 					    	value="OK" reRender="homeMainPanel, homePageMainBodyInclude" action="#{navigationController.listUserProjects()}">

@@ -6,6 +6,13 @@
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:rich="http://richfaces.org/rich">
 	
+<!--  
+	<a4j:region>
+      <h:form>
+            <a4j:poll id="poll" interval="100" reRender="poll, dropDatabaseForm" />
+      </h:form>
+    </a4j:region>
+--> 
 	<a4j:form id="dropDatabaseForm" ajaxSubmit="true">
 		<h:panelGrid id="databaseStructurePanel_1" columns="1" border="1"
 			width="100%">
@@ -13,7 +20,7 @@
 				<h:outputLabel value="Database Name: " />
 				<h:outputLabel value="#{currentProjectDatabase.databaseName}" />
 			</h:panelGroup>
-
+ 
 			<h:panelGroup>
 				<h:outputLabel value="Database ID: " />
 				<h:outputLabel value="#{currentProjectDatabase.databaseId}" />
@@ -34,7 +41,7 @@
 			<h:panelGroup>
 				<h:outputLabel value="Uploaded File: " />
 				<h:outputLabel
-					value="#currentProjectDatabase.databaseStructure.file}" />
+					value="#{currentProjectDatabase.databaseStructure.file}" />
 			</h:panelGroup>
 
 			<h:panelGroup>
@@ -54,6 +61,7 @@
 				<h:outputLabel
 					value="#{currentProjectDatabase.databaseStructure.status}" />
 			</h:panelGroup>
+	<!--		 -->
 		</h:panelGrid>
 		<div class="actionButtons"><a4j:commandButton
 			id="dropDatabaseCancelButton" value="Cancel" style="float:left">
@@ -63,7 +71,7 @@
 				
 		<a4j:commandButton
 			action="#{createController.dropDatabase(currentProjectDatabase.databaseName)}"
-			id="dropDatabaseButton" value="Confirm Drop Database" onclick="this.disabled=true" status="submitStatus"
+			id="dropDatabaseButton" value="Confirm Delete Database" onclick="this.disabled=true" status="submitStatus"
 			reRender="homePageMainBodyInclude, datbasesDataGrid, dropDatabasePanel, dropDatabaseFormInclude, homeMainPanel" style="float:right">
 		</a4j:commandButton> <a4j:region>
 			<a4j:status id="submitStatus">
