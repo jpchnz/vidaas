@@ -128,6 +128,7 @@ public class CreateWebApplication {
             System.out.println(stderr);*/
         } catch (Exception e) {
         	dataHolder.setCurrentStatus("Failed to Build Environment");
+        	e.printStackTrace();
         	//dataHolder.setOkButton(false);
         }
         return result;
@@ -161,6 +162,7 @@ public class CreateWebApplication {
             System.out.println(stderr);
         } catch (Exception e){
         	dataHolder.setCurrentStatus("Failed to Gerate Web Application");
+        	e.printStackTrace();
         }
         
         System.out.println("Process Result: " + result);
@@ -187,6 +189,7 @@ public class CreateWebApplication {
             System.out.println(stderr);
         } catch (Exception e) {
         	dataHolder.setCurrentStatus("Failed to create Project");
+        	e.printStackTrace();
         	//dataHolder.setOkButton(false);
         }
         return result;
@@ -212,6 +215,7 @@ public class CreateWebApplication {
             System.out.println(stderr);
         } catch (Exception e) {
         	dataHolder.setCurrentStatus("Failed to do Reverse Engineering");
+        	e.printStackTrace();
         	//dataHolder.setOkButton(false);
         }
         return result;
@@ -237,6 +241,7 @@ public class CreateWebApplication {
             System.out.println(stderr);*/
         } catch (Exception e) {
         	dataHolder.setCurrentStatus("Failed to Deploy Project");
+        	e.printStackTrace();
         	//dataHolder.setOkButton(false);
         }
         return result;
@@ -262,6 +267,7 @@ public class CreateWebApplication {
             System.out.println(stderr);
         } catch (Exception e) {
         	dataHolder.setCurrentStatus("Failed to remove Temportay Directory and Files");
+        	e.printStackTrace();
         	//dataHolder.setOkButton(false);
         }
         return result;
@@ -314,7 +320,8 @@ public class CreateWebApplication {
             System.out.println("STDERR");
             System.out.println(stderr);
         } catch (Exception e) {
-        	dataHolder.setCurrentStatus("Failed to remove Temportay Directory and Files");
+        	dataHolder.setCurrentStatus("Failed to remove Temporary Directory and Files");
+        	e.printStackTrace();
         	//dataHolder.setOkButton(false);
         }
         return result;
@@ -340,6 +347,7 @@ public class CreateWebApplication {
             properties.load(new FileInputStream(tempDirectoryNameWithPath + "/seam-gen/build.properties"));
         } catch (IOException e) {
         	dataHolder.setCurrentStatus("Failed to read Default Configuration");
+        	e.printStackTrace();
         	//dataHolder.setOkButton(false);
         }
 
