@@ -102,6 +102,12 @@ public class CreateWebApplication {
 	// romanriver is webApplicationName
 	private int copySeamDir(String webApplicationName, String webApplicationLocation, String seamLocation) {
         int result = -99;
+        /*
+         * FIXME
+         * webApplicationName, webApplicationLocation, seamLocation
+         * all obtained from environment vars and may be null
+         * need to check for this
+         */
         List<String> command = new ArrayList<String>();
         command.add("cp");
         command.add("-r");
