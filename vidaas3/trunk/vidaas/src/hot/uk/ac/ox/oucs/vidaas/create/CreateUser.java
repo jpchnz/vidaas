@@ -1,7 +1,6 @@
 package uk.ac.ox.oucs.vidaas.create;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -74,6 +73,15 @@ public class CreateUser {
         String tempUserName = userName;
         
         if (this.userExist(tempUserName)) {
+        	/*
+			 * TODO
+			 * Why not simply append "_1" to the username and then loop -
+			 * if that exists, append "_2", then "_3", etc
+			 * 
+			 * FIXME
+			 * Currently it is still possible for tempUserName to end up with the
+			 * name of an existing user
+			 */
         	int randomNumber = (int)((Math.random() * 1000) + 100);
         	tempUserName = userName + randomNumber;
         }
@@ -82,7 +90,16 @@ public class CreateUser {
         try {
             statement = connection.createStatement();
             
-            if(!this.userExist(tempUserName)){
+            if(this.userExist(tempUserName)) {
+            	/*
+            	 * FIXME
+            	 * This could cause an infinite loop. Also, the above line 
+            	 * statement = connection.createStatement();
+            	 * will be executed several times needlessly
+            	 */
+            	createUser(owner, admin);
+            }
+            else {
 	            //statement = connection.prepareStatement("CREATE USER " + userName  + " WITH PASSWORD '" + userPassword + "'");
 	            statement.executeUpdate("CREATE USER " + tempUserName + " WITH PASSWORD '" + userPassword + "'");
 	            
@@ -91,6 +108,7 @@ public class CreateUser {
 	                statement.executeUpdate("GRANT ALL PRIVILEGES ON DATABASE " + databaseName + " to " + tempUserName);
 	                //statement.executeUpdate("GRANT ALL PRIVILEGES ON SCHEMA " + databaseName + " to " + userName);
 	            } else {
+	            	// TODO
 	                // There is no such option ...
 	                // have to come with any clever trick
 	                //statement.executeUpdate("GRANT SELECT ON  " + databaseName + " to " + userName);
@@ -100,8 +118,6 @@ public class CreateUser {
 	                statement.executeUpdate("ALTER DATABASE " + databaseName + " OWNER TO " + tempUserName);
 	                //statement.executeUpdate("GRANT ALL PRIVILEGES ON SCHEMA " + databaseName + " to " + userName);
 	            }
-            } else {
-            	createUser(owner, admin);
             }
             
              System.out.println(this.userExist(tempUserName));
@@ -176,8 +192,9 @@ public class CreateUser {
                  */
                 System.out.println(queryUserStatement + "      " + rs.getString(1));
                 int rowsReturned = Integer.parseInt(rs.getString(1));
-                if(rowsReturned > 0)
-                    return true;
+                if(rowsReturned > 0) {
+                	return true;
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(CreateUser.class.getName()).log(Level.SEVERE, null, ex);
