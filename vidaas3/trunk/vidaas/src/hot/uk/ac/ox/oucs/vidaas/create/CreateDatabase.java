@@ -1,6 +1,10 @@
 package uk.ac.ox.oucs.vidaas.create;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,6 +44,15 @@ public class CreateDatabase {
 
 		/**/
 		if (databaseExist(tempDatabaseName)) {
+			/*
+			 * TODO
+			 * Why not simply append "_1" to the database and then loop -
+			 * if that exists, append "_2", then "_3", etc
+			 * 
+			 * FIXME
+			 * Currently it is still possible for tempDatabaseName to end up with the
+			 * name of an existing database
+			 */
 			int randomNumber = (int) ((Math.random() * 1000) + 100);
 			tempDatabaseName = databaseName + randomNumber;
 			// System.out.println("If .... createDatabase()    " +
@@ -60,6 +73,10 @@ public class CreateDatabase {
 					null, ex);
 			int randomNumber = (int) ((Math.random() * 1000) + 100);
 			databaseName = databaseName + randomNumber;
+			/*
+			 * FIXME
+			 * potential infinite loop here
+			 */
 			createDatabase();
 		} /*finally {
 			try {
@@ -94,6 +111,10 @@ public class CreateDatabase {
 			statement.executeUpdate("CREATE DATABASE " + newDatabase
 					+ " WITH TEMPLATE " + oldDatabase);
 
+			/*
+			 * FIXME
+			 * Hard coding the connection string is not portable
+			 */
 			databaseConnectionString = "jdbc:postgresql://daas.oucs.ox.ac.uk:5432/"
 					+ newDatabase;
 
@@ -131,8 +152,9 @@ public class CreateDatabase {
 				System.out
 						.println("                                                                              rowsReturned    "
 								+ rs.getString(1));
-				if (rowsReturned > 0)
+				if (rowsReturned > 0) {
 					return true;
+				}
 			}
 		} catch (SQLException ex) {
 			Logger.getLogger(CreateDatabase.class.getName()).log(Level.SEVERE,
