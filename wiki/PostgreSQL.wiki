@@ -1,4 +1,4 @@
-#PostgreSQL setup
+#summary PostgreSQL setup instructions
 
 = Introduction =
 
