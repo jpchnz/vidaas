@@ -149,6 +149,8 @@ public class ovfcatalog implements EntryPoint {
 						});
 					}
 				}));
+			} else {
+				j++; //leave column empty for readability
 			}
 			if(vm.isStartable()) {
 				flexTableVmlist.setWidget(i, j++, new Button("Start", new ClickHandler() {
@@ -171,10 +173,12 @@ public class ovfcatalog implements EntryPoint {
 						});
 					}
 				}));
+			} else {
+				j++; //leave column empty for readability
 			}
-			if((new Integer(0)).compareTo(vm.isBusy())>0) {
-				flexTableVmlist.setWidget(i, j++, new Label("busy (" + vm.isBusy() + " Tasks)..."));
-			}
+
+			flexTableVmlist.setWidget(i, j++, new Label("(" + vm.isBusy() + " Tasks)"));
+
 			i++;
 		}
 		if("vmlistContainer".equals(list)) {
