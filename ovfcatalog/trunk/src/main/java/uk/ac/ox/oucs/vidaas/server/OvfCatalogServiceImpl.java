@@ -50,53 +50,6 @@ import com.vmware.vcloud.sdk.Vdc;
 public class OvfCatalogServiceImpl extends RemoteServiceServlet implements
     OvfCatalogService {
 	
-	static VcloudClient client;
-	
-	/**
-	 * Static initialisation
-	 */
-	{
-		staticInit();
-	}
-	
-	/**
-	 * Authenticate to vcloud API
-	 */
-	private boolean staticInit() {
-		InputStream in = getClass().getResourceAsStream("vmware.properties");
-		Properties props = new Properties();
-
-		try {
-			//load properties
-			props.load(in);
-			String password = props.getProperty("vidaas.vmware.password");
-			String URL = props.getProperty("vidaas.vmware.URL");
-			String username = props.getProperty("vidaas.vmware.username");
-			String version = props.getProperty("vidaas.vmware.version");
-			
-			// Setting up for SSL access. Do not use it production environment
-			Protocol https = new Protocol("https",
-					(ProtocolSocketFactory) new FakeSSLSocketFactory(), 443);
-			Protocol.registerProtocol("https", https);
-	
-			client = new VcloudClient(URL);
-			// Client login
-
-			client.login(username, password, client.getSupportedVersions().get(version));
-			return true;
-			
-		} catch (Exception e) {
-			client = null;
-			return false;
-		} finally {
-			try {
-				in.close();
-			} catch (IOException e) {
-				//ignore
-			}
-		}
-	}
-	
 	/**
 	 * Retrieves a list of Vapps
 	 * @return
@@ -104,30 +57,27 @@ public class OvfCatalogServiceImpl extends RemoteServiceServlet implements
 	public VmValue[] getVMs() throws OvfCatalogException {
 		try {
 
-			//iterate VDCs
-			for(ReferenceType vdcRef : getVdcRefs()) {
-				Vdc vdc = Vdc.getVdcByReference(client, vdcRef);
+			Vdc vdc = VcloudSession.getVDC();
+			
+			//copy to value class
+			HashMap<String, ResourceReferenceType> vmRefs = vdc.getVappRefsByName();
+			VmValue[] vmValue = new VmValue[vmRefs.size()];
+			int i = 0;
+			for(String vmName : vmRefs.keySet()) {
+				Vapp vApp = Vapp.getVappByReference(VcloudSession.getClient(), vmRefs.get(vmName));
 				
-				//copy to value class
-				HashMap<String, ResourceReferenceType> vmRefs = vdc.getVappRefsByName();
-				VmValue[] vmValue = new VmValue[vmRefs.size()];
-				int i = 0;
-				for(String vmName : vmRefs.keySet()) {
-					Vapp vApp = Vapp.getVappByReference(client, vmRefs.get(vmName));
-					
-					List<Vapp> vms = vApp.getChildrenVms();
-					HashSet<String> ips = new HashSet<String>();
-					int busy = 0;
-					for (Vapp vm : vms) {
-						ips.addAll(vm.getIpAddresses());
-						busy = vm.getTasks().size();
-					}
-					
-					vmValue[i++] = new VmValue(vmName, vApp.getVappStatus(), ips, busy);
+				List<Vapp> vms = vApp.getChildrenVms();
+				HashSet<String> ips = new HashSet<String>();
+				int busy = 0;
+				for (Vapp vm : vms) {
+					ips.addAll(vm.getIpAddresses());
+					busy = vm.getTasks().size();
 				}
-				return vmValue;
+				
+				vmValue[i++] = new VmValue(vmName, vApp.getVappStatus(), ips, busy);
 			}
-			return new VmValue[0]; //return empty list
+			return vmValue;
+
 		} catch (VCloudException e) {
 			throw new OvfCatalogException(e.getMessage());
 		}
@@ -140,31 +90,28 @@ public class OvfCatalogServiceImpl extends RemoteServiceServlet implements
 	public VmValue[] getTemplates() throws OvfCatalogException {
 		try {
 				
-			//iterate VDCs
-			for(ReferenceType vdcRef : getVdcRefs()) {
-				Vdc vdc = Vdc.getVdcByReference(client, vdcRef);
+			Vdc vdc = VcloudSession.getVDC();
+			
+			//copy to value class
+			Collection<ResourceReferenceType> vappTemplRefs = vdc.getVappTemplateRefs();
+			VmValue vmValue[] = new VmValue[vappTemplRefs.size()];
+			int i=0;
+			for(ResourceReferenceType vappTemplRef : vappTemplRefs) {
+				String catName = vappTemplRef.getName();
 				
-				//copy to value class
-				Collection<ResourceReferenceType> vappTemplRefs = vdc.getVappTemplateRefs();
-				VmValue vmValue[] = new VmValue[vappTemplRefs.size()];
-				int i=0;
-				for(ResourceReferenceType vappTemplRef : vappTemplRefs) {
-					String catName = vappTemplRef.getName();
-					
-					VappTemplate vappTemplate = VappTemplate.getVappTemplateByReference(client, vappTemplRef);
-					Task task = vappTemplate.enableDownload();
-					VmValue vm;
-					if(waitForTaskCompletion(client, task, 100)) {
-						vm = new VmValue(catName, vappTemplRef.getStatus(), null, vappTemplate.getTasks().size());
-					} else {
-						vm = new VmValue(catName, vappTemplRef.getStatus(), null, vappTemplate.getTasks().size());
-					}
-					vm.setCreateable(true);
-					vmValue[i++] = vm;
+				VappTemplate vappTemplate = VappTemplate.getVappTemplateByReference(VcloudSession.getClient(), vappTemplRef);
+				Task task = vappTemplate.enableDownload();
+				VmValue vm;
+				if(VcloudSession.waitForTaskCompletion(task, 100)) {
+					vm = new VmValue(catName, vappTemplRef.getStatus(), null, vappTemplate.getTasks().size());
+				} else {
+					vm = new VmValue(catName, vappTemplRef.getStatus(), null, vappTemplate.getTasks().size());
 				}
-				return vmValue;
+				vm.setCreateable(true);
+				vmValue[i++] = vm;
 			}
-			return null;
+			return vmValue;
+
 		} catch (VCloudException e) {
 			throw new OvfCatalogException(e.getMessage());
 		}
@@ -202,86 +149,39 @@ public class OvfCatalogServiceImpl extends RemoteServiceServlet implements
 	 */
 	private void startStopVM(String name, boolean start) throws VCloudException, OvfCatalogException {
 		
-		//iterate VDCs
-		for(ReferenceType vdcRef : getVdcRefs()) {
-			Vdc vdc = Vdc.getVdcByReference(client, vdcRef);
-			
-			//find VM by name
-			HashMap<String, ResourceReferenceType> vmRefs = vdc.getVappRefsByName();
-			for(String vmName : vmRefs.keySet()) {
-				if(vmName.equals(name)) {
-					Vapp vApp = Vapp.getVappByReference(client, vmRefs.get(vmName));
-					if(start==true) {
-						List<Vapp> childVms = vApp.getChildrenVms();
-						for (Vapp childVm : childVms) {
-							NetworkConnectionSectionType networkConnectionSectionType = childVm
-									.getNetworkConnectionSection();
-							List<NetworkConnectionType> networkConnections = networkConnectionSectionType
-									.getNetworkConnection();
-							for (NetworkConnectionType networkConnection : networkConnections) {
-								networkConnection
-										.setIpAddressAllocationMode(IpAddressAllocationModeType.POOL);
-								ReferenceType parentNetwork = vdc.getAvailableNetworkRefs().iterator().next();
-								String parentNetworkName = parentNetwork.getName();
-								networkConnection.setNetwork(parentNetworkName);
-								networkConnection.setIsConnected(true);
-							}
-							Task t = childVm.updateSection(networkConnectionSectionType);
-							waitForTaskCompletion(client, t, 10000);
-						}
-						Task t = vApp.powerOn();
-						waitForTaskCompletion(client, t, 100);
-					} else {
-						vApp.shutdown();
-					}
-					break;
-				}	
-			}
-		}
-
-
-	}
-	
-	/**
-	 * Gets VDCRefs
-	 * @throws VCloudException on vcloud API errors
-	 * @throws OvfCatalogException if initialisation failed
-	 */
-	private Collection<ReferenceType> getVdcRefs() throws OvfCatalogException, VCloudException {
+		Vdc vdc = VcloudSession.getVDC();
 		
-		try {
-			if(client==null) {
-				if(!staticInit()) {
-					throw new OvfCatalogException("Initialisation failed");
-				}	
-			}
-	
-			HashMap<String, ReferenceType> orgsList = client.getOrgRefsByName();
-			Collection<ReferenceType> vdcRefs=null;
-			
-			//iterate vOrgs
-			for (String vOrg : orgsList.keySet()) {
-				ReferenceType orgRef = orgsList.get(vOrg);
-				Organization org = Organization.getOrganizationByReference(client, orgRef);
-				
-				if(vdcRefs==null) {
-					vdcRefs = org.getVdcRefs();
+		//find VM by name
+		HashMap<String, ResourceReferenceType> vmRefs = vdc.getVappRefsByName();
+		for(String vmName : vmRefs.keySet()) {
+			if(vmName.equals(name)) {
+				Vapp vApp = Vapp.getVappByReference(VcloudSession.getClient(), vmRefs.get(vmName));
+				if(start==true) {
+					List<Vapp> childVms = vApp.getChildrenVms();
+					for (Vapp childVm : childVms) {
+						NetworkConnectionSectionType networkConnectionSectionType = childVm
+								.getNetworkConnectionSection();
+						List<NetworkConnectionType> networkConnections = networkConnectionSectionType
+								.getNetworkConnection();
+						for (NetworkConnectionType networkConnection : networkConnections) {
+							networkConnection
+									.setIpAddressAllocationMode(IpAddressAllocationModeType.POOL);
+							ReferenceType parentNetwork = vdc.getAvailableNetworkRefs().iterator().next();
+							String parentNetworkName = parentNetwork.getName();
+							networkConnection.setNetwork(parentNetworkName);
+							networkConnection.setIsConnected(true);
+						}
+						Task t = childVm.updateSection(networkConnectionSectionType);
+						VcloudSession.waitForTaskCompletion(t, 10000);
+					}
+					Task t = vApp.powerOn();
+					VcloudSession.waitForTaskCompletion(t, 100);
 				} else {
-					vdcRefs.addAll(org.getVdcRefs());
+					vApp.shutdown();
 				}
-			}
-			return vdcRefs;
-		} catch (VCloudException e) {
-			ErrorType vCloudError = e.getVcloudError();
-			if(vCloudError.getMajorErrorCode()==403) {
-				//possible session timeout, reauthenticate
-				client = null;
-				return getVdcRefs();
-			} else {
-				throw e;
-			}
+				break;
+			}	
 		}
-
 	}
 	
 	public void createVM(String templateName, String vmName) throws OvfCatalogException {
@@ -295,27 +195,18 @@ public class OvfCatalogServiceImpl extends RemoteServiceServlet implements
 	public Vapp newVmFromTemplate(String templateName, String vmName) throws VCloudException, OvfCatalogException {
 		
 		ReferenceType vAppTemplateReference = null;
-		Vdc vdc = null;
-		
-		for(ReferenceType vdcRef : getVdcRefs()) {
-			Vdc curVdc = Vdc.getVdcByReference(client, vdcRef);
-			for(ReferenceType vappTemplRef : curVdc.getVappTemplateRefs()) {
-				if(vappTemplRef.getName().equals(templateName)) {
-					if(vAppTemplateReference == null) {
-						vAppTemplateReference = vappTemplRef;
-						vdc = curVdc;
-					} else {
-						throw new OvfCatalogException("Duplicate vApp with name \"" + vappTemplRef + "\"");
-					}
-				}
+		Vdc vdc = VcloudSession.getVDC();
+
+		for(ReferenceType vappTemplRef : vdc.getVappTemplateRefs()) {
+			if(vappTemplRef.getName().equals(templateName)) {
+				vAppTemplateReference = vappTemplRef;
+				break;
 			}
 		}
-		if(vAppTemplateReference==null || vdc==null) {
+
+		if(vAppTemplateReference==null) {
 			throw new OvfCatalogException("template with name \"" + templateName + "\" not found");
 		}
-		
-		System.out.println("Instantiating " + vAppTemplateReference.getName());
-		System.out.println("-----------------------------");
 
 		NetworkConfigurationType networkConfigurationType = new NetworkConfigurationType();
 		if (vdc.getAvailableNetworkRefs().size() == 0) {
@@ -352,51 +243,6 @@ public class OvfCatalogServiceImpl extends RemoteServiceServlet implements
 		Vapp vapp = vdc.instantiateVappTemplate(instVappTemplParamsType);
 		
 		return vapp;
-	}
-
-  /*
-   * Escape an html string. Escaping data received from the client helps to
-   * prevent cross-site script vulnerabilities.
-   *
-   * @param html the html string to escape
-   * @return the escaped string
-   */
-  /*private String escapeHtml(String html) {
-    if (html == null) {
-      return null;
-    }
-    return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(
-        ">", "&gt;");
-  }*/
-  
-	/**
-	 * Waiting for a successful task
-	 *
-	 * @throws VCloudException
-	 * 
-	 */
-	public static boolean waitForTaskCompletion(VcloudClient client, Task task, int maxMillis)
-			throws VCloudException {
-		int time=0;
-		TaskStatusType taskStatus = Task.getTaskByReference(client,
-				task.getReference()).getResource().getStatus();
-		while (!taskStatus.equals(TaskStatusType.SUCCESS)) {
-			taskStatus = Task.getTaskByReference(client,
-					task.getReference()).getResource().getStatus();
-			if (taskStatus.equals(TaskStatusType.ERROR)
-					|| taskStatus.equals(TaskStatusType.CANCELED)) {
-				return false;
-			}
-			if(time>maxMillis) {
-				return false;
-			}
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-			}
-			time+=50;
-		}
-		return true;
 	}
 
 }
