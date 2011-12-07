@@ -328,6 +328,11 @@ public class CreateWebApplication {
     }
 	
 	private void updatePropertiesFile(Properties properties, String key, String value) {
+		/*
+		 * NOTE
+		 * 
+		 * Be very careful to not log these details - sometimes a password field may be passed it
+		 */
         properties.getProperty(key);
         properties.setProperty(key, value);
     }
