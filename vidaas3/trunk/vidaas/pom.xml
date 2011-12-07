@@ -29,20 +29,6 @@
 					<exclude>**/*.java</exclude>
 				</excludes>
 			</resource>
-			<resource>
-				<directory>${basedir}/resources</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>**/data.txt</include>
-				</includes>
-			</resource>
-			<resource>
-				<directory>${basedir}/resources</directory>
-				<filtering>false</filtering>
-				<excludes>
-					<exclude>**/data.txt</exclude>
-				</excludes>
-			</resource>
 		</resources>
 		<plugins>
 			<plugin>
