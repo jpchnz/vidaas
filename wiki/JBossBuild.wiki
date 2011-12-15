@@ -59,3 +59,9 @@ https://oss.sonatype.org/content/repositories/JBoss
 
 mvn package
 }}}
+
+= Hardening =
+
+== JMX Console etc. ==
+
+http://community.jboss.org/wiki/SecureTheJmxConsole
