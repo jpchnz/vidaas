@@ -8,8 +8,15 @@ Documentation work in progress
 
 == Fix VMware image wiredness ==
 
-remove `deb cdrom` entry from sources.list
-nullmailer
+ * remove `deb cdrom` entry from sources.list
+ * change root password
+
+== local mail (optional) ==
+{{{
+apt-get install nullmailer
+echo email@domain > /etc/nullmailer/adminaddr
+echo smtp.ox.ac.uk > /etc/nullmailer/remotes
+}}}
 
 == Runtime setup ==
 
