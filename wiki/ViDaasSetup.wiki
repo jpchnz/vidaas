@@ -10,6 +10,7 @@ Documentation work in progress
 
  * remove `deb cdrom` entry from sources.list
  * change root password
+ * create new ssh key
 
 == local mail (optional) ==
 {{{
