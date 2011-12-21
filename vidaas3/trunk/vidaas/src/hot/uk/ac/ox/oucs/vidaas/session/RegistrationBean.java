@@ -5,7 +5,6 @@ import uk.ac.ox.oucs.vidaas.dao.LoginsHome;
 import uk.ac.ox.oucs.vidaas.dao.UsersHome;
 import uk.ac.ox.oucs.vidaas.entity.Logins;
 import uk.ac.ox.oucs.vidaas.entity.Users;
-import uk.ac.ox.oucs.vidaas.utility.SystemVars;
 
 import org.hibernate.validator.Email;
 import org.jboss.seam.ScopeType;
@@ -244,9 +243,8 @@ public class RegistrationBean {
 
 				String tempPersistResult = loginsHome.persist();
 
-				System.out.println("usersHome.persist(): " + tempPersistResult + " "
-						+ logins.getUserName() + " " + (SystemVars.SHOW_PASSWORD_IN_LOGS_FOR_DEBUGGING_PURPOSES ? 
-								logins.getPassword() : ""));
+				System.out.println("usersHome.persist(): " + tempPersistResult
+						+ logins.getUserName() + "  " + logins.getPassword());
 
 				if (tempPersistResult.equalsIgnoreCase("persisted")) {
 					level1Registration2 = false;
