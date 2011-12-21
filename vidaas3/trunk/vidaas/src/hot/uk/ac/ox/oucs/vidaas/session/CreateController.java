@@ -463,7 +463,7 @@ public class CreateController {
 		ConnectionManager connectionManager = new ConnectionManager();
 		Connection connection = connectionManager.createConnection(
 				tempProjectDatabase.getDatabaseName().toLowerCase(),
-				getLoginsMain().getUserName(), getLoginsMain().getPassword());
+				getLoginsMain().getUserName().toLowerCase(), getLoginsMain().getPassword());
 		dataHolder.setCurrentStatus("\nSuccessfully Connected with Database "
 				+ dataHolder.getCurrentStatus());
 
@@ -539,7 +539,7 @@ public class CreateController {
 		try {
 			createWebApplicationThread = new CreateWebApplicationThread(
 					webApplicationName, webApplicationLocation, databaseName,
-					userName, password, dataHolder);
+					userName.toLowerCase(), password, dataHolder);
 
 			Thread webApplicationCreaterThread = new Thread(
 					createWebApplicationThread);

@@ -64,7 +64,6 @@ public class Authenticator {
 		this.disableLogin = disableLogin;
 	}
 
-	@SuppressWarnings("unused")
 	public boolean authenticate() {
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).defaultHomePage();
@@ -81,21 +80,11 @@ public class Authenticator {
 
 			// This if condition will never be executed
 			// EntityNotFoundException will be thrown ...!
-			/*
-			 * Therefore the statement is unnecessary? From the doc,
-			 * 
-			 * "getInstance - Get the managed entity, using the id from getId() to load it from the Persistence Context or creating a new instance if the id is not defined."
-			 * 
-			 * If the getinstance() call can ever return null (it seems the Seam junit tests assert this cannot happen)
-			 * then LoginsHome getInstance() calls should test for this too.
-			 */
-			if (login == null) {// Unnecessary code?
+			if (login == null) {
 				loginAttemptedAndSuccessful = true;
 				loginFailed = "Username not found. Try Again";
 				return false;
-			}
-
-			if (login.getPassword().equals(credentials.getPassword())) {
+			} else if (login.getPassword().equals(credentials.getPassword())) {
 				user = login.getUsers();
 				identity.addRole(user.getPosition());
 
