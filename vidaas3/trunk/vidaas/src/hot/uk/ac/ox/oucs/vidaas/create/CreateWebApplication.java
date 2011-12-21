@@ -48,7 +48,7 @@ public class CreateWebApplication {
         updatePropertiesFile(properties, "driver.jar", jdbcDriverJarTemp);
         updatePropertiesFile(properties, "jboss.home", serverLocationTemp);
         
-        updatePropertiesFile(properties, "hibernate.connection.username", userName);
+        updatePropertiesFile(properties, "hibernate.connection.username", userName.toLowerCase());
         updatePropertiesFile(properties, "hibernate.connection.password", password);
         updatePropertiesFile(properties, "hibernate.connection.url", "jdbc:postgresql://localhost/"+ databaseName);
 		
@@ -91,8 +91,8 @@ public class CreateWebApplication {
         }
         */
         dataHolder.setCurrentStatus("Removing Temporary Files");
-        removeSeamDir(webApplicationName, webApplicationLocation);
-        removeProjectDir(webApplicationLocation);
+        //removeSeamDir(webApplicationName, webApplicationLocation);
+        //removeProjectDir(webApplicationLocation);
         
         //dataHolder.setOkButton(false);
 	}
@@ -102,12 +102,6 @@ public class CreateWebApplication {
 	// romanriver is webApplicationName
 	private int copySeamDir(String webApplicationName, String webApplicationLocation, String seamLocation) {
         int result = -99;
-        /*
-         * FIXME
-         * webApplicationName, webApplicationLocation, seamLocation
-         * all obtained from environment vars and may be null
-         * need to check for this
-         */
         List<String> command = new ArrayList<String>();
         command.add("cp");
         command.add("-r");
@@ -128,7 +122,6 @@ public class CreateWebApplication {
             System.out.println(stderr);*/
         } catch (Exception e) {
         	dataHolder.setCurrentStatus("Failed to Build Environment");
-        	e.printStackTrace();
         	//dataHolder.setOkButton(false);
         }
         return result;
@@ -162,7 +155,6 @@ public class CreateWebApplication {
             System.out.println(stderr);
         } catch (Exception e){
         	dataHolder.setCurrentStatus("Failed to Gerate Web Application");
-        	e.printStackTrace();
         }
         
         System.out.println("Process Result: " + result);
@@ -189,7 +181,6 @@ public class CreateWebApplication {
             System.out.println(stderr);
         } catch (Exception e) {
         	dataHolder.setCurrentStatus("Failed to create Project");
-        	e.printStackTrace();
         	//dataHolder.setOkButton(false);
         }
         return result;
@@ -215,7 +206,6 @@ public class CreateWebApplication {
             System.out.println(stderr);
         } catch (Exception e) {
         	dataHolder.setCurrentStatus("Failed to do Reverse Engineering");
-        	e.printStackTrace();
         	//dataHolder.setOkButton(false);
         }
         return result;
@@ -241,7 +231,6 @@ public class CreateWebApplication {
             System.out.println(stderr);*/
         } catch (Exception e) {
         	dataHolder.setCurrentStatus("Failed to Deploy Project");
-        	e.printStackTrace();
         	//dataHolder.setOkButton(false);
         }
         return result;
@@ -267,7 +256,6 @@ public class CreateWebApplication {
             System.out.println(stderr);
         } catch (Exception e) {
         	dataHolder.setCurrentStatus("Failed to remove Temportay Directory and Files");
-        	e.printStackTrace();
         	//dataHolder.setOkButton(false);
         }
         return result;
@@ -320,19 +308,13 @@ public class CreateWebApplication {
             System.out.println("STDERR");
             System.out.println(stderr);
         } catch (Exception e) {
-        	dataHolder.setCurrentStatus("Failed to remove Temporary Directory and Files");
-        	e.printStackTrace();
+        	dataHolder.setCurrentStatus("Failed to remove Temportay Directory and Files");
         	//dataHolder.setOkButton(false);
         }
         return result;
     }
 	
 	private void updatePropertiesFile(Properties properties, String key, String value) {
-		/*
-		 * NOTE
-		 * 
-		 * Be very careful to not log these details - sometimes a password field may be passed it
-		 */
         properties.getProperty(key);
         properties.setProperty(key, value);
     }
@@ -352,7 +334,6 @@ public class CreateWebApplication {
             properties.load(new FileInputStream(tempDirectoryNameWithPath + "/seam-gen/build.properties"));
         } catch (IOException e) {
         	dataHolder.setCurrentStatus("Failed to read Default Configuration");
-        	e.printStackTrace();
         	//dataHolder.setOkButton(false);
         }
 

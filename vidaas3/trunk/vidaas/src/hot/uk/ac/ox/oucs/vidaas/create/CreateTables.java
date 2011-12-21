@@ -61,11 +61,6 @@ public class CreateTables {
 			InputStream inputStream = null;
 			Statement statement = null;
 			try {
-				/*
-				 * FIXME
-				 * If connection==null
-				 * we will get an NPE here
-				 */
 				statement = connection.createStatement();
 				inputStream = new FileInputStream(ddlFileWithURL);
 			} catch (SQLException e1) {
@@ -92,12 +87,6 @@ public class CreateTables {
 						}
 						// System.out.println("Main Statement \n" +
 						// mainStatement);
-						
-						/*
-						 * FIXME
-						 * If dataHolder==null
-						 * we will get an NPE here
-						 */
 						dataHolder.setCurrentStatus("\n" + mainStatement + "\n\n" + dataHolder.getCurrentStatus());	
 						mainStatement = "";
 					}
@@ -138,13 +127,6 @@ public class CreateTables {
 						while ((line = buffered.readLine()) != null) {
 							mainStatement = mainStatement + line + "\n";
 							System.out.println("Line: \n" + line);
-							
-							/*
-							 * FIXME
-							 * Why not just 
-							 * if (line.contains(";")) {
-							 * (easier to read)
-							 */
 							if (line.endsWith(";") || line.contains(";")) {
 								try {
 									statement.executeUpdate(mainStatement);
@@ -159,11 +141,6 @@ public class CreateTables {
 						}
 						buffered.close();
 					} catch (IOException e) {
-						/*
-						 * FIXME
-						 * Entering this code, the exception will be thrown but the 
-						 * return code will still be true
-						 */
 						e.printStackTrace();
 					}
 			    }
