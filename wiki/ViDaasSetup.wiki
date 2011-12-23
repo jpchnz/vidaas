@@ -19,15 +19,23 @@ echo email@domain > /etc/nullmailer/adminaddr
 echo smtp.ox.ac.uk > /etc/nullmailer/remotes
 }}}
 
+== general stuff (optional) ==
+
+{{{
+apt-get install less vim unzip
+}}}
+
 == Runtime setup ==
 
 {{{
 apt-get install postgresql mysql-server libmysql-java libpg-java
+adduser --system --home /opt/VIDaaSData --disabled-login --group vidaas --shell /bin/bash
 }}}
 
 Configure [PostgreSQL]
 
 Install [JBossBuild]
+chown -R vidaas:vidaas $JBOSS_HOME
 
 Currently, there is the possibility of using MySQL and/or PostgreSQL for the underlying database services. To aid with testing (and partly due to historical reasons), MySQL is used on the Controller Node and PostgreSQL is used on the Project Node (for relational database data). Thus, both PostgreSQL and MySql need to be configured. First, create a new PostgreSQL user (sudamihAdmin) and then have it own a new database, sudamihtestdb. Then create a new MySql database (vidaas_v3).
 
@@ -56,6 +64,7 @@ apt-get install openjdk-6-jdk maven2 subversion
 
 Build ViDaaS
 {{{
+su vidaas
 svn checkout https://vidaas.googlecode.com/svn/vidaas3/branches/No_XML_DB
 cd No_XML_DB/vidaas
 vi src/hot/uk/ac/ox/oucs/vidaas/manager/sudamih.properties #update uk.ac.ox.oucs.sudamih.adminUserNamePW reported as issue#44
