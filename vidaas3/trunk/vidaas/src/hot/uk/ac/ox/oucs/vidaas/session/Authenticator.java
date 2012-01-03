@@ -34,6 +34,13 @@ public class Authenticator {
 	@Out(required = true)
 	UsersHome usersHome;
 
+	
+	/**
+	 * NOTE
+	 * loginAttemptedAndSuccessful
+	 * This flag will be set to TRUE if the login has been attempted and is UNsuccessful, and
+	 * FALSE if the login has been attempted and is successful. Thus the variable is poorly named.
+	 */
 	private boolean loginAttemptedAndSuccessful = false;
 	private boolean disableLogin = false;
 
