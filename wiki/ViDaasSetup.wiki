@@ -118,6 +118,11 @@ ln -s /usr/share/java/mysql.jar mysql.jar
 ln -s /usr/share/java/postgresql.jar postgresql.jar
 }}}
 ----
+Seam-gen requires ant
+{{{
+apt-get install ant
+}}}
+
 Seam needs to be installed (for seam gen)
 {{{
 wget http://downloads.sourceforge.net/project/jboss/JBoss%20Seam/2.2.2.Final/jboss-seam-2.2.2.Final.tar.gz
