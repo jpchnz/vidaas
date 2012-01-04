@@ -97,7 +97,7 @@ Example vidaas3-ds.xml (replace $PASSWORD$ with your mysql password chosen earli
 </datasources>
 }}}
 ----
-Example vidaas-service.xml
+Example vidaas-service.xml (doesn't need changing, maybe remove from docs?)
 {{{
 <mbean code="org.jboss.varia.property.SystemPropertiesService" name="jboss.util:type=Service,name=VIDaaSProperties">
   <attribute name="Properties">
@@ -113,8 +113,12 @@ Example vidaas-service.xml
 The database drivers need to be installed to JBoss using the following instructions:
 
 {{{
+su vidaas
 cd $JBOSS_HOME/server/default/lib/
 ln -s /usr/share/java/mysql.jar mysql.jar
+ln -s /usr/share/java/postgresql.jar postgresql.jar
+mkdir /opt/DatabaseDrivers/
+cd /opt/DatabaseDrivers/
 ln -s /usr/share/java/postgresql.jar postgresql.jar
 }}}
 ----
