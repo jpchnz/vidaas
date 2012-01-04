@@ -163,3 +163,8 @@ add to vhost
         JkMount /vidaas-0.3/ vidaas
         JkMount /vidaas-0.3/* vidaas
 }}}
+
+restart apache
+{{{
+service apache2 restart
+}}}
