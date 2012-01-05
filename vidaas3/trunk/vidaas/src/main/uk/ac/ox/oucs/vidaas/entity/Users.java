@@ -89,9 +89,9 @@ public class Users implements java.io.Serializable {
 		this.userId = userId;
 	}
 
-	@Column(name = "Department", nullable = false, length = 45)
+	@Column(name = "Department", nullable = false, length = 245)
 	@NotNull
-	@Length(max = 45)
+	@Length(max = 245)
 	public String getDepartment() {
 		return this.department;
 	}
@@ -100,7 +100,7 @@ public class Users implements java.io.Serializable {
 		this.department = department;
 	}
 
-	@Column(name = "Email", nullable = false, length = 120)
+	@Column(name = "Email", nullable = false, length = 220)
 	@NotNull
 	@Length(max = 120)
 	public String getEmail() {
@@ -111,9 +111,9 @@ public class Users implements java.io.Serializable {
 		this.email = email;
 	}
 
-	@Column(name = "First_Name", nullable = false, length = 45)
+	@Column(name = "First_Name", nullable = false, length = 145)
 	@NotNull
-	@Length(max = 45)
+	@Length(max = 145)
 	public String getFirstName() {
 		return this.firstName;
 	}
@@ -122,8 +122,8 @@ public class Users implements java.io.Serializable {
 		this.firstName = firstName;
 	}
 
-	@Column(name = "Grp", length = 20)
-	@Length(max = 20)
+	@Column(name = "Grp", length = 220)
+	@Length(max = 220)
 	public String getGrp() {
 		return this.grp;
 	}
@@ -132,9 +132,9 @@ public class Users implements java.io.Serializable {
 		this.grp = grp;
 	}
 
-	@Column(name = "Last_Name", nullable = false, length = 45)
+	@Column(name = "Last_Name", nullable = false, length = 245)
 	@NotNull
-	@Length(max = 45)
+	@Length(max = 245)
 	public String getLastName() {
 		return this.lastName;
 	}
@@ -143,8 +143,8 @@ public class Users implements java.io.Serializable {
 		this.lastName = lastName;
 	}
 
-	@Column(name = "Position", length = 20)
-	@Length(max = 20)
+	@Column(name = "Position", length = 220)
+	@Length(max = 220)
 	public String getPosition() {
 		return this.position;
 	}
