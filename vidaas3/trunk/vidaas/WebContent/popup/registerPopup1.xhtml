@@ -5,7 +5,9 @@
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:s="http://jboss.com/products/seam/taglib"
 	xmlns:rich="http://richfaces.org/rich">
-	<rich:modalPanel id="registrationPanel-1" width="350" autosized="true" showWhenRendered="#{registration.level1Registration}" >
+	<rich:modalPanel id="registrationPanel-1" width="350" autosized="true" 
+			style="border-radius: 30px"
+			showWhenRendered="#{registration.level1Registration}" >
 		<f:facet name="header">
 			<h:panelGroup>
 				<h:outputText value="Register" style="background-color: #f0f0f0"></h:outputText>
