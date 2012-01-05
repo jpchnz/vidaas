@@ -5,7 +5,7 @@
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:rich="http://richfaces.org/rich">
 	<rich:modalPanel id="loginPanel" width="350" autosized="true"
-		showWhenRendered="#{authenticator.loginAttemptedAndSuccessful}"
+		showWhenRendered="#{authenticator.loginAttemptedAndFailed}"
 		onhide="window.location.reload()" style="border-radius: 30px">
 		<f:facet name="header">
 			<h:panelGroup>
@@ -37,7 +37,7 @@
 				value="Login" action="#{identity.login}"
 				reRender="loginForm, topToolBarForm, rightTopToolBarGroup"
 				onclick="this.disabled=true" status="submitStatus"
-				oncomplete="#{not authenticator.loginAttemptedAndSuccessful ? 'Richfaces.hideModalPanel(\'loginPanel\');' : 'Richfaces.showModalPanel(\'loginPanel\');'}" />
+				oncomplete="#{not authenticator.loginAttemptedAndFailed ? 'Richfaces.hideModalPanel(\'loginPanel\');' : 'Richfaces.showModalPanel(\'loginPanel\');'}" />
 
 			<a4j:region>
 				<a4j:status id="submitStatus">
