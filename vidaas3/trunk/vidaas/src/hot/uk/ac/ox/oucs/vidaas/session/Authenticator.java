@@ -34,14 +34,7 @@ public class Authenticator {
 	@Out(required = true)
 	UsersHome usersHome;
 
-	
-	/**
-	 * NOTE
-	 * loginAttemptedAndSuccessful
-	 * This flag will be set to TRUE if the login has been attempted and is UNsuccessful, and
-	 * FALSE if the login has been attempted and is successful. Thus the variable is poorly named.
-	 */
-	private boolean loginAttemptedAndSuccessful = false;
+	private boolean loginAttemptedAndSuccessful = true;
 	private boolean disableLogin = false;
 
 	private String loginFailed = "";
@@ -77,7 +70,7 @@ public class Authenticator {
 
 		disableLogin = true;
 		loginFailed = "";
-		loginAttemptedAndSuccessful = false;
+		loginAttemptedAndSuccessful = true;
 
 		// log.info("authenticating {0}", credentials.getUsername());
 		// log.info("authenticating {0}", credentials.getPassword());
@@ -88,7 +81,7 @@ public class Authenticator {
 			// This if condition will never be executed
 			// EntityNotFoundException will be thrown ...!
 			if (login == null) {
-				loginAttemptedAndSuccessful = true;
+				loginAttemptedAndSuccessful = false;
 				loginFailed = "Username not found. Try Again";
 				return false;
 			} else if (login.getPassword().equals(credentials.getPassword())) {
@@ -104,14 +97,14 @@ public class Authenticator {
 
 				System.out.println(user.getFirstName());
 
-				loginAttemptedAndSuccessful = false;
+				loginAttemptedAndSuccessful = true;
 				return true;
 			} else {
-				loginAttemptedAndSuccessful = true;
+				loginAttemptedAndSuccessful = false;
 				loginFailed = "Login Failed Try Again";
 			}
 		} catch (org.jboss.seam.framework.EntityNotFoundException exception) {
-			loginAttemptedAndSuccessful = true;
+			loginAttemptedAndSuccessful = false;
 			loginFailed = "Username not found. Try Again";
 		}
 		// disableLogin = false;
