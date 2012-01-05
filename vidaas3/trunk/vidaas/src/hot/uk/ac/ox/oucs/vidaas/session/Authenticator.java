@@ -17,108 +17,110 @@ import org.jboss.seam.web.Session;
 
 @Name("authenticator")
 public class Authenticator {
-	@Logger
-	private Log log;
+        @Logger
+        private Log log;
 
-	@In
-	Identity identity;
-	@In
-	Credentials credentials;
+        @In
+        Identity identity;
+        @In
+        Credentials credentials;
 
-	Users user;
+        Users user;
 
-	@In(create = true)
-	LoginsHome loginsHome;
+        @In(create = true)
+        LoginsHome loginsHome;
 
-	@In(create = true)
-	@Out(required = true)
-	UsersHome usersHome;
+        @In(create = true)
+        @Out(required = true)
+        UsersHome usersHome;
 
-	private boolean loginAttemptedAndSuccessful = true;
-	private boolean disableLogin = false;
+        
+        private boolean loginAttemptedAndFailed = false;
+        private boolean disableLogin = false;
 
-	private String loginFailed = "";
+        private String loginFailed = "";
 
-	public boolean isLoginAttemptedAndSuccessful() {
-		return loginAttemptedAndSuccessful;
-	}
+        public boolean isLoginAttemptedAndFailed() {
+                return loginAttemptedAndFailed;
+        }
 
-	public void setLoginAttemptedAndSuccessful(
-			boolean loginAttemptedAndSuccessful) {
-		this.loginAttemptedAndSuccessful = loginAttemptedAndSuccessful;
-	}
+        public void setLoginAttemptedAndFailed(
+                        boolean loginAttemptedAndFailed) {
+                this.loginAttemptedAndFailed = loginAttemptedAndFailed;
+        }
 
-	public String getLoginFailed() {
-		return loginFailed;
-	}
+        public String getLoginFailed() {
+                return loginFailed;
+        }
 
-	public void setLoginFailed(String loginFailed) {
-		this.loginFailed = loginFailed;
-	}
+        public void setLoginFailed(String loginFailed) {
+                this.loginFailed = loginFailed;
+        }
 
-	public boolean isDisableLogin() {
-		return disableLogin;
-	}
+        public boolean isDisableLogin() {
+                return disableLogin;
+        }
 
-	public void setDisableLogin(boolean disableLogin) {
-		this.disableLogin = disableLogin;
-	}
+        public void setDisableLogin(boolean disableLogin) {
+                this.disableLogin = disableLogin;
+        }
 
-	public boolean authenticate() {
-		((NavigationController) Contexts.getSessionContext().get(
-				"navigationController")).defaultHomePage();
+        public boolean authenticate() {
+                ((NavigationController) Contexts.getSessionContext().get(
+                                "navigationController")).defaultHomePage();
 
-		disableLogin = true;
-		loginFailed = "";
-		loginAttemptedAndSuccessful = true;
+                disableLogin = true;
+                loginFailed = "";
+                loginAttemptedAndFailed = false;
 
-		// log.info("authenticating {0}", credentials.getUsername());
-		// log.info("authenticating {0}", credentials.getPassword());
-		try {
-			loginsHome.setLoginsUserName(credentials.getUsername());
-			Logins login = loginsHome.getInstance();
+                // log.info("authenticating {0}", credentials.getUsername());
+                // log.info("authenticating {0}", credentials.getPassword());
+                try {
+                        loginsHome.setLoginsUserName(credentials.getUsername());
+                        Logins login = loginsHome.getInstance();
 
-			// This if condition will never be executed
-			// EntityNotFoundException will be thrown ...!
-			if (login == null) {
-				loginAttemptedAndSuccessful = false;
-				loginFailed = "Username not found. Try Again";
-				return false;
-			} else if (login.getPassword().equals(credentials.getPassword())) {
-				user = login.getUsers();
-				identity.addRole(user.getPosition());
+                        // This if condition will never be executed
+                        // EntityNotFoundException will be thrown ...!
+                        if (login == null) {
+                                loginAttemptedAndFailed = true;
+                                loginFailed = "Username not found. Try Again";
+                                return false;
+                        } else if (login.getPassword().equals(credentials.getPassword())) {
+                                user = login.getUsers();
+                                identity.addRole(user.getPosition());
 
-				usersHome.setId(user.getUserId());
-				usersHome.getInstance().setUserId(user.getUserId());
-				// Adding userMain in the context
+                                usersHome.setId(user.getUserId());
+                                usersHome.getInstance().setUserId(user.getUserId());
+                                // Adding userMain in the context
 
-				Contexts.getSessionContext().set("userMain", user);
-				Contexts.getSessionContext().set("loginMain", login);
+                                Contexts.getSessionContext().set("userMain", user);
+                                Contexts.getSessionContext().set("loginMain", login);
 
-				System.out.println(user.getFirstName());
+                                System.out.println(user.getFirstName());
 
-				loginAttemptedAndSuccessful = true;
-				return true;
-			} else {
-				loginAttemptedAndSuccessful = false;
-				loginFailed = "Login Failed Try Again";
-			}
-		} catch (org.jboss.seam.framework.EntityNotFoundException exception) {
-			loginAttemptedAndSuccessful = false;
-			loginFailed = "Username not found. Try Again";
-		}
-		// disableLogin = false;
-		return false;
-	}
+                                loginAttemptedAndFailed = false;
+                                return true;
+                        } else {
+                                loginAttemptedAndFailed = true;
+                                loginFailed = "Login Failed Try Again";
+                        }
+                } catch (org.jboss.seam.framework.EntityNotFoundException exception) {
+                        loginAttemptedAndFailed = true;
+                        loginFailed = "Username not found. Try Again";
+                }
+                // disableLogin = false;
+                return false;
+        }
 
-	public void logout() {
-		log.info("Authenticator Logout called", "");
-		((NavigationController) Contexts.getSessionContext().get(
-				"navigationController")).defaultHomePage();
-		Session session = Session.instance();
-		session.invalidate();
-		identity.logout();
-		// return result;
-	}
+        public void logout() {
+                log.info("Authenticator Logout called", "");
+                ((NavigationController) Contexts.getSessionContext().get(
+                                "navigationController")).defaultHomePage();
+                Session session = Session.instance();
+                session.invalidate();
+                identity.logout();
+                // return result;
+        }
+
 
 }
