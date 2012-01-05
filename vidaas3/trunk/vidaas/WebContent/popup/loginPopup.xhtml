@@ -6,7 +6,7 @@
 	xmlns:rich="http://richfaces.org/rich">
 	<rich:modalPanel id="loginPanel" width="350" autosized="true"
 		showWhenRendered="#{authenticator.loginAttemptedAndSuccessful}"
-		onhide="window.location.reload()">
+		onhide="window.location.reload()" style="border-radius: 30px">
 		<f:facet name="header">
 			<h:panelGroup>
 				<h:outputText value="Login" style="background-color: #f0f0f0"></h:outputText>
