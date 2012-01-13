@@ -17,6 +17,13 @@ This is to create a user for apache as similar as possible to what you'd get fro
 {{{
 htpasswd -c /opt/VIDaaSData/apache-passwords https//registry.shibboleth.ox.ac.uk/idp\!https//examplesp.org/shibboleth\!/yaoc/E4DdCAkoR/4WvJCn6NTck=
 }}}
+
+The un-escaped username is
+
+{{{
+https//registry.shibboleth.ox.ac.uk/idp!https//examplesp.org/shibboleth!/yaoc/E4DdCAkoR/4WvJCn6NTck=
+}}}
+
 This will prompt you for a password. If you already have a password file don't use '-c' .
 
 == Update your apache config to require BASIC authentication ==
@@ -24,6 +31,7 @@ This will prompt you for a password. If you already have a password file don't u
 Add this to your apache config (e.g directory you want to secure)
 
 {{{
+        AllowOverride AuthConfig 
         AuthType Basic
         AuthName "Restricted Files"
         AuthBasicProvider file
