@@ -185,17 +185,26 @@ public class Authenticator {
 	
 	/**
 	 * Check the current header value of AJP_targeted-id
-	 * @return the header value, or "" if not present or if this checking is not enabled
+	 * @return the header value, or "" if not present
 	 */
 	public static String checkHeaderForTargetedId() {
 		String targetedId = "";
+		boolean printAllHeaderValues = false;
 		
 		FacesContext fc = FacesContext.getCurrentInstance();
 		ExternalContext ec = fc.getExternalContext();
 		Map<String, String> headers = ec.getRequestHeaderMap();
 		if (SystemVars.USE_SSO_IF_AVAILABLE) {
 			targetedId = headers.get("AJP_targeted-id");
-		}		
+			if (printAllHeaderValues) {
+				for (String h : headers.keySet()) {
+					if ( (headers.get(h) != null) && (headers.get(h).length() != 0) ) {
+						System.out.println("Header: " + h + " - value: <" + headers.get(h) + ">");
+					}
+				}
+			}
+		}
+		
 		 
 		return targetedId;
 	}
