@@ -1,7 +1,11 @@
 package uk.ac.ox.oucs.vidaas.session;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
 import uk.ac.ox.oucs.vidaas.entity.Logins;
 import uk.ac.ox.oucs.vidaas.entity.Users;
@@ -181,19 +185,17 @@ public class Authenticator {
 	
 	/**
 	 * Check the current header value of AJP_targeted-id
-	 * @return the header value, or null if not present
+	 * @return the header value, or "" if not present or if this checking is not enabled
 	 */
 	public static String checkHeaderForTargetedId() {
-		String targetedId = null;
+		String targetedId = "";
 		
-		/*
-		 * TODO
-		 * This needs to be properly queried
-		 * jsf get servlet context
-		 */
+		FacesContext fc = FacesContext.getCurrentInstance();
+		ExternalContext ec = fc.getExternalContext();
+		Map<String, String> headers = ec.getRequestHeaderMap();
 		if (SystemVars.USE_SSO_IF_AVAILABLE) {
-			targetedId = "dpdpdp2";
-		}
+			targetedId = headers.get("AJP_targeted-id");
+		}		
 		 
 		return targetedId;
 	}
