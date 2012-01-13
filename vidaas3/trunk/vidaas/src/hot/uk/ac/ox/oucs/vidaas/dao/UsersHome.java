@@ -85,4 +85,10 @@ public class UsersHome extends EntityHome<Users> {
 		return usersList;
 	}
 
+	public List<Users> findUserByShibId(String shibId){
+		Query query = this.getEntityManager().createNamedQuery("Users.findByShibTargetedId");
+		query.setParameter("shibTargetedId", new String(shibId));
+		List<Users> usersList = query.getResultList();
+		return usersList;
+	}
 }

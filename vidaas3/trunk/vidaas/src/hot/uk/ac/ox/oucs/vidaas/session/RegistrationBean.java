@@ -5,6 +5,7 @@ import uk.ac.ox.oucs.vidaas.dao.LoginsHome;
 import uk.ac.ox.oucs.vidaas.dao.UsersHome;
 import uk.ac.ox.oucs.vidaas.entity.Logins;
 import uk.ac.ox.oucs.vidaas.entity.Users;
+import uk.ac.ox.oucs.vidaas.utility.SystemVars;
 
 import org.hibernate.validator.Email;
 import org.jboss.seam.ScopeType;
@@ -188,6 +189,32 @@ public class RegistrationBean {
 	public void setEmailUniqueViolation(String emailUniqueViolation) {
 		this.emailUniqueViolation = emailUniqueViolation;
 	}
+	
+	private void setUserVars(String shibTargetedId) {
+		user = usersHome.getInstance();
+		
+		user.setFirstName(firstName);
+		user.setLastName(lastName);
+		user.setPosition(postion);
+		user.setDepartment(department);
+		user.setGrp(grp);
+		user.setEmail(email);
+		user.setShibTargetedId(shibTargetedId);
+
+		String tempPersistResult = usersHome.persist();
+		System.out.println("usersHome.persist(): " + tempPersistResult
+				+ user.getPosition() + "  " + this.postion);
+
+		this.userId = user.getUserId();
+
+		if (tempPersistResult.equalsIgnoreCase("persisted")) {
+			level1Registration = false;
+			level1Registration2 = true;
+			registrationMessage1 = "";
+			registrationFormInclude = "/popup/registerForm-2.xhtml";
+			emailUniqueViolation = "";
+		}
+	}
 
 	public boolean registrationLevel1() {
 		level1Registration = true;
@@ -195,33 +222,26 @@ public class RegistrationBean {
 		((NavigationController) Contexts.getSessionContext().get(
 		"navigationController")).defaultHomePage();
 		
-		if (usersHome.findUserByEmail(email).isEmpty()) {
-
-			user = usersHome.getInstance();
-
-			user.setFirstName(firstName);
-			user.setLastName(lastName);
-			user.setPosition(postion);
-			user.setDepartment(department);
-			user.setGrp(grp);
-			user.setEmail(email);
-
-			String tempPersistResult = usersHome.persist();
-			System.out.println("usersHome.persist(): " + tempPersistResult
-					+ user.getPosition() + "  " + this.postion);
-
-			this.userId = user.getUserId();
-
-			if (tempPersistResult.equalsIgnoreCase("persisted")) {
-				level1Registration = false;
-				level1Registration2 = true;
-				registrationMessage1 = "";
-				registrationFormInclude = "/popup/registerForm-2.xhtml";
-				emailUniqueViolation = "";
+		String shibTargetedId = Authenticator.checkHeaderForTargetedId(); 
+		
+		if (SystemVars.USE_SSO_IF_AVAILABLE) {
+			if (usersHome.findUserByShibId(shibTargetedId).isEmpty()) {
+				setUserVars(shibTargetedId);
 			}
-		} else {
-			emailUniqueViolation = "'" + email + "' already registered";
+			else {
+				emailUniqueViolation = "user already registered";
+			}
 		}
+		else {
+			if (usersHome.findUserByEmail(email).isEmpty()) {
+				setUserVars("");
+			}
+			else {
+				emailUniqueViolation = "'" + email + "' already registered";
+			}
+		}
+
+		
 		return level1Registration;
 	}
 
@@ -235,6 +255,7 @@ public class RegistrationBean {
 
 				logins.setUserName(userName);
 				logins.setPassword(password);
+				logins.setShibTargetedId("");
 
 				System.out.println("User ID: " + this.userId);
 				usersHome.setId(this.userId);
