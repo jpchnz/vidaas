@@ -255,7 +255,7 @@ public class RegistrationBean {
 
 				logins.setUserName(userName);
 				logins.setPassword(password);
-				logins.setShibTargetedId("");
+				logins.setShibTargetedId(Authenticator.checkHeaderForTargetedId());
 
 				System.out.println("User ID: " + this.userId);
 				usersHome.setId(this.userId);
