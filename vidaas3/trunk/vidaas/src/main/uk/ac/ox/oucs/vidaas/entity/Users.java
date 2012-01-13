@@ -30,6 +30,7 @@ import org.hibernate.validator.NotNull;
     @NamedQuery(name = "Users.findByFirstName", query = "SELECT u FROM Users u WHERE u.firstName = :firstName"),
     @NamedQuery(name = "Users.findByGrp", query = "SELECT u FROM Users u WHERE u.grp = :grp"),
     @NamedQuery(name = "Users.findByLastName", query = "SELECT u FROM Users u WHERE u.lastName = :lastName"),
+    @NamedQuery(name = "Users.findByShibTargetedId", query = "SELECT u FROM Users u WHERE u.shibTargetedId = :shibTargetedId"),
     @NamedQuery(name = "Users.findByPosition", query = "SELECT u FROM Users u WHERE u.position = :position")})
 public class Users implements java.io.Serializable {
 
@@ -38,6 +39,7 @@ public class Users implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = -4547320628162409645L;
 	private Integer userId;
+	private String shibTargetedId;
 	private String department;
 	private String email;
 	private String firstName;
@@ -89,6 +91,17 @@ public class Users implements java.io.Serializable {
 		this.userId = userId;
 	}
 
+	@Column(name = "ShibTargetedId", nullable = false, length = 100)
+	@NotNull
+	@Length(max = 100)
+	public String getShibTargetedId() {
+		return this.shibTargetedId;
+	}
+	
+	public void setShibTargetedId(String shibTargetedId) {
+		this.shibTargetedId = shibTargetedId;
+	}
+	
 	@Column(name = "Department", nullable = false, length = 245)
 	@NotNull
 	@Length(max = 245)
