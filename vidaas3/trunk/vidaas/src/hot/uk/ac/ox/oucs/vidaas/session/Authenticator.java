@@ -42,20 +42,20 @@ public class Authenticator {
         @Out(required = true)
         UsersHome usersHome;
         
-        @Out
-        private int randomNumber = 4;
-        public int getRandomNumber() {
-            return randomNumber;
-         }
+//        @Out
+//        private int randomNumber = 4;
+//        public int getRandomNumber() {
+//            return randomNumber;
+//         }
 
-    	private boolean test = false;
-
-        public boolean isTest() {
-        	return test;
-        }
-        public void setTest(boolean test) {
-        	this.test = test;
-        }
+//    	private boolean test = false;
+//
+//        public boolean isTest() {
+//        	return test;
+//        }
+//        public void setTest(boolean test) {
+//        	this.test = test;
+//        }
         
         private boolean loginAttemptedAndFailed = false;
         private boolean disableLogin = false;
