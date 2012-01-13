@@ -22,7 +22,8 @@ import org.hibernate.validator.NotNull;
 @NamedQueries({
     @NamedQuery(name = "Logins.findAll", query = "SELECT l FROM Logins l"),
     @NamedQuery(name = "Logins.findByUserName", query = "SELECT l FROM Logins l WHERE l.userName = :userName"),
-    @NamedQuery(name = "Logins.findByPassword", query = "SELECT l FROM Logins l WHERE l.password = :password")})
+    @NamedQuery(name = "Logins.findByPassword", query = "SELECT l FROM Logins l WHERE l.password = :password"),
+    @NamedQuery(name = "Logins.findByUserShibTargetedId", query = "SELECT l FROM Logins l WHERE l.shibTargetedId = :shibTargetedId")})
 public class Logins implements java.io.Serializable {
 
 	/**
@@ -32,6 +33,7 @@ public class Logins implements java.io.Serializable {
 	private String userName;
 	private Users users;
 	private String password;
+	private String shibTargetedId;
 
 	public Logins() {
 	}
@@ -76,4 +78,14 @@ public class Logins implements java.io.Serializable {
 		this.password = password;
 	}
 
+	@Column(name = "ShibTargetedId", nullable = false, length = 100)
+	@NotNull
+	@Length(max = 100)
+	public String getShibTargetedId() {
+		return this.shibTargetedId;
+	}
+
+	public void setShibTargetedId(String ShibTargetedId) {
+		this.shibTargetedId = ShibTargetedId;
+	}
 }
