@@ -41,7 +41,21 @@ public class Authenticator {
         @In(create = true)
         @Out(required = true)
         UsersHome usersHome;
+        
+        @Out
+        private int randomNumber = 4;
+        public int getRandomNumber() {
+            return randomNumber;
+         }
 
+    	private boolean test = false;
+
+        public boolean isTest() {
+        	return test;
+        }
+        public void setTest(boolean test) {
+        	this.test = test;
+        }
         
         private boolean loginAttemptedAndFailed = false;
         private boolean disableLogin = false;
@@ -152,11 +166,13 @@ public class Authenticator {
 				if (login == null) {
 					loginFailed = "Username not found. Try Again";
 				}
-				else if (login.getPassword().equals(credentials.getPassword())) {
-					setupUsers(login);
-				} 
 				else {
-					loginFailed = "Login Failed Try Again";
+					if ( (login.getPassword() != null) && (login.getPassword().equals(credentials.getPassword())) ) {
+						setupUsers(login);
+					} 
+					else {
+						loginFailed = "Login Failed Try Again";
+					}
 				}
 			}
 		} catch (org.jboss.seam.framework.EntityNotFoundException exception) {
