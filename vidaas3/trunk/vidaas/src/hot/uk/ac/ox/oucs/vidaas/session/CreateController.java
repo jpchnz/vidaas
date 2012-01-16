@@ -276,7 +276,7 @@ public class CreateController {
 				log.info("projectsList.get(0).getUserRole() {0}", projectsList
 						.get(0).getUserRole());
 
-				if (projectsList.get(0).getUserRole().equalsIgnoreCase("admin")) {
+				if (projectsList.get(0).getUserRole().equalsIgnoreCase("project administrator")) {
 					new CreateDataSpaceController().createDataSpace(
 							getUserMain(), projectsList.get(0).getProject(),
 							dataspaceHome, log);
