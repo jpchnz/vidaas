@@ -212,6 +212,9 @@ public class Authenticator {
 		Map<String, String> headers = ec.getRequestHeaderMap();
 		if (SystemVars.USE_SSO_IF_AVAILABLE) {
 			targetedId = headers.get("AJP_targeted-id");
+			if (targetedId == null) {
+				targetedId = "";
+			}
 			if (printAllHeaderValues) {
 				for (String h : headers.keySet()) {
 					if ( (headers.get(h) != null) && (headers.get(h).length() != 0) ) {
