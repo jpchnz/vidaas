@@ -27,7 +27,7 @@ import uk.ac.ox.oucs.vidaas.entity.WebApplication;
 
 public class CreateDatabaseController {
 
-	private final String rootStorageDirectory = "/opt/VIDaaSData/";
+	private final String rootStorageDirectory = System.getProperty("VIDaaSDataLocation");
 
 	public void createDatabaseStructure(Integer projectID, String databaseName,
 			DatabaseStructure tempDatabaseStructure, String databaseVersion,
