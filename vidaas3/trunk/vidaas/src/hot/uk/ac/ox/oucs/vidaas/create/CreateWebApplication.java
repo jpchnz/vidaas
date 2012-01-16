@@ -91,8 +91,8 @@ public class CreateWebApplication {
         }
         */
         dataHolder.setCurrentStatus("Removing Temporary Files");
-        //removeSeamDir(webApplicationName, webApplicationLocation);
-        //removeProjectDir(webApplicationLocation);
+        removeSeamDir(webApplicationName, webApplicationLocation);
+        removeProjectDir(webApplicationLocation);
         
         //dataHolder.setOkButton(false);
 	}
