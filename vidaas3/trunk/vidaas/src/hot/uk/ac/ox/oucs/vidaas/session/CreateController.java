@@ -628,10 +628,18 @@ public class CreateController {
 
 			// I should just return .. if user doesn't exist
 			// usersHome.persist();
-			addProjectMemberConfirmationMessage = tempUser.getLastName() + ", "
-					+ tempUser.getFirstName() + " is not a registered member";
+			addProjectMemberConfirmationMessage = String.format("User with email address '%s' is not a registered member", tempUser.getEmail());
 			// return;
-		} else {
+		}
+		else {
+			if (userList.size() > 1) {
+				/*
+				 * This is bad. It means there are more than one users defined with the same email address.
+				 * This should never happen so let us simply log this error and continue with the first defined
+				 * user for now.
+				 */
+				log.error("Problem finding unique user to add as project member - duplicates exist for " + tempUser.getEmail() + ". Will use the first instance.");
+			}
 			tempUser = userList.get(0);
 
 			UserProjectId userProjectID = new UserProjectId();
@@ -653,7 +661,7 @@ public class CreateController {
 				userProjectHome.persist();
 				addProjectMemberConfirmationMessage = tempUser.getLastName()
 						+ ", " + tempUser.getFirstName()
-						+ " is added as project member";
+						+ " has been added as project member with ";
 			} catch (Exception e) {
 				// org.hibernate.exception.ConstraintViolationException
 				addProjectMemberConfirmationMessage = tempUser.getLastName()
