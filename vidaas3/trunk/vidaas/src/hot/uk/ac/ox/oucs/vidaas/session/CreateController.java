@@ -289,8 +289,8 @@ public class CreateController {
 				
 				UserProject currentProject = projectsList.get(0);
 				
-				if ( (currentProject.getUserRole().equals(SystemVars.UserRoles.ADMIN.getRole())) ||
-						(currentProject.getUserRole().equals(SystemVars.UserRoles.OWNER.getRole())) ) {
+				if (true ||( (currentProject.getUserRole().equals(SystemVars.UserRoles.ADMIN.getRole())) ||
+						(currentProject.getUserRole().equals(SystemVars.UserRoles.OWNER.getRole())) )) {
 					new CreateDataSpaceController().createDataSpace(
 							getUserMain(), projectsList.get(0).getProject(),
 							dataspaceHome, log);

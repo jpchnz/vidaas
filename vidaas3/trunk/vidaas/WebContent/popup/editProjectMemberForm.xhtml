@@ -1,0 +1,44 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	
+	<a4j:form ajaxSubmit="true" reRender="homePageMainBodyInclude" id="createEditProjectMemberForm">
+		<h:outputText value="You are not involved in any Project."
+			rendered="#{empty navigationController.userProjectsList()}" />
+		<h:outputText value="You are involved in following Project/s."
+			rendered="#{not empty navigationController.userProjectsList()}" />
+		<rich:dataTable id="userProjectList" var="_userProject"
+			style="border-width: 1px; border-radius:20px" 
+			value="#{navigationController.userProjectsList()}"
+			rendered="#{not empty navigationController.userProjectsList()}">
+			<f:facet name="header">
+				<h:outputText value="Projects List" />
+			</f:facet>
+			<h:column>
+				<f:facet name="header">Project Members</f:facet>
+				<rich:dataTable var="_userProjectMembers"
+					value="#{navigationController.listProjectMembers(_userProject.id.projectId)}"
+					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'"
+					style="border:0px">
+					
+					<rich:column style="border:0px" sortBy="#{_userProjectMembers.users.lastName}">
+						<f:facet name="header">Name</f:facet>
+						<h:outputText value="#{_userProjectMembers.users.lastName}, #{_userProjectMembers.users.firstName}" />
+					</rich:column>
+					<rich:column style="border:0px" sortBy="#{_userProjectMembers.userRole}">
+						<f:facet name="header">Role</f:facet>
+						<h:outputText value="#{_userProjectMembers.userRole}" />
+					</rich:column>
+				</rich:dataTable>
+			</h:column>
+		</rich:dataTable>
+    </a4j:form>
+	
+</ui:composition>
