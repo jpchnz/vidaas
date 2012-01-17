@@ -42,7 +42,7 @@ public class CreateDatabaseController {
 		String projectName = "project_" + projectID;
 
 		// databaseDirectory = /opt/vidaasData/project_2/db_test/
-		String databaseDirectory = rootStorageDirectory + projectName + "/"
+		String databaseDirectory = rootStorageDirectory + "/" + projectName + "/"
 				+ stringValidation(databaseName) + "/" + databaseVersion + "/";
 
 		// schemaDirectory = /opt/vidaasData/project_2/db_test/
