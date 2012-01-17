@@ -33,7 +33,7 @@
 				</f:facet>
 				<h:outputText value="#{_userProject.project.title}" />
 			</h:column>
-			<h:column>
+			<h:column headerClass="descriptionWidth">
 				<f:facet name="header">
 					<ui:include src="/layout/sort.xhtml">
 						<ui:param name="entityList" value="#{userProjectList}" />
@@ -106,8 +106,7 @@
 				</s:link>
 			</h:column>
  -->
-			<h:column>
-				<!--  This is working with @RequestParameter but may need to look @DataModel  -->
+			<!-- <h:column>
 				<f:facet name="header">
 					<ui:include src="/layout/sort.xhtml">
 						<ui:param name="propertyLabel" value="Project Members" />
@@ -119,8 +118,39 @@
 					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'"
 					style="border:0px">
-					<rich:column style="border:0px">
+					<rich:column style="border:0px" sortBy="#{_userProjectMembers.users.lastName}">
+						<f:facet name="header">Name</f:facet>
 						<h:outputText value="#{_userProjectMembers.users.lastName}, #{_userProjectMembers.users.firstName}" />
+					</rich:column>
+					<rich:column style="border:0px">
+						<f:facet name="header">Authority</f:facet>
+						<h:outputText value="#{_userProjectMembers.users.lastName}, #{_userProjectMembers.users.firstName}" />
+					</rich:column>
+				</rich:dataTable>
+				<a4j:commandLink id="addProjectMemberLink" value="Add New Member"
+					action="#{navigationController.createProjectMember()}"
+					style="float:right">
+					<f:param name="projectIDValue" value="#{_userProject.id.projectId}" />
+					<rich:componentControl for="addProjectMemberPanel"
+						attachTo="addProjectMemberLink" operation="show" event="onclick" />
+				</a4j:commandLink>
+			</h:column>-->
+			
+			<h:column>
+				<f:facet name="header">Project Members</f:facet>
+				
+				<rich:dataTable var="_userProjectMembers"
+					value="#{navigationController.listProjectMembers(_userProject.id.projectId)}"
+					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'"
+					style="border:0px">
+					<rich:column style="border:0px" sortBy="#{_userProjectMembers.users.lastName}">
+						<f:facet name="header">Name</f:facet>
+						<h:outputText value="#{_userProjectMembers.users.lastName}, #{_userProjectMembers.users.firstName}" />
+					</rich:column>
+					<rich:column style="border:0px" sortBy="#{_userProjectMembers.userRole}">
+						<f:facet name="header">Role</f:facet>
+						<h:outputText value="#{_userProjectMembers.userRole}" />
 					</rich:column>
 				</rich:dataTable>
 				<a4j:commandLink id="addProjectMemberLink" value="Add New Member"
