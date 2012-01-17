@@ -544,9 +544,7 @@ public class NavigationController {
 	public void singleDataspaceDisplayPage() {
 		log.info("singleDatabaseDisplayPage dataspaceIDValue: {0} projectIDValue: {1}", dataspaceIDValue, projectIDValue);		
 
-		projectHome.setId(projectIDValue);
-		currentProject = projectHome.getInstance();
-		Contexts.getSessionContext().set("currentProject", currentProject);
+		initiateEnvironment();
 
 		dataspaceHome.setId(dataspaceIDValue);
 		currentDataspace = dataspaceHome.getInstance();
@@ -554,21 +552,32 @@ public class NavigationController {
 
 		homePageMainBodyNavigation = "/custom/singleDataspaceByProject.xhtml";
 	}
+	
+	public void editProjectMembers() {
+		log.debug("editProjectMembers");
+		
+		initiateEnvironment();
+	}
 
 	public void createProjectMember() {
-		log.info("createProjectMember projectIDValue: "
-				+ projectIDValue);
-		if (projectIDValue != null) {
-			Contexts.getSessionContext().set("projectIDValue", projectIDValue);
-		} else {
-			projectIDValue = (Integer) Contexts.getSessionContext().get(
-					"projectIDValue");
+		if (log.isInfoEnabled()) {
+			log.info("createProjectMember projectIDValue: " + projectIDValue);
 		}
 
-		projectHome.setId(projectIDValue);
-		currentProject = projectHome.getInstance();
+		initiateEnvironment();
+
 		Contexts.getSessionContext().set("currentProject", currentProject);
 		// homePageMainBodyNavigation = "/custom/createUserForm.xhtml";
+	}
+	
+	private void initiateEnvironment() {
+		if (projectIDValue == null) {
+			projectIDValue = (Integer) Contexts.getSessionContext().get("projectIDValue");
+		}
+		
+		Contexts.getSessionContext().set("projectIDValue", projectIDValue);
+		projectHome.setId(projectIDValue);
+		currentProject = projectHome.getInstance();
 	}
 
 	public boolean setCurrentDatabase(Integer currentDatabaseIDValue) {

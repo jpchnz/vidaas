@@ -138,12 +138,12 @@
 			
 			<h:column>
 				<f:facet name="header">Project Members</f:facet>
-				
 				<rich:dataTable var="_userProjectMembers"
 					value="#{navigationController.listProjectMembers(_userProject.id.projectId)}"
 					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'"
 					style="border:0px">
+					
 					<rich:column style="border:0px" sortBy="#{_userProjectMembers.users.lastName}">
 						<f:facet name="header">Name</f:facet>
 						<h:outputText value="#{_userProjectMembers.users.lastName}, #{_userProjectMembers.users.firstName}" />
@@ -153,7 +153,7 @@
 						<h:outputText value="#{_userProjectMembers.userRole}" />
 					</rich:column>
 				</rich:dataTable>
-				<a4j:commandLink id="addProjectMemberLink" value="Add New Member"
+				<a4j:commandLink id="addProjectMemberLink" value="Add new member"
 					action="#{navigationController.createProjectMember()}"
 					style="float:right">
 					<f:param name="projectIDValue" value="#{_userProject.id.projectId}" />
