@@ -1,0 +1,25 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+<rich:modalPanel id="editProjectMemberPanel" width="455" autosized="true" style="border-radius: 30px"
+	showWhenRendered="#{navigationController.editProjectMemberFormRender}">
+		
+        <f:facet name="header">
+            <h:panelGroup>
+                <h:outputText value="Edit Project Member" style="background-color: #f0f0f0"></h:outputText>
+            </h:panelGroup>
+        </f:facet>
+        <f:facet name="controls">
+            <h:panelGroup>
+                <h:graphicImage value="/images/close.png" width="20px" styleClass="hidelink" id="editProjectMemberHidelink"/>
+                <rich:componentControl for="editProjectMemberPanel" attachTo="editProjectMemberHidelink" operation="hide" event="onclick"/>
+            </h:panelGroup>
+        </f:facet>
+        <a4j:include id="editProjectMemberFormInclude" viewId="#{navigationController.editProjectMemberInclude}"/>
+	</rich:modalPanel>
+</ui:composition>

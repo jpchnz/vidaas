@@ -159,7 +159,14 @@
 					<f:param name="projectIDValue" value="#{_userProject.id.projectId}" />
 					<rich:componentControl for="addProjectMemberPanel"
 						attachTo="addProjectMemberLink" operation="show" event="onclick" />
-				</a4j:commandLink>
+				</a4j:commandLink><p></p>
+				<!-- <a4j:commandLink id="editProjectMemberLink" value="Edit membership"
+					action="#{navigationController.editProjectMembers()}"
+					style="float:left">
+					<f:param name="projectIDValue" value="#{_userProject.id.projectId}" />
+					<rich:componentControl for="editProjectMemberPanel"
+						attachTo="editProjectMemberLink" operation="show" event="onclick" />
+				</a4j:commandLink> -->
 			</h:column>
 		</rich:dataTable>
 	</a4j:form>
