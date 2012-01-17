@@ -661,7 +661,7 @@ public class CreateController {
 				userProjectHome.persist();
 				addProjectMemberConfirmationMessage = tempUser.getLastName()
 						+ ", " + tempUser.getFirstName()
-						+ " has been added as project member with ";
+						+ " has been added as project member";
 			} catch (Exception e) {
 				// org.hibernate.exception.ConstraintViolationException
 				addProjectMemberConfirmationMessage = tempUser.getLastName()
