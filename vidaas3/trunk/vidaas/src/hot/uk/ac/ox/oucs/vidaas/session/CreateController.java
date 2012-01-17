@@ -629,7 +629,7 @@ public class CreateController {
 			// I should just return .. if user doesn't exist
 			// usersHome.persist();
 			addProjectMemberConfirmationMessage = tempUser.getLastName() + ", "
-					+ tempUser.getFirstName() + " is not registered member";
+					+ tempUser.getFirstName() + " is not a registered member";
 			// return;
 		} else {
 			tempUser = userList.get(0);
