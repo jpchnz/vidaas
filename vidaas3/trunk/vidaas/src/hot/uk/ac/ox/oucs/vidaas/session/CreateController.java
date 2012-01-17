@@ -36,6 +36,7 @@ import uk.ac.ox.oucs.vidaas.delete.DeleteXMLFileFromDatabase;
 import uk.ac.ox.oucs.vidaas.manager.ConnectionManager;
 import uk.ac.ox.oucs.vidaas.session.NavigationController;
 import uk.ac.ox.oucs.vidaas.utility.LoadXMLContainer;
+import uk.ac.ox.oucs.vidaas.utility.SystemVars;
 
 import org.hibernate.validator.InvalidStateException;
 import org.hibernate.validator.InvalidValue;
@@ -272,28 +273,51 @@ public class CreateController {
 						.findByUserIDAndProjectID(getUserMain().getUserId(),
 								this.currentProjectID);
 
-				log.info("projectsList.size() {0}", projectsList.size());
-				log.info("projectsList.get(0).getUserRole() {0}", projectsList
-						.get(0).getUserRole());
-
-				if (projectsList.get(0).getUserRole().equalsIgnoreCase("project administrator")) {
+				if (log.isInfoEnabled()) {
+					log.info("projectsList.size() {0}", projectsList.size());
+					log.info("projectsList.get(0).getUserRole() {0}", projectsList
+							.get(0).getUserRole());
+				}
+				
+				if (projectsList.size() > 1) {
+					/*
+					 * This should never happen. For now, log the fact and continue.
+					 */
+					log.error(String.format("Too many projects defined in the database for userid %s and project id %d",
+							getUserMain().getUserId(), this.currentProjectID));
+				}
+				
+				UserProject currentProject = projectsList.get(0);
+				
+				if ( (currentProject.getUserRole().equals(SystemVars.UserRoles.ADMIN.getRole())) ||
+						(currentProject.getUserRole().equals(SystemVars.UserRoles.OWNER.getRole())) ) {
 					new CreateDataSpaceController().createDataSpace(
 							getUserMain(), projectsList.get(0).getProject(),
 							dataspaceHome, log);
+					createProjectDataspaceConfirmationMessage = "Data Space '"
+							+ dataspaceHome.getInstance().getDataspaceName()
+							+ "' for Project: '"
+							+ projectsList.get(0).getProject().getTitle()
+							+ "' is successfully created.";
+				}
+				else {
+					createProjectDataspaceConfirmationMessage = "ERROR: You do not have the authority to create data space '"
+							+ dataspaceHome.getInstance().getDataspaceName()
+							+ "' for Project: '"
+							+ projectsList.get(0).getProject().getTitle()
+							+ "'.";
 				}
 
-				createProjectDataspaceConfirmationMessage = "Data Space '"
-						+ dataspaceHome.getInstance().getDataspaceName()
-						+ "' for Project: '"
-						+ projectsList.get(0).getProject().getTitle()
-						+ "' is successfully created.";
+				
 				((NavigationController) Contexts.getSessionContext().get(
 						"navigationController"))
 						.createProjectDataspaceConfirmation();
-			} else {
+			} 
+			else {
 				validationError = "Web Application Name should not contain special character or space";
 			}
-		} else {
+		} 
+		else {
 			validationError = "Dataspace Name should not contain special character or space";
 		}
 	}

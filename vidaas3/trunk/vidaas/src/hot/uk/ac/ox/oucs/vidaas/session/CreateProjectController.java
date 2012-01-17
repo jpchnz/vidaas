@@ -9,6 +9,7 @@ import uk.ac.ox.oucs.vidaas.entity.UserProject;
 import uk.ac.ox.oucs.vidaas.entity.UserProjectId;
 
 import uk.ac.ox.oucs.vidaas.utility.StringUtility;
+import uk.ac.ox.oucs.vidaas.utility.SystemVars;
 
 //import org.jboss.seam.annotations.Name;
 import org.jboss.seam.log.Log;
@@ -36,7 +37,7 @@ public class CreateProjectController {
 		userProject.setId(userProjectID);
 		userProject.setProject(projectHome.getInstance());
 		userProject.setUsers(userMain);
-		userProject.setUserRole("Admin");
+		userProject.setUserRole(SystemVars.UserRoles.OWNER.getRole());
 
 		userProjectHome.setInstance(userProject);
 		String persistResultString = userProjectHome.persist();
