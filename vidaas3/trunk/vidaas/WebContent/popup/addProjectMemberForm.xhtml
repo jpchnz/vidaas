@@ -13,22 +13,16 @@
 		
 	        <div>
 			<h:panelGrid columns="3" rowClasses="prop" columnClasses="name,value,errorMessage">
-			<!-- 
-			17th January
-			The user's name is no longer required. There could be several users with the same name,
-			so specifying it here doesn't make sense (and currently the back end code doesn't use it except
-			for messages anyway). Only the email address is unique and should be used.
-			Currently commented out - to be removed after a few weeks when I can guarantee this is definitely the case. 
 	                    <h:outputLabel for="firstName">First Name</h:outputLabel>
 	                    <h:inputText id="firstName" 
-	                              value="#{usersHome.instance.firstName}" required="false" itemDisabled="true"/>
+	                              value="#{usersHome.instance.firstName}" required="true" />
 	                     <rich:message for="firstName" style="width : 184px;" />
 	                     
 	                    <h:outputLabel for="lastName">Last Name</h:outputLabel>
 	                    <h:inputText id="lastName" 
-	                                value="#{usersHome.instance.lastName}" required="false" itemDisabled="true"/>	                     
+	                                value="#{usersHome.instance.lastName}" required="true" />	                     
 						<rich:message for="lastName" style="width : 184px;" />
-			-->
+			
 						
 						<h:outputLabel for="email">Email</h:outputLabel>
 	                    <h:inputText id="email" 
