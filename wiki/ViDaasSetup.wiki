@@ -20,6 +20,12 @@ echo email@domain > /etc/nullmailer/adminaddr
 echo smtp.ox.ac.uk > /etc/nullmailer/remotes
 }}}
 
+apticron (optional needs local mail)
+
+{{{
+apt-get install apticron
+}}}
+
 == general stuff (optional) ==
 
 {{{
