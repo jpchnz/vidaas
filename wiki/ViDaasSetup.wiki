@@ -6,11 +6,12 @@ Documentation work in progress
 
 = Details =
 
-== Fix VMware image wiredness ==
+== Fix VMware image issues ==
 
  * remove `deb cdrom` entry from sources.list
  * change root password
  * create new ssh key
+ * use partition created for home in /var
 
 == local mail (optional) ==
 {{{
