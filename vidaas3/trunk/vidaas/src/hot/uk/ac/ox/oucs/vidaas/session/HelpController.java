@@ -4,7 +4,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 
-import uk.ac.ox.oucs.vidaas.session.generated.HelpField;
+//import uk.ac.ox.oucs.vidaas.session.generated.HelpField;
 
 @Name("helpController")
 @Scope(ScopeType.SESSION)
