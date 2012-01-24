@@ -25,7 +25,7 @@ import com.sun.jna.Platform;
 public class HMacTest {
 	private static final String CORRECT_PERM_MESSAGE = "This is a secret HMAC message"; // The message used to generate the HMAC key on the remote machine
 	private static String encryptedStringFromSource;
-	private static File remoteMacKey = new File("remote_MacKey");
+	private static File remoteMacKey = new File("testfiles" + File.separator + "remote_MacKey");
 
 	/**
 	 * Perform init functions
@@ -34,7 +34,7 @@ public class HMacTest {
 	@BeforeClass
 	public static void initialise() throws IOException {
 		encryptedStringFromSource = (String) GeneralUtils
-				.readObjectFromFile("hMacString.source.remote");
+				.readObjectFromFile("testfiles" + File.separator + "hMacString.source.remote");
 	}
 	
 
