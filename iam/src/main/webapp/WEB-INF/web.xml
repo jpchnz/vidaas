@@ -28,4 +28,13 @@
         <servlet-name>ReceivePost</servlet-name>
         <url-pattern>/ReceivePost</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>AccessServlet</servlet-name>
+        <servlet-class>uk.ac.ox.oucs.iam.postsec.AccessServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AccessServlet</servlet-name>
+        <url-pattern>/AccessServlet</url-pattern>
+    </servlet-mapping>
 </web-app>
