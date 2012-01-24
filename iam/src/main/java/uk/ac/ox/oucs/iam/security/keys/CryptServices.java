@@ -11,6 +11,8 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.apache.commons.codec.binary.Base64;
+
 import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
 import uk.ac.ox.oucs.iam.security.utilities.exceptions.NoEncodingException;
 
@@ -133,7 +135,7 @@ public class CryptServices extends KeyServices implements Serializable {
 		byte[] enc = ecipher.doFinal(utf8);
 
 		// Encode bytes to base64 to get a string
-		return new sun.misc.BASE64Encoder().encode(enc);
+		return new String(Base64.encodeBase64(enc));
 	}
 
 	/**
@@ -150,6 +152,7 @@ public class CryptServices extends KeyServices implements Serializable {
 			BadPaddingException, IOException {
 		// Decode base64 to get bytes
 		byte[] dec = new sun.misc.BASE64Decoder().decodeBuffer(str);
+		dec = Base64.decodeBase64(str);
 
 		// Decrypt
 		byte[] utf8 = dcipher.doFinal(dec);
