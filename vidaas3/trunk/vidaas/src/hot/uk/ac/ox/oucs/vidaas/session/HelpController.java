@@ -6,8 +6,8 @@ import org.jboss.seam.annotations.Scope;
 
 //import uk.ac.ox.oucs.vidaas.session.generated.HelpField;
 
-@Name("helpController")
-@Scope(ScopeType.SESSION)
+//@Name("helpController")
+//@Scope(ScopeType.SESSION)
 public class HelpController {
 //	private HelpTextGenerator helpTextGenerator;
 //	private String helpId = null;
@@ -21,14 +21,15 @@ public class HelpController {
 //		}
 //	}
 //	
-//	public String setupHelpText(String helpId) {
+	public String setupHelpText(String helpId) {
 //		HelpField helpField = helpTextGenerator.getHelpField(helpId);
 //		if (helpField == null) {
 //			return "No help available";
 //		}
 //		this.helpId = helpId;
 //		return helpField.getText();
-//	}
+		return "Here is some help text for id " + helpId;
+	}
 //
 //	public String getHelpText() {
 //		if (helpId == null) {
