@@ -41,7 +41,7 @@ public class CryptServicesTest {
 		msg[numberOfStrings++] = "";
 
 		permanentKey = new File("permanentSymKey");
-		remoteKey = new File("cryptkey.source");
+		remoteKey = new File("testfiles" + File.separator + "cryptkey.source");
 		localKey = new File("localKey");
 	}
 	
@@ -60,7 +60,7 @@ public class CryptServicesTest {
 					break;
 				}
 				String toTest = (String) GeneralUtils
-						.readObjectFromFile("./encString" + counter);
+						.readObjectFromFile("testfiles" + File.separator + "encString" + counter);
 				assertTrue(cs.decrypt(toTest).equals(msg[counter]));
 				counter++;
 			}
@@ -84,7 +84,7 @@ public class CryptServicesTest {
 					break;
 				}
 				String toTest = (String) GeneralUtils
-						.readObjectFromFile("./encString" + counter);
+						.readObjectFromFile("testfiles" + File.separator + "encString" + counter);
 				assertFalse(cs.decrypt(toTest).equals(msg[counter]));
 				counter++;
 			}
