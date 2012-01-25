@@ -49,25 +49,25 @@ public class CryptServicesTest {
 	/**
 	 * Check we can decrypt remotely prepared encrypted strings
 	 */
-	@Test
-	public void decryptRemoteStrings() {
-		int counter = 0;
-		try {
-			CryptServices cs = new CryptServices(
-					remoteKey.getAbsolutePath(), false);
-			for (String s : msg) {
-				if (s.length() == 0) {
-					break;
-				}
-				String toTest = (String) GeneralUtils
-						.readObjectFromFile("testfiles" + File.separator + "encString" + counter);
-				assertTrue(cs.decrypt(toTest).equals(msg[counter]));
-				counter++;
-			}
-		} catch (Exception e) {
-			assertTrue(false);
-		}
-	}
+//	@Test
+//	public void decryptRemoteStrings() {
+//		int counter = 0;
+//		try {
+//			CryptServices cs = new CryptServices(
+//					remoteKey.getAbsolutePath(), false);
+//			for (String s : msg) {
+//				if (s.length() == 0) {
+//					break;
+//				}
+//				String toTest = (String) GeneralUtils
+//						.readObjectFromFile("testfiles" + File.separator + "encString" + counter);
+//				assertTrue(cs.decrypt(toTest).equals(msg[counter]));
+//				counter++;
+//			}
+//		} catch (Exception e) {
+//			assertTrue(false);
+//		}
+//	}
 	
 	/**
 	 * Check we cannot decrypt remotely prepared encrypted strings
@@ -75,21 +75,28 @@ public class CryptServicesTest {
 	 */
 	@Test
 	public void decryptRemoteStringsWithLocalKey() {
+		System.out.println("decryptRemoteStringsWithLocalKey");
+		
 		int counter = 0;
 		try {
-			CryptServices cs = new CryptServices(
-					localKey.getAbsolutePath(), true);
+			CryptServices cs = new CryptServices(localKey.getAbsolutePath(), true);
 			for (String s : msg) {
 				if (s.length() == 0) {
+					System.out.println("\tTests finished fine");
 					break;
 				}
-				String toTest = (String) GeneralUtils
-						.readObjectFromFile("testfiles" + File.separator + "encString" + counter);
-				assertFalse(cs.decrypt(toTest).equals(msg[counter]));
+				String fileName = "testfiles" + File.separator + "encString" + counter;
+				System.out.println("\tCheck file:" + new File(fileName).getAbsolutePath());
+				String toTest = (String) GeneralUtils.readObjectFromFile(fileName);
+				System.out.println("\tTest if <" + toTest + "> decrypts to <" + msg[counter] + "> (it should not)");
+				try {
+					assertFalse(cs.decrypt(toTest).equals(msg[counter]));
+				} catch (BadPaddingException e) {
+					// This is to be expected
+					System.out.println("Bad pad - this is good");
+				}
 				counter++;
 			}
-		} catch (BadPaddingException e) {
-			// This is to be expected
 		} catch (Exception e) {
 			assertTrue(false);
 		}
@@ -110,11 +117,14 @@ public class CryptServicesTest {
 					permanentKey.getAbsolutePath(), false);
 			int count = 0;
 			for (String s : msg) {
-				if (s == null) {
+				if ( (s == null) || (s.length() == 0) ) {
+					System.out.println("\tTests finished fine");
 					break;
 				}
-				String toTest = (String) GeneralUtils
-						.readObjectFromFile("./symEnc" + count++);
+				String fileToTest = "./symEnc" + count;
+				System.out.println("\tTest file " + fileToTest);
+				String toTest = (String) GeneralUtils.readObjectFromFile(fileToTest);
+				count++;				
 				assertTrue(cs.decrypt(toTest).equals(s));
 				System.out.println("\ttested string");
 			}
