@@ -1,4 +1,4 @@
-package uk.ac.ox.oucs.iam.postsec;
+package uk.ac.ox.oucs.iam.postsecurely;
 
 import java.io.IOException;
 import java.io.PrintWriter;

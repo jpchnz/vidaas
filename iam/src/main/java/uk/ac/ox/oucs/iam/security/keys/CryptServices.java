@@ -151,8 +151,7 @@ public class CryptServices extends KeyServices implements Serializable {
 	public String decrypt(String str) throws IllegalBlockSizeException,
 			BadPaddingException, IOException {
 		// Decode base64 to get bytes
-		byte[] dec = new sun.misc.BASE64Decoder().decodeBuffer(str);
-		dec = Base64.decodeBase64(str);
+		byte[] dec = Base64.decodeBase64(str);
 
 		// Decrypt
 		byte[] utf8 = dcipher.doFinal(dec);
