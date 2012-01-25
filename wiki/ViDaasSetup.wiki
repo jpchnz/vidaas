@@ -12,6 +12,8 @@ Documentation work in progress
  * change root password
  * create new ssh key
  * use partition created for home in /var
+ * update hosts.allow and hosts.deny
+ * check vmware customization completed successfully
 
 == local mail (optional) ==
 {{{
