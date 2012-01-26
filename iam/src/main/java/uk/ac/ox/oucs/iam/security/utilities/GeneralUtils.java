@@ -10,6 +10,15 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
 public class GeneralUtils {
+	/**
+	 * Copy a file
+	 * 
+	 * @param src
+	 *            the source file to be copied
+	 * @param dst
+	 *            the destination file
+	 * @throws IOException
+	 */
 	public static void copy(File src, File dst) throws IOException {
 		InputStream in = new FileInputStream(src);
 		OutputStream out = new FileOutputStream(dst);
@@ -24,6 +33,14 @@ public class GeneralUtils {
 		out.close();
 	}
 
+	
+	/**
+	 * Read the contents of a file and return as a generic object that can be
+	 * cast to something more useful
+	 * @param fileName the file to read
+	 * @return a generic object representing the file contents
+	 * @throws IOException
+	 */
 	public static Object readObjectFromFile(String fileName) throws IOException {
 		Object o = null;
 
@@ -42,11 +59,16 @@ public class GeneralUtils {
 		return o;
 	}
 
+	
+	/**
+	 * Create a file with specific contents (such as a key) 
+	 * @param fileName the file to create
+	 * @param o the contents for the file
+	 */
 	public static void writeObject(String fileName, Object o) {
 		FileOutputStream fos = null;
 		ObjectOutputStream out = null;
 		try {
-
 			fos = new FileOutputStream(fileName);
 			out = new ObjectOutputStream(fos);
 			out.writeObject(o);
