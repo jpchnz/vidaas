@@ -22,7 +22,7 @@
     </servlet-mapping>
     <servlet>
         <servlet-name>ReceivePost</servlet-name>
-        <servlet-class>uk.ac.ox.oucs.iam.postsec.ReceivePost</servlet-class>
+        <servlet-class>uk.ac.ox.oucs.iam.postsecurely.ReceivePost</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ReceivePost</servlet-name>
