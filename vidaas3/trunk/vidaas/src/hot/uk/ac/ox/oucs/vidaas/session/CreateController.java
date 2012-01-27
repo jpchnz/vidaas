@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.FileChannel;
 import java.sql.Connection;
 import java.util.Date;
@@ -32,11 +33,11 @@ import uk.ac.ox.oucs.vidaas.data.holder.DataHolder;
 import uk.ac.ox.oucs.vidaas.delete.DeleteDatabase;
 import uk.ac.ox.oucs.vidaas.delete.DeleteWebApplication;
 import uk.ac.ox.oucs.vidaas.delete.DeleteXMLFileFromDatabase;
+import uk.ac.ox.oucs.vidaas.download.DownloadDatabase;
 
 import uk.ac.ox.oucs.vidaas.manager.ConnectionManager;
 import uk.ac.ox.oucs.vidaas.session.NavigationController;
 import uk.ac.ox.oucs.vidaas.utility.LoadXMLContainer;
-import uk.ac.ox.oucs.vidaas.utility.SystemVars;
 
 import org.hibernate.validator.InvalidStateException;
 import org.hibernate.validator.InvalidValue;
@@ -61,6 +62,11 @@ import uk.ac.ox.oucs.vidaas.entity.UserProjectId;
 import uk.ac.ox.oucs.vidaas.entity.XMLFiles;
 
 import java.util.regex.Pattern;
+
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 @Name("createController")
 @Scope(ScopeType.SESSION)
@@ -141,6 +147,16 @@ public class CreateController {
 	private String backupDatabaseConfirmationMessage = "";
 	private String restoreDatabaseConfirmationMessage = "";
 	private String deleteWebApplicationConfirmationMessage = "";
+	
+	private Date today;
+	
+	public Date getToday() {
+		return new Date();
+	}
+
+	public void setToday(Date today) {
+		this.today = today;
+	}
 
 	public String getCreateProjectConfirmationMessage() {
 		return createProjectConfirmationMessage;
@@ -273,52 +289,29 @@ public class CreateController {
 						.findByUserIDAndProjectID(getUserMain().getUserId(),
 								this.currentProjectID);
 
-				if (log.isInfoEnabled()) {
-					log.info("projectsList.size() {0}", projectsList.size());
-					log.info("projectsList.get(0).getUserRole() {0}", projectsList
-							.get(0).getUserRole());
-				}
-				
-				if (projectsList.size() > 1) {
-					/*
-					 * This should never happen. For now, log the fact and continue.
-					 */
-					log.error(String.format("Too many projects defined in the database for userid %s and project id %d",
-							getUserMain().getUserId(), this.currentProjectID));
-				}
-				
-				UserProject currentProject = projectsList.get(0);
-				
-				if (true ||( (currentProject.getUserRole().equals(SystemVars.UserRoles.ADMIN.getRole())) ||
-						(currentProject.getUserRole().equals(SystemVars.UserRoles.OWNER.getRole())) )) {
+				log.info("projectsList.size() {0}", projectsList.size());
+				log.info("projectsList.get(0).getUserRole() {0}", projectsList
+						.get(0).getUserRole());
+
+				if (projectsList.get(0).getUserRole().equalsIgnoreCase("admin")) {
 					new CreateDataSpaceController().createDataSpace(
 							getUserMain(), projectsList.get(0).getProject(),
-							dataspaceHome, log);
-					createProjectDataspaceConfirmationMessage = "Data Space '"
-							+ dataspaceHome.getInstance().getDataspaceName()
-							+ "' for Project: '"
-							+ projectsList.get(0).getProject().getTitle()
-							+ "' is successfully created.";
-				}
-				else {
-					createProjectDataspaceConfirmationMessage = "ERROR: You do not have the authority to create data space '"
-							+ dataspaceHome.getInstance().getDataspaceName()
-							+ "' for Project: '"
-							+ projectsList.get(0).getProject().getTitle()
-							+ "'.";
+							dataspaceHome, today, log);
 				}
 
-				
+				createProjectDataspaceConfirmationMessage = "Data Space '"
+						+ dataspaceHome.getInstance().getDataspaceName()
+						+ "' for Project: '"
+						+ projectsList.get(0).getProject().getTitle()
+						+ "' is successfully created.";
 				((NavigationController) Contexts.getSessionContext().get(
 						"navigationController"))
 						.createProjectDataspaceConfirmation();
-			} 
-			else {
+			} else {
 				validationError = "Web Application Name should not contain special character or space";
 			}
-		} 
-		else {
-			validationError = "Dataspace Name should not contain special character or space";
+		} else {
+			validationError = "Databace Name should not contain special character or space";
 		}
 	}
 
@@ -335,7 +328,8 @@ public class CreateController {
 		/**/
 		DatabaseStructure tempDatabaseStructure = databaseStructureHome
 				.getInstance();
-
+		tempDatabaseStructure.setCreationDate(today);
+		
 		new CreateDatabaseController().createDatabaseStructure(
 				tempProject.getProjectId(), tempDataspace.getDataspaceName(),
 				tempDatabaseStructure, "main", log);
@@ -353,6 +347,7 @@ public class CreateController {
 		log.info("webApplicationPersistString {0}", webApplicationPersistString);
 
 		ProjectDatabase tempProjectDatabase = projectDatabaseHome.getInstance();
+		tempProjectDatabase.setCreationDate(today);
 		new CreateDatabaseController().createDatabase(tempDataspace,
 				tempDatabaseStructure, tempWebApplication, getLoginsMain(),
 				tempProject.getTitle(), tempProjectDatabase, "main", log);
@@ -487,7 +482,8 @@ public class CreateController {
 		ConnectionManager connectionManager = new ConnectionManager();
 		Connection connection = connectionManager.createConnection(
 				tempProjectDatabase.getDatabaseName().toLowerCase(),
-				getLoginsMain().getUserName().toLowerCase(), getLoginsMain().getPassword());
+				getLoginsMain().getUserName().toLowerCase(), getLoginsMain()
+						.getPassword());
 		dataHolder.setCurrentStatus("\nSuccessfully Connected with Database "
 				+ dataHolder.getCurrentStatus());
 
@@ -534,7 +530,7 @@ public class CreateController {
 		dataHolder.currentStatus = "";
 
 		String serverURLTemp = System.getProperty("serverURL");
-		
+
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).createWebApplicationConfirmation();
 
@@ -581,8 +577,7 @@ public class CreateController {
 		tempWebApplication.setStatus("Deployed");
 		tempWebApplication.setWebApplicationName(webApplicationName);
 
-		tempWebApplication
-				.setUrl(serverURLTemp + webApplicationName);
+		tempWebApplication.setUrl(serverURLTemp + webApplicationName);
 
 		webApplicationHome.persist();
 	}
@@ -615,13 +610,14 @@ public class CreateController {
 			tempWebApplication.setStatus("NotDeployed");
 
 			webApplicationHome.persist();
-			
-			deleteWebApplicationConfirmationMessage = "Web Application " + webApplicationNameTemp + " successfully removed";
+
+			deleteWebApplicationConfirmationMessage = "Web Application "
+					+ webApplicationNameTemp + " successfully removed";
 		} else {
-			deleteWebApplicationConfirmationMessage = "Failed to remove Web Application " + webApplicationNameTemp;
+			deleteWebApplicationConfirmationMessage = "Failed to remove Web Application "
+					+ webApplicationNameTemp;
 		}
 
-		
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).removeWebApplicationConfirmation();
 
@@ -652,18 +648,10 @@ public class CreateController {
 
 			// I should just return .. if user doesn't exist
 			// usersHome.persist();
-			addProjectMemberConfirmationMessage = String.format("User with email address '%s' is not a registered member", tempUser.getEmail());
+			addProjectMemberConfirmationMessage = tempUser.getLastName() + ", "
+					+ tempUser.getFirstName() + " is not registered member";
 			// return;
-		}
-		else {
-			if (userList.size() > 1) {
-				/*
-				 * This is bad. It means there are more than one users defined with the same email address.
-				 * This should never happen so let us simply log this error and continue with the first defined
-				 * user for now.
-				 */
-				log.error("Problem finding unique user to add as project member - duplicates exist for " + tempUser.getEmail() + ". Will use the first instance.");
-			}
+		} else {
 			tempUser = userList.get(0);
 
 			UserProjectId userProjectID = new UserProjectId();
@@ -685,7 +673,7 @@ public class CreateController {
 				userProjectHome.persist();
 				addProjectMemberConfirmationMessage = tempUser.getLastName()
 						+ ", " + tempUser.getFirstName()
-						+ " has been added as project member";
+						+ " is added as project member";
 			} catch (Exception e) {
 				// org.hibernate.exception.ConstraintViolationException
 				addProjectMemberConfirmationMessage = tempUser.getLastName()
@@ -700,6 +688,7 @@ public class CreateController {
 
 	public void dropDatabase(String databaseName) {
 		log.info("dropDatabase {0}", databaseName);
+
 		new DeleteDatabase(databaseName).DeleteDatabase();
 
 		ProjectDatabase tempProjectDatabase = (ProjectDatabase) Contexts
@@ -730,6 +719,127 @@ public class CreateController {
 
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).dropDatabaseConfirmation();
+	}
+
+	public void downloadDatabase(/* Integer currentDatabaseIDValue */) {
+		log.info("downloadDatabase( ) Database ID: "
+				+ ((NavigationController) Contexts.getSessionContext().get(
+						"navigationController")).getDatabaseIDValue());
+		log.info("downloadDatabase( ) Project ID: "
+				+ ((NavigationController) Contexts.getSessionContext().get(
+						"navigationController")).getProjectIDValue());
+		log.info("downloadDatabase( ) Dataspace ID: "
+				+ ((NavigationController) Contexts.getSessionContext().get(
+						"navigationController")).getDataspaceIDValue());
+
+		/*
+		 * projectDatabaseHome.setId(currentDatabaseIDValue); ProjectDatabase
+		 * tempDatabase = projectDatabaseHome.getInstance();
+		 */
+		/* */
+
+		Integer tempDatabaseID = ((NavigationController) Contexts
+				.getSessionContext().get("navigationController"))
+				.getDatabaseIDValue();
+		if (tempDatabaseID != null) {
+			projectDatabaseHome.setId(tempDatabaseID);
+
+			ProjectDatabase tempDatabase = projectDatabaseHome.getInstance();
+
+			if (tempDatabase != null) {
+				log.info("downloadDatabase( ) tempDatabase ID: "
+						+ tempDatabase.getDatabaseId());
+
+				Project tempProject = ((Project) Contexts.getSessionContext()
+						.get("currentProject"));
+
+				if (tempDatabase != null) {
+					log.info("downloadDatabase( ) projectID: "
+							+ tempProject.getProjectId());
+
+					Dataspace tempDataspace = ((Dataspace) Contexts
+							.getSessionContext().get("currentDataspace"));
+
+					log.info("downloadDatabase( ) tempDataspaceID: "
+							+ tempDataspace.getDataSpaceId());
+
+					if (tempDatabase != null) {
+						log.info(
+								"Project ID {0}, Dataspace ID {1}, Database ID {2}, old database name {3}",
+								tempProject.getProjectId(),
+								tempDataspace.getDataSpaceId(),
+								tempDatabase.getDatabaseId(),
+								tempDatabase.getDatabaseName());
+
+						String fileNameWithLocation = new DownloadDatabase()
+								.dumpDatabaseForDownload(
+										tempProject.getProjectId(),
+										tempDataspace.getDataspaceName(),
+										tempDatabase.getDatabaseName(),
+
+										tempDatabase.getDatabaseType(), log);
+
+						/* */
+						try {
+							downloadCSVFile(fileNameWithLocation);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	public void downloadCSVFile(String csvFileName) throws IOException {
+
+		// String csvFileName =
+		// "/opt/VIDaaSData/project_1/Rivers/main/romaneconomy_rivers.csv";
+		log.info("downloadCSVFile () method called");
+		File file = new File(csvFileName);
+		InputStream is = new FileInputStream(file);
+
+		// Get the size of the file
+		long length = file.length();
+
+		log.info("fileSize: " + length);
+
+		if (length < Integer.MAX_VALUE) {
+			byte[] bytes = new byte[(int) length];
+
+			int offset = 0;
+			int numRead = 0;
+			while (offset < bytes.length
+					&& (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+				offset += numRead;
+
+				if (offset < bytes.length) {
+					throw new IOException("Could not completely read file "
+							+ file.getName());
+				}
+				is.close();
+
+				HttpServletResponse response = (HttpServletResponse) FacesContext
+						.getCurrentInstance().getExternalContext()
+						.getResponse();
+				response.setContentType("application/data");
+				response.addHeader("Content-Disposition",
+						"attachment;filename=\"" + csvFileName + ".csv\"");
+				response.addHeader("Cache-Control", "no-cache");
+				response.setStatus(200);
+
+				try {
+					ServletOutputStream os = response.getOutputStream();
+					os.write(bytes);
+					os.flush();
+					os.close();
+					FacesContext.getCurrentInstance().responseComplete();
+				} catch (Exception e) {
+					log.error("\nFailure : " + e.toString() + "\n");
+				}
+			}
+		}
 	}
 
 	public void createXMLDatabase(String fileName, String fileLocation,
@@ -973,8 +1083,9 @@ public class CreateController {
 				containerPath);
 
 		new DeleteXMLFileFromDatabase().deleteXMLFileInContainer(containerPath,
-				"TestProject171011_TestXMLDB" + ".dbxml",
+				databaseName + ".dbxml",
 				tempXMLFile.getFileName());
+		xmlFilesHome.remove();
 	}
 
 	public void dropXMLDatabase(int databaseIDValue) {
