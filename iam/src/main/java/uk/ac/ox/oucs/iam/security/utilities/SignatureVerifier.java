@@ -129,6 +129,10 @@ public class SignatureVerifier {
 		return false;
 	}
 	
+	public byte[] decodeAsByteArrayWithoutPosting(String signature) throws UnsupportedEncodingException {
+		return Base64.decodeBase64(URLDecoder.decode(signature, "UTF-8"));
+	}
+	
 	public byte[] decodeAsByteArray(String signature) {
 		return Base64.decodeBase64(signature);
 	}

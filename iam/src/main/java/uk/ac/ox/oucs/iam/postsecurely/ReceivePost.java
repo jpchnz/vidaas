@@ -52,7 +52,7 @@ public class ReceivePost extends HttpServlet {
 				out.println(data + " - ");
 				out.println(request.getParameter(data));
 				if (data.compareTo("sig") == 0) {
-					out.println("Yay - encrypted");
+					out.println("This is encrypted");
 					// Encrypted sig - need to verify
 					File privateKey = new File(keyFile+".pub");
 					if (!privateKey.exists()) {
