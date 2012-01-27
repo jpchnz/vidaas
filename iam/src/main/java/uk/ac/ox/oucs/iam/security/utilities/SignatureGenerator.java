@@ -34,6 +34,7 @@ public class SignatureGenerator {
 	static boolean sanityCheck = true;
 	static final String encodingInstance = "SHA1withDSA";
 	private String keyFilePath;
+	public final static String TIMESTAMP_POST_ATTRIBUTE = "ts";
 
 	/**
 	 * Create a signature generator, using the private key in the given file
@@ -72,7 +73,9 @@ public class SignatureGenerator {
 	private PrivateKey privateKey;
 
 	/**
-	 * Sign the given message using the SHA-1 with DSA algorithm.
+	 * Sign the given message using the SHA-1 with DSA algorithm. Note that using this method will
+	 * not provide timestamps meaning messages cannot be aged out. If this is required, then
+	 * signMessageAndEncode should be used instead.
 	 * 
 	 * @param message
 	 *            the message to sign
@@ -85,7 +88,7 @@ public class SignatureGenerator {
 	 * @throws SignatureException
 	 *             on any errors during the signature generation
 	 */
-	public byte[] signMessage(String message) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+	private byte[] signMessage(String message) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
 		Signature sig = Signature.getInstance(encodingInstance);
 		sig.initSign(privateKey);
 		sig.update(message.getBytes());
@@ -93,8 +96,7 @@ public class SignatureGenerator {
 	}
 
 	/**
-	 * Create a digital signature of a message and then encode this as a 64 bit
-	 * binary
+	 * Create a digital signature of a message and then encode this
 	 * 
 	 * @param messageToSend
 	 *            the message whose digital signature is required
@@ -115,15 +117,23 @@ public class SignatureGenerator {
 			timeStampOfMessage = 0;
 		}
 		
-		return encodeMessage(signature);
+		VidaasSignature vSig = encodeMessage(signature);
+		vSig.setOriginalMessage(messageToSend);
+		return vSig;
 	}
 		
 		
-	public VidaasSignature encodeMessage(byte[] signature) throws UnsupportedEncodingException {
+	/**
+	 * Encode a byte array so that it may be dealt with as a string (for http posting)
+	 * @param signature the byte array to encode
+	 * @return a VidaasSignature object that contains the encoded byte array
+	 * @throws UnsupportedEncodingException
+	 */
+	private VidaasSignature encodeMessage(byte[] signature) throws UnsupportedEncodingException {
 		String encodedSignature;
 		
 		encodedSignature = new String(Base64.encodeBase64(signature));
-		System.out.println("Before:" + encodedSignature);
+
 		return new VidaasSignature(URLEncoder.encode(encodedSignature, "UTF-8"), timeStampOfMessage);
 	}
 

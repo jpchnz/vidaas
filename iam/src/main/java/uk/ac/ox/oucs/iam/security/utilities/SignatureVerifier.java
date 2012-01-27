@@ -78,7 +78,7 @@ public class SignatureVerifier {
 	}
 
 	/**
-	 * Verify the signature for a message.
+	 * Verify the signature for a message, without worrying about timestamps
 	 * 
 	 * @param signatureBytes
 	 *            the digital signature to verify
@@ -127,6 +127,32 @@ public class SignatureVerifier {
 		}
 		
 		return false;
+	}
+	
+	
+	/**
+	 * Determine if a message is too old based on its timestamp. A message is deemed to be
+	 * too old if it was generated more than maxMessageAgeSeconds seconds ago.
+	 * maxMessageAgeSeconds is currently 60.
+	 * @param timestamp A string representation of the number of milliseconds elapsed since 1970
+	 * @return true if the timestamp suggests the message was generated within the last (60) seconds,
+	 * 		i.e. the timestamp has been verified, else false
+	 */
+	public boolean verifyTimestamp(String timestamp) {
+		return (verifyTimestamp(Long.parseLong(timestamp)));
+	}
+	
+	public boolean verifyTimestamp(long lTimestamp) {
+		Date now = new Date();
+		if (((now.getTime() - lTimestamp) > (maxMessageAgeSeconds * 1000))
+				&& (lTimestamp != 0)) {
+			// Message is too old
+			messageTooOld = true;
+		} else {
+			// Message has not yet expired
+			messageTooOld = false;
+		}
+		return !messageTooOld;
 	}
 	
 	public byte[] decodeAsByteArrayWithoutPosting(String signature) throws UnsupportedEncodingException {

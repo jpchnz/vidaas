@@ -10,6 +10,7 @@ package uk.ac.ox.oucs.iam.security.utilities;
  */
 public class VidaasSignature {
 	private String signature;
+	private String originalMessage;
 	private long timestamp = 0;
 	private boolean timeStampInUse = false;
 	
@@ -25,11 +26,12 @@ public class VidaasSignature {
 	
 	public String getTimestampedMessage(String message) {
 		if (timeStampInUse) {
-			return message + "_" + timestamp;
+			originalMessage = message + "_" + timestamp;
 		}
 		else {
-			return message;
+			originalMessage = message;
 		}
+		return originalMessage;
 	}
 	
 
@@ -45,5 +47,15 @@ public class VidaasSignature {
 
 	public long getTimestamp() {
 		return timestamp;
+	}
+
+
+	public String getOriginalMessage() {
+		return originalMessage;
+	}
+
+
+	public void setOriginalMessage(String originalMessage) {
+		this.originalMessage = getTimestampedMessage(originalMessage);
 	}
 }
