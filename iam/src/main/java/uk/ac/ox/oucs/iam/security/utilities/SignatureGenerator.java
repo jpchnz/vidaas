@@ -102,9 +102,10 @@ public class SignatureGenerator {
 	 * @throws InvalidKeyException
 	 * @throws NoSuchAlgorithmException
 	 * @throws SignatureException
+	 * @throws UnsupportedEncodingException 
 	 */
 	public VidaasSignature signMessageAndEncode(String messageToSend) throws InvalidKeyException,
-			NoSuchAlgorithmException, SignatureException {
+			NoSuchAlgorithmException, SignatureException, UnsupportedEncodingException {
 		byte[] signature;
 		if (useMessageExpiry) {
 			timeStampOfMessage = new Date().getTime();
@@ -118,12 +119,12 @@ public class SignatureGenerator {
 	}
 		
 		
-	public VidaasSignature encodeMessage(byte[] signature) {
+	public VidaasSignature encodeMessage(byte[] signature) throws UnsupportedEncodingException {
 		String encodedSignature;
 		
 		encodedSignature = new String(Base64.encodeBase64(signature));
-		
-		return new VidaasSignature(encodedSignature, timeStampOfMessage);
+		System.out.println("Before:" + encodedSignature);
+		return new VidaasSignature(URLEncoder.encode(encodedSignature, "UTF-8"), timeStampOfMessage);
 	}
 
 	/**

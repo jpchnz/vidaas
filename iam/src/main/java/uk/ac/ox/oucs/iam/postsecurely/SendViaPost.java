@@ -9,17 +9,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
-
-import org.apache.commons.codec.binary.Base64;
 
 import uk.ac.ox.oucs.iam.security.keys.KeyServices;
-import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
 import uk.ac.ox.oucs.iam.security.utilities.SignatureGenerator;
 import uk.ac.ox.oucs.iam.security.utilities.SignatureVerifier;
 import uk.ac.ox.oucs.iam.security.utilities.VidaasSignature;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.NoEncodingException;
 
 public class SendViaPost {
 	private URL url;
@@ -76,34 +70,20 @@ public class SendViaPost {
 			try {
 				SignatureGenerator signature = new SignatureGenerator(keyFile);
 				signature.setUseMessageExpiry(false); // TODO turn off for ease of development - should normally be on
-				//vSig = signature.signMessageAndEncode("name=bigun");
-				int counter = 0;
-				/*
-				 * TODO - This is a bad hack
-				 * Message encoding should be URL safe!
-				 * Fix this
-				 */
-				while (true) {
-					byte[] array = signature.signMessage(postData);
-				
-					vSig = signature.encodeMessage(array);
-					if (!vSig.getSignature().contains("+")) {
-						break;
+				vSig = signature.encodeMessage(signature.signMessage(postData));
+				System.out.println("After: " + vSig.getSignature());
+
+				boolean debug = true;
+				if (debug) {
+					// Try to decode ...
+					SignatureVerifier sigVerifier = new SignatureVerifier(keyFile);
+					byte[] decodedBytes = sigVerifier.decodeAsByteArrayWithoutPosting(vSig.getSignature());
+					if (sigVerifier.verifyDigitalSignature(decodedBytes, postData)) {
+						System.out.println("All good so far");
 					}
-					counter++;
-					if (counter > 100) {
-						System.out.println("Bad stuff");
+					else {
+						System.out.println("All bad so far");
 					}
-				}
-				System.out.println("Count = " + counter);
-				// Try to decode ...
-				SignatureVerifier sigVerifier = new SignatureVerifier(keyFile);
-				byte[] decodedBytes = sigVerifier.decodeAsByteArray(vSig.getSignature());
-				if (sigVerifier.verifyDigitalSignature(decodedBytes, postData)) {
-					System.out.println("All good so far-" + decodedBytes.length);
-				}
-				else {
-					System.out.println("All bad so far");
 				}
 			} catch (GeneralSecurityException e) {
 				System.out.println("Unable to generate signature - sorry it didn't work out");
