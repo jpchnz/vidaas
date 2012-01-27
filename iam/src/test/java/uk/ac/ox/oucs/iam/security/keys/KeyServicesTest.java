@@ -19,8 +19,8 @@ import com.sun.jna.Platform;
 
 public class KeyServicesTest {
 	public static KeyServices keyServicesBlowfish, keyServicesHMAC;
-	public static final String KEY_FILE_NAME_BLOWFISH = "." + File.separator + "blowFishTestkey";// "/tmp/testkey"
-	public static final String KEY_FILE_NAME_HMAC = "." + File.separator + "HMACTestkey";
+	public static final String KEY_FILE_NAME_BLOWFISH = "." + File.separator + "blowFishTestkey.priv";
+	public static final String KEY_FILE_NAME_HMAC = "." + File.separator + "HMACTestkey.priv";
 	private static File[] fArray;
 	private static boolean problemWithInit;
 	
