@@ -38,6 +38,7 @@ wget -O jboss-5.1.0.GA-jdk6.zip http://downloads.sourceforge.net/project/jboss/J
 unzip jboss-5.1.0.GA-jdk6.zip
 rm jboss-5.1.0.GA-jdk6.zip
 rm -rf $JBOSS_HOME/server/default/deploy/*war
+rm -rf $JBOSS_HOME/server/default/deploy/management/
 }}}
 
 == build ==
