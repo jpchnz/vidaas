@@ -6,13 +6,13 @@ Documentation work in progress
 
 = Details =
 
-== Fix VMware image issues ==
+== Check/fix common VMware image issues ==
 
- * remove `deb cdrom` entry from sources.list
- * change root password
+ * check sources.list (e.g. remove `deb cdrom` entries)
+ * change root password (or force customisation in vmware)
  * create new ssh key
- * use partition created for home in /var
- * update hosts.allow and hosts.deny
+ * use partition created for home in /var (if image has default debian layout)
+ * update hosts.allow and hosts.deny (if only NSMS hosts are allowed)
  * check vmware customization completed successfully
 
 {{{
