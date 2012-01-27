@@ -12,7 +12,7 @@
 				id="testButton" value="Test String" style="float:left"/>
 	</a4j:form>
 -->
-	<rich:panel>
+	<rich:panel >
 		<f:facet name="header">
 			<h:outputText
 				value="Detailed summary of project of '#{currentProject.title}'"></h:outputText>
@@ -65,14 +65,14 @@
 		</h:panelGrid>
 	</rich:panel>
 	
-	<h:panelGrid id="dataspaceButtonPanel" columns="1" width="1105px"
+	<h:panelGrid id="dataspaceButtonPanel" columns="1"
 		rendered="#{empty navigationController.listDatabaseByDataspace()}">
 		
 		<h:panelGroup rendered="#{currentDataspace.databaseType =='relational'}">
 			<a4j:form id="dataspaceSQLButtonForm" ajaxSubmit="true">
 				<div class="actionButtons"><a4j:commandLink
 					id="createDatabaseFromSchemaButton"
-					value="Create Database from Schema"
+					value="Upload existing Database"
 					style="float:left">
 					<rich:componentControl for="createDatabasePanel"
 						attachTo="createDatabaseFromSchemaButton" operation="show" event="onclick" />
