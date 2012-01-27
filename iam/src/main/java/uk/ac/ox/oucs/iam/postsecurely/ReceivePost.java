@@ -1,16 +1,11 @@
 package uk.ac.ox.oucs.iam.postsecurely;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,10 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import uk.ac.ox.oucs.iam.audit.IamAudit;
-import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
 import uk.ac.ox.oucs.iam.security.utilities.SignatureGenerator;
 import uk.ac.ox.oucs.iam.security.utilities.SignatureVerifier;
-import uk.ac.ox.oucs.iam.security.utilities.VidaasSignature;
 
 public class ReceivePost extends HttpServlet {
 	private PrintWriter out;
@@ -57,7 +50,6 @@ public class ReceivePost extends HttpServlet {
 
 		auditer.auditSuccess("Post request received from " + request.getRemoteAddr());
 
-		
 		Enumeration<?> e = request.getParameterNames();
 		String[] messages = new String[request.getParameterMap().size()];
 		while (e.hasMoreElements()) {
@@ -152,8 +144,8 @@ public class ReceivePost extends HttpServlet {
 	}
 
 	private String getAllCallerDetails(HttpServletRequest request) {
-		return String.format("Remote host:%s, Referer:%s, remoteHost:%s, user agent:%s", request.getRemoteAddr(), request.getHeader("referer"),
-				request.getHeader("host"), request.getHeader("user-agent"));
+		return String.format("Remote host:%s, Referer:%s, remoteHost:%s, user agent:%s", request.getRemoteAddr(),
+				request.getHeader("referer"), request.getHeader("host"), request.getHeader("user-agent"));
 	}
 
 	private synchronized void manipulateSecurePostDataList(SecurePostData dataItem) {
