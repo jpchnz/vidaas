@@ -22,7 +22,7 @@ dpkg-reconfigure openssh-server
 
 == local mail (optional) ==
 {{{
-apt-get install nullmailer
+apt-get -y install nullmailer
 echo vidaas-hosts@rt.oucs.ox.ac.uk > /etc/nullmailer/adminaddr
 echo smtp.ox.ac.uk > /etc/nullmailer/remotes
 }}}
