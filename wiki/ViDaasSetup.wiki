@@ -16,33 +16,34 @@ Documentation work in progress
  * check vmware customization completed successfully
 
 {{{
-# dpkg-reconfigure openssh-server
+rm /etc/ssh/ssh_host_*
+dpkg-reconfigure openssh-server
 }}}
 
 == local mail (optional) ==
 {{{
-# apt-get install nullmailer
-# echo vidaas-hosts@rt.oucs.ox.ac.uk > /etc/nullmailer/adminaddr
-# echo smtp.ox.ac.uk > /etc/nullmailer/remotes
+apt-get install nullmailer
+echo vidaas-hosts@rt.oucs.ox.ac.uk > /etc/nullmailer/adminaddr
+echo smtp.ox.ac.uk > /etc/nullmailer/remotes
 }}}
 
 apticron (optional needs local mail)
 
 {{{
-# apt-get install apticron
+apt-get install apticron
 }}}
 
 == general stuff (optional) ==
 
 {{{
-# apt-get install less vim unzip
+apt-get install less vim unzip
 }}}
 
 == Runtime setup ==
 
 {{{
-# apt-get install postgresql mysql-server libmysql-java libpg-java
-# adduser --system --home /opt/VIDaaSData --disabled-login --group vidaas --shell /bin/bash
+apt-get install postgresql mysql-server libmysql-java libpg-java
+adduser --system --home /opt/VIDaaSData --disabled-login --group vidaas --shell /bin/bash
 }}}
 
 Configure [PostgreSQL]
@@ -51,14 +52,14 @@ Install [JBossBuild]
 
 This makes development easier but is not suggested for production.
 {{{
-# chown -R vidaas:vidaas $JBOSS_HOME
-# ln -s $JBOSS_HOME /opt/jboss
+chown -R vidaas:vidaas $JBOSS_HOME
+ln -s $JBOSS_HOME /opt/jboss
 }}}
 
 Currently, there is the possibility of using MySQL and/or PostgreSQL for the underlying database services. To aid with testing (and partly due to historical reasons), MySQL is used on the Controller Node and PostgreSQL is used on the Project Node (for relational database data). Thus, both PostgreSQL and MySql need to be configured. First, create a new PostgreSQL user (sudamihAdmin) and then have it own a new database, sudamihtestdb. Then create a new MySql database (vidaas_v3).
 
 {{{
-# su postgres
+su postgres
 createuser -U postgres -s -E -P sudamihAdmin
 #dropuser sudamihAdmin
 
@@ -77,7 +78,7 @@ mkdir /opt/VIDaaSData  #to be removed, reported as issue#18
 Build requirements
 
 {{{
-# apt-get install openjdk-6-jdk maven2 subversion
+apt-get install openjdk-6-jdk maven2 subversion
 }}}
 
 Build ViDaaS
