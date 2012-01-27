@@ -6,13 +6,13 @@ html {
 
 #middleHeader{background-color:#061F46}
 
-#header-banner-wrap {clear:both; margin:0; top:0px; height:57px; width:1000px; position:relative; margin:0 auto;
+#header-banner-wrap {clear:both; margin:0; top:0px; height:57px; width:800px; position:relative; margin:0 auto;
 	background-color:#061F46; border-top:20px solid #061F46; border-bottom:20px solid #061F46
 }
 #header-banner-wrap h2 {font-size:14px;color:#3366CC; margin:0; 
 	position:absolute; top:80px; width:325.2px;left:5px}
 
-#logo {position:absolute; left: 715px; top:-15px; width:28%}
+#logo {position:absolute; left: 570px; top:-15px; width:28%}
 #vidaas-logo {width: 18%; position:absolute; left: 5px; top:-15px}
 
 
@@ -20,7 +20,7 @@ body {
 	margin:0px; 
 	padding:0px; 
 	font-size: 12px;
-	width:1000px;
+	width:800px;
 	margin: 0px auto
 }
 
@@ -66,7 +66,7 @@ select {
 	margin-bottom: 10px;
 }
 
-.descriptionWidth {width:300px}
+
 
 
 .body {
