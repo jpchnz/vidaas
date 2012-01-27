@@ -57,6 +57,9 @@ public class NavigationController {
 
 	@RequestParameter("dataspaceIDValue")
 	private Integer dataspaceIDValue;
+	
+	@RequestParameter("databaseIDValue")
+	private Integer databaseIDValue;
 
 	/*
 	 * @RequestParameter("dataspaceIDValue") private Integer
@@ -80,15 +83,15 @@ public class NavigationController {
 
 	private String dropDatabaseInclude = "/popup/dropDatabaseForm.xhtml";
 	private boolean dropDatabaseFormRender = false;
+	
+	private String downloadDatabaseInclude = "/popup/downloadDatabaseForm.xhtml";
+	private boolean downloadDatabaseFormRender = false;
 
 	private String parseDatabaseInclude = "/popup/parseDatabaseForm.xhtml";
 	private boolean parseDatabaseFormRender = false;
 
 	private String addProjectMemberInclude = "/popup/addProjectMemberForm.xhtml";
 	private boolean projectMemberFormRender = false;
-	
-	private String editProjectMemberInclude = "/popup/editProjectMemberForm.xhtml";
-	private boolean editProjectMemberFormRender = false;
 
 	private String backupDatabaseInclude = "/popup/backupDatabaseForm.xhtml";
 	private boolean backupDatabaseFormRender = false;
@@ -107,6 +110,9 @@ public class NavigationController {
 	
 	private String removeWebApplicationInclude = "/popup/removeWebApplicationForm.xhtml";
 	private boolean removeWebApplicationFormRender = false;
+	
+	private String editProjectMemberInclude = "/popup/editProjectMemberForm.xhtml";
+	private boolean editProjectMemberFormRender = false;
 
 	public String getHomePageMainBodyNavigation() {
 		return homePageMainBodyNavigation;
@@ -132,6 +138,29 @@ public class NavigationController {
 	public void setProjectIDValue(Integer projectIDValue) {
 		log.info("setProjectIDValue {0}", projectIDValue);
 		this.projectIDValue = projectIDValue;
+	}
+	
+	public Integer getDataspaceIDValue() {
+		return dataspaceIDValue;
+	}
+
+	public void setDataspaceIDValue(Integer dataspaceIDValue) {
+		this.dataspaceIDValue = dataspaceIDValue;
+	}
+
+	public Integer getDatabaseIDValue() {
+		return databaseIDValue;
+	}
+
+	public void setDatabaseIDValue(Integer databaseIDValue) {
+		log.info("setDatabaseIDValue {0}", databaseIDValue);
+		
+		this.databaseIDValue = databaseIDValue;
+		
+		projectDatabaseHome.setId(databaseIDValue);
+		this.currentProjectDatabase = projectDatabaseHome.getInstance();
+		Contexts.getSessionContext().set("currentProjectDatabase",
+				this.currentProjectDatabase);
 	}
 
 	public String getCreateProjectFormInclude() {
@@ -205,14 +234,6 @@ public class NavigationController {
 	public void setAddProjectMemberInclude(String addProjectMemberInclude) {
 		this.addProjectMemberInclude = addProjectMemberInclude;
 	}
-	
-	public String getEditProjectMemberInclude() {
-		return editProjectMemberInclude;
-	}
-	
-	public void setEditProjectMemberInclude(String editProjectMemberInclude) {
-		this.editProjectMemberInclude = editProjectMemberInclude;
-	}
 
 	public boolean isProjectMemberFormRender() {
 		return projectMemberFormRender;
@@ -220,14 +241,6 @@ public class NavigationController {
 
 	public void setProjectMemberFormRender(boolean projectMemberFormRender) {
 		this.projectMemberFormRender = projectMemberFormRender;
-	}
-	
-	public boolean isEditProjectMemberFormRender() {
-		return editProjectMemberFormRender;
-	}
-
-	public void setEditProjectMemberFormRender(boolean editProjectMemberFormRender) {
-		this.editProjectMemberFormRender = editProjectMemberFormRender;
 	}
 
 	public String getDropDatabaseInclude() {
@@ -244,6 +257,22 @@ public class NavigationController {
 
 	public void setDropDatabaseFormRender(boolean dropDatabaseFormRender) {
 		this.dropDatabaseFormRender = dropDatabaseFormRender;
+	}
+	
+	public String getDownloadDatabaseInclude() {
+		return downloadDatabaseInclude;
+	}
+
+	public void setDownloadDatabaseInclude(String downloadDatabaseInclude) {
+		this.downloadDatabaseInclude = downloadDatabaseInclude;
+	}
+
+	public boolean isDownloadDatabaseFormRender() {
+		return downloadDatabaseFormRender;
+	}
+
+	public void setDownloadDatabaseFormRender(boolean downloadDatabaseFormRender) {
+		this.downloadDatabaseFormRender = downloadDatabaseFormRender;
 	}
 
 	public String getBackupDatabaseInclude() {
@@ -359,7 +388,23 @@ public class NavigationController {
 			boolean removeWebApplicationFormRender) {
 		this.removeWebApplicationFormRender = removeWebApplicationFormRender;
 	}
+	
+	public String getEditProjectMemberInclude() {
+		return editProjectMemberInclude;
+	}
+	
+	public void setEditProjectMemberInclude(String editProjectMemberInclude) {
+		this.editProjectMemberInclude = editProjectMemberInclude;
+	}
 
+	public boolean isEditProjectMemberFormRender() {
+		return editProjectMemberFormRender;
+	}
+
+	public void setEditProjectMemberFormRender(boolean editProjectMemberFormRender) {
+		this.editProjectMemberFormRender = editProjectMemberFormRender;
+	}
+	
 	public Users getUserMain() {
 		if (userMain == null) {
 			userMain = ((Users) Contexts.getSessionContext().get("userMain"));
@@ -454,22 +499,11 @@ public class NavigationController {
 		//log.info("addProjectMemberInitial() ................................................................... addProjectMemberInitial()");
 		addProjectMemberInclude = "/popup/addProjectMemberForm.xhtml";
 	}
-	
-	public void editProjectMemberInitial() {
-		editProjectMemberFormRender = false;
-		editProjectMemberInclude = "/popup/editProjectMemberForm.xhtml";
-	}
 
 	public void addProjectMemberConfirmation() {
 		projectMemberFormRender = true;
 		log.info("createDatabaseStructureConfirmation()");
 		addProjectMemberInclude = "/popup/addProjectMemberConfirmation.xhtml";
-	}
-	
-	public void editProjectMemberConfirmation() {
-		editProjectMemberFormRender = true;
-		log.debug("editProjectMemberFormRender()");
-		editProjectMemberInclude = "/popup/editProjectMemberConfirmation.xhtml";
 	}
 
 	public void createProjectInitial() {
@@ -570,6 +604,16 @@ public class NavigationController {
 		testDatabaseFormRender = true;
 		testDatabaseInclude = "/popup/testDatabaseConfirmation.xhtml";
 	}
+	
+	public void editProjectMemberInitial() {
+		editProjectMemberFormRender = false;
+		editProjectMemberInclude = "/popup/editProjectMemberForm.xhtml";
+	}
+	
+	public void editProjectMemberConfirmation() {
+		editProjectMemberFormRender = true;
+		editProjectMemberInclude = "/popup/editProjectMemberConfirmation.xhtml";
+	}
 
 	public void singleDataspaceDisplayPage() {
 		log.info("singleDatabaseDisplayPage dataspaceIDValue: {0} projectIDValue: {1}", dataspaceIDValue, projectIDValue);		
@@ -583,12 +627,6 @@ public class NavigationController {
 		Contexts.getSessionContext().set("currentDataspace", currentDataspace);
 
 		homePageMainBodyNavigation = "/custom/singleDataspaceByProject.xhtml";
-	}
-	
-	public void editProjectMembers() {
-		log.debug("editProjectMembers");
-		
-		initiateEnvironment();
 	}
 
 	public void createProjectMember() {
@@ -605,16 +643,6 @@ public class NavigationController {
 		currentProject = projectHome.getInstance();
 		Contexts.getSessionContext().set("currentProject", currentProject);
 		// homePageMainBodyNavigation = "/custom/createUserForm.xhtml";
-	}
-	
-	private void initiateEnvironment() {
-		if (projectIDValue == null) {
-			projectIDValue = (Integer) Contexts.getSessionContext().get("projectIDValue");
-		}
-		
-		Contexts.getSessionContext().set("projectIDValue", projectIDValue);
-		projectHome.setId(projectIDValue);
-		currentProject = projectHome.getInstance();
 	}
 
 	public boolean setCurrentDatabase(Integer currentDatabaseIDValue) {
@@ -633,8 +661,9 @@ public class NavigationController {
 
 	public ProjectDatabase getCurrentProjectDatabase() {
 		log.info(" *******************************************************   getCurrentProjectDatabase()");
-		if(currentProjectDatabase != null)
+		if(currentProjectDatabase != null){
 			log.info("getCurrentProjectDatabase() Database Name: {0}", currentProjectDatabase.getDatabaseName());
+		}
 		return currentProjectDatabase;
 	}
 
