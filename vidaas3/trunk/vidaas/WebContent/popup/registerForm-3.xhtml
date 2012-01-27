@@ -18,12 +18,12 @@
 			</h:outputText>
 		</div>
 		<div class="actionButtons">
-			<a4j:commandButton value="Finish" action="#{registration.registrationSuccessful()}" id="registrationFormHideButton">
+			<a4j:commandButton value="Finish" action="#{registration.registrationSuccessful()}" id="registrationFormHideButton" 
+				reRender="registrationFormInclude">
 				<rich:componentControl for="registrationPanel-1" attachTo="registrationFormHideButton"
 					operation="hide" event="onclick" />
 			</a4j:commandButton>
 		</div>
 	</a4j:form>
 
-	
 </ui:composition>

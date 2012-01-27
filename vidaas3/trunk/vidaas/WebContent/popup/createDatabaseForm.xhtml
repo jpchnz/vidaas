@@ -27,10 +27,10 @@
 				<rich:message for="databaseStructureUploadType"
 					style="width : 184px;" />
 					
-				<h:outputLabel for="creationDate">Creation date</h:outputLabel>
+				<h:outputLabel for="creationDate">Database upload date</h:outputLabel>
 				<rich:calendar id="creationDate" required="true"
-					value="#{projectDatabaseHome.instance.creationDate}"
-					datePattern="MM/dd/yyyy" />
+					value="#{createController.today}"
+					datePattern="dd/MM/yyyy" />
 				<rich:message for="creationDate" style="width : 184px;" />
 	
 				<h:outputLabel for="fileUpload">Attachment</h:outputLabel>
