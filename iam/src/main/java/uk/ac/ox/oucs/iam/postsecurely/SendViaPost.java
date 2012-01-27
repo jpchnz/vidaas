@@ -10,6 +10,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.GeneralSecurityException;
 
+import uk.ac.ox.oucs.iam.audit.IamAudit;
 import uk.ac.ox.oucs.iam.security.keys.KeyServices;
 import uk.ac.ox.oucs.iam.security.utilities.SignatureGenerator;
 import uk.ac.ox.oucs.iam.security.utilities.SignatureVerifier;
@@ -21,13 +22,10 @@ public class SendViaPost {
 	private OutputStreamWriter out;
 	private String postData;
 	private boolean encrypt = true;
-	//private String privateKeyFile = "/tmp/privKey";
 	public String keyFile = "/tmp/key";
 	private boolean messagePosted = false;
 	private final String keyType = "HmacSHA512";
-
-	public SendViaPost() {
-	}
+	
 
 	public void sendPost(String url, String postData) throws IOException, MalformedURLException {
 		this.url = new URL(url);
@@ -42,6 +40,7 @@ public class SendViaPost {
 	}
 
 	private void sendPost() throws IOException {
+		IamAudit auditer = new IamAudit();
 		messagePosted = false;
 		VidaasSignature vSig = null;
 		
@@ -69,16 +68,15 @@ public class SendViaPost {
 			// Now we generate a signature object
 			try {
 				SignatureGenerator signature = new SignatureGenerator(keyFile);
-				signature.setUseMessageExpiry(false); // TODO turn off for ease of development - should normally be on
-				vSig = signature.encodeMessage(signature.signMessage(postData));
-				System.out.println("After: " + vSig.getSignature());
+				signature.setUseMessageExpiry(true);
+				vSig = signature.signMessageAndEncode(postData);
 
 				boolean debug = true;
 				if (debug) {
 					// Try to decode ...
 					SignatureVerifier sigVerifier = new SignatureVerifier(keyFile);
 					byte[] decodedBytes = sigVerifier.decodeAsByteArrayWithoutPosting(vSig.getSignature());
-					if (sigVerifier.verifyDigitalSignature(decodedBytes, postData)) {
+					if (sigVerifier.verifyDigitalSignature(decodedBytes, vSig.getOriginalMessage())) {
 						System.out.println("All good so far");
 					}
 					else {
@@ -95,11 +93,20 @@ public class SendViaPost {
 		connection.setDoOutput(true);
 		out = new OutputStreamWriter(connection.getOutputStream());
 
-//		?name=fred&sig=MCwCFGKn7ucmYGTiIti5%2B3QNOnjXSGbMAhRxAvm%2BelrlIvqrCm6LObd%2B5yC%2BSA%3D%3D&ts=1323857454692
+		/*
+		 * An example post with timestamp is
+		 * ?name=fred&ts=1323857454692&sig=MCwCFGKn7ucmYGTiIti5%2B3QNOnjXSGbMAhRxAvm%2BelrlIvqrCm6LObd%2B5yC%2BSA%3D%3D
+		 * An example post without timestamp is
+		 * ?name=fred&sig=MCwCFGKn7ucmYGTiIti5%2B3QNOnjXSGbMAhRxAvm%2BelrlIvqrCm6LObd%2B5yC%2BSA%3D%3D
+		 */
 		System.out.println("Posting " + postData + "&sig=" + vSig.getSignature());
-//		out.write("sig="+vSig.getSignature());
-		out.write(postData+"&sig="+vSig.getSignature());
-		//out.write("name=bigun"+"&sig="+vSig.getSignature());
+		if (vSig.isTimeStampInUse()) {
+			out.write(postData + "&" + SignatureGenerator.TIMESTAMP_POST_ATTRIBUTE + "=" + vSig.getTimestamp() + "&sig=" + vSig.getSignature());
+		}
+		else {
+			out.write(postData + "&sig=" + vSig.getSignature());
+		}
+		auditer.auditSuccess(String.format("Sent post <%s> to host %s with timestamp %s", postData, url.toString(), vSig.isTimeStampInUse()));
 		out.flush();
 		out.close();
 		messagePosted = true;
