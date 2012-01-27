@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo $1
 if [ $# -gt 0 ]; then
 	if [ -d $1 ]; then
