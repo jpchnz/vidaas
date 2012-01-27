@@ -19,14 +19,14 @@
 				<h:outputLabel for="startDate">Start date</h:outputLabel>
 	            <rich:calendar id="startDate"
                        required="true"
-                          value="#{projectHome.instance.startDate}" datePattern="MM/dd/yyyy"/>
+                          value="#{createController.today}" datePattern="dd/MM/yyyy"/>
 	        	<rich:message for="startDate" style="width : 184px;" />
 	
 	        
 	            <h:outputLabel for="endDate">End date</h:outputLabel>
 	            <rich:calendar id="endDate"
-                       required="true"
-                          value="#{projectHome.instance.endDate}" datePattern="MM/dd/yyyy"/>
+                       required="false"
+                          value="#{projectHome.instance.endDate}" datePattern="dd/MM/yyyy"/>
 	        	<rich:message for="endDate" style="width : 184px;" />
 	
 	        

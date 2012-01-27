@@ -28,7 +28,7 @@
 		                <h:outputLabel value="Please, click button 'OK' to continue" rendered="#{not createController.statusPanelOKButtonDisabled}" 
 		                	styleClass="errorMessage" />
 		                <h:inputTextarea id="status" value="#{createController.databaseSchemaFormStatus}" disabled="true"
-		                rows="40" cols="80"/>	
+		                rows="10" cols="80"/>	
 		                <h:panelGroup>            
 		                 <a4j:commandButton id="okButtonParseDatabase" disabled="#{createController.statusPanelOKButtonDisabled}" 
 					    	value="OK" reRender="homeMainPanel, homePageMainBodyInclude" action="#{createController.finishParseDatabase()}">
