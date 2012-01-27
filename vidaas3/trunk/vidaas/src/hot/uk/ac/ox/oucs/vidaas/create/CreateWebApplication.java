@@ -55,41 +55,24 @@ public class CreateWebApplication {
         writePropertiesFile(properties, tempDirectoryName);
         
         dataHolder.setCurrentStatus("Creating Web Application. Be patient it may take few minutes.");
-        runSeamCommandsSingleStep(tempDirectoryName);
+        //runSeamCommandsSingleStep(tempDirectoryName);
         
-        /*
+        
         runSeamCommandCreateProject(tempDirectoryName);
         
-        try {
-        	Thread.sleep(10000);
-        } catch (Exception ex){
-        	
-        }
         
         // Hack to remove 
         removeMenuPage(webApplicationName, webApplicationLocation);
-        try {
-        	Thread.sleep(5000);
-        } catch (Exception ex){
-        	
-        }
+        
+
         dataHolder.setCurrentStatus("Reverse Engineering From Database");
         runSeamCommandGenerateEntities(tempDirectoryName);
         
-        try {
-        	Thread.sleep(5000);
-        } catch (Exception ex){
-        	
-        }
+        
         dataHolder.setCurrentStatus("Deploying Web Application");
         runSeamCommandExplodeProject(tempDirectoryName);
         
-        try {
-        	Thread.sleep(500);
-        } catch (Exception ex){
-        	
-        }
-        */
+        /**/
         dataHolder.setCurrentStatus("Removing Temporary Files");
         removeSeamDir(webApplicationName, webApplicationLocation);
         removeProjectDir(webApplicationLocation);
@@ -164,8 +147,9 @@ public class CreateWebApplication {
 	private int runSeamCommandCreateProject(String tempDirectoryNameWithPath) {
         int result = -99;
         List<String> command = new ArrayList<String>();
-        command.add(tempDirectoryNameWithPath + "/seam");
-        command.add("create-project");
+        command.add(tempDirectoryNameWithPath + "/VIDaaS-SeamScript.sh");
+        command.add(tempDirectoryNameWithPath);
+        command.add("project");
 
         SystemCommandExecutor commandExecutor = new SystemCommandExecutor(command);
         try {
@@ -189,8 +173,9 @@ public class CreateWebApplication {
 	private int runSeamCommandGenerateEntities(String tempDirectoryNameWithPath) {
         int result = -99;
         List<String> command = new ArrayList<String>();
-        command.add(tempDirectoryNameWithPath + "/seam");
-        command.add("generate-entities");
+        command.add(tempDirectoryNameWithPath + "/VIDaaS-SeamScript.sh");
+        command.add(tempDirectoryNameWithPath);
+        command.add("entity");
 
         SystemCommandExecutor commandExecutor = new SystemCommandExecutor(command);
         try {
@@ -214,8 +199,9 @@ public class CreateWebApplication {
     private int runSeamCommandExplodeProject(String tempDirectoryNameWithPath) {
         int result = -99;
         List<String> command = new ArrayList<String>();
-        command.add(tempDirectoryNameWithPath + "/seam");
-        command.add("explode");
+        command.add(tempDirectoryNameWithPath + "/VIDaaS-SeamScript.sh");
+        command.add(tempDirectoryNameWithPath);
+        command.add("deploy");
 
         SystemCommandExecutor commandExecutor = new SystemCommandExecutor(command);
         try {
@@ -267,9 +253,9 @@ public class CreateWebApplication {
          //command.add("*");
          System.out.println(webApplicationLocation + "seamProject/" + webApplicationName + "/exploded-archives/" +webApplicationName + ".war/layout/*");
          
-         dataHolder.setCurrentStatus(webApplicationLocation + "seamProject/" + webApplicationName + "/exploded-archives/" +webApplicationName + ".war/layout/*");
+         //dataHolder.setCurrentStatus(webApplicationLocation + "seamProject/" + webApplicationName + "/exploded-archives/" + webApplicationName + ".war/layout/*");
          
-         command.add(webApplicationLocation + webApplicationName + "/exploded-archives/" +webApplicationName + ".war/layout");
+         command.add(webApplicationLocation + webApplicationName + "/exploded-archives/" + webApplicationName + ".war/layout");
          SystemCommandExecutor commandExecutor = new SystemCommandExecutor(command);
          try {
              result = commandExecutor.executeCommand();
