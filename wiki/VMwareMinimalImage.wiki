@@ -8,13 +8,16 @@ Steps to create an image using vmware
 
  * Install minimal debian using netinst image
  * update/upgrade and reboot if a new kernel was installed
- * apt-get install linux-headers-2.6-amd64 make (needed by vmware tools)
 
 == Minimal image ==
 
- * apt get install subversion
- * svn checkout https://vidaas.googlecode.com/svn/admin
- * Install vmware tools
+as root
+{{{
+cd
+apt-get install subversion
+svn checkout https://vidaas.googlecode.com/svn/admin
+sh admin/scripts/image-minimal
+}}}
 
 == Prepared image ==
 
@@ -22,10 +25,7 @@ Time consuming tasks which make sense to be part of the image
 
 as root
 {{{
-adduser --system --home /opt/VIDaaSData --disabled-login --group vidaas --shell /bin/bash
-apt-get install maven2 less vim unzip postgresql libmysql-java libpg-java openjdk-6-jdk ant apache2 libapache2-mod-jk daemontools
-apt-get remove mpt-status
-chown vidaas:vidaas /opt #this issue is sorted out but needs testing
+sh admin/scripts/image-prepared
 }}}
 
 as vidaas
