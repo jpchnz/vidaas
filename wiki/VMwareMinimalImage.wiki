@@ -4,9 +4,35 @@
 
 Steps to create an image using vmware
 
-== Minimal install ==
+== Essential image ==
 
  * Install minimal debian using netinst image
  * update/upgrade and reboot if a new kernel was installed
  * apt-get install linux-headers-2.6-amd64 make (needed by vmware tools)
- * Install vmware tools (into /usr/local/ tree)
+
+== Minimal image ==
+
+ * apt get install subversion
+ * svn checkout https://vidaas.googlecode.com/svn/admin
+ * Install vmware tools
+
+== Prepared image ==
+
+Time consuming tasks which make sense to be part of the image
+
+as root
+{{{
+adduser --system --home /opt/VIDaaSData --disabled-login --group vidaas --shell /bin/bash
+apt-get install maven2 less vim unzip postgresql libmysql-java libpg-java openjdk-6-jdk ant apache2 libapache2-mod-jk daemontools
+apt-get remove mpt-status
+chown vidaas:vidaas /opt #this issue is sorted out but needs testing
+}}}
+
+as vidaas
+{{{
+cd /opt
+wget -O jboss-5.1.0.GA-jdk6.zip http://downloads.sourceforge.net/project/jboss/JBoss/JBoss-5.1.0.GA/jboss-5.1.0.GA-jdk6.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fjboss%2Ffiles%2FJBoss%2FJBoss-5.1.0.GA%2F
+wget http://downloads.sourceforge.net/project/jboss/JBoss%20Seam/2.2.2.Final/jboss-seam-2.2.2.Final.tar.gz
+cd
+
+}}}
