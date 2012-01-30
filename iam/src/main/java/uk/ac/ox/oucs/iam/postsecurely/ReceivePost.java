@@ -12,10 +12,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.ox.oucs.iam.audit.IamAudit;
 import uk.ac.ox.oucs.iam.security.utilities.SignatureGenerator;
 import uk.ac.ox.oucs.iam.security.utilities.SignatureVerifier;
 
+@SuppressWarnings("serial")
 public class ReceivePost extends HttpServlet {
 	private PrintWriter out;
 	public String keyFile = "/tmp/key";
@@ -23,8 +26,15 @@ public class ReceivePost extends HttpServlet {
 	private List<SecurePostData> securePostDataList = new ArrayList<SecurePostData>();
 	public static final String REQUEST_DATA_CODE = "requestCurrent=data";
 	private IamAudit auditer = new IamAudit();
+	private boolean dontAcceptGet = true;
+	private Logger log = Logger.getLogger(ReceivePost.class);
+	
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (dontAcceptGet) {
+			return;
+		}
+		
 		out = response.getWriter();
 
 		checkRequest(request);
@@ -42,6 +52,18 @@ public class ReceivePost extends HttpServlet {
 		out.close();
 	}
 
+	
+	/**
+	 * Method that looks at the POST data sent to the application server. It breaks down all the
+	 * parameters, validates the encrypted data contained within and builds a SecurePostData
+	 * object with that data, adding it to an internal list for local query.
+	 * 
+	 * Important. The &sig parameter should be the very last parameter sent. So an example post could be
+	 * ?name=fred&ts=1323857454692&sig=MCwCFGKn7ucmYGTiIti5%2B3QNOnjXSGbMAhRxAvm%2BelrlIvqrCm6LObd%2B5yC%2BSA%3D%3D
+	 * 
+	 * 
+	 * @param request
+	 */
 	private void checkRequest(HttpServletRequest request) {
 		String messageToVerify = "";
 		String timestamp = "";
@@ -49,17 +71,23 @@ public class ReceivePost extends HttpServlet {
 		securePostData = new SecurePostData();
 
 		auditer.auditSuccess("Post request received from " + request.getRemoteAddr());
+		log.debug("QQQQQQQQQQQQQQQQQQQQQQQ" + request.getRemoteAddr());
+		securePostData.setOriginatorHost(request.getRemoteAddr());
 
 		Enumeration<?> e = request.getParameterNames();
 		String[] messages = new String[request.getParameterMap().size()];
+		/*
+		 * Understand and process each parameter 
+		 */
 		while (e.hasMoreElements()) {
 			String data = (String) e.nextElement();
 
 			if (data != null) {
 				out.println(data + " = " + request.getParameter(data));
 				if (data.compareTo("sig") == 0) {
-					out.println("This is encrypted");
-					// Encrypted sig - need to verify
+					/*
+					 * A digital signature has been sent, which is expected. Verify this. 
+					 */
 					File privateKey = new File(keyFile + ".pub");
 					if (!privateKey.exists()) {
 						out.println("Unable to get at the private key");
@@ -67,6 +95,18 @@ public class ReceivePost extends HttpServlet {
 					}
 					else {
 						try {
+							/*
+							 * When the message is POSTed here, the signature is generated from
+							 * that message. Thus we need to build the message and check that
+							 * the expected signature is present.
+							 * 
+							 *  Remember, the sender generates the signature using their private key.
+							 *  The receiver (here) generates the signature using the sender's
+							 *  public key. If the sigs are the same, we know the message has not been 
+							 *  tampered with (since the sig is generated using the message) and,
+							 *  since we have used the sender's public key to generate the sig, we
+							 *  can guarantee that the message did indeed come from the sender. 
+							 */
 							for (int index = counter - 1; index > -1; index--) {
 								messageToVerify += messages[index];
 								if (index != 0) {
@@ -76,39 +116,34 @@ public class ReceivePost extends HttpServlet {
 
 							out.println("About to verify message...<" + messageToVerify + ">");
 							String signature = request.getParameter(data);
-							out.println(signature);
 
 							SignatureVerifier sigVerifier = new SignatureVerifier(keyFile);
 							byte[] decodedBytes = sigVerifier.decodeAsByteArray(signature);
-							boolean verified = false;
-							boolean messageIsTooOld = false;
 							if (timestamp == "") {
-								verified = sigVerifier.verifyDigitalSignature(decodedBytes, messageToVerify);
+								securePostData.setMessageHasBeenVerified(sigVerifier.verifyDigitalSignature(decodedBytes, messageToVerify));
 							}
 							else {
-								verified = sigVerifier.verifyDigitalSignature(decodedBytes, messageToVerify + "_"
-										+ timestamp);
-								messageIsTooOld = !sigVerifier.verifyTimestamp(timestamp);
+								securePostData.setMessageHasBeenVerified(sigVerifier.verifyDigitalSignature(decodedBytes, messageToVerify + "_"
+										+ timestamp));
+								securePostData.setMessageTimedOut(!sigVerifier.verifyTimestamp(timestamp));
 							}
-							if (verified && !messageIsTooOld) {
-								auditer.auditSuccess("Message has been verified");
+							if (securePostData.isMessageHasBeenVerified() && !securePostData.isMessageTimedOut()) {
+								securePostData.setMessageHasBeenVerified(true);
 							}
 							else {
 								auditer.auditFailure("Message has not been verified");
-								securePostData.setMessageHasBeenVerified(false);
-								if (messageIsTooOld) {
+								if (securePostData.isMessageTimedOut()) {
 									auditer.auditFailure("The message is considered too old:"
 											+ getAllCallerDetails(request));
-									securePostData.setMessageTimeout(true);
+									securePostData.setMessageTimedOut(true);
 								}
-								if (!verified) {
+								if (!securePostData.isMessageHasBeenVerified()) {
 									auditer.auditFailure("Bad verification:" + getAllCallerDetails(request));
 									securePostData.setBadSig(true);
 								}
 							}
 						}
 						catch (Exception e1) {
-							// TODO Auto-generated catch block
 							out.println("Exception trying to verify the data:" + e1.getMessage());
 							auditer.auditFailure("Bad signature:" + getAllCallerDetails(request));
 							securePostData.setBadSig(true);
@@ -117,6 +152,11 @@ public class ReceivePost extends HttpServlet {
 					manipulateSecurePostDataList(securePostData);
 				}
 				else {
+					/*
+					 * This is not a digital signature parameter so we should look
+					 * at the data. If the data == REQUEST_DATA_CODE then a client is asking for the
+					 * data collected so far - send and reset
+					 */
 					String dataRequestor = data + "=" + request.getParameter(data);
 					if (dataRequestor.compareTo(REQUEST_DATA_CODE) == 0) {
 						manipulateSecurePostDataList(null);
@@ -134,7 +174,7 @@ public class ReceivePost extends HttpServlet {
 						}
 						else {
 							messages[counter] = data + "=" + request.getParameter(data);
-							securePostData.addPostParms(messages[counter]);
+							securePostData.addPostParm(messages[counter]);
 							counter++;
 						}
 					}

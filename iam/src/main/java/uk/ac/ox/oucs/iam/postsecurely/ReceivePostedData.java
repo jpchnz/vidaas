@@ -48,12 +48,13 @@ public class ReceivePostedData {
 	
 	public static void main(String[] args) {
 		try {
-			List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageData("http://localhost:8081/iam/ReceivePost");
+			List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageData("http://localhost:8080/iam/ReceivePost");
 			if (securePostDataList == null) {
 				System.out.println("No data returned");
 			}
 			else {
-				System.out.println("We have " + securePostDataList.size() + " pieces of data.");
+				System.out.println(String.format("We have %s piece%s of data", securePostDataList.size(), securePostDataList.size() > 1 ? "s" : ""));
+				System.out.println("Originator for data #1 = " + securePostDataList.get(0).getOriginatorHost());
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
