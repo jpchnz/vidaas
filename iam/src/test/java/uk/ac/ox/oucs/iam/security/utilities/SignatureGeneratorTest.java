@@ -6,29 +6,26 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.ox.oucs.iam.security.keys.KeyServices;
+import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
+import uk.ac.ox.oucs.iam.security.utilities.exceptions.NoEncodingException;
 
 public class SignatureGeneratorTest {
 	private static String keyFile = "/tmp/key";
 	private final static String keyType = "HmacSHA512";
 	
 	@BeforeClass
-	public static void initialise() {
+	public static void initialise() throws NoSuchAlgorithmException, IOException, KeyNotFoundException, NoEncodingException {
 		File privateKey = new File(keyFile+".priv");
 		if (!privateKey.exists()) {
 			// Create the private key
-			try {
-				new KeyServices(keyFile, true, keyType);
-				assertTrue(privateKey.exists());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				assertTrue(false);
-			}
+			new KeyServices(keyFile, true, keyType);
+			assertTrue(privateKey.exists());
 		}
 	}
 	
@@ -38,23 +35,18 @@ public class SignatureGeneratorTest {
 	 * without a message expiry 
 	 */
 	@Test
-	public void test1() {
+	public void test1() throws IOException, GeneralSecurityException {
 		String postData = "user=john&password=fred";
 		SignatureGenerator signature;
-		try {
-			for (int counter = 0; counter < 100; counter++) {
-				signature = new SignatureGenerator(keyFile);
-				signature.setUseMessageExpiry(false);
+		for (int counter = 0; counter < 100; counter++) {
+			signature = new SignatureGenerator(keyFile);
+			signature.setUseMessageExpiry(false);
 
-				VidaasSignature vSig = signature.signMessageAndEncode(postData + counter);
+			VidaasSignature vSig = signature.signMessageAndEncode(postData + counter);
 
-				SignatureVerifier sigVerifier = new SignatureVerifier(keyFile);
-				byte[] decodedBytes = sigVerifier.decodeAsByteArrayWithoutPosting(vSig.getSignature());
-				assertTrue(sigVerifier.verifyDigitalSignature(decodedBytes, vSig.getTimestampedMessage(postData + counter)));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			assertTrue(false);
+			SignatureVerifier sigVerifier = new SignatureVerifier(keyFile);
+			byte[] decodedBytes = sigVerifier.decodeAsByteArrayWithoutPosting(vSig.getSignature());
+			assertTrue(sigVerifier.verifyDigitalSignature(decodedBytes, vSig.getTimestampedMessage(postData + counter)));
 		}
 	}
 	
@@ -64,23 +56,18 @@ public class SignatureGeneratorTest {
 	 * without a message expiry 
 	 */
 	@Test
-	public void test2() {
+	public void test2() throws IOException, GeneralSecurityException {
 		String postData = "user=john&password=fred";
 		SignatureGenerator signature;
-		try {
-			for (int counter = 0; counter < 100; counter++) {
-				signature = new SignatureGenerator(keyFile);
-				signature.setUseMessageExpiry(false);
+		for (int counter = 0; counter < 100; counter++) {
+			signature = new SignatureGenerator(keyFile);
+			signature.setUseMessageExpiry(false);
 
-				VidaasSignature vSig = signature.signMessageAndEncode(postData + counter);
+			VidaasSignature vSig = signature.signMessageAndEncode(postData + counter);
 
-				SignatureVerifier sigVerifier = new SignatureVerifier(keyFile);
-				byte[] decodedBytes = sigVerifier.decodeAsByteArrayWithoutPosting(vSig.getSignature());
-				assertTrue(sigVerifier.verifyDigitalSignature(decodedBytes, vSig.getTimestampedMessage(postData + counter)));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			assertTrue(false);
+			SignatureVerifier sigVerifier = new SignatureVerifier(keyFile);
+			byte[] decodedBytes = sigVerifier.decodeAsByteArrayWithoutPosting(vSig.getSignature());
+			assertTrue(sigVerifier.verifyDigitalSignature(decodedBytes, vSig.getTimestampedMessage(postData + counter)));
 		}
 	}
 	
@@ -90,24 +77,19 @@ public class SignatureGeneratorTest {
 	 * with a message expiry 
 	 */
 	@Test
-	public void test3() {
+	public void test3() throws IOException, GeneralSecurityException {
 		String postData = "user=john&password=fred";
 		SignatureGenerator signature;
-		try {
-			for (int counter = 0; counter < 100; counter++) {
-				signature = new SignatureGenerator(keyFile);
-				signature.setUseMessageExpiry(true);
-				
-				VidaasSignature vSig = signature.signMessageAndEncode(postData + counter);
+		for (int counter = 0; counter < 100; counter++) {
+			signature = new SignatureGenerator(keyFile);
+			signature.setUseMessageExpiry(true);
+			
+			VidaasSignature vSig = signature.signMessageAndEncode(postData + counter);
 
-				SignatureVerifier sigVerifier = new SignatureVerifier(keyFile);
-				byte[] decodedBytes = sigVerifier.decodeAsByteArrayWithoutPosting(vSig.getSignature());
-				assertTrue(sigVerifier.verifyDigitalSignature(decodedBytes, vSig.getOriginalMessage()));
-				assertTrue(sigVerifier.verifyTimestamp(vSig.getTimestamp()));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			assertTrue(false);
+			SignatureVerifier sigVerifier = new SignatureVerifier(keyFile);
+			byte[] decodedBytes = sigVerifier.decodeAsByteArrayWithoutPosting(vSig.getSignature());
+			assertTrue(sigVerifier.verifyDigitalSignature(decodedBytes, vSig.getOriginalMessage()));
+			assertTrue(sigVerifier.verifyTimestamp(vSig.getTimestamp()));
 		}
 	}
 	
@@ -115,25 +97,20 @@ public class SignatureGeneratorTest {
 	 * Test message expiry 
 	 */
 	@Test
-	public void test4() {
+	public void test4() throws IOException, GeneralSecurityException, InterruptedException {
 		String postData = "user=john&password=fred";
 		SignatureGenerator signature;
-		try {
-			signature = new SignatureGenerator(keyFile);
-			signature.setUseMessageExpiry(true);
-			
-			VidaasSignature vSig = signature.signMessageAndEncode(postData);
-			
-			Thread.sleep(1002);
+		signature = new SignatureGenerator(keyFile);
+		signature.setUseMessageExpiry(true);
+		
+		VidaasSignature vSig = signature.signMessageAndEncode(postData);
+		
+		Thread.sleep(1002);
 
-			SignatureVerifier sigVerifier = new SignatureVerifier(keyFile);
-			sigVerifier.setMaxMessageAgeSeconds(1);
-			byte[] decodedBytes = sigVerifier.decodeAsByteArrayWithoutPosting(vSig.getSignature());
-			assertTrue(sigVerifier.verifyDigitalSignature(decodedBytes, vSig.getOriginalMessage()));
-			assertFalse(sigVerifier.verifyTimestamp(vSig.getTimestamp()));
-		} catch (Exception e) {
-			e.printStackTrace();
-			assertTrue(false);
-		}
+		SignatureVerifier sigVerifier = new SignatureVerifier(keyFile);
+		sigVerifier.setMaxMessageAgeSeconds(1);
+		byte[] decodedBytes = sigVerifier.decodeAsByteArrayWithoutPosting(vSig.getSignature());
+		assertTrue(sigVerifier.verifyDigitalSignature(decodedBytes, vSig.getOriginalMessage()));
+		assertFalse(sigVerifier.verifyTimestamp(vSig.getTimestamp()));
 	}
 }
