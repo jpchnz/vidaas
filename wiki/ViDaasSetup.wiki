@@ -199,3 +199,12 @@ restart apache
 {{{
 service apache2 restart
 }}}
+
+= Cleanup tasks =
+
+== fix permissions ==
+
+{{{
+chmod 640 $JBOSS_HOME/server/default/deploy/vidaas-ds.xml
+chmod 640 $JBOSS_HOME/server/default/deploy/vidaas-0.3/WEB-INF/classes/uk/ac/ox/oucs/vidaas/manager/sudamih.properties
+}}}
