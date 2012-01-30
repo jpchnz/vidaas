@@ -46,7 +46,7 @@ public class SendAndReceiveTest {
 		assertTrue(securePostDataList.size()==1);
 		assertTrue(securePostDataList.get(0).isMessageHasBeenVerified());
 		assertFalse(securePostDataList.get(0).isBadSig());
-		assertFalse(securePostDataList.get(0).isMessageTimeout());
+		assertFalse(securePostDataList.get(0).isMessageTimedOut());
 		assertFalse(securePostDataList.get(0).isNoPrivateKey());
 		assertTrue(securePostDataList.get(0).getPostParms().size() == 2);
 		assertTrue(securePostDataList.get(0).getPostParms().get(0).compareTo("password=bibble") == 0);
@@ -73,7 +73,7 @@ public class SendAndReceiveTest {
 		assertTrue(securePostDataList.size()==2);
 		assertTrue(securePostDataList.get(0).isMessageHasBeenVerified());
 		assertFalse(securePostDataList.get(0).isBadSig());
-		assertFalse(securePostDataList.get(0).isMessageTimeout());
+		assertFalse(securePostDataList.get(0).isMessageTimedOut());
 		assertFalse(securePostDataList.get(0).isNoPrivateKey());
 		assertTrue(securePostDataList.get(0).getPostParms().size() == 2);
 		assertTrue(securePostDataList.get(0).getPostParms().get(0).compareTo("password=This Is My Password123") == 0);

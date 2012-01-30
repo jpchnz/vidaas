@@ -92,7 +92,7 @@ public class CryptServicesTest {
 	public void decryptRemoteStringsWithLocalKey() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException, KeyNotFoundException, NoEncodingException, IllegalBlockSizeException, BadPaddingException {
 		System.out.println("decryptRemoteStringsWithLocalKey");
 		if (testingOff) {
-			return;
+			throw new BadPaddingException();
 		}
 		
 		int counter = 0;
