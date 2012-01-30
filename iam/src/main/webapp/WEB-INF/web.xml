@@ -3,38 +3,42 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Archetype Created Web Application</display-name>
-  <servlet>
-        <servlet-name>TestServ</servlet-name>
-        <servlet-class>uk.ac.ox.oucs.iam.TestServ</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TestServ</servlet-name>
-        <url-pattern>/TestServ</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <servlet-name>ProjectRoleServlet</servlet-name>
-        <servlet-class>uk.ac.ox.oucs.iam.ProjectRoleServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ProjectRoleServlet</servlet-name>
-        <url-pattern>/ProjectRoleServlet</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <servlet-name>ReceivePost</servlet-name>
-        <servlet-class>uk.ac.ox.oucs.iam.postsecurely.ReceivePost</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ReceivePost</servlet-name>
-        <url-pattern>/ReceivePost</url-pattern>
-    </servlet-mapping>
-    
-    <servlet>
-        <servlet-name>AccessServlet</servlet-name>
-        <servlet-class>uk.ac.ox.oucs.iam.postsec.AccessServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AccessServlet</servlet-name>
-        <url-pattern>/AccessServlet</url-pattern>
-    </servlet-mapping>
+	<display-name>Archetype Created Web Application</display-name>
+	<listener>
+		<listener-class>
+			uk.ac.ox.oucs.iam.ApplicationServletContextListener
+		</listener-class>
+	</listener>
+	<servlet>
+		<servlet-name>TestServ</servlet-name>
+		<servlet-class>uk.ac.ox.oucs.iam.TestServ</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>ProjectRoleServlet</servlet-name>
+		<servlet-class>uk.ac.ox.oucs.iam.ProjectRoleServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>ReceivePost</servlet-name>
+		<servlet-class>uk.ac.ox.oucs.iam.postsecurely.ReceivePost</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>AccessServlet</servlet-name>
+		<servlet-class>uk.ac.ox.oucs.iam.postsec.AccessServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AccessServlet</servlet-name>
+		<url-pattern>/AccessServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>TestServ</servlet-name>
+		<url-pattern>/TestServ</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ProjectRoleServlet</servlet-name>
+		<url-pattern>/ProjectRoleServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ReceivePost</servlet-name>
+		<url-pattern>/ReceivePost</url-pattern>
+	</servlet-mapping>
 </web-app>
