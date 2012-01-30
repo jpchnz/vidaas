@@ -10,10 +10,19 @@ public class IamAudit {
 		DOMConfigurator.configure("log4j.xml");
 	}
 	
+	/**
+	 * Always audit message
+	 * @param message the message to audit
+	 */
 	public void auditFailure(String message) {
 		log.fatal(message);
 	}
 	
+	/**
+	 * Only audits this message is the settings require it. Use this for environments
+	 * where some messages (i.e. these) may be switched off.
+	 * @param message the message to audit
+	 */
 	public void auditSuccess(String message) {
 		log.info(message);
 	}
