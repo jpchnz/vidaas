@@ -26,7 +26,7 @@ apt-get remove mpt-status
 == local mail (optional) ==
 {{{
 DEBIAN_FRONTEND=noninteractive apt-get -y install nullmailer
-echo vidaas-hosts@rt.oucs.ox.ac.uk > /etc/nullmailer/adminaddr
+echo vidaas-hosts@ <OUCS RT SERVER> > /etc/nullmailer/adminaddr
 echo smtp.ox.ac.uk > /etc/nullmailer/remotes
 }}}
 
