@@ -19,16 +19,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-
-import com.sun.jna.Library;
-import com.sun.jna.Native;
-import com.sun.jna.Platform;
 
 import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
 import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
 import uk.ac.ox.oucs.iam.security.utilities.exceptions.NoEncodingException;
+
+import com.sun.jna.Library;
+import com.sun.jna.Native;
+import com.sun.jna.Platform;
 
 /**
  * Provides services based around a generic (e.g. HMAC or Symmetric) key. The
@@ -43,8 +42,9 @@ public class KeyServices implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 7176143589838004264L;
-	protected SecretKey secretKey;
-	private String keyFileName;
+	protected PrivateKey secretKey;
+	private String genericKeyFileName;
+	public static String privateKeyNameExtension = ".priv", publicKeyNameExtension = ".pub";
 	private final boolean useJna = true;
 	private static CLibrary libc;
 	interface CLibrary extends Library {
@@ -80,7 +80,7 @@ public class KeyServices implements Serializable {
 		if (Platform.isLinux()) {
 			libc = (CLibrary) Native.loadLibrary("c", CLibrary.class);
 		}
-		this.keyFileName = keyFileName;
+		this.genericKeyFileName = keyFileName;
 		this.algorithm = algorithm;
 		newKeyCreated = !prepareKey(createIfNotThere);
 	}
@@ -116,11 +116,11 @@ public class KeyServices implements Serializable {
 			KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
 			PrivateKey newPrivateKey = keyFactory.generatePrivate(privateKeySpec);
 			PublicKey newPublicKey = keyFactory.generatePublic(publicKeySpec);
-			
-			GeneralUtils.writeObject(keyFileName+".priv", newPrivateKey);
-			GeneralUtils.writeObject(keyFileName+".pub", newPublicKey);
-			alterKeyFileModeToUserReadOnly(keyFileName+".priv");
-			alterKeyFileModeToUserReadOnly(keyFileName+".pub");
+
+			GeneralUtils.writeObject(genericKeyFileName+privateKeyNameExtension, newPrivateKey);
+			GeneralUtils.writeObject(genericKeyFileName+publicKeyNameExtension, newPublicKey);
+			alterKeyFileModeToUserReadOnly(genericKeyFileName+privateKeyNameExtension);
+			alterKeyFileModeToUserReadOnly(genericKeyFileName+publicKeyNameExtension);
 
 			System.out.println("Is transformation valid ? "
 					+ (privateKey.equals(newPrivateKey) && publicKey.equals(newPublicKey)));
@@ -135,7 +135,7 @@ public class KeyServices implements Serializable {
 	 * @throws IOException
 	 */
 	private void readKeyFromFile() throws IOException {
-		secretKey = (SecretKey) GeneralUtils.readObjectFromFile(keyFileName);
+		secretKey = (PrivateKey) GeneralUtils.readObjectFromFile(genericKeyFileName+privateKeyNameExtension);
 
 		/*
 		 * It shouldn't be necessary to reset file permissions on the key, since
@@ -189,7 +189,7 @@ public class KeyServices implements Serializable {
 	private boolean prepareKey(boolean createIfNotThere)
 			throws NoSuchAlgorithmException, IOException, KeyNotFoundException,
 			NoEncodingException {
-		boolean keyExists = new File(keyFileName+".priv").exists();
+		boolean keyExists = new File(genericKeyFileName+privateKeyNameExtension).exists();
 		if (keyExists) {
 			// We have a key - use it
 			readKeyFromFile();
@@ -211,10 +211,10 @@ public class KeyServices implements Serializable {
 	 * have found this to have problems (i.e. not work).
 	 */
 	private void alterKeyFileModeToUserReadOnly() {
-		alterKeyFileModeToUserReadOnly(keyFileName);
+		alterKeyFileModeToUserReadOnly(genericKeyFileName);
 	}
 	private void alterKeyFileModeToUserReadOnly(String fileName) {
-		if (true) {
+		if (false) {
 			return;
 		}
 		if (useJna && Platform.isLinux()) {

@@ -110,9 +110,10 @@ public class SendViaPost {
 		out.flush();
 		out.close();
 		messagePosted = true;
+		getResult();
 	}
 
-	public String getResult() throws IOException {
+	private String getResult() throws IOException {
 		if (!messagePosted) {
 			return "No data";
 		}
@@ -137,8 +138,7 @@ public class SendViaPost {
 		try {
 			System.out.println("Send via post");
 			SendViaPost post = new SendViaPost();
-			post.sendPost("http://localhost:8081/iam/ReceivePost", "name=freddy&password=bibble");
-			System.out.println(post.getResult());
+			post.sendPost("http://localhost:8080/iam/ReceivePost", "name=freddy&password=bibble");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

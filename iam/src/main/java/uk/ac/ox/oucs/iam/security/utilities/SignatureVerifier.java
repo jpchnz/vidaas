@@ -1,20 +1,16 @@
 package uk.ac.ox.oucs.iam.security.utilities;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Date;
 
 import org.apache.commons.codec.binary.Base64;
-
-import sun.misc.BASE64Decoder;
 
 /**
  * Signature Verifier verifies a digital signature. The signature verification
