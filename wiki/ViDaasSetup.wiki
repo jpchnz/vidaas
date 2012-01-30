@@ -14,10 +14,13 @@ Documentation work in progress
  * use partition created for home in /var (if image has default debian layout)
  * update hosts.allow and hosts.deny (if only NSMS hosts are allowed)
  * check vmware customization completed successfully
+ * remove mtp-status on virtual machines
 
 {{{
 rm /etc/ssh/ssh_host_*
 dpkg-reconfigure openssh-server
+
+apt-get remove mpt-status
 }}}
 
 == local mail (optional) ==
