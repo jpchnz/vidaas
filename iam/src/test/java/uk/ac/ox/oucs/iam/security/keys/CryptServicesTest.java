@@ -5,8 +5,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -14,6 +19,7 @@ import org.junit.Test;
 
 import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
 import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
+import uk.ac.ox.oucs.iam.security.utilities.exceptions.NoEncodingException;
 
 
 
@@ -73,36 +79,36 @@ public class CryptServicesTest {
 	/**
 	 * Check we cannot decrypt remotely prepared encrypted strings
 	 * with a newly created key 
+	 * @throws NoEncodingException 
+	 * @throws KeyNotFoundException 
+	 * @throws IOException 
+	 * @throws NoSuchPaddingException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws InvalidKeyException 
+	 * @throws IllegalBlockSizeException 
+	 * @throws BadPaddingException 
 	 */
-	@Test
-	public void decryptRemoteStringsWithLocalKey() {
+	@Test (expected=BadPaddingException.class)
+	public void decryptRemoteStringsWithLocalKey() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException, KeyNotFoundException, NoEncodingException, IllegalBlockSizeException, BadPaddingException {
 		System.out.println("decryptRemoteStringsWithLocalKey");
 		if (testingOff) {
 			return;
 		}
 		
 		int counter = 0;
-		try {
-			CryptServices cs = new CryptServices(localKey.getAbsolutePath(), true);
-			for (String s : msg) {
-				if (s.length() == 0) {
-					System.out.println("\tTests finished fine");
-					break;
-				}
-				String fileName = "testfiles" + File.separator + "encString" + counter;
-				System.out.println("\tCheck file:" + new File(fileName).getAbsolutePath());
-				String toTest = (String) GeneralUtils.readObjectFromFile(fileName);
-				System.out.println("\tTest if <" + toTest + "> decrypts to <" + msg[counter] + "> (it should not)");
-				try {
-					assertFalse(cs.decrypt(toTest).equals(msg[counter]));
-				} catch (BadPaddingException e) {
-					// This is to be expected
-					System.out.println("Bad pad - this is good");
-				}
-				counter++;
+		CryptServices cs = new CryptServices(localKey.getAbsolutePath(), true);
+		for (String s : msg) {
+			if (s.length() == 0) {
+				System.out.println("\tTests finished fine");
+				break;
 			}
-		} catch (Exception e) {
-			assertTrue(false);
+			String fileName = "testfiles" + File.separator + "encString" + counter;
+			System.out.println("\tCheck file:" + new File(fileName).getAbsolutePath());
+			String toTest = (String) GeneralUtils.readObjectFromFile(fileName);
+			System.out.println("\tTest if <" + toTest + "> decrypts to <" + msg[counter] + "> (it should not)");
+			assertFalse(cs.decrypt(toTest).equals(msg[counter]));
+			
+			counter++;
 		}
 	}
 
@@ -112,93 +118,89 @@ public class CryptServicesTest {
 	 * The next time through, it will use that key file, read the strings and
 	 * use the permanent key file to decrypt the strings to make sure they can
 	 * be persisted.
+	 * @throws NoEncodingException 
+	 * @throws KeyNotFoundException 
+	 * @throws IOException 
+	 * @throws NoSuchPaddingException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws InvalidKeyException 
+	 * @throws BadPaddingException 
+	 * @throws IllegalBlockSizeException 
 	 */
 	@Test
-	public void checkPersistance() {
+	public void checkPersistance() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException, KeyNotFoundException, NoEncodingException, IllegalBlockSizeException, BadPaddingException {
 		if (testingOff) {
 			return;
 		}
 		System.out.println("checkPersistance");
-		try {
-			CryptServices cs = new CryptServices(
-					permanentKey.getAbsolutePath(), false);
-			int count = 0;
-			for (String s : msg) {
-				if ( (s == null) || (s.length() == 0) ) {
-					System.out.println("\tTests finished fine");
-					break;
-				}
-				String fileToTest = "./symEnc" + count;
-				System.out.println("\tTest file " + fileToTest);
-				String toTest = (String) GeneralUtils.readObjectFromFile(fileToTest);
-				count++;				
-				assertTrue(cs.decrypt(toTest).equals(s));
-				System.out.println("\ttested string");
+		CryptServices cs = new CryptServices(
+				permanentKey.getAbsolutePath(), false);
+		int count = 0;
+		for (String s : msg) {
+			if ( (s == null) || (s.length() == 0) ) {
+				System.out.println("\tTests finished fine");
+				break;
 			}
-		} catch (KeyNotFoundException e) {
-			setupTestingFiles();
-			assertFalse(true);
-		} catch (IOException e) {
-			setupTestingFiles();
-			assertFalse(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-			assertFalse(true);
+			String fileToTest = "./symEnc" + count;
+			System.out.println("\tTest file " + fileToTest);
+			String toTest = (String) GeneralUtils.readObjectFromFile(fileToTest);
+			count++;				
+			assertTrue(cs.decrypt(toTest).equals(s));
+			System.out.println("\ttested string");
 		}
 		System.out.println("\tsuccess");
 	}
 	
-	private void setupTestingFiles() {
-		try {
-			/*
-			 * This is the first time through - set up persistance strings
-			 * to file
-			 */
-			CryptServices cs = new CryptServices(
-					permanentKey.getAbsolutePath(), true);
-			int count = 0;
-			for (String s : msg) {
-				if (s == null) {
-					break;
-				}
-				String enc = cs.encrypt(s);
-				GeneralUtils.writeObject("./symEnc" + count++, enc);
+	private void setupTestingFiles() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException, KeyNotFoundException, NoEncodingException, IllegalBlockSizeException, BadPaddingException {
+		/*
+		 * This is the first time through - set up persistance strings
+		 * to file
+		 */
+		CryptServices cs = new CryptServices(
+				permanentKey.getAbsolutePath(), true);
+		int count = 0;
+		for (String s : msg) {
+			if (s == null) {
+				break;
 			}
-			System.out
-					.println("\tIt appears this is the first tme through this test - a permanent key has been\n"
-							+ "\tcreated. Please now re-run the test. If you see this message again then there is a problem!");
-		} catch (Exception e2) {
-			e2.printStackTrace();
+			String enc = cs.encrypt(s);
+			GeneralUtils.writeObject("./symEnc" + count++, enc);
 		}
+		System.out
+				.println("\tIt appears this is the first tme through this test - a permanent key has been\n"
+						+ "\tcreated. Please now re-run the test. If you see this message again then there is a problem!");
 	}
 
 	
 	/**
+	 * @throws BadPaddingException 
+	 * @throws IllegalBlockSizeException 
+	 * @throws NoEncodingException 
+	 * @throws KeyNotFoundException 
+	 * @throws IOException 
+	 * @throws NoSuchPaddingException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws InvalidKeyException 
 	 * 
 	 */
 	@Test
-	public void basicEncryptionTests() {
+	public void basicEncryptionTests() throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException, KeyNotFoundException, NoEncodingException {
 		if (testingOff) {
 			return;
 		}
 		System.out.println("basicEncryptionTests");
 
 		CryptServices cs;
-		try {
-			cs = new CryptServices(true);
+		cs = new CryptServices(true);
 
-			for (String s : msg) {
-				if (s == null) {
-					break;
-				}
-				String enc = cs.encrypt(s);
-				assertFalse(s.equals(enc));
-				assertTrue(cs.decrypt(enc).equals(s));
-				System.out.println("\ttested string");
+		for (String s : msg) {
+			if (s == null) {
+				break;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			assertFalse(true);
+			String enc = cs.encrypt(s);
+			assertFalse(s.equals(enc));
+			assertTrue(cs.decrypt(enc).equals(s));
+			System.out.println("\ttested string");
 		}
 	}
 	

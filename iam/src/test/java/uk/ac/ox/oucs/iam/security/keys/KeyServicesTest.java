@@ -8,19 +8,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.NoSuchAlgorithmException;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.ox.oucs.iam.security.keys.KeyServices;
+import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
+import uk.ac.ox.oucs.iam.security.utilities.exceptions.NoEncodingException;
 
 import com.sun.jna.Platform;
 
 public class KeyServicesTest {
 	public static KeyServices keyServicesBlowfish, keyServicesHMAC;
-	public static final String KEY_FILE_NAME_BLOWFISH = "." + File.separator + "blowFishTestkey.priv";
-	public static final String KEY_FILE_NAME_HMAC = "." + File.separator + "HMACTestkey.priv";
+	public static final String KEY_FILE_NAME_BLOWFISH = "." + File.separator + "blowFishTestkey";
+	public static final String KEY_FILE_NAME_HMAC = "." + File.separator + "HMACTestkey";
 	private static File[] fArray;
 	private static boolean problemWithInit;
 	
@@ -37,9 +40,13 @@ public class KeyServicesTest {
 
 	/**
 	 * Create some files to test with
+	 * @throws NoEncodingException 
+	 * @throws KeyNotFoundException 
+	 * @throws IOException 
+	 * @throws NoSuchAlgorithmException 
 	 */
 	@BeforeClass
-	public static void initialise() {
+	public static void initialise() throws NoSuchAlgorithmException, IOException, KeyNotFoundException, NoEncodingException {
 		problemWithInit = true;
 		fArray = new File[2];
 		fArray[0] = new File(KEY_FILE_NAME_BLOWFISH);
@@ -50,15 +57,11 @@ public class KeyServicesTest {
 			f.getAbsoluteFile().delete();
 		}
 
-		try {
-			keyServicesBlowfish = new KeyServices(KEY_FILE_NAME_BLOWFISH, true,
-					"Blowfish");
-			keyServicesHMAC = new KeyServices(KEY_FILE_NAME_HMAC, true,
-					"HmacSHA512");
-			problemWithInit = false;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		keyServicesBlowfish = new KeyServices(KEY_FILE_NAME_BLOWFISH, true,
+				"Blowfish");
+		keyServicesHMAC = new KeyServices(KEY_FILE_NAME_HMAC, true,
+				"HmacSHA512");
+		problemWithInit = false;
 	}
 	
 	/**
@@ -76,15 +79,19 @@ public class KeyServicesTest {
 	/**
 	 * Check that the generated key exists and has the correct
 	 * permissions
+	 * @throws IOException 
 	 */
 	@Test
-	public void keyFileTest() {
+	public void keyFileTest() throws IOException {
 		System.out.println("keyFileTest");
 		
 		for (File f : fArray) {
-			System.out.println("Checking file " + f.getAbsolutePath());
-			assertTrue(f.getAbsoluteFile().exists());
-			assertTrue(checkFilePermissions(f));
+			System.out.println("Checking file " + f.getAbsolutePath()+ KeyServices.privateKeyNameExtension);
+			assertTrue(new File(f.getAbsolutePath()+ KeyServices.privateKeyNameExtension).getAbsoluteFile().exists());
+			assertTrue(checkFilePermissions(new File(f.getAbsolutePath()+ KeyServices.privateKeyNameExtension)));
+			assertTrue(new File(f.getAbsolutePath()+ KeyServices.publicKeyNameExtension).getAbsoluteFile().exists());
+			assertTrue(checkFilePermissions(new File(f.getAbsolutePath()+ KeyServices.publicKeyNameExtension)));
+			
 			System.out.println("\tfile checked");
 		}
 	}
@@ -93,8 +100,9 @@ public class KeyServicesTest {
 	 * Helper routine to ensure the key files have the correct permissions
 	 * @param f the file whose permissions are to test
 	 * @return true if they do
+	 * @throws IOException 
 	 */
-	public static boolean checkFilePermissions(File f) {
+	public static boolean checkFilePermissions(File f) throws IOException {
 		if (!Platform.isLinux()) {
 			System.out.println("Test not running on Linux - file permission test skipped");
 			return true;
@@ -105,20 +113,15 @@ public class KeyServicesTest {
 		String result = "";
 		Runtime rt = Runtime.getRuntime();
 		Process pr;
-		try {
-			pr = rt.exec(cmd);
-			InputStream in = pr.getInputStream();
-			InputStreamReader ir = new InputStreamReader(in);
-			BufferedReader br = new BufferedReader(ir);
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				result += line;
-			}
-			ret = result.contains("-r--------");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		pr = rt.exec(cmd);
+		InputStream in = pr.getInputStream();
+		InputStreamReader ir = new InputStreamReader(in);
+		BufferedReader br = new BufferedReader(ir);
+		String line = null;
+		while ((line = br.readLine()) != null) {
+			result += line;
 		}
+		ret = result.contains("-r--------");
 		return ret;
 	}
 }
