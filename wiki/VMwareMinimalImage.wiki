@@ -1,0 +1,12 @@
+#summary VMware image creation
+
+= Introduction =
+
+Steps to create an image using vmware
+
+== Minimal install ==
+
+ * Install minimal debian using netinst image
+ * update/upgrade and reboot if a new kernel was installed
+ * apt-get install linux-headers-2.6-amd64 make (needed by vmware tools)
+ * Install vmware tools (into /usr/local/ tree)
