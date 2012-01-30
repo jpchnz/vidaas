@@ -1,0 +1,40 @@
+#!/bin/bash
+
+#TODO find better place
+vidaas_home=/opt/VIDaaSData
+
+if ! adduser --system --home "$vidaas_home" --disabled-login --group vidaas --shell /bin/bash ; then
+  echo "failed to create vidaas user"
+  exit 1
+fi
+
+if ! apt-get -y install maven2 less vim unzip postgresql libmysql-java libpg-java openjdk-6-jdk ant apache2 libapache2-mod-jk daemontools ; then
+  echo "failed to install required packages"
+  exit 1
+fi
+
+# not essential
+apt-get -y remove mpt-status
+
+cd
+if ! wget -O /tmp/jboss-5.1.0.GA-jdk6.zip http://downloads.sourceforge.net/project/jboss/JBoss/JBoss-5.1.0.GA/jboss-5.1.0.GA-jdk6.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fjboss%2Ffiles%2FJBoss%2FJBoss-5.1.0.GA%2F ; then
+  rm /tmp/jboss-5.1.0.GA-jdk6.zip
+  echo "Unable to download jboss 5.1"
+  exit 1
+fi
+if ! wget -O /tmp/jboss-seam-2.2.2.Final.tar.gz http://downloads.sourceforge.net/project/jboss/JBoss%20Seam/2.2.2.Final/jboss-seam-2.2.2.Final.tar.gz ; then
+  rm /tmp/jboss-seam-2.2.2.Final.tar.gz
+  echo "Unable to download Seam 2.2.2"
+  exit 1
+fi
+
+cd /opt
+#rm jboss
+tar -xzf /tmp/jboss-5.1.0.GA-jdk6.zip
+#rm seam
+tar -xzf /tmp/jboss-seam-2.2.2.Final.tar.gz
+
+# is fixed but needs testing (remove when tested)
+chown vidaas:vidaas /opt
+
+
