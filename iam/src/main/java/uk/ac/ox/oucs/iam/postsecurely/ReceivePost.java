@@ -26,7 +26,7 @@ public class ReceivePost extends HttpServlet {
 	private List<SecurePostData> securePostDataList = new ArrayList<SecurePostData>();
 	public static final String REQUEST_DATA_CODE = "requestCurrent=data";
 	private IamAudit auditer = new IamAudit();
-	private boolean dontAcceptGet = true;
+	private boolean dontAcceptGet = true; // Set this to true if HTTP GET requests are not allowed on this server
 	private Logger log = Logger.getLogger(ReceivePost.class);
 	
 
@@ -70,9 +70,8 @@ public class ReceivePost extends HttpServlet {
 		int counter = 0;
 		securePostData = new SecurePostData();
 
-		auditer.auditSuccess("Post request received from " + request.getRemoteAddr());
-		log.debug("QQQQQQQQQQQQQQQQQQQQQQQ" + request.getRemoteAddr());
 		securePostData.setOriginatorHost(request.getRemoteAddr());
+		auditer.auditSuccess("Post request received from " + request.getRemoteAddr());
 
 		Enumeration<?> e = request.getParameterNames();
 		String[] messages = new String[request.getParameterMap().size()];
@@ -129,6 +128,10 @@ public class ReceivePost extends HttpServlet {
 							}
 							if (securePostData.isMessageHasBeenVerified() && !securePostData.isMessageTimedOut()) {
 								securePostData.setMessageHasBeenVerified(true);
+								auditer.auditSuccess(String.format("Post request from %s validated with the following parameters:", request.getRemoteAddr()));
+								for (String s : securePostData.getPostParms()) {
+									auditer.auditSuccess("\t" + s);
+								}
 							}
 							else {
 								auditer.auditFailure("Message has not been verified");
