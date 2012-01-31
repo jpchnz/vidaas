@@ -48,8 +48,8 @@ public class ReceivePostedData {
 	
 	public static void main(String[] args) {
 		try {
-			List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageData("http://localhost:8080/iam/ReceivePost");
-			if (securePostDataList == null) {
+			List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageData("http://localhost:8081/iam/ReceivePost");
+			if ( (securePostDataList == null) || (securePostDataList.size() == 0) ) {
 				System.out.println("No data returned");
 			}
 			else {
