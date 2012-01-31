@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * Helper class contains a list of a POST message that has been sent to the web server 
- * and the status of its verification
+ * and the status of the message's verification
  * 
  * @author oucs0153
  *
@@ -19,26 +19,34 @@ public class SecurePostData {
 	private boolean noPrivateKey = false;
 	private String originatorHost = null;
 	private List<String> postParms = new ArrayList<String>();
-	private static String token1 = "Printing data for SecurePostData";
-	private static String token2 = "Verified:";
-	private static String token3 = "Timeout:";
-	private static String token4 = "Bad sig:";
-	private static String token5 = "No key:";
+	private static String token_title_message = "Printing data for SecurePostData";
+	private static String token_verified = "Verified:";
+	private static String token_timeout = "Timeout:";
+	private static String token_bad_sig = "Bad sig:";
+	private static String token_no_key = "No key:";
 	private static String token_originator_host = "Originator Host:";
 	
 		
-	public void printData(PrintWriter out) {
-		out.println(token1);
-		out.println(token2 + messageHasBeenVerified);
-		out.println(token3 + messageTimedOut);
-		out.println(token4 + badSig);
-		out.println(token5 + noPrivateKey);
+	protected void printData(PrintWriter out) {
+		out.println(token_title_message);
+		out.println(token_verified + messageHasBeenVerified);
+		out.println(token_timeout + messageTimedOut);
+		out.println(token_bad_sig + badSig);
+		out.println(token_no_key + noPrivateKey);
 		out.println(token_originator_host + originatorHost);
 		for (String s : postParms) {
 			out.println(s);
 		}
 	}
 	
+	
+	
+	/**
+	 * This method will look at the supplied data string and parse it into a list of SecurePostData objects that
+	 * can then be easily queried. 
+	 * @param dataString The new line separated data stream that required parsing
+	 * @return A list of SecurePostData objects
+	 */
 	public static List<SecurePostData> getObjectFromString(String dataString) {
 		if ( (dataString == null) || (dataString.length() == 0) ) {
 			return null;
@@ -48,23 +56,23 @@ public class SecurePostData {
 		List<SecurePostData> spdList = new ArrayList<SecurePostData>();
 
 		for (String s : dataString.split("\n")) {
-			if (s.equals(token1)) {
+			if (s.equals(token_title_message)) {
 				if (spd != null) {
 					spdList.add(spd);
 				}
 				spd = new SecurePostData();
 			}
-			else if (s.startsWith(token2)) {
-				spd.setMessageHasBeenVerified(s.substring(token2.length()).equals("true"));
+			else if (s.startsWith(token_verified)) {
+				spd.setMessageHasBeenVerified(s.substring(token_verified.length()).equals("true"));
 			}
-			else if (s.startsWith(token3)) {
-				spd.setMessageTimedOut(s.substring(token3.length()).equals("true"));
+			else if (s.startsWith(token_timeout)) {
+				spd.setMessageTimedOut(s.substring(token_timeout.length()).equals("true"));
 			}
-			else if (s.startsWith(token4)) {
-				spd.setBadSig(s.substring(token4.length()).equals("true"));
+			else if (s.startsWith(token_bad_sig)) {
+				spd.setBadSig(s.substring(token_bad_sig.length()).equals("true"));
 			}
-			else if (s.startsWith(token5)) {
-				spd.setNoPrivateKey(s.substring(token5.length()).equals("true"));
+			else if (s.startsWith(token_no_key)) {
+				spd.setNoPrivateKey(s.substring(token_no_key.length()).equals("true"));
 			}
 			else if (s.startsWith(token_originator_host)) {
 				spd.setOriginatorHost(s.substring(token_originator_host.length()));

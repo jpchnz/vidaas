@@ -14,7 +14,7 @@ public class IamAudit {
 	 * Always audit message
 	 * @param message the message to audit
 	 */
-	public void auditFailure(String message) {
+	public void auditAlways(String message) {
 		log.fatal(message);
 	}
 	
@@ -23,7 +23,7 @@ public class IamAudit {
 	 * where some messages (i.e. these) may be switched off.
 	 * @param message the message to audit
 	 */
-	public void auditSuccess(String message) {
+	public void auditSometimes(String message) {
 		log.info(message);
 	}
 }
