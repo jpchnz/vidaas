@@ -10,10 +10,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.NoSuchAlgorithmException;
 
+import javax.crypto.BadPaddingException;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.ac.ox.oucs.iam.GlobalTestVars;
 import uk.ac.ox.oucs.iam.security.keys.KeyServices;
 import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
 import uk.ac.ox.oucs.iam.security.utilities.exceptions.NoEncodingException;
@@ -69,6 +72,9 @@ public class KeyServicesTest {
 	 */
 	@Test
 	public void testInit() {
+		if (!GlobalTestVars.runTests) {
+			return;
+		}
 		System.out.println("testInit");
 		assertTrue(keyServicesBlowfish != null);
 		assertTrue(keyServicesHMAC != null);
@@ -83,6 +89,9 @@ public class KeyServicesTest {
 	 */
 	@Test
 	public void keyFileTest() throws IOException {
+		if (!GlobalTestVars.runTests) {
+			return;
+		}
 		System.out.println("keyFileTest");
 		
 		for (File f : fArray) {
@@ -103,6 +112,9 @@ public class KeyServicesTest {
 	 * @throws IOException 
 	 */
 	public static boolean checkFilePermissions(File f) throws IOException {
+		if (!GlobalTestVars.runTests) {
+			return true;
+		}
 		if (!Platform.isLinux()) {
 			System.out.println("Test not running on Linux - file permission test skipped");
 			return true;

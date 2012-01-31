@@ -17,6 +17,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.ac.ox.oucs.iam.GlobalTestVars;
 import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
 import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
 import uk.ac.ox.oucs.iam.security.utilities.exceptions.NoEncodingException;
@@ -35,7 +36,7 @@ public class CryptServicesTest {
 	private static String[] msg;
 	private static int numberOfStrings = 0;
 	private static File permanentKey, remoteKey, localKey;
-	private static boolean testingOff = true;
+	
 
 	@BeforeClass
 	public static void initialise() {
@@ -90,10 +91,10 @@ public class CryptServicesTest {
 	 */
 	@Test (expected=BadPaddingException.class)
 	public void decryptRemoteStringsWithLocalKey() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException, KeyNotFoundException, NoEncodingException, IllegalBlockSizeException, BadPaddingException {
-		System.out.println("decryptRemoteStringsWithLocalKey");
-		if (testingOff) {
+		if (!GlobalTestVars.runTests) {
 			throw new BadPaddingException();
 		}
+		System.out.println("decryptRemoteStringsWithLocalKey");
 		
 		int counter = 0;
 		CryptServices cs = new CryptServices(localKey.getAbsolutePath(), true);
@@ -129,7 +130,7 @@ public class CryptServicesTest {
 	 */
 	@Test
 	public void checkPersistance() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException, KeyNotFoundException, NoEncodingException, IllegalBlockSizeException, BadPaddingException {
-		if (testingOff) {
+		if (!GlobalTestVars.runTests) {
 			return;
 		}
 		System.out.println("checkPersistance");
@@ -185,7 +186,7 @@ public class CryptServicesTest {
 	 */
 	@Test
 	public void basicEncryptionTests() throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException, KeyNotFoundException, NoEncodingException {
-		if (testingOff) {
+		if (!GlobalTestVars.runTests) {
 			return;
 		}
 		System.out.println("basicEncryptionTests");
