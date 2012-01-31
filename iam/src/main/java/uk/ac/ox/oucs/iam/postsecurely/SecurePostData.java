@@ -24,6 +24,7 @@ public class SecurePostData {
 	private static String token3 = "Timeout:";
 	private static String token4 = "Bad sig:";
 	private static String token5 = "No key:";
+	private static String token_originator_host = "Originator Host:";
 	
 		
 	public void printData(PrintWriter out) {
@@ -32,6 +33,7 @@ public class SecurePostData {
 		out.println(token3 + messageTimedOut);
 		out.println(token4 + badSig);
 		out.println(token5 + noPrivateKey);
+		out.println(token_originator_host + originatorHost);
 		for (String s : postParms) {
 			out.println(s);
 		}
@@ -63,6 +65,9 @@ public class SecurePostData {
 			}
 			else if (s.startsWith(token5)) {
 				spd.setNoPrivateKey(s.substring(token5.length()).equals("true"));
+			}
+			else if (s.startsWith(token_originator_host)) {
+				spd.setOriginatorHost(s.substring(token_originator_host.length()));
 			}
 			else {
 				if (spd != null) {
