@@ -6,7 +6,7 @@
 
 	<!-- log all audit records to a separate file every day -->
 	<appender name="auditAppender" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="audit.log" />
+		<param name="file" value="/tmp/audit.log" />
 		<param name="datePattern" value="'.'yyyy-MM-dd" />
 		<param name="append" value="true" />
 		<layout class="org.apache.log4j.PatternLayout">
