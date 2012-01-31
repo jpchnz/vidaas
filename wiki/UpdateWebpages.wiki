@@ -10,5 +10,53 @@ Add your content here.
 == Using google code ==
 
 Use the editor provided by google code by following this URL
+[https://code.google.com/p/vidaas/source/browse/#svn%2Fvidaas3%2Ftrunk%2Fvidaas%2FWebContent Googlecode-repository]
 
-[https://code.google.com/p/vidaas/source/browse/#svn%2Fvidaas3%2Ftrunk%2Fvidaas%2FWebContent asdf]
+== Using subversion on any computer of your choice ==
+
+Get your username password from [https://code.google.com/p/vidaas/source/checkout here]
+
+Initial checkout to your own machine:
+{{{
+svn co https://vidaas.googlecode.com/svn/vidaas3/trunk/
+}}}
+
+To update go into the same directory and run:
+{{{
+svn up
+}}}
+
+To save your changes:
+{{{
+svn commit
+}}}
+
+== Use subversion on the server ==
+
+Do exactly as in described under the heading above
+
+To build the .war file do the following
+{{{
+cd ~/trunk/vidaas/
+mvn package
+}}}
+
+to deploy
+{{{
+cd ~/trunk/vidaas
+cp -r target/vidaas-0.3/ /opt/jboss/server/default/deploy/
+}}}
+
+to undeploy 
+{{{
+rm -rf /opt/jboss/server/default/deploy/vidaas-0.3/
+}}}
+
+== To edit files directly ==
+
+You have to deploy the webapp first as described above, then
+
+{{{
+cd /opt/jboss/server/default/deploy/vidaas-0.3/
+}}}
+where you can edit files directly.
