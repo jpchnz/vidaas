@@ -60,3 +60,24 @@ You have to deploy the webapp first as described above, then
 cd /opt/jboss/server/default/deploy/vidaas-0.3/
 }}}
 where you can edit files directly.
+
+for example if you change theme.css
+{{{
+vi /opt/jboss/server/default/deploy/vidaas-0.3/stylesheet/theme.css
+}}}
+
+copy it back into the repository using
+{{{
+cp /opt/jboss/server/default/deploy/vidaas-0.3/stylesheet/theme.css ~/trunk/vidaas/WebContent/stylesheet/theme.css
+}}}
+
+check the changes, and make sure there are no other changes then your own
+{{{
+cd ~/trunk/vidaas
+svn diff
+}}}
+
+and if you see the expected change you can commit it to the repository using
+{{{
+svn commit
+}}}
