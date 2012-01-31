@@ -54,7 +54,15 @@ public class ReceivePostedData {
 			}
 			else {
 				System.out.println(String.format("We have %s piece%s of data", securePostDataList.size(), securePostDataList.size() > 1 ? "s" : ""));
-				System.out.println("Originator for data #1 = " + securePostDataList.get(0).getOriginatorHost());
+				int counter = 0;
+				for (SecurePostData spd : securePostDataList) {
+					System.out.println("Item " + (counter+1));
+					System.out.println("Originator for data " + (counter+1) + " = " + spd.getOriginatorHost());
+					for (String s : spd.getPostParms()) {
+						System.out.println(s);
+					}
+					counter++;
+				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
