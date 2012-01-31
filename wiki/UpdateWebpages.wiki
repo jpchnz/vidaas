@@ -81,3 +81,10 @@ and if you see the expected change you can commit it to the repository using
 {{{
 svn commit
 }}}
+
+== If you get error pages ==
+
+ * Please report the error via email or the issue tracker
+ * After the problem is fixed go to your working copy (your computer, server, ..)
+   * run svn up and mvn package as describe above
+   * redeploy the app to the server as described above
