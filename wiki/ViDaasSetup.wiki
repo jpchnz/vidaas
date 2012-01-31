@@ -87,7 +87,7 @@ apt-get install openjdk-6-jdk maven2 subversion
 Build ViDaaS
 {{{
 su vidaas
-svn checkout https://vidaas.googlecode.com/svn/vidaas3/branches/trunk
+svn checkout https://vidaas.googlecode.com/svn/vidaas3/trunk
 cd trunk/vidaas
 vi src/hot/uk/ac/ox/oucs/vidaas/manager/sudamih.properties #update uk.ac.ox.oucs.sudamih.adminUserNamePW reported as issue#44
 mvn package
