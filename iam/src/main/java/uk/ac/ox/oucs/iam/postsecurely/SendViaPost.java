@@ -138,7 +138,7 @@ public class SendViaPost {
 		try {
 			System.out.println("Send via post");
 			SendViaPost post = new SendViaPost();
-			post.sendPost("http://localhost:8080/iam/ReceivePost", "name=freddy&password=bibble");
+			post.sendPost("http://localhost:8081/iam/ReceivePost", "name=freddy&password=bibble");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

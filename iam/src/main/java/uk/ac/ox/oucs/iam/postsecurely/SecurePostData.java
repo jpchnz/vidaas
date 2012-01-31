@@ -65,7 +65,9 @@ public class SecurePostData {
 				spd.setNoPrivateKey(s.substring(token5.length()).equals("true"));
 			}
 			else {
-				spd.addPostParm(s);
+				if (spd != null) {
+					spd.addPostParm(s);
+				}
 			}
 		}
 		
