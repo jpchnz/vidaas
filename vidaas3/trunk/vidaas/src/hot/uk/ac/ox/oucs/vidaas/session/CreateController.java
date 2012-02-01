@@ -299,11 +299,11 @@ public class CreateController {
 							dataspaceHome, today, log);
 				}
 
-				createProjectDataspaceConfirmationMessage = "Data Space '"
+				createProjectDataspaceConfirmationMessage = "Database '"
 						+ dataspaceHome.getInstance().getDataspaceName()
 						+ "' for Project: '"
 						+ projectsList.get(0).getProject().getTitle()
-						+ "' is successfully created.";
+						+ "' has been successfully created.";
 				((NavigationController) Contexts.getSessionContext().get(
 						"navigationController"))
 						.createProjectDataspaceConfirmation();
