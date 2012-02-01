@@ -2,7 +2,7 @@
 
 = Introduction =
 
-Documentation work in progress
+These instructions are now obsolete and replaced by installation scripts.
 
 = Details =
 
