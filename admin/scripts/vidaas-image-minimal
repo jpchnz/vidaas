@@ -1,6 +1,13 @@
 #!/bin/bash
 
-# find out if VMware tools are working
+echo "Checking out admin repository into ~/"
+cd
+if ! svn checkout https://vidaas.googlecode.com/svn/admin ; then
+  echo "svn checkout failed"
+  exit 1
+fi
+
+echo "Checking status of vmware-tools..."
 if [ -e /etc/init.d/vmware-tools ] ; then
   if ! /etc/init.d/vmware-tools status ; then
     install_tools=yes
@@ -9,16 +16,10 @@ else
   install_tools=yes
 fi
 
-# get admin repository
-cd
-if ! svn checkout https://vidaas.googlecode.com/svn/admin ; then
-  echo "svn checkout failed"
-  exit 1
-fi
-
 # install tools
 if [ -n "$install_tools" ] ; then
-  apt-get install linux-headers-2.6-amd64 make
+  echo "Installing vmware-tools..."
+  apt-get -qqy install linux-headers-2.6-amd64 make
   cd
   if ! tar -xzf admin/bin/VMwareTools-8.6.0-425873.tar.gz ; then
     echo "unable to extract VMwareTools"
@@ -30,6 +31,15 @@ else
   echo "VMware tools already installed and running"
 fi
 
-# not essential (and noisy)
-apt-get -y remove mpt-status
+echo "Removing unwanted packages..."
+apt-get -qqy remove mpt-status
 
+echo "Setting up local mail and package update notifications"
+DEBIAN_FRONTEND=noninteractive apt-get -qqy install nullmailer
+echo vidaas-hosts@rt.oucs.ox.ac.uk > /etc/nullmailer/adminaddr
+echo smtp.ox.ac.uk > /etc/nullmailer/remotes
+
+if [ ! -f /etc/ssh/ssh_host_rsa_key ] ; then
+  echo "creating new hostkey..."
+  dpkg-reconfigure openssh-server
+fi
