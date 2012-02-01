@@ -78,7 +78,7 @@ public class Logins implements java.io.Serializable {
 		this.password = password;
 	}
 
-	@Column(name = "ShibTargetedId", nullable = false, length = 100)
+	@Column(name = "ShibTargetedId", length = 100)
 	//@NotNull
 	@Length(max = 100)
 	public String getShibTargetedId() {
