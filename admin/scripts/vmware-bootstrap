@@ -1,7 +1,14 @@
 #!/bin/bash
 
-echo "Loading settings..."
+if [ x$1 == x"precustomization" ]; then
+  exit 0
+fi
+
+#put your customization settings here
 vidaas_admin_repo_path=/root/
+vidaas_node_type=project
+
+#existing settings file overrides defaults
 if [ -f /etc/vidaas/settings ] ; then
   source /etc/vidaas/settings
 fi
@@ -12,10 +19,9 @@ echo "Updating settings file..."
 (
 cat <<EndOfFile
 vidaas_admin_repo_path=$vidaas_admin_repo_path
+vidaas_node_type=$vidaas_node_type
 EndOfFile
 ) > /etc/vidaas/settings
-
-export vidaas_admin_repo_path
 
 echo "Checking out admin repository into $vidaas_config_repo_path"
 if [ ! -f /usr/bin/svn ] ; then
@@ -31,3 +37,4 @@ if ! svn checkout https://vidaas.googlecode.com/svn/admin ; then
 fi
 
 # run whatever is required next
+sh $vidaas_config_repo_path/admin/scripts/vidaas-image-minimal
