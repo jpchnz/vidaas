@@ -101,6 +101,15 @@ cp resources/vidaas-ds.xml $JBOSS_HOME/server/default/deploy
 cp target/vidaas-0.3.war $JBOSS_HOME/server/default/deploy
 cp resources/vidaas-service.xml $JBOSS_HOME/server/default/deploy #serverURL has to be updated but this parameter will be removed
 }}}
+
+== Re-deployment (only when database schema changes) ==
+
+ * Drop and create the mysql database (see above)
+ * Remove all .war file from the deploy directory
+ * patch seam
+ * delete /opt/VIDaaSData/*
+ * Continue with "Deployment" section above
+
 ----
 Example vidaas3-ds.xml (replace $PASSWORD$ with your mysql password chosen earlier)
 {{{
