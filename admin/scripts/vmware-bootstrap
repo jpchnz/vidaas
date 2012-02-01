@@ -4,6 +4,9 @@ if [ x$1 == x"precustomization" ]; then
   exit 0
 fi
 
+exec &>> /var/log/customization.log
+echo "Customization started `date`"
+
 #put your customization settings here
 vidaas_admin_repo_path=/root/
 vidaas_node_type=project
