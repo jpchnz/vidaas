@@ -28,7 +28,11 @@
 	                                value="#{usersHome.instance.email}" required="true"/>	                     
 						<rich:message for="email" style="width : 184px;" />
 						
-						<h:outputLabel for="memberRole">Role</h:outputLabel>
+						<h:outputLabel for="memberRole">
+							<a class="tooltip" href="#">Role<span class="custom help">
+								<img src="images/Help.png" alt="Help" height="48" width="48" /><em>#{helpController.getHelpTitle('AddNewMembersPopup_Role')}</em>#{helpController.setupHelpText('AddNewMembersPopup_Role')}
+							</span></a>
+						</h:outputLabel>
 						<h:selectOneMenu  id="memberRole"  required="true" value="#{userProjectHome.instance.userRole}" 
 			            	style="width:184px;">
 			            	<f:selectItem id="memberRole_item1" itemLabel="Admin" 
