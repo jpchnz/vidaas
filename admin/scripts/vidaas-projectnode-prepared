@@ -8,7 +8,7 @@ if ! adduser --system --home "$vidaas_home" --disabled-login --group vidaas --sh
   exit 1
 fi
 
-if ! apt-get -y install maven2 less vim unzip postgresql libmysql-java libpg-java openjdk-6-jdk ant apache2 libapache2-mod-jk daemontools ; then
+if ! apt-get -y install maven2 less vim unzip postgresql libmysql-java libpg-java openjdk-6-jdk ant apache2 libapache2-mod-jk daemontools patch ; then
   echo "failed to install required packages"
   exit 1
 fi
