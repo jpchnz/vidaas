@@ -29,3 +29,7 @@ if [ -n "$install_tools" ] ; then
 else
   echo "VMware tools already installed and running"
 fi
+
+# not essential (and noisy)
+apt-get -y remove mpt-status
+
