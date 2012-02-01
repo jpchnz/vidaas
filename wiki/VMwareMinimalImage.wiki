@@ -10,6 +10,7 @@ Steps to create an image using vmware
  * update/upgrade and reboot if a new kernel was installed
 
 == Minimal image ==
+This image forms the basis of all other images (project node, vm node, backup node, etc.)
 
 as root
 {{{
