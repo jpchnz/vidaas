@@ -1,0 +1,59 @@
+<helpText language="En_US">
+	<helpGroup description="Fields shown when a user creates a new database (aka'dataspace') within a project">
+		<helpField>
+			<helpId>DatabaseCreationPopup_DatabaseName</helpId>
+			<title>Database Name</title>
+			<text>The database name you choose can only contain alphabetic and
+				numeric characters, i.e. a..z, 0..9, and cannot contain spaces.
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
+			<helpId>DatabaseCreationPopup_EstimatedSize</helpId>
+			<title>Estimated Database Size</title>
+			<text>JAMES TO WRITE THIS</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
+			<helpId>DatabaseCreationPopup_WebAppName</helpId>
+			<title>Database interface name</title>
+			<text>JAMES TO WRITE THIS (including example of what you might use)</text>
+			<image>help</image>
+		</helpField>
+	</helpGroup>
+	<helpGroup description="Login popup">
+		<helpField>
+			<helpId>LoginPopup_RememberMe</helpId>
+			<title>Remember me</title>
+			<text>Only select this option if you are the only person using this computer.
+			</text>
+			<image>help</image>
+		</helpField>
+	</helpGroup>
+	<helpGroup description="Project Creation popup">
+		<helpField>
+			<helpId>ProjectCreationPopup_StartDate</helpId>
+			<title>Start Date</title>
+			<text>James to write this
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
+			<helpId>ProjectCreationPopup_EndDate</helpId>
+			<title>End Date</title>
+			<text>James to write this
+			</text>
+			<image>help</image>
+		</helpField>
+	</helpGroup>
+	<helpGroup description="Add new members to project popup">
+		<helpField>
+			<helpId>AddNewMembersPopup_Role</helpId>
+			<title>Role</title>
+			<text>Project members will have one of the following roles:
+Project Administrator; Contributor; Viewer.  Additionally, the person who initiated the project will automatically inherit the role of Project Owner.
+			</text>
+			<image>help</image>
+		</helpField>
+	</helpGroup>
+</helpText>
