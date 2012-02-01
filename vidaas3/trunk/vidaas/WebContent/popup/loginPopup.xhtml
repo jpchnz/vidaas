@@ -28,7 +28,10 @@
 				<h:inputText id="username" value="#{credentials.username}" />
 				<h:outputLabel for="password">Password</h:outputLabel>
 				<h:inputSecret id="password" value="#{credentials.password}" />
-				<h:outputLabel for="rememberMe">Remember me</h:outputLabel>
+				<h:outputLabel for="rememberMe"><a class="tooltip" href="#">Remember me<span
+						class="custom help"> <img src="images/Help.png" alt="Help"
+							height="48" width="48" /><em>#{helpController.getHelpTitle('LoginPopup_RememberMe')}</em>#{helpController.setupHelpText('LoginPopup_RememberMe')}
+					</span></a></h:outputLabel>
 				<h:selectBooleanCheckbox id="rememberMe"
 					value="#{rememberMe.enabled}" />
 			</h:panelGrid></div>
