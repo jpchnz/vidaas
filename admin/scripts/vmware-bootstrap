@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo "Checking out admin repository into ~/"
+if [ ! -f /usr/bin/svn ] ; then
+  apt-get -qqy install subversion
+fi
+cd
+if ! svn checkout https://vidaas.googlecode.com/svn/admin ; then
+  echo "svn checkout failed"
+  exit 1
+fi
+
+# run whatever is required next
