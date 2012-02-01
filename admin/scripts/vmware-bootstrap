@@ -1,10 +1,30 @@
 #!/bin/bash
 
-echo "Checking out admin repository into ~/"
-if [ ! -f /usr/bin/svn ] ; then
-  apt-get -qqy install subversion
+echo "Loading settings..."
+vidaas_admin_repo_path=/root/
+if [ -f /etc/vidaas/settings ] ; then
+  source /etc/vidaas/settings
 fi
-cd
+if [ ! -d /etc/vidaas ] ; then
+  mkdir /etc/vidaas
+fi
+echo "Updating settings file..."
+(
+cat <<EndOfFile
+vidaas_admin_repo_path=$vidaas_admin_repo_path
+EndOfFile
+) > /etc/vidaas/settings
+
+export vidaas_admin_repo_path
+
+echo "Checking out admin repository into $vidaas_config_repo_path"
+if [ ! -f /usr/bin/svn ] ; then
+  if ! apt-get -qqy install subversion ; then
+    echo "Unable to install subversion package"
+    exit 1
+  fi
+fi
+cd $vidaas_config_repo_path
 if ! svn checkout https://vidaas.googlecode.com/svn/admin ; then
   echo "svn checkout failed"
   exit 1
