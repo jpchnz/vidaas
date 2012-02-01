@@ -13,9 +13,6 @@ if ! apt-get -y install maven2 less vim unzip postgresql libmysql-java libpg-jav
   exit 1
 fi
 
-# not essential
-apt-get -y remove mpt-status
-
 cd
 if ! wget -O /tmp/jboss-5.1.0.GA-jdk6.zip http://downloads.sourceforge.net/project/jboss/JBoss/JBoss-5.1.0.GA/jboss-5.1.0.GA-jdk6.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fjboss%2Ffiles%2FJBoss%2FJBoss-5.1.0.GA%2F ; then
   rm /tmp/jboss-5.1.0.GA-jdk6.zip
