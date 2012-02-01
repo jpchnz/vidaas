@@ -156,6 +156,9 @@ install into /opt/seam (or symlink)
 cp seam/VIDaaS-SeamScript.sh /opt/seam #will be replaced with patch
 cp seam/build.properties /opt/seam/seam-gen/
 }}}
+
+TODO: write instructions to patch seam
+
 ----
 JBoss is now ready to be started
 {{{
