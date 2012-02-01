@@ -92,7 +92,7 @@ public class Users implements java.io.Serializable {
 	}
 
 	@Column(name = "ShibTargetedId", nullable = false, length = 100)
-	@NotNull
+	//@NotNull // Giving error on development machine
 	@Length(max = 100)
 	public String getShibTargetedId() {
 		return this.shibTargetedId;
