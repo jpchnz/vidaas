@@ -41,6 +41,12 @@ cd ~/trunk/vidaas/
 mvn package
 }}}
 
+To clean the build environment (this forces a full rebuild when running mvn package)
+{{{
+cd ~/trunk/vidaas/
+mvn clean
+}}}
+
 to deploy
 {{{
 cd ~/trunk/vidaas
