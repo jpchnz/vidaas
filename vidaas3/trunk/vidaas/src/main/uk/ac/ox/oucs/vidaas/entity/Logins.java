@@ -79,7 +79,7 @@ public class Logins implements java.io.Serializable {
 	}
 
 	@Column(name = "ShibTargetedId", nullable = false, length = 100)
-	@NotNull
+	//@NotNull
 	@Length(max = 100)
 	public String getShibTargetedId() {
 		return this.shibTargetedId;
