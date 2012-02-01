@@ -104,10 +104,12 @@ cp resources/vidaas-service.xml $JBOSS_HOME/server/default/deploy #serverURL has
 
 == Re-deployment (only when database schema changes) ==
 
+ * /etc/init.d/jboss51 stop
  * Drop and create the mysql database (see above)
  * Remove all .war file from the deploy directory
- * patch seam
- * delete /opt/VIDaaSData/*
+ * get a new copy of seam and patch it
+   * https://vidaas.googlecode.com/svn/vidaas3/trunk/seam/vidaas-seam.patch
+ * delete /opt/VIDaaSData/project_*
  * Continue with "Deployment" section above
 
 ----
