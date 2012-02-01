@@ -10,7 +10,7 @@
 		<s:validateAll>
 	        <h:panelGrid columns="3" columnClasses="name, value, errorMessage">
 	        
-	        	<h:outputLabel for="databaseType">Database type</h:outputLabel>
+	        	<h:outputLabel for="databaseType">Database Type</h:outputLabel>
 	            <h:selectOneMenu  id="databaseType"  required="true" value="#{dataspaceHome.instance.databaseType}" 
 	            	style="width:302px;">
 	            	<f:selectItem id="databaseType_item1" itemLabel="Relational Database" 
@@ -22,23 +22,23 @@
 	            </h:selectOneMenu>
 	        	<rich:message for="databaseType" style="width : 184px;" />
 	        	
-	        	<h:outputLabel for="dataspaceName">Database name</h:outputLabel>
+	        	<h:outputLabel for="dataspaceName">Database Name</h:outputLabel>
 	            <h:inputText id="dataspaceName"  required="true" value="#{dataspaceHome.instance.dataspaceName}" 
 	            	style="width:295px;"/>
 	        	<rich:message for="dataspaceName" style="width : 184px;" />
 	        	
-	        	<h:outputLabel for="databaseDescription">Database description</h:outputLabel>	            
+	        	<h:outputLabel for="databaseDescription">Database Description</h:outputLabel>	            
 	            <h:inputText id="databaseDescription"  required="true" value="#{dataspaceHome.instance.databaseDescription}" 
 	            	style="width:295px;"/>
 	        	<rich:message for="databaseDescription" style="width : 184px;" />
 	        	
-	        	<h:outputLabel for="dataspaceCreationDate">Creation date</h:outputLabel>	            
+	        	<h:outputLabel for="dataspaceCreationDate">Creation Date</h:outputLabel>	            
 	           <rich:calendar id="dataspaceCreationDate"
                        required="true"
                           value="#{createController.today}" datePattern="dd/MM/yyyy"/>
 	        	<rich:message for="dataspaceCreationDate" style="width : 184px;" />
 	        	
-	        	<h:outputLabel for="databaseSize">Estimated database size</h:outputLabel>
+	        	<h:outputLabel for="databaseSize">Estimated Database Size</h:outputLabel>
 				<h:selectOneMenu value="#{dataspaceHome.instance.databaseSize}"
 				required="true" id="databaseSize" style="width:302px;">
 				<f:selectItem id="databaseSize_item1" itemLabel="1 Gigabyte"
@@ -52,7 +52,7 @@
 				</h:selectOneMenu>
 				<rich:message for="databaseSize" style="width : 184px;" />
 	        
-	            <h:outputLabel for="databaseBackupPolicy">Backup policy</h:outputLabel>
+	            <h:outputLabel for="databaseBackupPolicy">Backup Policy</h:outputLabel>
 				<h:selectOneMenu value="#{dataspaceHome.instance.databaseBackupPolicy}"
 				required="true" id="databaseBackupPolicy" style="width:302px;">
 					<f:selectItem id="databaseBackupPolicy_item1" itemLabel="Daily"
@@ -76,7 +76,7 @@
 				</h:selectOneMenu>
 				<rich:message for="databaseExpandable" style="width : 184px;" />
 				
-				<h:outputLabel for="webApplicationName">Database interface name</h:outputLabel>
+				<h:outputLabel for="webApplicationName">Database Interface Name</h:outputLabel>
 	            <h:inputText id="webApplicationName"  required="true" value="#{dataspaceHome.instance.webApplicationName}" 
 	            	style="width:295px;"/>
 	        	<rich:message for="webApplicationName" style="width : 184px;" />
