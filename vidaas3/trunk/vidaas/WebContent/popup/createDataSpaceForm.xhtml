@@ -22,7 +22,12 @@
 	            </h:selectOneMenu>
 	        	<rich:message for="databaseType" style="width : 184px;" />
 	        	
-	        	<h:outputLabel for="dataspaceName">Database Name</h:outputLabel>
+	        	<h:outputLabel for="dataspaceName">
+					<a class="tooltip" href="#">Database name<span
+						class="custom help"> <img src="images/Help.png" alt="Help"
+							height="48" width="48" /><em>#{helpController.getHelpTitle('DatabaseCreationPopup_DatabaseName')}</em>#{helpController.setupHelpText('DatabaseCreationPopup_DatabaseName')}
+					</span></a>
+				</h:outputLabel>
 	            <h:inputText id="dataspaceName"  required="true" value="#{dataspaceHome.instance.dataspaceName}" 
 	            	style="width:295px;"/>
 	        	<rich:message for="dataspaceName" style="width : 184px;" />
@@ -38,7 +43,10 @@
                           value="#{createController.today}" datePattern="dd/MM/yyyy"/>
 	        	<rich:message for="dataspaceCreationDate" style="width : 184px;" />
 	        	
-	        	<h:outputLabel for="databaseSize">Estimated Database Size</h:outputLabel>
+	        	<h:outputLabel for="databaseSize"><a class="tooltip" href="#">Estimated database size<span
+						class="custom help"> <img src="images/Help.png" alt="Help"
+							height="48" width="48" /><em>#{helpController.getHelpTitle('DatabaseCreationPopup_EstimatedSize')}</em>#{helpController.setupHelpText('DatabaseCreationPopup_EstimatedSize')}
+					</span></a></h:outputLabel>
 				<h:selectOneMenu value="#{dataspaceHome.instance.databaseSize}"
 				required="true" id="databaseSize" style="width:302px;">
 				<f:selectItem id="databaseSize_item1" itemLabel="1 Gigabyte"
@@ -76,7 +84,10 @@
 				</h:selectOneMenu>
 				<rich:message for="databaseExpandable" style="width : 184px;" />
 				
-				<h:outputLabel for="webApplicationName">Database Interface Name</h:outputLabel>
+				<h:outputLabel for="webApplicationName"><a class="tooltip" href="#">Database interface name<span
+						class="custom help"> <img src="images/Help.png" alt="Help"
+							height="48" width="48" /><em>#{helpController.getHelpTitle('DatabaseCreationPopup_WebAppName')}</em>#{helpController.setupHelpText('DatabaseCreationPopup_WebAppName')}
+					</span></a></h:outputLabel>
 	            <h:inputText id="webApplicationName"  required="true" value="#{dataspaceHome.instance.webApplicationName}" 
 	            	style="width:295px;"/>
 	        	<rich:message for="webApplicationName" style="width : 184px;" />
