@@ -66,11 +66,13 @@ public class LoginsHome extends EntityHome<Logins> {
 		List<Logins> loginsList = query.getResultList();
 		return loginsList;
 	}
-
+	
 	public List<Logins> findByShibTargetedId(String shibTargetedId){
-		Query query = this.getEntityManager().createNamedQuery("Logins.findByUserShibTargetedId");
-		query.setParameter("shibTargetedId", new String(shibTargetedId));
-		List<Logins> loginsList = query.getResultList();
-		return loginsList;
-	}
+        Query query = this.getEntityManager().createNamedQuery("Logins.findByUserShibTargetedId");
+        query.setParameter("shibTargetedId", new String(shibTargetedId));
+        List<Logins> loginsList = query.getResultList();
+        return loginsList;
+}
+
+
 }
