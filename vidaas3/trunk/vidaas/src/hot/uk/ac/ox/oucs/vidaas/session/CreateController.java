@@ -186,8 +186,8 @@ public class CreateController {
 	}
 
 	public boolean isStatusPanelOKButtonDisabled() {
-		System.out.println("isStatusPanelOKButtonDisabled(): "
-				+ dataHolder.isOkButton());
+		/*System.out.println("isStatusPanelOKButtonDisabled(): "
+				+ dataHolder.isOkButton());*/
 		return dataHolder.isOkButton();
 	}
 
@@ -197,7 +197,7 @@ public class CreateController {
 	}
 
 	public String getDatabaseSchemaFormStatus() {
-		System.out.println("getDatabaseSchemaFormStatus()");
+		//System.out.println("getDatabaseSchemaFormStatus()");
 		return dataHolder.getCurrentStatus();
 	}
 
@@ -270,7 +270,7 @@ public class CreateController {
 		new CreateProjectController().createProject(getUserMain(), projectHome,
 				userProjectHome, log);
 		createProjectConfirmationMessage = "Project '"
-				+ projectHome.getInstance().getTitle()
+				+ projectHome.getInstance().getName()
 				+ "' created successfully.";
 
 		((NavigationController) Contexts.getSessionContext().get(
@@ -278,7 +278,7 @@ public class CreateController {
 	}
 
 	public void createDataSpace(/* Integer projectIDValue */) {
-		if (validateString(dataspaceHome.getInstance().getDataspaceName())) {
+		//if (validateString(dataspaceHome.getInstance().getDataspaceUserFriendlyName())) {
 			if (validateString(dataspaceHome.getInstance()
 					.getWebApplicationName())) {
 
@@ -300,9 +300,9 @@ public class CreateController {
 				}
 
 				createProjectDataspaceConfirmationMessage = "Database '"
-						+ dataspaceHome.getInstance().getDataspaceName()
+						+ dataspaceHome.getInstance().getDataspaceUserFriendlyName()
 						+ "' for Project: '"
-						+ projectsList.get(0).getProject().getTitle()
+						+ projectsList.get(0).getProject().getName()
 						+ "' has been successfully created.";
 				((NavigationController) Contexts.getSessionContext().get(
 						"navigationController"))
@@ -310,9 +310,9 @@ public class CreateController {
 			} else {
 				validationError = "Web Application Name should not contain special character or space";
 			}
-		} else {
+		/*} else {
 			validationError = "Databace Name should not contain special character or space";
-		}
+		}*/
 	}
 
 	public void createDatabaseFromSchema() {
