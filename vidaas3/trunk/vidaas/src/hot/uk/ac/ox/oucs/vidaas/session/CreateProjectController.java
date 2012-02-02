@@ -23,7 +23,7 @@ public class CreateProjectController {
 		tempProject.setStartDate(new Date());
 
 		projectHome.getInstance().setTitle(
-				StringUtility.stringValidation(projectHome.getInstance().getTitle()));
+				StringUtility.stringValidation(projectHome.getInstance().getName()));
 
 		projectHome.persist();
 
