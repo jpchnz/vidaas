@@ -427,13 +427,13 @@ public class NavigationController {
 	}
 
 	public void listUserProjects() {
-		log.info("listUserProjects {0}", homePageMainBodyNavigation);
+		//log.info("listUserProjects {0}", homePageMainBodyNavigation);
 		if (getUserMain() != null) {
 			homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
 		} else {
 			homePageMainBodyNavigation = "homeWelcome.xhtml";
 		}
-		log.info("listUserProjects {0}", homePageMainBodyNavigation);
+		//log.info("listUserProjects {0}", homePageMainBodyNavigation);
 	}
 
 	public List<UserProject> userProjectsList() {
@@ -458,9 +458,9 @@ public class NavigationController {
 	public List<ProjectDatabase> listDatabaseByDataspace() {
 		Set<ProjectDatabase> tempProjectDatabaseSet = currentDataspace
 				.getProjectDatabases();
-		log.info("currentDataspace.getDataSpaceId() {0} Number of Databases: {1}",
+		/*log.info("currentDataspace.getDataSpaceId() {0} Number of Databases: {1}",
 				currentDataspace.getDataSpaceId(),
-				tempProjectDatabaseSet.size());
+				tempProjectDatabaseSet.size());*/
 
 		List<ProjectDatabase> list = new ArrayList<ProjectDatabase>(
 				tempProjectDatabaseSet);
