@@ -15,15 +15,15 @@
 	<rich:panel >
 		<f:facet name="header">
 			<h:outputText
-				value="Detailed summary of project of '#{currentProject.title}'"></h:outputText>
+				value="Detailed summary of project of '#{currentProject.name}'"></h:outputText>
 		</f:facet>
 		<h:panelGrid id="projectPanel" columns="1">
 		<!--  
 			<h:outputText
 				value="Test String: '#{createController.testString}'"></h:outputText> -->
 			<h:panelGroup>
-				<h:outputLabel value="Project Title: " />
-				<h:outputLabel value="#{currentProject.title}" />
+				<h:outputLabel value="Project Name: " />
+				<h:outputLabel value="#{currentProject.name}" />
 			</h:panelGroup>
 			<h:panelGroup>
 				<h:outputLabel value="Project Description: " />
@@ -47,8 +47,8 @@
 		</f:facet>
 		<h:panelGrid id="dataspacePanel" columns="4" border="1" width="100%">
 			<h:panelGroup>
-				<h:outputLabel value="Data Space Name: " />
-				<h:outputLabel value="#{currentDataspace.dataspaceName}" />
+				<h:outputLabel value="Database Name: " />
+				<h:outputLabel value="#{currentDataspace.dataspaceUserFriendlyName}" />
 			</h:panelGroup>
 			<h:panelGroup>
 				<h:outputLabel value="Database Creation Date: " />
