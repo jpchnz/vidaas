@@ -91,7 +91,7 @@ public class Users implements java.io.Serializable {
 		this.userId = userId;
 	}
 
-	@Column(name = "ShibTargetedId", length = 100)
+	@Column(name = "ShibTargetedId", nullable = true, length = 100)
 	//@NotNull // Giving error on development machine
 	@Length(max = 100)
 	public String getShibTargetedId() {
