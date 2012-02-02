@@ -84,11 +84,14 @@ public class UsersHome extends EntityHome<Users> {
 		List<Users> usersList = query.getResultList();
 		return usersList;
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	public List<Users> findUserByShibId(String shibId){
-		Query query = this.getEntityManager().createNamedQuery("Users.findByShibTargetedId");
-		query.setParameter("shibTargetedId", new String(shibId));
-		List<Users> usersList = query.getResultList();
-		return usersList;
-	}
+        Query query = this.getEntityManager().createNamedQuery("Users.findByShibTargetedId");
+        query.setParameter("shibTargetedId", new String(shibId));
+        List<Users> usersList = query.getResultList();
+        return usersList;
+}
+
+
 }
