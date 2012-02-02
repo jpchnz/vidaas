@@ -54,7 +54,7 @@ public class CreateWebApplication {
 		
         writePropertiesFile(properties, tempDirectoryName);
         
-        dataHolder.setCurrentStatus("Creating Web Application. Be patient it may take few minutes.");
+        dataHolder.setCurrentStatus("Creating data interface.  Please wait.");
         //runSeamCommandsSingleStep(tempDirectoryName);
         
         
