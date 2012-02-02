@@ -24,9 +24,9 @@
 			</f:facet>
 
 			<rich:column sortBy="#{_userProject.project.title}">
-				<f:facet name="header">Project Title</f:facet>
+				<f:facet name="header">Project Name</f:facet>
 					
-				<h:outputText value="#{_userProject.project.title}" />
+				<h:outputText value="#{_userProject.project.name}" />
 			</rich:column>
 			<rich:column headerClass="descriptionWidth" sortBy="#{_userProject.project.description}">
 				<f:facet name="header">Description
@@ -47,7 +47,7 @@
 					style="border:0px">
 					<rich:column style="border:0px">
 					<!--  -->	
-						<a4j:commandLink value="#{_dataspaces.dataspaceName}" action="#{navigationController.singleDataspaceDisplayPage()}" 
+						<a4j:commandLink value="#{_dataspaces.dataspaceUserFriendlyName}" action="#{navigationController.singleDataspaceDisplayPage()}" 
 							reRender="homeMainPanel, homePageMainBodyInclude">
 							<f:param name="projectIDValue" value="#{_userProject.id.projectId}" />
 							<f:param name="dataspaceIDValue" value="#{_dataspaces.dataSpaceId}" />
