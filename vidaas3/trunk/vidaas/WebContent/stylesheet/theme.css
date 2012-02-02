@@ -1,239 +1,247 @@
 html {
-	overflow-y: scroll;
+        overflow-y: scroll;
 }
 
 
 
-#middleHeader{background-color:#061F46}
+#middleHeader{
 
-#header-banner-wrap {clear:both; margin:0; top:0px; height:57px; width:800px; position:relative; margin:0 auto;
-	background-color:#061F46; border-top:20px solid #061F46; border-bottom:20px solid #061F46
 }
+
+#header-banner-wrap {
+clear:both; 
+margin:0; 
+position:relative;
+margin:0 auto;
+      
+}
+
+
 #header-banner-wrap h2 {font-size:14px;color:#3366CC; margin:0; 
-	position:absolute; top:80px; width:325.2px;left:5px}
+        position:absolute; top:80px; width:325.2px;left:5px}
 
-#logo {position:absolute; left: 570px; top:-15px; width:28%}
+#logo {position:absolute; left: 715px; top:-15px; width:28%}
 #vidaas-logo {width: 18%; position:absolute; left: 5px; top:-15px}
 
 
 body {
-	margin:0px; 
-	padding:0px; 
-	font-size: 12px;
-	width:800px;
-	margin: 0px auto
+        margin:0px; 
+        padding:0px; 
+        font-size: 12px;
+        width:1000px;
+        margin: 0px auto
 }
 
 a img {
-	border: none;
+        border: none;
 }
 
 h1 {
-	font-size: 1.6em;
-	margin-top: 0;
+        font-size: 1.6em;
+        margin-top: 0;
 }
 
 input[type=submit], input[type=button] {
-	font-size: 11px;
-	margin: 5px 5px 5px 0;
-	cursor: pointer;
+        font-size: 11px;
+        margin: 5px 5px 5px 0;
+        cursor: pointer;
 }
 
 input[type=text], input[type=password], textarea {
-	font-size: 12px;
-	padding-left: 1px;
+        font-size: 12px;
+        padding-left: 1px;
 }
 
 select {
-	font-size: 13px;
+        font-size: 13px;
 }
 
 .tableControl, .actionButtons {
-	width: 100%;
+        width: 100%;
 }
 
 .tableControl a {
-	padding-left: 10px;
+        padding-left: 10px;
 }
 
 .tableControl {
-	text-align: right;
+        text-align: right;
 }
 
 .footer {
-	text-align: center;
-	font-size: 11px;
-	margin-bottom: 10px;
+        text-align: center;
+        font-size: 11px;
+        margin-bottom: 10px;
 }
 
-
+.descriptionWidth {width:300px}
 
 
 .body {
-	padding: 30px;
+        padding: 30px;
 }
 .message {
-	padding: 5px;
-	list-style: none;
-	border: 0;
-	background: none;
-	padding: 0;
-	color: #000000;
-	margin: 5px 0 8px 0;
-	font-size: 12px;
+        padding: 5px;
+        list-style: none;
+        border: 0;
+        background: none;
+        padding: 0;
+        color: #000000;
+        margin: 5px 0 8px 0;
+        font-size: 12px;
 }
 
 .message li {
-	background: no-repeat left center;
-	padding-top: 1px;
-	padding-left: 20px;
-	margin-left: 3px;
+        background: no-repeat left center;
+        padding-top: 1px;
+        padding-left: 20px;
+        margin-left: 3px;
 }
 
 .message li.infomsg {
-	background-image: url(../img/msginfo.png);
+        background-image: url(../img/msginfo.png);
 }
 
 .message li.errormsg {
-	background-image: url(../img/msgerror.png);
+        background-image: url(../img/msgerror.png);
 }
 
 .message li.warnmsg {
-	background-image: url(../img/msgwarn.png);
+        background-image: url(../img/msgwarn.png);
 }
 
 .name {
-	vertical-align: top;
-	font-weight: bold;
-	width: 115px;
-	float: left;
-	padding: 5px;
-	margin-top: 3px;
-	clear: left;
+        vertical-align: top;
+        font-weight: bold;
+        width: 115px;
+        float: left;
+        padding: 5px;
+        margin-top: 3px;
+        clear: left;
 }
 
 .value {
-	float: left;
-	padding: 5px;
+        float: left;
+        padding: 5px;
 }
 
 .errorMessage {
-	float: right;
-	 font-size:14px; 
-	 color:red
+        float: right;
+         font-size:14px; 
+         color:red
 }
 
 .error {
-	float: left;
-	padding: 5px;
+        float: left;
+        padding: 5px;
 }
 
 .errors {
-	color: #FF0000;
-	vertical-align: middle;
+        color: #FF0000;
+        vertical-align: middle;
 }
 
 img.errors {
-	padding-right: 5px;
+        padding-right: 5px;
 }
 
 .errors input, .errors textarea, .errors select {
-	border: 1px solid red !important;
+        border: 1px solid red !important;
 }
 
 .required {
-	color: #FF0000;
-	padding-left: 2px;
+        color: #FF0000;
+        padding-left: 2px;
 }
 
 .rich-stglpanel-body {
-	overflow: auto;
+        overflow: auto;
 } 
 
 /* the specificity here is necessary to override the defaults */
 /**/
 .rich-panel .rich-panel-header,
 .rich-stglpanel .rich-stglpanel-header {
-	padding: 2px 3px;	
+        padding: 2px 3px;       
 }
 
 .rich-panel input[type=submit], .rich-panel input[type=button],
 .rich-tabpanel input[type=submit], .rich-tabpanel input[type=button] {
-	margin-bottom: 0;
+        margin-bottom: 0;
 }
 
 .tableControl input[type=submit], .tableControl input[type=button], .tableControl select {
-	margin: 5px 0 5px 5px;
+        margin: 5px 0 5px 5px;
 }
 
 /* I don't know why this is necessary, but the select is off by a pixel on the top and is padding too much on the left */
 .tableControl select {
-	margin-left: 2px;
-	position: relative;
-	top: 1px;
+        margin-left: 2px;
+        position: relative;
+        top: 1px;
 }
 
 .actionButtons {
-	padding-left: 1px;
+        padding-left: 1px;
 }
 
 .actionButtons select {
-	margin: 5px 5px 5px 0;
-	vertical-align: bottom;
+        margin: 5px 5px 5px 0;
+        vertical-align: bottom;
 }
 
 .rich-toolbar-item a {
-	text-decoration: none;
+        text-decoration: none;
 }
 
 .rich-toolbar-item a:hover, .rich-ddmenu-label-select {
-	text-decoration: underline;
-	color: red
+        text-decoration: underline;
+        color: red
 }
 
 .rich-toolbar-item a:active, .rich-ddmenu-label-select {
-	text-decoration: underline;
-	color: red
+        text-decoration: underline;
+        color: red
 }
 
 .rich-toolbar-item .rich-menu-item a:hover {
-	text-decoration: none;
+        text-decoration: none;
 }
 
 .rich-datalist {
-	list-style: square;
-	margin: 6px 0 1px 0;
-	padding-left: 18px;
+        list-style: square;
+        margin: 6px 0 1px 0;
+        padding-left: 18px;
 }
 
 .rich-list-item {
-	padding-bottom: 4px;
+        padding-bottom: 4px;
 }
 
 .p {
-	font-size: 14px;
+        font-size: 14px;
 }
 div.info {
-	font-size: 1.2em;
+        font-size: 1.2em;
 }
 
 ul.bullets {
-	list-style: square;
+        list-style: square;
 }
 
 ul.bullets li {
-	padding-bottom: 2px;
+        padding-bottom: 2px;
 }
 
 td.action {
-	text-align: center;
-	width: 8em;
-	white-space: nowrap;
+        text-align: center;
+        width: 8em;
+        white-space: nowrap;
 }
 
 td.action a {
-	padding-left: 1px;
-	padding-right: 1px;
+        padding-left: 1px;
+        padding-right: 1px;
 }
 
 table.radio {
@@ -262,12 +270,12 @@ left:10px; top:-1px; border-width: 0px; text-decoration: underline; border-radiu
 .rich-mpnl-body {background-color: white; border-color: #f0f0f0; font-size:14px; border-radius:20px; border-width: 0px}
 
 .rich-table1 {
-	width: 100%;
-	margin: 10px 0px;
-	border-radius: 20px;
-	border-color: white;
+        width: 100%;
+        margin: 10px 0px;
+        border-radius: 20px;
+        border-color: white;
     border-width: 0px;
-	box-shadow: #f0f0f0 1px 1px 1px 1px;
+        box-shadow: #f0f0f0 1px 1px 1px 1px;
 }
 
 /*
@@ -282,87 +290,72 @@ left:10px; top:-1px; border-width: 0px; text-decoration: underline; border-radiu
 */
 
 .rich-table {
-	width: 100%;
+        width: 100%;
 }
+
+/*
 .myrich-toolbar {
-	background-image: none;
-	background-color:#061F46;
-	color:white
+        background-image: none;
+        background-color:#061F46;
+        color:white
 }
 
-.tooltip {
-	border-bottom: 1px dotted #000000;
-	color: #000000;
-	outline: none;
-	cursor: help;
-	text-decoration: none;
-	position: relative;
+*/
+
+/*  overrides to RichFace by Joseph Talbot, OUCS */
+
+body
+{
+ font-family: Helvetica, Arial, sans-serif;
 }
 
-.tooltip span {
-	margin-left: -999em;
-	position: absolute;
+.body {
+
+padding: 0px;
 }
 
-.tooltip:hover span {
-	border-radius: 5px 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
-	-webkit-box-shadow: 5px 5px rgba(0, 0, 0, 0.1);
-	-moz-box-shadow: 5px 5px rgba(0, 0, 0, 0.1);
-	font-family: Calibri, Tahoma, Geneva, sans-serif;
-	position: absolute;
-	left: 1em;
-	top: 2em;
-	z-index: 99;
-	margin-left: 0;
-	width: 250px;
+
+.body h1{
+  background-color: #002147;
+  color: #fff;
+  margin-top: 10px;
+  padding: 10px;	
+  text-align: center;
+  text-shadow: 0px 2px 3px #333;
+  text-transform: uppercase;
 }
 
-.tooltip:hover img {
-	border: 0;
-	margin: -10px 0 0 -55px;
-	float: left;
-	position: absolute;
+
+/* apply drop-shadow to some (all?) of the main blocks */
+
+#header-banner-wrap,
+.body h1,
+.rich-panel,
+.rich-toolbar{
+
+box-shadow: #eee 0.5em 0.5em 0.7em !important; /* Opera 10.5, IE 9.0 */
+	-webkit-box-shadow: #eee 0.3em 0.3em 0.7em !important ; /* Chrome Safari */
+	-moz-box-shadow: #eee 0.3em 0.3em 0.7em!important ; /* Firefox F3.5+ */
+
 }
 
-.tooltip:hover em {
-	font-family: Candara, Tahoma, Geneva, sans-serif;
-	font-size: 1.2em;
-	font-weight: bold;
-	display: block;
-	padding: 0.2em 0 0.6em 0;
+
+.rich-panel {
+border: 1px solid #dedede;
+    -webkit-border-radius: 1px ;
+	-moz-border-radius: 1px;
+border-radius: 1px !important ;
+
 }
 
-.classic {
-	padding: 0.8em 1em;
+
+.rich-toolbar-item   {
+font-size: 1.6em !important;
+font-weight: normal;
+font-style: normal !important;
 }
 
-.custom {
-	padding: 0.5em 0.8em 0.8em 2em;
-}
-
-* html a:hover {
-	background: transparent;
-}
-
-.classic {
-	background: #FFFFAA;
-	border: 1px solid #FFAD33;
-}
-
-.critical {
-	background: #FFCCAA;
-	border: 1px solid #FF3334;
-}
-
-.help {
-	background: #9FDAEE;
-	border: 1px solid #2BB0D7;
-}
-
-.warning {
-	background: #FFFFAA;
-	border: 1px solid #FFAD33;
+.rich-toolbar-item  a {
+font-size: 0.8em !important;
+font-weight: normal;
 }
