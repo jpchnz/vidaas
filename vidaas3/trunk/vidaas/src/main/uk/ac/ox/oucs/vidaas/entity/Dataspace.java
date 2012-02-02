@@ -54,6 +54,7 @@ public class Dataspace implements java.io.Serializable {
 	private int databaseSize;
 	private String databaseType;
 	private String dataspaceName;
+	private String dataspaceUserFriendlyName;
 	private String webApplicationName;
 	
 	private Set<ProjectDatabase> projectDatabases = new HashSet<ProjectDatabase>(
@@ -182,15 +183,27 @@ public class Dataspace implements java.io.Serializable {
 		this.databaseType = databaseType;
 	}
 
-	@Column(name = "Dataspace_Name", nullable = false, length = 50)
+	@Column(name = "Dataspace_Name", nullable = false, length = 150)
 	@NotNull
-	@Length(max = 50)
+	@Length(max = 150)
 	public String getDataspaceName() {
 		return this.dataspaceName;
 	}
 
 	public void setDataspaceName(String dataspaceName) {
 		this.dataspaceName = dataspaceName;
+	}
+
+
+	@Column(name = "Dataspace_Friendly_Name", nullable = false, length = 150)
+	@NotNull
+	@Length(max = 150)
+	public String getDataspaceUserFriendlyName() {
+		return dataspaceUserFriendlyName;
+	}
+
+	public void setDataspaceUserFriendlyName(String dataspaceUserFriendlyName) {
+		this.dataspaceUserFriendlyName = dataspaceUserFriendlyName;
 	}
 
 	@Column(name = "WebApplicationName", nullable = false, length = 45)
