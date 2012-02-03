@@ -308,7 +308,7 @@ public class CreateController {
 						"navigationController"))
 						.createProjectDataspaceConfirmation();
 			} else {
-				validationError = "Web Application Name should not contain special character or space";
+				validationError = "Database interface name should not contain special characters or spaces";
 			}
 		/*} else {
 			validationError = "Databace Name should not contain special character or space";
