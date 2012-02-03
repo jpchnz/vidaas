@@ -11,7 +11,7 @@
 	<a4j:form ajaxSubmit="true" reRender="homePageMainBodyInclude" id="createEditProjectMemberForm">
 		<h:outputText value="You are not involved in any Project."
 			rendered="#{empty navigationController.userProjectsList()}" />
-		<h:outputText value="You are involved in following Project/s."
+		<h:outputText value="You are involved in the following Project(s)."
 			rendered="#{not empty navigationController.userProjectsList()}" />
 		<rich:dataTable id="userProjectList" var="_userProject"
 			style="border-width: 1px; border-radius:20px" 
