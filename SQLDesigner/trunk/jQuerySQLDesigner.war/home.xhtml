@@ -1,0 +1,63 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich" template="layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h1 align="center">Welcome to First Draft Version of jQuery SQL
+		Designer!</h1>
+
+		<rich:panel>
+			<s:div styleClass="info1">
+				<h:outputText>jQuery SQL Designer is web based tool to design, update and retrieve Database Model with drag and drop facility for better user experience. This is beta version of jQuery SQL Designer with 
+        limited functionality but in due course I will improve existing features and add more features. </h:outputText>
+        <h:outputText> </h:outputText>
+			</s:div>
+			<h:panelGrid columns="3">
+				<h:graphicImage value="/img/oxfordlogo.jpg" alt="Oxford University"
+					height="300" />
+					<rich:separator width="40" height="0"/>
+				<s:div styleClass="info">
+					<p><a href="designer.seam"><strong>SQL Designer</strong></a> has following features</p>
+					<ul class="bullets">
+						<li>Drag n Drop</li>
+						<li>Table Creation</li>
+						<li>Table Update</li>
+						<li>Add Column</li>
+						<li>Column Update</li>
+						<li>Create Relation</li>				
+						<li>Table expand and collapse</li>
+						<li>Delete Table/s (New Feature)</li>
+						<li>Delete Column/s (New Feature)</li>
+						<li>Table Validation i.e. two tables with same name (New Feature)</li>
+						<li>Column Validation i.e. two columns with same name in same table (New Feature)</li>
+					</ul>
+					<p><a href="designer.seam"><strong>SQL Designer</strong></a> makes use of following
+					technologies</p>
+					<ul class="bullets">
+						<li>Seam 2.2</li>
+						<li>jQuery</li>
+						<li>jQuery UI</li>
+						<li>jQuery SVG plug-in</li>
+						<li>Apache DdlUtils</li>
+					</ul>
+					<p><a href="designer.seam"><strong>SQL Designer</strong></a> things to do ...!</p>
+					<ul class="bullets">
+						<li>Update Relation</li>						
+						<li>Delete Relation</li>
+						<li>Option to create Table without Primary Key</li>
+						<li>Better Exception Handling</li>
+					</ul>
+					<br />
+					<p><a href="help.seam"><strong>Quick Start Guide</strong></a> brief how to use ...!</p>
+				</s:div>
+			</h:panelGrid>
+		</rich:panel>
+
+	</ui:define>
+</ui:composition>
