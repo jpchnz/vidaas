@@ -55,8 +55,7 @@ public class HelpTextGenerator {
 
 	private void init() throws JAXBException {
 		if (!helpFile.exists()) {
-			System.out.println("Unable to find help file " + helpFile.getAbsolutePath()
-					+ ". Help will not be available.");
+			System.out.println("Unable to find help file. Help will not be available.");
 			helpEnabled = false;
 		}
 		JAXBContext jaxbContext = JAXBContext.newInstance(HelpText.class);
