@@ -130,7 +130,7 @@
 					rendered="#{_database.databaseType=='main'  and createController.hasBackupDatabase(_database.databaseId)}"
 					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
 					reRender="backupDatabaseFormInclude" id="backupDatabaseButton"
-					value="Backup Database"
+					value="create milestone database"
 					oncomplete="Richfaces.showModalPanel('backupDatabasePanel');">
 					<!--  
 							<rich:componentControl for="backupDatabasePanel"

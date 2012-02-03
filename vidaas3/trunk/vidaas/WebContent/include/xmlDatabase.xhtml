@@ -8,7 +8,7 @@
 	<rich:panel>
 		<f:facet name="header">
 			<h:outputText
-				value="Detailed summary of database of '#{currentDataspace.dataspaceName}'"></h:outputText>
+				value="Summary of database '#{currentDataspace.dataspaceName}'"></h:outputText>
 		</f:facet>
 		<rich:dataGrid id="datbasesDataGrid"
 			value="#{navigationController.listXMLFilesByProjectDatabase(_database.databaseId)}"
