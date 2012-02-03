@@ -251,11 +251,11 @@ public class CreateWebApplication {
     	 List<String> command = new ArrayList<String>();
          command.add("rm");
          //command.add("*");
-         System.out.println(webApplicationLocation + "seamProject/" + webApplicationName + "/exploded-archives/" +webApplicationName + ".war/layout/*");
+         System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  " + webApplicationLocation + "seamProject/" + webApplicationName + "/view/layout/menu.xhtml");
          
          //dataHolder.setCurrentStatus(webApplicationLocation + "seamProject/" + webApplicationName + "/exploded-archives/" + webApplicationName + ".war/layout/*");
          
-         command.add(webApplicationLocation + webApplicationName + "/exploded-archives/" + webApplicationName + ".war/layout");
+         command.add(webApplicationLocation + "seamProject/" + webApplicationName + "/view/layout/menu.xhtml");
          SystemCommandExecutor commandExecutor = new SystemCommandExecutor(command);
          try {
              result = commandExecutor.executeCommand();
