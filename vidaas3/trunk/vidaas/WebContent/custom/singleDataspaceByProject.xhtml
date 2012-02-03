@@ -15,7 +15,7 @@
 	<rich:panel >
 		<f:facet name="header">
 			<h:outputText
-				value="Summary of database '#{currentProject.name}'"></h:outputText>
+				value="Summary of project '#{currentProject.title}'"></h:outputText>
 		</f:facet>
 		<h:panelGrid id="projectPanel" columns="1">
 		<!--  
@@ -23,7 +23,7 @@
 				value="Test String: '#{createController.testString}'"></h:outputText> -->
 			<h:panelGroup>
 				<h:outputLabel value="Project Name: " />
-				<h:outputLabel value="#{currentProject.name}" />
+				<h:outputLabel value="#{currentProject.title}" />
 			</h:panelGroup>
 			<h:panelGroup>
 				<h:outputLabel value="Project Description: " />
