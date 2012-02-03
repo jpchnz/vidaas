@@ -1,0 +1,631 @@
+<?xml version="1.0"?>
+<!DOCTYPE database SYSTEM "http://db.apache.org/torque/dtd/database">
+  <database name="model">
+    <table name="areas">
+      <column name="areaid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="areaname" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="areatype" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="areaoldid" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="areaentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <column name="areacountry" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="areaprovince" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+    </table>
+    <table name="connections">
+      <column name="conid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="conname" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="contype" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="conentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <column name="condescription" primaryKey="false" required="false" type="LONGVARCHAR" autoIncrement="false"/>
+      <column name="constart" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="conend" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="conwidth" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="condepth" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="concountry" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="conprovince" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="conlength" primaryKey="false" required="false" type="NUMERIC" size="131089" autoIncrement="false"/>
+      <foreign-key foreignTable="sites" name="fk66cb5d55777ce925">
+        <reference local="constart" foreign="id"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="connections_constart_fkey">
+        <reference local="constart" foreign="id"/>
+      </foreign-key>
+    </table>
+    <table name="contexts">
+      <column name="contid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="contsite" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="contloc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="contname" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="contentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <foreign-key foreignTable="locations" name="fkde2f80a43dd27ca5">
+        <reference local="contloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="contexts_contloc_fkey">
+        <reference local="contloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="fkde2f80a4778aaa7e">
+        <reference local="contsite" foreign="id"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="contexts_contsite_fkey">
+        <reference local="contsite" foreign="id"/>
+      </foreign-key>
+    </table>
+    <table name="coordinates">
+      <column name="crdid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="crdsite" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="crdloc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="crdctxt" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="crdobj" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="crdinst" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="crdtype" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="crdaccuracy" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="crdcomment" primaryKey="false" required="false" type="LONGVARCHAR" autoIncrement="false"/>
+      <column name="crdlat" primaryKey="false" required="false" type="NUMERIC" size="131089" autoIncrement="false"/>
+      <column name="crdlong" primaryKey="false" required="false" type="NUMERIC" size="131089" autoIncrement="false"/>
+      <column name="crddepth" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="crdentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <foreign-key foreignTable="contexts" name="fk6f9339fb5ff8c98d">
+        <reference local="crdctxt" foreign="contid"/>
+      </foreign-key>
+      <foreign-key foreignTable="contexts" name="coordinates_crdctxt_fkey">
+        <reference local="crdctxt" foreign="contid"/>
+      </foreign-key>
+      <foreign-key foreignTable="institutions" name="coordinates_crdinst_fkey">
+        <reference local="crdinst" foreign="instid"/>
+      </foreign-key>
+      <foreign-key foreignTable="institutions" name="fk6f9339fbe697723d">
+        <reference local="crdinst" foreign="instid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="fk6f9339fbb4808322">
+        <reference local="crdloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="coordinates_crdloc_fkey">
+        <reference local="crdloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="objects" name="fk6f9339fb677544cf">
+        <reference local="crdobj" foreign="objid"/>
+      </foreign-key>
+      <foreign-key foreignTable="objects" name="coordinates_crdobj_fkey">
+        <reference local="crdobj" foreign="objid"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="coordinates_crdsite_fkey">
+        <reference local="crdsite" foreign="id"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="fk6f9339fbd69d73a1">
+        <reference local="crdsite" foreign="id"/>
+      </foreign-key>
+    </table>
+    <table name="documents">
+      <column name="docid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="docsite" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="docloc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="docctxt" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="docobj" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="doclang" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="docname" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="doctype" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="docentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <column name="docauthor" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="doctitle" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="doccorpus" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="docvolume" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="docrefnr" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <foreign-key foreignTable="contexts" name="fk383d52b88fb26370">
+        <reference local="docctxt" foreign="contid"/>
+      </foreign-key>
+      <foreign-key foreignTable="contexts" name="documents_docctxt_fkey">
+        <reference local="docctxt" foreign="contid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="fk383d52b8b60aa0df">
+        <reference local="docloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="documents_docloc_fkey">
+        <reference local="docloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="objects" name="fk383d52b868ff628c">
+        <reference local="docobj" foreign="objid"/>
+      </foreign-key>
+      <foreign-key foreignTable="objects" name="documents_docobj_fkey">
+        <reference local="docobj" foreign="objid"/>
+      </foreign-key>
+      <foreign-key foreignTable="people" name="documents_docauthor_fkey">
+        <reference local="docauthor" foreign="peopid"/>
+      </foreign-key>
+      <foreign-key foreignTable="people" name="fk383d52b8a2867379">
+        <reference local="docauthor" foreign="peopid"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="fk383d52b86570d84">
+        <reference local="docsite" foreign="id"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="documents_docsite_fkey">
+        <reference local="docsite" foreign="id"/>
+      </foreign-key>
+    </table>
+    <table name="events_tab">
+      <column name="evntid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="evntsite" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="evntloc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="eventcon" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="evntctxt" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="evntobj" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="evntdoc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="evntpost" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="evntante" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="evntaccuracy" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="evntcomment" primaryKey="false" required="false" type="LONGVARCHAR" autoIncrement="false"/>
+      <column name="evnttype" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="evntentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <foreign-key foreignTable="contexts" name="fk3bbc9b6f42f3f8ef">
+        <reference local="evntctxt" foreign="contid"/>
+      </foreign-key>
+      <foreign-key foreignTable="contexts" name="events_tab_evntctxt_fkey">
+        <reference local="evntctxt" foreign="contid"/>
+      </foreign-key>
+      <foreign-key foreignTable="documents" name="events_tab_evntdoc_fkey">
+        <reference local="evntdoc" foreign="docid"/>
+      </foreign-key>
+      <foreign-key foreignTable="documents" name="fk3bbc9b6f3329bcd2">
+        <reference local="evntdoc" foreign="docid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="fk3bbc9b6fb390df80">
+        <reference local="evntloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="events_tab_evntloc_fkey">
+        <reference local="evntloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="objects" name="fk3bbc9b6f6685a12d">
+        <reference local="evntobj" foreign="objid"/>
+      </foreign-key>
+      <foreign-key foreignTable="objects" name="events_tab_evntobj_fkey">
+        <reference local="evntobj" foreign="objid"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="events_tab_evntsite_fkey">
+        <reference local="evntsite" foreign="id"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="fk3bbc9b6fb998a303">
+        <reference local="evntsite" foreign="id"/>
+      </foreign-key>
+    </table>
+    <table name="images">
+      <column name="imgid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="imgtype" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="imgsite" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="imgloc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="imgctxt" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="imgobj" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="imgdoc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="imgpub" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="imgdate" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <column name="imgfile" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="imgdescription" primaryKey="false" required="false" type="LONGVARCHAR" autoIncrement="false"/>
+      <column name="imgentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <foreign-key foreignTable="contexts" name="fkb95a82789500387b">
+        <reference local="imgctxt" foreign="contid"/>
+      </foreign-key>
+      <foreign-key foreignTable="contexts" name="images_imgctxt_fkey">
+        <reference local="imgctxt" foreign="contid"/>
+      </foreign-key>
+      <foreign-key foreignTable="documents" name="images_imgdoc_fkey">
+        <reference local="imgdoc" foreign="docid"/>
+      </foreign-key>
+      <foreign-key foreignTable="documents" name="fkb95a82783e115bc6">
+        <reference local="imgdoc" foreign="docid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="fkb95a8278be787e74">
+        <reference local="imgloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="images_imgloc_fkey">
+        <reference local="imgloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="objects" name="fkb95a8278716d4021">
+        <reference local="imgobj" foreign="objid"/>
+      </foreign-key>
+      <foreign-key foreignTable="objects" name="images_imgobj_fkey">
+        <reference local="imgobj" foreign="objid"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="images_imgsite_fkey">
+        <reference local="imgsite" foreign="id"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="fkb95a8278ba4e28f">
+        <reference local="imgsite" foreign="id"/>
+      </foreign-key>
+    </table>
+    <table name="institutions">
+      <column name="instid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="instname" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="inststart" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="instend" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="instsite" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="insttype" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="instentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+    </table>
+    <table name="keywords">
+      <column name="keyid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="keycat" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="keywrd" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="keyentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+    </table>
+    <table name="locations">
+      <column name="locid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="locsite" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="location" primaryKey="false" required="false" type="LONGVARCHAR" autoIncrement="false"/>
+      <column name="locname" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="loctype" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="locdimensions" primaryKey="false" required="false" type="LONGVARCHAR" autoIncrement="false"/>
+      <column name="loclength" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="locwidth" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="locarea" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="loccubic" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="locoldid" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="locentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <foreign-key foreignTable="keywords" name="fkb8a4575e77eb288b">
+        <reference local="loctype" foreign="keyid"/>
+      </foreign-key>
+      <foreign-key foreignTable="keywords" name="locations_loctype_fkey">
+        <reference local="loctype" foreign="keyid"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="fkb8a4575ead88e78c">
+        <reference local="locsite" foreign="id"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="locations_locsite_fkey">
+        <reference local="locsite" foreign="id"/>
+      </foreign-key>
+    </table>
+    <table name="logbook">
+      <column name="logid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="logdate" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <column name="loguser" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="logtable" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="logrecord" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <foreign-key foreignTable="users" name="fk14649c2dade2d610">
+        <reference local="loguser" foreign="userid"/>
+      </foreign-key>
+      <foreign-key foreignTable="users" name="logbook_loguser_fkey">
+        <reference local="loguser" foreign="userid"/>
+      </foreign-key>
+    </table>
+    <table name="objects">
+      <column name="objid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objsite" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objloc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objctxt" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objtype" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objfunct" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objtchnl" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="objmaterial" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objheight" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objwidth" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objdepth" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objweight" primaryKey="false" required="false" type="NUMERIC" size="131089" autoIncrement="false"/>
+      <column name="objvolume" primaryKey="false" required="false" type="NUMERIC" size="131089" autoIncrement="false"/>
+      <column name="objpresloc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objcode" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="objoldid" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objamount" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objpost" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objante" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="objcomment" primaryKey="false" required="false" type="LONGVARCHAR" autoIncrement="false"/>
+      <column name="objentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <foreign-key foreignTable="contexts" name="fk9d13c514bfca93af">
+        <reference local="objctxt" foreign="contid"/>
+      </foreign-key>
+      <foreign-key foreignTable="contexts" name="objects_objctxt_fkey">
+        <reference local="objctxt" foreign="contid"/>
+      </foreign-key>
+      <foreign-key foreignTable="keywords" name="objects_objmaterial_fkey">
+        <reference local="objmaterial" foreign="keyid"/>
+      </foreign-key>
+      <foreign-key foreignTable="keywords" name="objects_objtype_fkey">
+        <reference local="objtype" foreign="keyid"/>
+      </foreign-key>
+      <foreign-key foreignTable="keywords" name="fk9d13c5146931a1aa">
+        <reference local="objfunct" foreign="keyid"/>
+      </foreign-key>
+      <foreign-key foreignTable="keywords" name="objects_objfunct_fkey">
+        <reference local="objfunct" foreign="keyid"/>
+      </foreign-key>
+      <foreign-key foreignTable="keywords" name="fk9d13c514ed26c12f">
+        <reference local="objmaterial" foreign="keyid"/>
+      </foreign-key>
+      <foreign-key foreignTable="keywords" name="fk9d13c514d17ec2">
+        <reference local="objtype" foreign="keyid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="objects_objloc_fkey">
+        <reference local="objloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="fk9d13c514c81becc0">
+        <reference local="objloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="objects_objsite_fkey">
+        <reference local="objsite" foreign="id"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="fk9d13c514366f3dc3">
+        <reference local="objsite" foreign="id"/>
+      </foreign-key>
+    </table>
+    <table name="people">
+      <column name="peopid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="peopname" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="peopgreekname" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="peopsurname" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="peopfirstname" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="peopinitials" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="peopbirth" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="peopdeath" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="peopstart" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="peopend" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="peopentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <column name="peoptype" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+    </table>
+    <table name="publications">
+      <column name="pubid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="pubyear" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="pubtitle" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="pubname" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="pubtype" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="pubcity" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="pubpublish" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="pubedition" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="pubjournal" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="pubissue" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="pubvolume" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="pubstart" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="pubend" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="pubentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <foreign-key foreignTable="institutions" name="fk37b8a3c7bc53923c">
+        <reference local="pubjournal" foreign="instid"/>
+      </foreign-key>
+      <foreign-key foreignTable="institutions" name="publications_pubjournal_fkey">
+        <reference local="pubjournal" foreign="instid"/>
+      </foreign-key>
+    </table>
+    <table name="references_tab">
+      <column name="refid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="refpub" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="refsite" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="refloc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="refctxt" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="refobj" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="refdoc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="refstart" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="refend" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="reftext" primaryKey="false" required="false" type="LONGVARCHAR" autoIncrement="false"/>
+      <column name="refentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <column name="refcon" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <foreign-key foreignTable="contexts" name="fk8fd1155e6363714b">
+        <reference local="refctxt" foreign="contid"/>
+      </foreign-key>
+      <foreign-key foreignTable="contexts" name="references_tab_refctxt_fkey">
+        <reference local="refctxt" foreign="contid"/>
+      </foreign-key>
+      <foreign-key foreignTable="documents" name="references_tab_refdoc_fkey">
+        <reference local="refdoc" foreign="docid"/>
+      </foreign-key>
+      <foreign-key foreignTable="documents" name="fk8fd1155e4cfbc8f6">
+        <reference local="refdoc" foreign="docid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="fk8fd1155ecd62eba4">
+        <reference local="refloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="references_tab_refloc_fkey">
+        <reference local="refloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="objects" name="fk8fd1155e8057ad51">
+        <reference local="refobj" foreign="objid"/>
+      </foreign-key>
+      <foreign-key foreignTable="objects" name="references_tab_refobj_fkey">
+        <reference local="refobj" foreign="objid"/>
+      </foreign-key>
+      <foreign-key foreignTable="publications" name="fk8fd1155e3948dc38">
+        <reference local="refpub" foreign="pubid"/>
+      </foreign-key>
+      <foreign-key foreignTable="publications" name="references_tab_refpub_fkey">
+        <reference local="refpub" foreign="pubid"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="fk8fd1155eda081b5f">
+        <reference local="refsite" foreign="id"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="references_tab_refsite_fkey">
+        <reference local="refsite" foreign="id"/>
+      </foreign-key>
+    </table>
+    <table name="relations">
+      <column name="relid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relarea" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relconn" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relctxt" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="reldoc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relevnt" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relimg" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relinst" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relkey" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relloc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relobj" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relpeople" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relpub" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relref" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relsite" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relself" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relsequence" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relthm" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="relnotes" primaryKey="false" required="false" type="LONGVARCHAR" autoIncrement="false"/>
+      <column name="relentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <column name="relhead" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <foreign-key foreignTable="connections" name="fkff8b45f7b1e6ecd3">
+        <reference local="relconn" foreign="conid"/>
+      </foreign-key>
+      <foreign-key foreignTable="connections" name="relations_relconn_fkey">
+        <reference local="relconn" foreign="conid"/>
+      </foreign-key>
+      <foreign-key foreignTable="contexts" name="fkff8b45f763b7fe51">
+        <reference local="relctxt" foreign="contid"/>
+      </foreign-key>
+      <foreign-key foreignTable="contexts" name="relations_relctxt_fkey">
+        <reference local="relctxt" foreign="contid"/>
+      </foreign-key>
+      <foreign-key foreignTable="documents" name="fkff8b45f74cfe8330">
+        <reference local="reldoc" foreign="docid"/>
+      </foreign-key>
+      <foreign-key foreignTable="documents" name="relations_reldoc_fkey">
+        <reference local="reldoc" foreign="docid"/>
+      </foreign-key>
+      <foreign-key foreignTable="events_tab" name="fkff8b45f78f657085">
+        <reference local="relevnt" foreign="evntid"/>
+      </foreign-key>
+      <foreign-key foreignTable="events_tab" name="relations_relevnt_fkey">
+        <reference local="relevnt" foreign="evntid"/>
+      </foreign-key>
+      <foreign-key foreignTable="images" name="fkff8b45f748b55329">
+        <reference local="relimg" foreign="imgid"/>
+      </foreign-key>
+      <foreign-key foreignTable="images" name="relations_relimg_fkey">
+        <reference local="relimg" foreign="imgid"/>
+      </foreign-key>
+      <foreign-key foreignTable="institutions" name="fkff8b45f7ea56a701">
+        <reference local="relinst" foreign="instid"/>
+      </foreign-key>
+      <foreign-key foreignTable="institutions" name="relations_relinst_fkey">
+        <reference local="relinst" foreign="instid"/>
+      </foreign-key>
+      <foreign-key foreignTable="keywords" name="fkff8b45f72c010937">
+        <reference local="relkey" foreign="keyid"/>
+      </foreign-key>
+      <foreign-key foreignTable="keywords" name="relations_relkey_fkey">
+        <reference local="relkey" foreign="keyid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="fkff8b45f7cd65a5de">
+        <reference local="relloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="locations" name="relations_relloc_fkey">
+        <reference local="relloc" foreign="locid"/>
+      </foreign-key>
+      <foreign-key foreignTable="objects" name="fkff8b45f7805a678b">
+        <reference local="relobj" foreign="objid"/>
+      </foreign-key>
+      <foreign-key foreignTable="objects" name="relations_relobj_fkey">
+        <reference local="relobj" foreign="objid"/>
+      </foreign-key>
+      <foreign-key foreignTable="people" name="fkff8b45f7a445eb1e">
+        <reference local="relpeople" foreign="peopid"/>
+      </foreign-key>
+      <foreign-key foreignTable="people" name="relations_relpeople_fkey">
+        <reference local="relpeople" foreign="peopid"/>
+      </foreign-key>
+      <foreign-key foreignTable="publications" name="fkff8b45f7394b9672">
+        <reference local="relpub" foreign="pubid"/>
+      </foreign-key>
+      <foreign-key foreignTable="publications" name="relations_relpub_fkey">
+        <reference local="relpub" foreign="pubid"/>
+      </foreign-key>
+      <foreign-key foreignTable="references_tab" name="fkff8b45f71789af40">
+        <reference local="relref" foreign="refid"/>
+      </foreign-key>
+      <foreign-key foreignTable="references_tab" name="relations_relref_fkey">
+        <reference local="relref" foreign="refid"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="fkff8b45f7da5ca865">
+        <reference local="relsite" foreign="id"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="relations_relsite_fkey">
+        <reference local="relsite" foreign="id"/>
+      </foreign-key>
+    </table>
+    <table name="sites">
+      <column name="id" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="sitename" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="sitearea" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="sitetype" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="sitepopulation" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="siteoldid" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="siteentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <column name="sitecountry" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="siteprovince" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="sitelat" primaryKey="false" required="false" type="NUMERIC" size="131089" autoIncrement="false"/>
+      <column name="sitelong" primaryKey="false" required="false" type="NUMERIC" size="131089" autoIncrement="false"/>
+      <column name="sitecrdacc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="sitecrdcomment" primaryKey="false" required="false" type="LONGVARCHAR" autoIncrement="false"/>
+      <column name="sitedesc" primaryKey="false" required="false" type="LONGVARCHAR" autoIncrement="false"/>
+      <foreign-key foreignTable="areas" name="fk6860a0c112746ee">
+        <reference local="sitecountry" foreign="areaid"/>
+      </foreign-key>
+      <foreign-key foreignTable="areas" name="sites_sitecountry_fkey">
+        <reference local="sitecountry" foreign="areaid"/>
+      </foreign-key>
+      <foreign-key foreignTable="areas" name="fk6860a0c14610ff6">
+        <reference local="siteprovince" foreign="areaid"/>
+      </foreign-key>
+      <foreign-key foreignTable="areas" name="sites_siteprovince_fkey">
+        <reference local="siteprovince" foreign="areaid"/>
+      </foreign-key>
+    </table>
+    <table name="themes">
+      <column name="themeid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="theme" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+    </table>
+    <table name="toponyms">
+      <column name="topid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="toponym" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="topsite" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="topcon" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="toploc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="topentry" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <column name="toptype" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <foreign-key foreignTable="sites" name="fkc74ad16b5571f321">
+        <reference local="topsite" foreign="id"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="toponyms_topsite_fkey">
+        <reference local="topsite" foreign="id"/>
+      </foreign-key>
+    </table>
+    <table name="transactions">
+      <column name="transid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="transoldid" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="transpayer" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="transrecipient" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="transsite" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="transday" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="transmonth" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="transyear" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="transante" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="transpost" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="transcat" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="transobject" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="transquantity" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="transunity" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="transamount" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="transvalue" primaryKey="false" required="false" type="NUMERIC" size="131089" autoIncrement="false"/>
+      <column name="transcurrency" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="transadded" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+      <column name="transdoc" primaryKey="false" required="false" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="transcomment" primaryKey="false" required="false" type="LONGVARCHAR" autoIncrement="false"/>
+      <foreign-key foreignTable="keywords" name="transactions_transobject_fkey">
+        <reference local="transobject" foreign="keyid"/>
+      </foreign-key>
+      <foreign-key foreignTable="keywords" name="fk74798955fb288df8">
+        <reference local="transobject" foreign="keyid"/>
+      </foreign-key>
+      <foreign-key foreignTable="people" name="fk74798955ed3e9327">
+        <reference local="transrecipient" foreign="peopid"/>
+      </foreign-key>
+      <foreign-key foreignTable="people" name="transactions_transrecipient_fkey">
+        <reference local="transrecipient" foreign="peopid"/>
+      </foreign-key>
+      <foreign-key foreignTable="people" name="fk7479895525884063">
+        <reference local="transpayer" foreign="peopid"/>
+      </foreign-key>
+      <foreign-key foreignTable="people" name="transactions_transpayer_fkey">
+        <reference local="transpayer" foreign="peopid"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="transactions_transsite_fkey">
+        <reference local="transsite" foreign="id"/>
+      </foreign-key>
+      <foreign-key foreignTable="sites" name="fk74798955d81942f4">
+        <reference local="transsite" foreign="id"/>
+      </foreign-key>
+    </table>
+    <table name="users">
+      <column name="userid" primaryKey="true" required="true" type="INTEGER" size="10" autoIncrement="false"/>
+      <column name="username" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="password" primaryKey="false" required="false" type="VARCHAR" size="255" autoIncrement="false"/>
+      <column name="added" primaryKey="false" required="false" type="TIMESTAMP" size="29,6" autoIncrement="false"/>
+    </table>
+  </database>

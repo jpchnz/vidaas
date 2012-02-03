@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:s="http://jboss.com/products/seam/taglib">
+
+<head>
+
+<title>JQuery SQL Designer Help</title>
+</head>
+
+<body>
+
+<div>
+
+
+<p style='text-align: center'><span><span><b
+	style='mso-bidi-font-weight: normal'><span
+	style='font-size: 20.0pt; line-height: 115%'>jQuery</span></b></span></span><b
+	style='mso-bidi-font-weight: normal'><span
+	style='font-size: 20.0pt; line-height: 115%'> SQL Designer</span></b><span
+	style='font-size: 20.0pt; line-height: 115%'></span></p>
+
+<ul class="bullets">
+	<li><span>jQuery</span> SQL Designer can be accessed at the
+	following URL: <a
+		href="http://daas.oucs.ox.ac.uk:8080/jQuerySQLDesigner/designer.seam">http://daas.oucs.ox.ac.uk:8080/jQuerySQLDesigner/designer.seam</a></li>
+
+	<li><span>jQuery</span> SQL Designer is online tool for database
+	designing. It can be used for designing new database, modifying
+	existing database or viewing the design of live database.</li>
+
+	<li>jQuery SQL Designer is intentionally made "Double Click". This
+	means for each action double click is required. It will be made clear
+	in the remaining instructions.</li>
+
+	<li><img border='0' width='61' height='60'
+		src="SQLDesigner_files/image002.jpg" /> is the Table icon. To start
+	the database designing, drag "Table" icon. This will bring the pop-up
+	suggesting to first create database itself, as shown: <br></br>
+	<img border='0' width='212' height='232'
+		src="SQLDesigner_files/image004.jpg" /></li>
+
+	<li>Fill the form accordingly by giving the name of database and
+	its description and click button "Create Database". This will result in
+	another pop-up confirming the successful creation of database.</li>
+
+	<li>Drag the "Table" icon again on the grid to create the table.
+	Create Table pop-up will appear. Please fill the form as required and
+	click the button "Create Table". <br></br>
+	<img border='0' width='244' height='267'
+		src="SQLDesigner_files/image008.jpg" /></li>
+
+	<li>This will result in the creation of new table with one primary
+	key "ID" as integer. In next versions of the database it will be
+	possible to create a database without any primary key. <img border='0'
+		width='173' height='59' src="SQLDesigner_files/image010.jpg" /></li>
+
+	<li><img border='0' width='52' height='46'
+		src="SQLDesigner_files/image012.jpg" /> is the Column icon. It is
+	used to add columns to existing tables.</li>
+
+	<li>Drag "Column" icon on already created table. This will bring
+	the Create Column pop-up as shown below: <br></br>
+	<img border='0' width='242' height='388'
+		src="SQLDesigner_files/image014.jpg" /></li>
+
+	<li>There are few things to notice. Fields "Data Length" and
+	"Scale" are either disabled or enabled depending on the Column Type.
+	For data type "char" and "vchar" the field "Data Length" is editable. <br></br>
+	<img border='0' width='337' height='142'
+		src="SQLDesigner_files/image016.jpg" /></li>
+
+	<li>Similarly for the data type "Decimal" and "Float", fields
+	"Data Length" and "Scale" are editable. <br />
+	<img border='0' width='310' height='131'
+		src="SQLDesigner_files/image018.jpg" /></li>
+
+	<li>If the field is tagged as Primary Key then the form
+	automatically selects the column properties as "Not Null" and "Unique"
+	and made them un-editable. <br />
+	<img border='0' width='376' height='120'
+		src="SQLDesigner_files/image020.jpg" /></li>
+
+	<li>Fill the Create Column form as required and click on the button
+	"Create Column". This will add a new column to the existing table. <br />
+	<img border='0' width='167' height='81'
+		src="SQLDesigner_files/image022.jpg" /></li>
+
+	<li><img border='0' width='22' height='35'
+		src="SQLDesigner_files/image024.jpg" /> is the properties icon on the
+	right hand side of Table and Column names. Double clicking on the
+	properties icon brings either Modify Table or Modify Column form. User
+	can verify, modify and update the existing values for the table and
+	columns. The form do also has options to Delete Table or Delete Column
+	buttons.</li>
+
+	<li><img border='0' width='30' height='35'
+		src="SQLDesigner_files/image026.jpg" /> is the minimise icon on the
+	left hand side of the table name. Double click the minimise icon to
+	minimise the table. The table will be minimised and its header will
+	change the background colour and font size as shown below: <br />
+	<img border='0' width='160' height='48'
+		src="SQLDesigner_files/image028.jpg" /></li>
+
+	<li>Tables can be dragged around the design panel by bringing the
+	mouse on table header. Mouse icon changes on entering the table header
+	and changes again when user right click the mouse button.</li>
+
+	<li>There are various icons for various types of relations i.e.
+	One-To-One (Identifying and Non Identifying), One-To-Many One
+	(Identifying and Non Identifying) and Many-To-Many.</li>
+
+	<li>When any of the relation button is clicked it changes its
+	appearance as shown below: <br />
+	<img border='0' width='48' height='44'
+		src="SQLDesigner_files/image030.jpg" /> ..... to ...... <img
+		border='0' width='48' height='44' src="SQLDesigner_files/image032.jpg" /></li>
+
+	<li>Icons with dashed lines represent Non Identifying relations.
+	Similarly icons with continuous line represent Identifying relations.</li>
+
+	<li>Drawing relations between two tables involves three steps:</li>
+
+	<ul>
+		<li>Click the appropriate relation icon</li>
+		<li>Double click the header of Table with Primary Key</li>
+		<li>Double click the header of secondary (dependent) Table.</li>
+	</ul>
+
+	<li>Line will be drawn between two tables representing the
+	relation and the relation icon reverts to its normal state. <br />
+	<img border='0' width='459' height='109'
+		src="SQLDesigner_files/image034.jpg" /></li>
+
+	<li>Moving the cursor on the relation will change the colour of
+	the relation and also highlights headers of tables involved.</li>
+
+	<li><img border='0' width='55' height='56'
+		src="SQLDesigner_files/image036.jpg" /> is SQL Generator option and
+	it produces the SQL for the designed database.</li>
+	<li><img border='0' width='44' height='51'
+		src="SQLDesigner_files/image038.jpg" /> button loads one existing
+	database. This option is to kick start the process of familiarising
+	with jQuerySQL Designer. It is quite complicated database used by Roman
+	Economy Project in Oxford University.</li>
+
+	<li>The button "Load Live Database" is a new very powerful feature
+	to draw Design Diagram from the live running database.</li>
+
+	<li>Click on the "Load Live Database", it will bring the pop-up
+	where enters the appropriate fields. The pop-up form is shown below: <br />
+	<img border='0' width='276' height='341'
+		src="SQLDesigner_files/image040.jpg" /></li>
+
+	<li>We support all major Databases but right now we are only
+	functionality related to MySQL and PostgreSQL is available from GUI.</li>
+
+	<li>Select the database type; enter the host name where database
+	is located without any protocol i.e. daas.oucs.ox.ac.uk. The following
+	URL http:// daas.oucs.ox.ac.uk will not work.</li>
+
+	<li>Enter the database port for MySQL the default port is 3306 and
+	for PostgreSQL it is 5432 but contact your system administrator if you
+	are not sure.</li>
+
+	<li>In the end enter the user name and password of the user who
+	has access to the database.</li>
+	<li>SQL Designer supports the migrating of database from one
+	vendor to another at run time. It follows following steps:</li>
+	<ul>
+		<li>Pulls the database design from existing database.</li>
+		<li>Pulls the data from the existing database.</li>
+		<li>Create new database which can even be on different database
+		platform</li>
+		<li>Populate the database with the data.</li>
+	</ul>
+</ul>
+</div>
+
+</body>
+</html>

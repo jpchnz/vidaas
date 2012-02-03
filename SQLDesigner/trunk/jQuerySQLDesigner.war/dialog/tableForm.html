@@ -1,0 +1,37 @@
+<script type="text/javascript">
+/*
+    $('[name=tableName]').keypress(function (event){ 
+         var keycode = (event.keyCode ? event.keyCode : (event.which ? event.which : event.charCode));
+         if (keycode == 13) {
+            return false;
+
+         }
+    });*/
+    $('#tableForm').keypress(function (event){    
+         var keycode = (event.keyCode ? event.keyCode : (event.which ? event.which : event.charCode));
+         if (keycode == 13) {
+            return false;
+         }
+    });
+
+    function checkName(field, rules, i, options){
+    	var tableFound = databaseObject.findTableInDatabaseByNameFunction(field.val());
+    	console.log("Table Found: " + tableFound);
+    	//alert(tableFound);
+      if (tableFound != undefined) {
+          // this allows to use i18 for the error msgs
+          return "Table '" + field.val() + "' already exists";
+      }
+  }
+</script>
+
+<form id= "tableForm" visible='false'>
+<fieldset>
+    <label for="tableName">
+        Table Name</label>
+    <input type="text" name="tableName" id="name" class="validate[required,funcCall[checkName]] text ui-widget-content ui-corner-all" />
+    <label for="tableDescription">
+        Description</label>
+    <textarea name="tableDescription" cols="36" rows="8" class="text-input text ui-widget-content ui-corner-all"> </textarea>
+</fieldset>
+</form>

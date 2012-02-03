@@ -1,0 +1,83 @@
+<script type="text/javascript">
+    //$("#length").hide();
+    $('#dbConnectionForm').keypress(function (event){    
+         var keycode = (event.keyCode ? event.keyCode : (event.which ? event.which : event.charCode));
+         if (keycode == 13) {
+            return false;
+         }
+    });
+    
+    $("#dataBaseType").change(function() { 
+        if( $("#dataBaseType option:selected").val() != "empty") {
+             $("#dbHostURL").removeAttr('disabled');
+             $("#dbHostURL").val("");
+             
+             $("#dbPort").removeAttr('disabled');
+             $("#dbPort").val("");
+             
+             $("#dbName").removeAttr('disabled');
+             $("#dbName").val("");
+             
+             $("#dbUserName").removeAttr('disabled');
+             $("#dbUserName").val("");
+             
+             $("#dbPassword").removeAttr('disabled');
+             $("#dbPassword").val("");
+        } else {
+            $("#dbHostURL").attr('disabled', 'disabled');
+            $("#dbHostURL").val("Please, first select database type");
+            
+            $("#dbPort").attr('disabled', 'disabled');
+            $("#dbPort").val("Please, first select database type");
+            
+            $("#dbName").attr('disabled', 'disabled');
+            $("#dbName").val("Please, first select database type");
+            
+            $("#dbUserName").attr('disabled', 'disabled');
+            $("#dbUserName").val("Please, first select database type");
+            
+            $("#dbPassword").attr('disabled', 'disabled');
+            $("#dbPassword").val("Please, first select database type");
+        }
+    });
+    
+</script>
+
+<form visible='false' id="dbConnectionForm">
+<fieldset>
+
+    <p>
+        <label for="dataBaseType">
+            Database Type</label>
+        <select name="dataBaseType" id="dataBaseType" class="select ui-widget-content ui-corner-all"
+            style="font-size: 12px; padding: 3px 2px 3px 3px; width: 98%">
+            <option value="empty">Select Database Type</option>
+            <option value="postgresql">PostgreSQL</option>
+            <option value="mysql">MySQL</option>
+            <option value="oracle">Oracle</option>
+            <option value="mssql">Microsoft SQL Server</option>
+            <option value="db2">IBM DB2</option>
+        </select>
+    </p> 
+    
+    <label for="dbHostURL">
+        Database Host URL (example.com)</label>
+    <input type="text" name="dbHostURL" id="dbHostURL" value="Please, first select database type" class="text ui-widget-content ui-corner-all" DISABLED/>
+    
+    <label for="dbPort">
+        Database Port</label>
+    <input type="text" name="dbPort" id="dbPort" value="Please, first select database type" class="text ui-widget-content ui-corner-all" DISABLED/>
+    
+    <label for="dbName">
+        Database Name</label>
+    <input type="text" name="dbName" id="dbName" value="Please, first select database type" class="text ui-widget-content ui-corner-all" DISABLED/>
+    
+    <label for="dbUserName">
+        User Name</label>
+    <input type="text" name="dbUserName" id="dbUserName" value="Please, first select database type" class="text ui-widget-content ui-corner-all" DISABLED/>
+    
+    <label for="dbPassword">
+        Password</label>
+    <input type="password"  name="dbPassword" id="dbPassword" value="Please, first select database type" class="text ui-widget-content ui-corner-all" DISABLED/>
+</fieldset>
+</form>
