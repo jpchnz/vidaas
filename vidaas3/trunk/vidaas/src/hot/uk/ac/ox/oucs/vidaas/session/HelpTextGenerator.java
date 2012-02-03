@@ -58,9 +58,11 @@ public class HelpTextGenerator {
 			System.out.println("Unable to find help file. Help will not be available.");
 			helpEnabled = false;
 		}
-		JAXBContext jaxbContext = JAXBContext.newInstance(HelpText.class);
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		helpText = (HelpText) jaxbUnmarshaller.unmarshal(helpFile);
+		else {
+			JAXBContext jaxbContext = JAXBContext.newInstance(HelpText.class);
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			helpText = (HelpText) jaxbUnmarshaller.unmarshal(helpFile);
+		}
 	}
 
 	public HelpField getHelpField(String helpId) {

@@ -45,6 +45,9 @@ public class HelpController {
 			return "No help available";
 		}
 		HelpField helpField = helpTextGenerator.getHelpField(helpId);
+		if (helpField == null) {
+			return "No help available";
+		}
 		return helpField.getText();
 	}
 	
