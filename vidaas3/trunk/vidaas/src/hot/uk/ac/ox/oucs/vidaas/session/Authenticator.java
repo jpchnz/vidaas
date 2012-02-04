@@ -2,11 +2,15 @@ package uk.ac.ox.oucs.vidaas.session;
 
 import java.util.Map;
 
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+
 import uk.ac.ox.oucs.vidaas.entity.Logins;
 import uk.ac.ox.oucs.vidaas.entity.Users;
-import uk.ac.ox.oucs.vidaas.utility.SystemVars;
 import uk.ac.ox.oucs.vidaas.dao.LoginsHome;
 import uk.ac.ox.oucs.vidaas.dao.UsersHome;
+
+import uk.ac.ox.oucs.vidaas.utility.SystemVars;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
@@ -92,8 +96,6 @@ public class Authenticator {
       		return ret;
       	}
 
-
-
         public boolean authenticate() {
                 ((NavigationController) Contexts.getSessionContext().get(
                                 "navigationController")).defaultHomePage();
@@ -143,23 +145,32 @@ public class Authenticator {
         
         /**
     	 * Check the current header value of AJP_targeted-id
-    	 * @return the header value, or null if not present
+    	 * @return the header value, or "" if not present
     	 */
     	public static String checkHeaderForTargetedId() {
-    		String targetedId = null;
+    		String targetedId = "";
+    		boolean printAllHeaderValues = false;
     		
-    		/*
-    		 * TODO
-    		 * This needs to be properly queried
-    		 * jsf get servlet context
-    		 */
+    		FacesContext fc = FacesContext.getCurrentInstance();
+    		ExternalContext ec = fc.getExternalContext();
+    		Map<String, String> headers = ec.getRequestHeaderMap();
     		if (SystemVars.USE_SSO_IF_AVAILABLE) {
-    			targetedId = "dpdpdp2";
+    			targetedId = headers.get("AJP_targeted-id");
+    			if (targetedId == null) {
+    				targetedId = "";
+    			}
+    			if (printAllHeaderValues) {
+    				for (String h : headers.keySet()) {
+    					if ( (headers.get(h) != null) && (headers.get(h).length() != 0) ) {
+    						System.out.println("Header: " + h + " - value: <" + headers.get(h) + ">");
+    					}
+    				}
+    			}
     		}
+    		
     		 
     		return targetedId;
     	}
-
 
         public void logout() {
                 log.info("Authenticator Logout called", "");
