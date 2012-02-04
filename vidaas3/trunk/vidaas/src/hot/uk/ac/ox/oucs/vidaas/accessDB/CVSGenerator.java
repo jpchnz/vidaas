@@ -33,7 +33,6 @@ public class CVSGenerator {
 			"PRIMARY", "VERBOSE", "USER", "TABLE", "SESSION_USER", "ORDER",
 			"LIMIT", "GROUP", "FOREIGN", "CURRENT_USER", "CONSTRAINT", "CAST",
 			"EVENTS" };
-
 	private List<String> keyWordsList = Arrays.asList(keyWordsArray);
 
 	private String csvDirectoryURL = null;
