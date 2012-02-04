@@ -15,7 +15,7 @@
 	<rich:panel >
 		<f:facet name="header">
 			<h:outputText
-				value="Summary of project '#{currentProject.title}'"></h:outputText>
+				value="Summary of database '#{currentProject.name}'"></h:outputText>
 		</f:facet>
 		<h:panelGrid id="projectPanel" columns="1">
 		<!--  
@@ -23,7 +23,7 @@
 				value="Test String: '#{createController.testString}'"></h:outputText> -->
 			<h:panelGroup>
 				<h:outputLabel value="Project Name: " />
-				<h:outputLabel value="#{currentProject.title}" />
+				<h:outputLabel value="#{currentProject.name}" />
 			</h:panelGroup>
 			<h:panelGroup>
 				<h:outputLabel value="Project Description: " />
@@ -43,7 +43,7 @@
 	<rich:panel>
 		<f:facet name="header">
 			<h:outputText
-				value="Summary of database '#{currentDataspace.dataspaceName}'"></h:outputText>
+				value="Summary of database '#{currentDataspace.dataspaceUserFriendlyName}'"></h:outputText>
 		</f:facet>
 		<h:panelGrid id="dataspacePanel" columns="4" border="1" width="100%">
 			<h:panelGroup>
@@ -122,7 +122,7 @@
 		width="1105px">
 		<f:facet name="header">
 			<h:outputText
-				value="Detailed summary of database"></h:outputText>
+				value="Detailed summary of database version(s)"></h:outputText>
 		</f:facet>
 		<h:panelGrid id="databasePanel" columns="3" border="1">
 
