@@ -125,7 +125,17 @@ public class ConnectionManager {
 
 
  
-    public static void main(String argv[]) {
+    public String getAdminUserName() {
+    	readPropertiesFile();
+		return adminUserName;
+	}
+
+	public String getAdminUserNamePW() {
+		readPropertiesFile();
+		return adminUserNamePW;
+	}
+
+	public static void main(String argv[]) {
     	ConnectionManager cm = new ConnectionManager();
         cm.getConnection();
          if (cm.connection != null){
