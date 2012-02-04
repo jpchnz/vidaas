@@ -293,17 +293,19 @@ public class CreateController {
 				log.info("projectsList.get(0).getUserRole() {0}", projectsList
 						.get(0).getUserRole());
 
-				if (projectsList.get(0).getUserRole().equalsIgnoreCase("admin")|| projectsList.get(0).getUserRole().equalsIgnoreCase("Owner")) {
+				if (projectsList.get(0).getUserRole().equalsIgnoreCase("admin") || projectsList.get(0).getUserRole().equalsIgnoreCase("Owner")) {
 					new CreateDataSpaceController().createDataSpace(
 							getUserMain(), projectsList.get(0).getProject(),
 							dataspaceHome, today, log);
 				}
 
-				createProjectDataspaceConfirmationMessage = "Database '"
-						+ dataspaceHome.getInstance().getDataspaceUserFriendlyName()
-						+ "' for Project: '"
-						+ projectsList.get(0).getProject().getName()
-						+ "' has been successfully created.";
+
+				createProjectDataspaceConfirmationMessage = "Databace '"
+					+ dataspaceHome.getInstance().getDataspaceName()
+					+ "' for the Project: '"
+					+ projectsList.get(0).getProject().getTitle()
+					+ "' has been successfully created.";
+
 				((NavigationController) Contexts.getSessionContext().get(
 						"navigationController"))
 						.createProjectDataspaceConfirmation();
