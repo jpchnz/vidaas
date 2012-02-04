@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 
 import org.jboss.seam.log.Log;
 
+import uk.ac.ox.oucs.vidaas.manager.ConnectionManager;
+
 public class DownloadDatabase {
 	
 	private final String rootStorageDirectory = "/opt/VIDaaSData/";
@@ -46,7 +48,7 @@ public class DownloadDatabase {
             cmds.add("-p");
             cmds.add("5432");
             cmds.add("-U");
-            cmds.add("sudamihAdmin");
+            cmds.add(new ConnectionManager().getAdminUserName());
             cmds.add("-a");
             cmds.add("-F");
             cmds.add("P");
@@ -57,7 +59,7 @@ public class DownloadDatabase {
             cmds.add(databaseName.toLowerCase());
             
             pb = new ProcessBuilder(cmds);
-            pb.environment().put("PGPASSWORD", "sudamihAdminPW");
+            pb.environment().put("PGPASSWORD", new ConnectionManager().getAdminUserNamePW());
             //pb.redirectErrorStream(true);
             p = pb.start();
             try {
