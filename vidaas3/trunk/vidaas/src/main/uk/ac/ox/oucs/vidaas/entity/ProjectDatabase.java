@@ -143,9 +143,9 @@ public class ProjectDatabase implements java.io.Serializable {
 		this.creationDate = creationDate;
 	}
 
-	@Column(name = "Database_Name", nullable = false, length = 150)
+	@Column(name = "Database_Name", nullable = false, length = 50)
 	@NotNull
-	@Length(max = 150)
+	@Length(max = 50)
 	public String getDatabaseName() {
 		return this.databaseName;
 	}
