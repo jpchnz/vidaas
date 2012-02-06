@@ -15,7 +15,7 @@
 	</servlet>
 	<servlet>
 		<servlet-name>ProjectRoleServlet</servlet-name>
-		<servlet-class>uk.ac.ox.oucs.iam.ProjectRoleServlet</servlet-class>
+		<servlet-class>uk.ac.ox.oucs.iam.servlet.ProjectRoleServlet</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>ReceivePost</servlet-name>
@@ -23,7 +23,7 @@
 	</servlet>
 	<servlet>
 		<servlet-name>AccessServlet</servlet-name>
-		<servlet-class>uk.ac.ox.oucs.iam.postsec.AccessServlet</servlet-class>
+		<servlet-class>uk.ac.ox.oucs.iam.servlet.AccessServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>AccessServlet</servlet-name>
