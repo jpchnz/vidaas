@@ -3,8 +3,7 @@
 <h1>IAM Services test</h1>
 <h2>Test ProjectRoleServlet</h2>
 <form action="ProjectRoleServlet" METHOD="POST">
-Name: <input type="text" name="name" /><br />
-Password: <input type="password" name="password" />
+Name: <input type="text" name="isOwner" /><br />
 <input type="submit" value="Submit" />
 </form>
 
