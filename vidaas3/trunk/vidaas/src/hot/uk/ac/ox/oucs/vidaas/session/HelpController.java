@@ -5,8 +5,10 @@ import java.io.FileNotFoundException;
 import javax.xml.bind.JAXBException;
 
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.log.Log;
 
 import uk.ac.ox.oucs.vidaas.session.generated.HelpField;
 
@@ -15,10 +17,12 @@ import uk.ac.ox.oucs.vidaas.session.generated.HelpField;
 public class HelpController {
 	private HelpTextGenerator helpTextGenerator;
 	private String helpId = null;
+	@Logger
+	private Log log;
 	
 	public HelpController() {
 		try {
-			helpTextGenerator = new HelpTextGenerator();
+			helpTextGenerator = new HelpTextGenerator(log);
 		}
 		catch (FileNotFoundException e) {
 			e.printStackTrace();

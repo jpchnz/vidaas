@@ -12,6 +12,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.jboss.seam.log.Log;
+
 import uk.ac.ox.oucs.vidaas.session.generated.HelpField;
 import uk.ac.ox.oucs.vidaas.session.generated.HelpGroup;
 import uk.ac.ox.oucs.vidaas.session.generated.HelpText;
@@ -20,12 +22,27 @@ public class HelpTextGenerator {
 	private HelpText helpText;
 	private File helpFile;
 	boolean helpEnabled = true;
+	private Log log;
 
-	public HelpTextGenerator() throws JAXBException, FileNotFoundException {
+	public HelpTextGenerator(Log log) throws JAXBException, FileNotFoundException {
+		this.log = log;
 		try {
 			loadHelpFile();
 		}
 		catch (IOException e) {
+			log.error("Unable to find helpfile in the standard place");
+			helpFile = new File("/tmp/helpText.xml");
+		}
+		
+		init();
+	}
+	
+	private HelpTextGenerator() throws JAXBException, FileNotFoundException {
+		try {
+			loadHelpFile();
+		}
+		catch (IOException e) {
+			System.out.println("Unable to find helpfile in the standard place");
 			helpFile = new File("/tmp/helpText.xml");
 		}
 		
@@ -35,6 +52,12 @@ public class HelpTextGenerator {
 	private void loadHelpFile() throws IOException {
 		InputStream inputStream = HelpTextGenerator.class.getClassLoader().getResourceAsStream("helpText.xml");
 		if (inputStream == null) {
+			if (log == null) {
+				System.out.println("Unable to get resource");
+			}
+			else {
+				log.error("Unable to get resource");
+			}
 			throw new IOException();
 		}
 		helpFile = new File("helpfile");
@@ -46,6 +69,12 @@ public class HelpTextGenerator {
 		}
 		out.close();
 		inputStream.close();
+		if (log == null) {
+			System.out.println("Help text has been loaded");
+		}
+		else {
+			log.error("Help text has been loaded");
+		}
 	}
 
 	public HelpTextGenerator(String fileName) throws JAXBException {
