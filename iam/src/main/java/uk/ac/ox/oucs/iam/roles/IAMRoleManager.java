@@ -8,7 +8,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 
-public class IAMRoleManager implements IAMRoleManagerInterface {
+public class IAMRoleManager {
 	private URL url;
 	private URLConnection connection = null;
 	private OutputStreamWriter out;
@@ -55,24 +55,34 @@ public class IAMRoleManager implements IAMRoleManagerInterface {
 		return result;
 	}
 	
-	/* (non-Javadoc)
-	 * @see uk.ac.ox.oucs.iam.roles.IAMRoleManagerInterface#checkIsOwner(java.lang.String)
+	/**
+	 * Check if the role supplied denotes the user as an owner of the project
+	 * @param role the role to test
+	 * @return true of the role denotes the user is owner, false otherwise
+	 * @throws IOException
 	 */
 	public boolean checkIsOwner(String role) throws IOException {
 		String result = sendPost("checkIsOwner=" + role);
 		return (result.startsWith("true"));
 	}
 	
-	/* (non-Javadoc)
-	 * @see uk.ac.ox.oucs.iam.roles.IAMRoleManagerInterface#checkIsAllowedToCreateDatabaseByRole(java.lang.String)
+	/**
+	 * Check if the user with the defined role is allowed to create a database against the project
+	 * @param role the role to test
+	 * @return true if the user is allowed to create a database in the project, else false
+	 * @throws IOException
 	 */
 	public boolean checkIsAllowedToCreateDatabaseByRole(String role) throws IOException {
 		String result = sendPost("checkIsAllowedToCreateDatabaseByRole=" + role);
 		return (result.startsWith("true"));
 	}
 	
-	/* (non-Javadoc)
-	 * @see uk.ac.ox.oucs.iam.roles.IAMRoleManagerInterface#checkIsAllowedToAlterOtherUsersRole(java.lang.String)
+	/**
+	 * Check if the user with the defined role is allowed to alter the roles of other users
+	 * within a project, or remove them from the project altogether
+	 * @param role the role to test
+	 * @return true if the user is allowed to create a database in the project, else false
+	 * @throws IOException
 	 */
 	public boolean checkIsAllowedToAlterOtherUsersRole(String role) throws IOException {
 		String result = sendPost("checkIsAllowedToAlterOtherUsersRole=" + role);
@@ -80,8 +90,10 @@ public class IAMRoleManager implements IAMRoleManagerInterface {
 	}
 	
 	
-	/* (non-Javadoc)
-	 * @see uk.ac.ox.oucs.iam.roles.IAMRoleManagerInterface#getRoles()
+	/**
+	 * Get a list of all roles available
+	 * @return A String object containing all roles, each separated by a newline
+	 * @throws IOException
 	 */
 	public String getRoles() throws IOException {
 		return sendPost("getRoles=true");
@@ -89,7 +101,7 @@ public class IAMRoleManager implements IAMRoleManagerInterface {
 	
 	public static void main(String[] args) {
 		try {
-			IAMRoleManagerInterface iamPost = new IAMRoleManager();
+			IAMRoleManager iamPost = new IAMRoleManager();
 			
 			System.out.println("Checking is owner ...");
 			System.out.println(iamPost.checkIsOwner("owner"));
