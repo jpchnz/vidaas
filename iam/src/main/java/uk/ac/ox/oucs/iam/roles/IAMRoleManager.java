@@ -93,6 +93,23 @@ public class IAMRoleManager {
 	}
 	
 	
+	
+	/**
+	 * Check if the user with the defined role is allowed to remove the project.
+	 * 
+	 * Note. This is back end processing. It assumes the project is known by the caller.
+	 * So the caller can simply get the relevant data string from the database for the project and
+	 * verify its value against this function.
+	 * @param role the role to test
+	 * @return true if the user has sufficient authority to to create a database in the project, else false
+	 * @throws IOException
+	 */
+	public boolean checkIsAllowedToRemoveProject(String role) throws IOException {
+		String result = sendPost("checkIsAllowedToRemoveProjectByRole=" + role);
+		return (result.startsWith("true"));
+	}
+	
+	
 	/**
 	 * Check if the user with the defined role is allowed to create a database against the project.
 	 * 
