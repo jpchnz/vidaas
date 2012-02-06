@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -12,16 +13,26 @@ public class IAMRoleManager {
 	private URL url;
 	private URLConnection connection = null;
 	private OutputStreamWriter out;
+	private String postData;
 	
 	
-	public IAMRoleManager() throws Exception {
+	/**
+	 * Testing only - create a Role Manager object to communicate with
+	 * "http://localhost:8080/iam/ProjectRoleServlet"
+	 * 
+	 * @throws MalformedURLException 
+	 */
+	private IAMRoleManager() throws MalformedURLException  {
 		url = new URL("http://localhost:8080/iam/ProjectRoleServlet");
 	}
-	public IAMRoleManager(String urlString) throws Exception {
+	public IAMRoleManager(String urlString) throws MalformedURLException {
 		url = new URL(urlString);
 	}
+	public IAMRoleManager(URL url) throws Exception {
+		this.url = url;
+	}
 	
-	private String postData;
+	
 	private String sendPost(String postData) throws IOException {
 		this.postData = postData;
 		sendPost();
@@ -29,6 +40,10 @@ public class IAMRoleManager {
 	}
 	
 	
+	/**
+	 * Post the data set in variable:postData to the web service defined in the constructor
+	 * @throws IOException
+	 */
 	private void sendPost() throws IOException {
 		connection = url.openConnection();
 		connection.setDoOutput(true);
@@ -39,6 +54,11 @@ public class IAMRoleManager {
 	}
 	
 	
+	/**
+	 * Add the result from the servlet to a String with newlines
+	 * @return the output from the web servlet as a String
+	 * @throws IOException
+	 */
 	private String getResult() throws IOException {
 		BufferedReader in = null;
 		String result = "";
@@ -55,8 +75,14 @@ public class IAMRoleManager {
 		return result;
 	}
 	
+	
+	
 	/**
-	 * Check if the role supplied denotes the user as an owner of the project
+	 * Check if the role supplied denotes the user as an owner of the project.
+	 * 
+	 * Note. This is back end processing. It assumes the project is known by the caller.
+	 * So the caller can simply get the relevant data string from the database for the project and
+	 * verify its value against this function.
 	 * @param role the role to test
 	 * @return true of the role denotes the user is owner, false otherwise
 	 * @throws IOException
@@ -66,10 +92,15 @@ public class IAMRoleManager {
 		return (result.startsWith("true"));
 	}
 	
+	
 	/**
-	 * Check if the user with the defined role is allowed to create a database against the project
+	 * Check if the user with the defined role is allowed to create a database against the project.
+	 * 
+	 * Note. This is back end processing. It assumes the project is known by the caller.
+	 * So the caller can simply get the relevant data string from the database for the project and
+	 * verify its value against this function.
 	 * @param role the role to test
-	 * @return true if the user is allowed to create a database in the project, else false
+	 * @return true if the user has sufficient authority to to create a database in the project, else false
 	 * @throws IOException
 	 */
 	public boolean checkIsAllowedToCreateDatabaseByRole(String role) throws IOException {
@@ -77,9 +108,14 @@ public class IAMRoleManager {
 		return (result.startsWith("true"));
 	}
 	
+	
 	/**
 	 * Check if the user with the defined role is allowed to alter the roles of other users
-	 * within a project, or remove them from the project altogether
+	 * within a project, or remove them from the project altogether.
+	 * 
+	 * Note. This is back end processing. It assumes the project is known by the caller.
+	 * So the caller can simply get the relevant data string from the database for the project and
+	 * verify its value against this function.
 	 * @param role the role to test
 	 * @return true if the user is allowed to create a database in the project, else false
 	 * @throws IOException
@@ -98,6 +134,8 @@ public class IAMRoleManager {
 	public String getRoles() throws IOException {
 		return sendPost("getRoles=true");
 	}
+	
+	
 	
 	public static void main(String[] args) {
 		try {
