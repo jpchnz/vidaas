@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import uk.ac.ox.oucs.iam.roles.IAMRoleManager;
-import uk.ac.ox.oucs.iam.roles.IAMRoleManagerInterface;
+//import uk.ac.ox.oucs.iam.roles.IAMRoleManagerInterface;
 
 
 public class IAMRoleManagerInterfaceTest {
