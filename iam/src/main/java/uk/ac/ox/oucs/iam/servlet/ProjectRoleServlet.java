@@ -13,6 +13,7 @@ import uk.ac.ox.oucs.iam.utilities.UserRoles;
 @SuppressWarnings("serial")
 public class ProjectRoleServlet extends HttpServlet {
 	private PrintWriter out;
+	private UserRoles userRoles = new UserRoles();
 	
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -39,24 +40,81 @@ public class ProjectRoleServlet extends HttpServlet {
 	 * @param request
 	 */
 	private void checkRequest(HttpServletRequest request) {
-		String command = request.getParameter("checkIsOwner");
+		String command = request.getParameter("isOwner");
 		if (command != null) {
-			isOwner(command);
+			out.println(userRoles.isOwner(command));
 		}
 		
-		command = request.getParameter("checkIsAllowedToCreateDatabaseByRole");
+		command = request.getParameter("isAllowedToCreateDatabaseByRole");
 		if (command != null) {
-			isAllowedToCreateDatabaseByRole(command);
+			out.println(userRoles.isAllowedToCreateDatabaseByRole(command));
 		}
 		
-		command = request.getParameter("checkIsAllowedToRemoveProject");
+		command = request.getParameter("isAllowedToEditDatabaseByRole");
 		if (command != null) {
-			isAllowedToRemoveProject(command);
+			out.println(userRoles.isAllowedToEditDatabaseByRole(command));
+		}
+		
+		command = request.getParameter("isAllowedToDeleteDatabaseByRole");
+		if (command != null) {
+			out.println(userRoles.isAllowedToDeleteDatabaseByRole(command));
+		}
+		
+		command = request.getParameter("isAllowedToAlterOtherUsersRole");
+		if (command != null) {
+			out.println(userRoles.isAllowedToAlterOtherUsersRole(command));
+		}
+		
+		command = request.getParameter("isAllowedToRemoveProject");
+		if (command != null) {
+			out.println(userRoles.isAllowedToRemoveProject(command));
+		}
+		
+		command = request.getParameter("isAllowedToAddOthersForProject");
+		if (command != null) {
+			out.println(userRoles.isAllowedToAddOthersForProject(command));
+		}
+		
+		command = request.getParameter("isAllowedToRemoveOthersForProject");
+		if (command != null) {
+			out.println(userRoles.isAllowedToRemoveOthersForProject(command));
+		}
+		
+		command = request.getParameter("isAllowedToAddEditOrRemoveDatabaseDataByRole");
+		if (command != null) {
+			out.println(userRoles.isAllowedToAddEditOrRemoveDatabaseDataByRole(command));
+		}
+		
+		command = request.getParameter("isAllowedToCreateWebAppByRole");
+		if (command != null) {
+			out.println(userRoles.isAllowedToCreateWebAppByRole(command));
+		}
+		
+		command = request.getParameter("isAllowedToDeleteWebAppByRole");
+		if (command != null) {
+			out.println(userRoles.isAllowedToDeleteWebAppByRole(command));
+		}
+		
+		command = request.getParameter("isViewProjectData");
+		if (command != null) {
+			out.println(userRoles.isViewProjectData(command));
+		}
+		
+		command = request.getParameter("isCreatePublicViewsOfData");
+		if (command != null) {
+			out.println(userRoles.isCreatePublicViewsOfData(command));
+		}
+		
+		command = request.getParameter("isAllowedToRemoveProjectByRole");
+		if (command != null) {
+			out.println(userRoles.isAllowedToRemoveProjectByRole(command));
 		}
 
+		
 		command = request.getParameter("getRoles");
 		if (command != null) {
 			getRoles();
+			out.println(userRoles.isAllowedToCreateDatabaseByRole(command));
 		}
 	}
 	
@@ -65,24 +123,9 @@ public class ProjectRoleServlet extends HttpServlet {
 	 * List all available roles within IAM
 	 */
 	private void getRoles() {
-		String [] result = UserRoles.getRolesAsArray();
+		String [] result = userRoles.getRolesAsArray();
 		for (int count = 0; count < result.length; count++) {
 			out.println(result[count]);
 		}
-	}
-	
-	private void isOwner(String role) {
-		boolean result = UserRoles.isOwner(role);
-		out.println(result);
-	}
-	
-	private void isAllowedToCreateDatabaseByRole(String role) {
-		boolean result = UserRoles.isAllowedToCreateDatabaseByRole(role);
-		out.println(result);
-	}
-	
-	private void isAllowedToRemoveProject(String role) {
-		boolean result = UserRoles.isAllowedToRemoveProject(role);
-		out.println(result);
 	}
 }
