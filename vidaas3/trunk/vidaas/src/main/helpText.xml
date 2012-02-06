@@ -3,15 +3,27 @@
 		description="Fields shown when a user creates a new database (aka'dataspace') within a project">
 		<helpField>
 			<helpId>DatabaseCreationPopup_DatabaseName</helpId>
-			<title>Database Name</title>
+			<title>Database name</title>
 			<text>The database name you choose can only contain alphabetic and
 				numeric characters, i.e. a..z, 0..9, and cannot contain spaces.
 			</text>
 			<image>help</image>
 		</helpField>
 		<helpField>
+			<helpId>DatabaseCreationPopup_DatabaseDescription</helpId>
+			<title>Database description</title>
+			<text>This field should be used to describe the content and scope of
+				the database, to record who created or compiled the data (and for
+				what purpose), to state when the data was collected or digitized,
+				and to supply any other information that may be needed to permit
+				proper interpretation of the data at a later date, such as whether
+				the data has been edited or manipulated since collection.
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
 			<helpId>DatabaseCreationPopup_EstimatedSize</helpId>
-			<title>Estimated Database Size</title>
+			<title>Estimated database size</title>
 			<text>This defines the total space that will be available to your
 				project for hosting databases. Please be aware that if you intend to
 				create more than one version of any given database within your
@@ -28,7 +40,8 @@
 				with very large databases although if you think you might require
 				more than 100 GB we may be able to create a customized virtual
 				machine that will suit your requirement. Please email us if that is
-				the case.</text>
+				the case.
+			</text>
 			<image>help</image>
 		</helpField>
 		<helpField>
@@ -63,6 +76,18 @@
 			<helpId>ProjectCreationPopup_EndDate</helpId>
 			<title>End Date</title>
 			<text>James to write this
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
+			<helpId>ProjectCreationPopup_Description</helpId>
+			<title>Description</title>
+			<text>This description will appear on your ORDS project list page. It
+				will be visible to everyone who is a member of the project, and will
+				act as a summary of what the project is about. This field can be
+				used to describe the subject matter and scope of the project, and to
+				supply other relevant information such as details of the people
+				involved, or the URL of a project website.
 			</text>
 			<image>help</image>
 		</helpField>
