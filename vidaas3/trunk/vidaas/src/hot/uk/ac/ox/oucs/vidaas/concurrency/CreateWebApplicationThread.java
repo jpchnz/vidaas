@@ -1,6 +1,7 @@
 package uk.ac.ox.oucs.vidaas.concurrency;
 
 import uk.ac.ox.oucs.vidaas.create.CreateWebApplication;
+import uk.ac.ox.oucs.vidaas.dao.WebApplicationHome;
 import uk.ac.ox.oucs.vidaas.data.holder.DataHolder;
 
 public class CreateWebApplicationThread  implements Runnable {
@@ -15,6 +16,8 @@ public class CreateWebApplicationThread  implements Runnable {
 	private String password;
 	private String webApplicationLocation;
 	
+	
+	
 	public CreateWebApplicationThread(String webApplicationNameValue, String webApplicationLocationValue, 
 			String databaseNameValue, String userNameValue, String passwordValue, DataHolder dataHolderValue){
 		
@@ -24,7 +27,8 @@ public class CreateWebApplicationThread  implements Runnable {
 		this.userName = userNameValue;
 		this.password = passwordValue;
 		
-		dataHolder = dataHolderValue;
+		this.dataHolder = dataHolderValue;
+		
 	}
 
 	public void run(){
@@ -39,8 +43,10 @@ public class CreateWebApplicationThread  implements Runnable {
 				webApplicationLocation, databaseName, userName, password, dataHolder);
 		
 		if (processOutcome == true){
+			dataHolder.setOkButton(false);
 			dataHolder.setCurrentStatus("Web Application will be available at: '" + serverURLTemp + webApplicationName + "' after few minutes");
 			createStatus = true;
+			
 		}
 		dataHolder.setOkButton(false);
 	}
