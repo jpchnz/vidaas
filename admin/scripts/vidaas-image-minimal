@@ -30,7 +30,7 @@ fi
 echo "Removing unwanted packages..."
 apt-get -qqy remove mpt-status
 
-echo "Setting up local mail and package update notifications"
+echo "Setting up local mail..."
 DEBIAN_FRONTEND=noninteractive apt-get -qqy install nullmailer
 echo vidaas-hosts@rt.oucs.ox.ac.uk > /etc/nullmailer/adminaddr
 echo smtp.ox.ac.uk > /etc/nullmailer/remotes
