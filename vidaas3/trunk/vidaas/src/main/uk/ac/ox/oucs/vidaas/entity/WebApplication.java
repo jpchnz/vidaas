@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import org.hibernate.validator.Length;
@@ -38,15 +39,14 @@ public class WebApplication implements java.io.Serializable {
 	private String url;
 	private String webApplicationName;
 	private String status;
-	private Set<ProjectDatabase> projectDatabases = new HashSet<ProjectDatabase>(
-			0);
+	private ProjectDatabase projectDatabase;
 
 	public WebApplication() {
 	}
 
-	public WebApplication(String url, Set<ProjectDatabase> projectDatabases) {
+	public WebApplication(String url, ProjectDatabase projectDatabase) {
 		this.url = url;
-		this.projectDatabases = projectDatabases;
+		this.projectDatabase = projectDatabase;
 	}
 
 	@Id
@@ -100,13 +100,13 @@ public class WebApplication implements java.io.Serializable {
 		this.webApplicationName = webApplicationName;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "webApplication")
-	public Set<ProjectDatabase> getProjectDatabases() {
-		return this.projectDatabases;
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "webApplication")
+	public ProjectDatabase getProjectDatabase() {
+		return this.projectDatabase;
 	}
 
-	public void setProjectDatabases(Set<ProjectDatabase> projectDatabases) {
-		this.projectDatabases = projectDatabases;
+	public void setProjectDatabase(ProjectDatabase projectDatabase) {
+		this.projectDatabase = projectDatabase;
 	}
 
 }

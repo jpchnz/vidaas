@@ -9,10 +9,13 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
@@ -47,7 +50,10 @@ public class Users implements java.io.Serializable {
 	private String lastName;
 	private String position;
 	private Set<UserDatabase> userDatabases = new HashSet<UserDatabase>(0);
-	private Set<Logins> loginses = new HashSet<Logins>(0);
+	
+	@OneToOne(cascade = CascadeType.ALL, mappedBy = "userID")
+    private Logins logins;
+	
 	private Set<Dataspace> dataspaces = new HashSet<Dataspace>(0);
 	private Set<UserProject> userProjects = new HashSet<UserProject>(0);
 	private Set<SchemaLog> schemaLogs = new HashSet<SchemaLog>(0);
@@ -66,7 +72,7 @@ public class Users implements java.io.Serializable {
 
 	public Users(String department, String email, String firstName, String grp,
 			String lastName, String position, Set<UserDatabase> userDatabases,
-			Set<Logins> loginses, Set<UserProject> userProjects,
+			Logins logins, Set<UserProject> userProjects,
 			Set<SchemaLog> schemaLogs) {
 		this.department = department;
 		this.email = email;
@@ -75,7 +81,7 @@ public class Users implements java.io.Serializable {
 		this.lastName = lastName;
 		this.position = position;
 		this.userDatabases = userDatabases;
-		this.loginses = loginses;
+		this.logins = logins;
 		this.userProjects = userProjects;
 		this.schemaLogs = schemaLogs;
 	}
@@ -175,14 +181,14 @@ public class Users implements java.io.Serializable {
 		this.userDatabases = userDatabases;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
-	public Set<Logins> getLoginses() {
-		return this.loginses;
-	}
+	@OneToOne(cascade = CascadeType.ALL, mappedBy = "users")
+	public Logins getLogins() {
+        return logins;
+    }
 
-	public void setLoginses(Set<Logins> loginses) {
-		this.loginses = loginses;
-	}
+    public void setLogins(Logins logins) {
+        this.logins = logins;
+    }
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
 	public Set<Dataspace> getDataspaces() {

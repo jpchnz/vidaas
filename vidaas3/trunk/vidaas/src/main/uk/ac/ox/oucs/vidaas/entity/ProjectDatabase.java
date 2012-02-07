@@ -16,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -100,7 +101,7 @@ public class ProjectDatabase implements java.io.Serializable {
 		this.dataspace = dataspace;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "Web_ID", nullable = false)
 	@NotNull
 	public WebApplication getWebApplication() {
@@ -111,7 +112,7 @@ public class ProjectDatabase implements java.io.Serializable {
 		this.webApplication = webApplication;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "Structure_ID", nullable = false)
 	@NotNull
 	public DatabaseStructure getDatabaseStructure() {
