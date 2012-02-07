@@ -26,7 +26,7 @@ public class SendViaPost {
 	private URLConnection connection = null;
 	private OutputStreamWriter out;
 	private String postData;
-	private boolean encrypt = true;
+	private final boolean encrypt = true;
 	public String keyFile;
 	private boolean messagePosted = false;
 	private final String keyType = "HmacSHA512";
@@ -67,7 +67,6 @@ public class SendViaPost {
 	}
 
 	private String sendPost() throws IOException, NewKeyException, KeyNotFoundException {
-		IamAudit auditer = new IamAudit();
 		messagePosted = false;
 		VidaasSignature vSig = null;
 
