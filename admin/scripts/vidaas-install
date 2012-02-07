@@ -2,7 +2,7 @@
 
 source /etc/vidaas/settings
 
-default_packages="vim apticron"
+default_packages="vim apticron openssh-server"
 
 echo "Unattended update/upgrade of minimal image..."
 if apt-get -qq update ; then
