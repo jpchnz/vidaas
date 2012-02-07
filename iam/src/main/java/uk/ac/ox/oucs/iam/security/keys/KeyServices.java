@@ -142,6 +142,12 @@ public class KeyServices implements Serializable {
 		 */
 		alterKeyFileModeToUserReadOnly();
 	}
+	
+	
+	public String getPrivateKeyData() {
+		String res = privateKey.getAlgorithm();
+		return res;
+	}
 
 	
 

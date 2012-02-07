@@ -8,6 +8,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
+import uk.ac.ox.oucs.iam.servlet.ReceivePost;
+import uk.ac.ox.oucs.iam.servlet.SecurePostData;
+
 
 public class ReceivePostedData {
 	public static List<SecurePostData> getPendingMessageData(String urlString) throws IOException {
