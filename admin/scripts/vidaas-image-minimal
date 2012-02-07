@@ -21,7 +21,8 @@ if [ -n "$install_tools" ] ; then
     exit 1
   fi
   perl ./vmware-tools-distrib/vmware-install.pl -d
-  rm -r vmware-tools-distrib
+  rm -r /tmp/vmware-tools-distrib
+  rm /tmp/VMwareTools.tgz
 else
   echo "VMware tools already installed and running"
 fi
