@@ -147,9 +147,9 @@ public class CreateController {
 	private String backupDatabaseConfirmationMessage = "";
 	private String restoreDatabaseConfirmationMessage = "";
 	private String deleteWebApplicationConfirmationMessage = "";
-	
+
 	private Date today;
-	
+
 	public Date getToday() {
 		return new Date();
 	}
@@ -186,8 +186,10 @@ public class CreateController {
 	}
 
 	public boolean isStatusPanelOKButtonDisabled() {
-		/*System.out.println("isStatusPanelOKButtonDisabled(): "
-				+ dataHolder.isOkButton());*/
+		/*
+		 * System.out.println("isStatusPanelOKButtonDisabled(): " +
+		 * dataHolder.isOkButton());
+		 */
 		return dataHolder.isOkButton();
 	}
 
@@ -197,7 +199,7 @@ public class CreateController {
 	}
 
 	public String getDatabaseSchemaFormStatus() {
-		//System.out.println("getDatabaseSchemaFormStatus()");
+		// System.out.println("getDatabaseSchemaFormStatus()");
 		return dataHolder.getCurrentStatus();
 	}
 
@@ -278,43 +280,46 @@ public class CreateController {
 	}
 
 	public void createDataSpace(/* Integer projectIDValue */) {
-		//if (validateString(dataspaceHome.getInstance().getDataspaceUserFriendlyName())) {
-			if (validateString(dataspaceHome.getInstance()
-					.getWebApplicationName())) {
+		// if
+		// (validateString(dataspaceHome.getInstance().getDataspaceUserFriendlyName()))
+		// {
+		if (validateString(dataspaceHome.getInstance().getWebApplicationName())) {
 
-				System.out.println(this.currentProjectID + "   "
-						+ getUserMain().getUserId());
+			System.out.println(this.currentProjectID + "   "
+					+ getUserMain().getUserId());
 
-				List<UserProject> projectsList = userProjectHome
-						.findByUserIDAndProjectID(getUserMain().getUserId(),
-								this.currentProjectID);
+			List<UserProject> projectsList = userProjectHome
+					.findByUserIDAndProjectID(getUserMain().getUserId(),
+							this.currentProjectID);
 
-				log.info("projectsList.size() {0}", projectsList.size());
-				log.info("projectsList.get(0).getUserRole() {0}", projectsList
-						.get(0).getUserRole());
+			log.info("projectsList.size() {0}", projectsList.size());
+			log.info("projectsList.get(0).getUserRole() {0}",
+					projectsList.get(0).getUserRole());
 
-				if (projectsList.get(0).getUserRole().equalsIgnoreCase("admin") || projectsList.get(0).getUserRole().equalsIgnoreCase("Owner")) {
-					new CreateDataSpaceController().createDataSpace(
-							getUserMain(), projectsList.get(0).getProject(),
-							dataspaceHome, today, log);
-				}
+			if (projectsList.get(0).getUserRole().equalsIgnoreCase("admin")
+					|| projectsList.get(0).getUserRole()
+							.equalsIgnoreCase("Owner")) {
+				new CreateDataSpaceController().createDataSpace(getUserMain(),
+						projectsList.get(0).getProject(), dataspaceHome, today,
+						log);
+			}
 
-
-				createProjectDataspaceConfirmationMessage = "Databace '"
+			createProjectDataspaceConfirmationMessage = "Databace '"
 					+ dataspaceHome.getInstance().getDataspaceName()
 					+ "' for the Project: '"
 					+ projectsList.get(0).getProject().getTitle()
 					+ "' has been successfully created.";
 
-				((NavigationController) Contexts.getSessionContext().get(
-						"navigationController"))
-						.createProjectDataspaceConfirmation();
-			} else {
-				validationError = "Database interface name should not contain special characters or spaces";
-			}
-		/*} else {
-			validationError = "Databace Name should not contain special character or space";
-		}*/
+			((NavigationController) Contexts.getSessionContext().get(
+					"navigationController"))
+					.createProjectDataspaceConfirmation();
+		} else {
+			validationError = "Database interface name should not contain special characters or spaces";
+		}
+		/*
+		 * } else { validationError =
+		 * "Databace Name should not contain special character or space"; }
+		 */
 	}
 
 	public void createDatabaseFromSchema() {
@@ -331,7 +336,7 @@ public class CreateController {
 		DatabaseStructure tempDatabaseStructure = databaseStructureHome
 				.getInstance();
 		tempDatabaseStructure.setCreationDate(today);
-		
+
 		new CreateDatabaseController().createDatabaseStructure(
 				tempProject.getProjectId(), tempDataspace.getDataspaceName(),
 				tempDatabaseStructure, "main", log);
@@ -570,18 +575,21 @@ public class CreateController {
 			e.printStackTrace();
 		}
 
-		webApplicationHome.setId(tempProjectDatabase.getWebApplication()
-				.getWebId());
-		WebApplication tempWebApplication = webApplicationHome.find();
+		if (createWebApplicationThread.isCreateStatus() == true) {
 
-		webApplicationHome.setInstance(tempWebApplication);
+			webApplicationHome.setId(tempProjectDatabase.getWebApplication()
+					.getWebId());
+			WebApplication tempWebApplication = webApplicationHome.find();
 
-		tempWebApplication.setStatus("Deployed");
-		tempWebApplication.setWebApplicationName(webApplicationName);
+			webApplicationHome.setInstance(tempWebApplication);
 
-		tempWebApplication.setUrl(serverURLTemp + webApplicationName);
+			tempWebApplication.setStatus("Deployed");
+			tempWebApplication.setWebApplicationName(webApplicationName);
 
-		webApplicationHome.persist();
+			tempWebApplication.setUrl(serverURLTemp + webApplicationName);
+
+			webApplicationHome.persist();
+		}
 	}
 
 	public void finishCreateWebApplication() {
@@ -1085,8 +1093,7 @@ public class CreateController {
 				containerPath);
 
 		new DeleteXMLFileFromDatabase().deleteXMLFileInContainer(containerPath,
-				databaseName + ".dbxml",
-				tempXMLFile.getFileName());
+				databaseName + ".dbxml", tempXMLFile.getFileName());
 		xmlFilesHome.remove();
 	}
 
