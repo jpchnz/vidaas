@@ -5,6 +5,8 @@ import uk.ac.ox.oucs.vidaas.data.holder.DataHolder;
 
 public class CreateWebApplicationThread  implements Runnable {
 	
+	private boolean createStatus = false;
+	
 	private DataHolder dataHolder = null;
 	
 	private String webApplicationName;
@@ -38,7 +40,18 @@ public class CreateWebApplicationThread  implements Runnable {
 		
 		if (processOutcome == true){
 			dataHolder.setCurrentStatus("Web Application will be available at: '" + serverURLTemp + webApplicationName + "' after few minutes");
+			createStatus = true;
 		}
 		dataHolder.setOkButton(false);
 	}
+
+	public boolean isCreateStatus() {
+		return createStatus;
+	}
+
+	public void setCreateStatus(boolean createStatus) {
+		this.createStatus = createStatus;
+	}
+	
+	
 }
