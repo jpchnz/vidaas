@@ -12,6 +12,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.OneToOne;
+
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -57,8 +59,7 @@ public class DatabaseStructure implements java.io.Serializable {
 	private String status;
 	private String schemaType;
 	private String uploadType;
-	private Set<ProjectDatabase> projectDatabases = new HashSet<ProjectDatabase>(
-			0);
+	private ProjectDatabase projectDatabase;
 	private Set<SchemaLog> schemaLogs = new HashSet<SchemaLog>(0);
 
 	public DatabaseStructure() {
@@ -79,7 +80,7 @@ public class DatabaseStructure implements java.io.Serializable {
 			String csvDirectory, byte[] data, String databaseDirectory,
 			String file, long size, String sqlDirectory, String status,
 			String schemaType, String uploadType,
-			Set<ProjectDatabase> projectDatabases, Set<SchemaLog> schemaLogs) {
+			ProjectDatabase projectDatabase, Set<SchemaLog> schemaLogs) {
 		this.contentType = contentType;
 		this.creationDate = creationDate;
 		this.csvDirectory = csvDirectory;
@@ -91,7 +92,7 @@ public class DatabaseStructure implements java.io.Serializable {
 		this.status = status;
 		this.schemaType = schemaType;
 		this.uploadType = uploadType;
-		this.projectDatabases = projectDatabases;
+		this.projectDatabase = projectDatabase;
 		this.schemaLogs = schemaLogs;
 	}
 
@@ -217,13 +218,13 @@ public class DatabaseStructure implements java.io.Serializable {
 		this.uploadType = uploadType;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "databaseStructure")
-	public Set<ProjectDatabase> getProjectDatabases() {
-		return this.projectDatabases;
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "databaseStructure")
+	public ProjectDatabase getProjectDatabase() {
+		return this.projectDatabase;
 	}
 
-	public void setProjectDatabases(Set<ProjectDatabase> projectDatabases) {
-		this.projectDatabases = projectDatabases;
+	public void setProjectDatabase(ProjectDatabase projectDatabases) {
+		this.projectDatabase = projectDatabases;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "databaseStructure")

@@ -46,9 +46,9 @@ public class DatabaseStructureHome extends EntityHome<DatabaseStructure> {
 		return isIdDefined() ? getInstance() : null;
 	}
 
-	public List<ProjectDatabase> getProjectDatabases() {
-		return getInstance() == null ? null : new ArrayList<ProjectDatabase>(
-				getInstance().getProjectDatabases());
+	public ProjectDatabase getProjectDatabases() {
+		return getInstance() == null ? null : (
+				getInstance().getProjectDatabase());
 	}
 
 	public List<SchemaLog> getSchemaLogs() {

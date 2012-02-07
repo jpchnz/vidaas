@@ -54,9 +54,9 @@ public class UsersHome extends EntityHome<Users> {
 				getInstance().getUserDatabases());
 	}
 
-	public List<Logins> getLoginses() {
-		return getInstance() == null ? null : new ArrayList<Logins>(
-				getInstance().getLoginses());
+	public Logins getLogins() {
+		return getInstance() == null ? null : (
+				getInstance().getLogins());
 	}
 
 	public List<UserProject> getUserProjects() {

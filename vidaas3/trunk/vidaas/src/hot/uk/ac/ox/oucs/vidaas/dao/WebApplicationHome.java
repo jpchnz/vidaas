@@ -46,9 +46,9 @@ public class WebApplicationHome extends EntityHome<WebApplication> {
 		return isIdDefined() ? getInstance() : null;
 	}
 
-	public List<ProjectDatabase> getProjectDatabases() {
-		return getInstance() == null ? null : new ArrayList<ProjectDatabase>(
-				getInstance().getProjectDatabases());
+	public ProjectDatabase getProjectDatabases() {
+		return getInstance() == null ? null : (
+				getInstance().getProjectDatabase());
 	}
 
 }
