@@ -111,8 +111,8 @@ public class HMacReceiver extends KeyServices implements Serializable {
 	private void generateHmacMD5(String inputMessage)
 			throws UnsupportedEncodingException, NoSuchAlgorithmException,
 			InvalidKeyException {
-		Mac mac = Mac.getInstance(secretKey.getAlgorithm());
-		mac.init(secretKey);
+		Mac mac = Mac.getInstance(privateKey.getAlgorithm());
+		mac.init(privateKey);
 		byte[] utf8 = inputMessage.getBytes("UTF8");
 		byte[] digest = mac.doFinal(utf8);
 		// GeneralUtils.writeObject("digest.source", digest);

@@ -40,7 +40,7 @@ public class KeyServices implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 7176143589838004264L;
-	protected PrivateKey secretKey;
+	protected PrivateKey privateKey;
 	private String genericKeyFileName;
 	public static String privateKeyNameExtension = ".priv", publicKeyNameExtension = ".pub";
 	private final boolean useJna = true;
@@ -133,7 +133,7 @@ public class KeyServices implements Serializable {
 	 * @throws IOException
 	 */
 	private void readKeyFromFile() throws IOException {
-		secretKey = (PrivateKey) GeneralUtils.readObjectFromFile(genericKeyFileName+privateKeyNameExtension);
+		privateKey = (PrivateKey) GeneralUtils.readObjectFromFile(genericKeyFileName+privateKeyNameExtension);
 
 		/*
 		 * It shouldn't be necessary to reset file permissions on the key, since
