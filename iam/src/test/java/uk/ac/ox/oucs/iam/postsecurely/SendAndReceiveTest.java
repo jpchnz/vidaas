@@ -20,8 +20,8 @@ import uk.ac.ox.oucs.iam.GlobalTestVars;
  *
  */
 public class SendAndReceiveTest {
-	private String webAppName = "http://localhost:8080/iam/ReceivePost";
-	private boolean webServerNotRunning = true;
+	private String webAppName = "http://localhost:8081/iam/ReceivePost";
+	private boolean webServerNotRunning = false;
 	
 	
 	@Test

@@ -1,5 +1,5 @@
 package uk.ac.ox.oucs.iam;
 
 public class GlobalTestVars {
-	public static boolean runTests = false;
+	public static boolean runTests = true;
 }
