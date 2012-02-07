@@ -14,12 +14,16 @@
 		<servlet-class>uk.ac.ox.oucs.iam.TestServ</servlet-class>
 	</servlet>
 	<servlet>
+		<servlet-name>KeyUtilitiesServlet</servlet-name>
+		<servlet-class>uk.ac.ox.oucs.iam.servlet.KeyUtilitiesServlet</servlet-class>
+	</servlet>
+	<servlet>
 		<servlet-name>ProjectRoleServlet</servlet-name>
 		<servlet-class>uk.ac.ox.oucs.iam.servlet.ProjectRoleServlet</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>ReceivePost</servlet-name>
-		<servlet-class>uk.ac.ox.oucs.iam.postsecurely.ReceivePost</servlet-class>
+		<servlet-class>uk.ac.ox.oucs.iam.servlet.ReceivePost</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>AccessServlet</servlet-name>
@@ -28,6 +32,10 @@
 	<servlet-mapping>
 		<servlet-name>AccessServlet</servlet-name>
 		<url-pattern>/AccessServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>KeyUtilitiesServlet</servlet-name>
+		<url-pattern>/KeyUtilitiesServlet</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>TestServ</servlet-name>
