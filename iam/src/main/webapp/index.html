@@ -1,0 +1,137 @@
+<HTML>
+<HEAD>
+<script type="text/javascript">
+var xmlhttp = getHttpObject();
+
+    function getHttpObject() {
+        if (window.XMLHttpRequest) {
+            xmlhttp=new XMLHttpRequest();
+        }
+        else if (window.ActiveXObject) {
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        else {
+            alert("Your browser does not support XMLHTTP!");
+        }
+        return xmlhttp;
+    }    
+
+
+    
+	function updatePrivateKey() {
+        xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState==4) {
+                ajxfrm.privKey.value=xmlhttp.responseText;
+            }
+        }
+        xmlhttp.open("GET","KeyUtilitiesServlet?privateKey=true",true);
+        xmlhttp.send(null);
+    }
+    
+    function updateNumberOfPrivateKeysFound() {
+        xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState==4) {
+                ajxfrm.privKeyNum.value=xmlhttp.responseText;
+            }
+        }
+        xmlhttp.open("GET","KeyUtilitiesServlet?privateKeyNumber=true",true);
+        xmlhttp.send(null);
+    }
+
+    function updateNumberOfPublicKeysFound() {
+        xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState==4) {
+                ajxfrm.pubKeyNum.value=xmlhttp.responseText;
+            }
+        }
+        xmlhttp.open("GET","KeyUtilitiesServlet?publicKeyNumber=true",true);
+        xmlhttp.send(null);
+    }
+
+    function updatePublicKeys() {
+        xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState==4) {
+                ajxfrm.pubKeys.value=xmlhttp.responseText;
+            }
+        }
+        xmlhttp.open("GET","KeyUtilitiesServlet?publicKeyNames=true",true);
+        xmlhttp.send(null);
+    }
+    
+    function updateRemoteHosts() {
+        xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState==4) {
+                ajxfrm.remHosts.value=xmlhttp.responseText;
+            }
+        }
+        xmlhttp.open("GET","KeyUtilitiesServlet?remoteHosts=true",true);
+        xmlhttp.send(null);
+    }
+    
+    function shipToRemoteHosts() {
+        xmlhttp.onreadystatechange=function() {
+            if(xmlhttp.readyState==4) {
+                ajxfrm.remHosts.value=xmlhttp.responseText;
+            }
+        }
+        xmlhttp.open("GET","KeyUtilitiesServlet?shipToHosts=true",true);
+        xmlhttp.send(null);
+    }
+    
+    function doWork() {
+    		updatePrivateKey();
+    		updateNumberOfPrivateKeysFound();
+    }
+    
+
+</script>
+</HEAD>
+<BODY>
+	<h1>IAM Key Utilities</h1>
+	<form name="ajxfrm">
+		<table>
+
+			<tr>
+				<td>Number of private keys found:</td>
+				<td><input type="text" name="privKeyNum" value=""
+					onfocus="updateNumberOfPrivateKeysFound();" /></td>
+				<td><label id="updateButton"
+					onclick="updateNumberOfPrivateKeysFound()">Update</label></td>
+			</tr>
+
+			<tr>
+				<td>Private key:</td>
+				<td><textarea rows="1" cols="100" name="privKey"
+						onfocus="updatePrivateKey();"></textarea></td>
+				<td><label id="updateButton" onclick="updatePrivateKey()">Update</label></td>
+			</tr>
+
+			<tr>
+				<td>Number of public keys found:</td>
+				<td><input type="text" name="pubKeyNum" value=""
+					onfocus="updateNumberOfPublicKeysFound();" /></td>
+				<td><label id="updateButton"
+					onclick="updateNumberOfPublicKeysFound()">Update</label></td>
+			</tr>
+
+			<tr>
+				<td>Public keys:</td>
+				<td><textarea rows="10" cols="100" name="pubKeys"
+						onfocus="updatePublicKeys();"></textarea></td>
+				<td><label id="updateButton" onclick="updatePublicKeys()">Update</label></td>
+			</tr>
+
+			<tr>
+				<td>Remote Hosts</td>
+				<td><textarea rows="10" cols="30" name="remHosts"
+						onfocus="updateRemoteHosts();"></textarea></td>
+				<td><label id="updateButton" onclick="updateRemoteHosts()">Find</label>
+					<p>
+						<label id="shipButton" onclick="shipToRemoteHosts()">Ship</label></td>
+			</tr>
+		</table>
+		<!--<a href="#" onclick="javascript:doWork();">Update all</a>-->
+	</form>
+
+</BODY>
+</HTML>
