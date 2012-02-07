@@ -1,12 +1,5 @@
 #!/bin/bash
 
-echo "Checking out admin repository into ~/"
-cd
-if ! svn checkout https://vidaas.googlecode.com/svn/admin ; then
-  echo "svn checkout failed"
-  exit 1
-fi
-
 echo "Checking status of vmware-tools..."
 if [ -e /etc/init.d/vmware-tools ] ; then
   if ! /etc/init.d/vmware-tools status ; then
@@ -20,8 +13,9 @@ fi
 if [ -n "$install_tools" ] ; then
   echo "Installing vmware-tools..."
   apt-get -qqy install linux-headers-2.6-amd64 make
-  cd
-  if ! tar -xzf admin/bin/VMwareTools-8.6.0-425873.tar.gz ; then
+  cd /tmp
+  wget -O /tmp/VMwareTools.tgz --no-check-certificate https://vidaas.googlecode.com/svn/admin/bin/VMwareTools-8.6.0-425873.tar.gz
+  if ! tar -xzf /tmp/VMwareTools.tgz ; then
     echo "unable to extract VMwareTools"
     exit 1
   fi
