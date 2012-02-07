@@ -28,7 +28,7 @@ public class SendViaPost {
 	private final boolean encrypt = true;
 	public String keyFile;
 	private boolean messagePosted = false;
-	private final String keyType = "HmacSHA512";
+	private final String algorithm = "HmacSHA512";
 	private IamAudit auditer = new IamAudit();
 
 	/**
@@ -78,7 +78,7 @@ public class SendViaPost {
 				// Create the private and public keys
 				try {
 					auditer.auditAlways("Local keys do not exist so will be created");
-					new KeyServices(keyFile, true, keyType);
+					new KeyServices(keyFile, true, algorithm);
 				}
 				catch (Exception e) {
 					e.printStackTrace();
