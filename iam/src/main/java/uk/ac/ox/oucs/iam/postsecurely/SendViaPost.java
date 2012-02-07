@@ -45,7 +45,7 @@ public class SendViaPost {
 	 *            the address where the POST data is to be sent
 	 * @param postData
 	 *            HTTP POST data
-	 * @return true if the message was successfully sent, otherwise false
+	 * @return a full String representation of the data transmitted if the message was successfully sent, otherwise null
 	 * @throws IOException
 	 * @throws MalformedURLException
 	 * @throws KeyNotFoundException
@@ -58,7 +58,7 @@ public class SendViaPost {
 	 *             More than one private key found in the local key store. Only
 	 *             one private key may be present.
 	 */
-	public boolean sendPost(String url, String postData) throws IOException, NewKeyException, KeyNotFoundException,
+	public String sendPost(String url, String postData) throws IOException, NewKeyException, KeyNotFoundException,
 			DuplicateKeyException {
 		this.url = new URL(url);
 		keyFile = GeneralUtils.provideBaseKeyPairName();
@@ -66,7 +66,7 @@ public class SendViaPost {
 		return sendPost();
 	}
 
-	private boolean sendPost() throws IOException, NewKeyException, KeyNotFoundException {
+	private String sendPost() throws IOException, NewKeyException, KeyNotFoundException {
 		IamAudit auditer = new IamAudit();
 		messagePosted = false;
 		VidaasSignature vSig = null;
@@ -95,7 +95,7 @@ public class SendViaPost {
 			}
 			if (!privateKey.exists()) {
 				System.out.println("This is bad - sorry it didn't work out");
-				return false;
+				return null;
 			}
 
 			// Now we generate a signature object
@@ -119,7 +119,7 @@ public class SendViaPost {
 			}
 			catch (GeneralSecurityException e) {
 				System.out.println("Unable to generate signature - sorry it didn't work out");
-				return false;
+				return null;
 			}
 		}
 
@@ -155,7 +155,7 @@ public class SendViaPost {
 		messagePosted = true;
 		getResult();
 
-		return true;
+		return dataToPost;
 	}
 
 	private String getResult() throws IOException {
