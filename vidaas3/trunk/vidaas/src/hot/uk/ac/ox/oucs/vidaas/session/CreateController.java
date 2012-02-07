@@ -535,7 +535,9 @@ public class CreateController {
 	public void createWebApplication(Integer projectDatabaseIDValue) {
 		dataHolder.setOkButton(true);
 		dataHolder.currentStatus = "";
-
+		log.info("createWebApplication() called "  + "" +  projectDatabaseIDValue);
+		this.currentDatabaseID = projectDatabaseIDValue;
+		
 		String serverURLTemp = System.getProperty("serverURL");
 
 		((NavigationController) Contexts.getSessionContext().get(
@@ -564,6 +566,17 @@ public class CreateController {
 		String password = getLoginsMain().getPassword();
 
 		try {
+			webApplicationHome.setId(tempProjectDatabase.getWebApplication()
+					.getWebId());
+			WebApplication tempWebApplication = webApplicationHome.find();
+
+			webApplicationHome.setInstance(tempWebApplication);
+
+			
+			tempWebApplication.setWebApplicationName(webApplicationName);
+
+			tempWebApplication.setUrl(serverURLTemp + webApplicationName);
+			
 			createWebApplicationThread = new CreateWebApplicationThread(
 					webApplicationName, webApplicationLocation, databaseName,
 					userName.toLowerCase(), password, dataHolder);
@@ -573,29 +586,39 @@ public class CreateController {
 			webApplicationCreaterThread.start();
 		} catch (Exception e) {
 			e.printStackTrace();
+			dataHolder.currentStatus = "Failed to initiate Data Interface creation process";
+			dataHolder.setOkButton(false);
 		}
-
-		if (createWebApplicationThread.isCreateStatus() == true) {
-
-			webApplicationHome.setId(tempProjectDatabase.getWebApplication()
-					.getWebId());
-			WebApplication tempWebApplication = webApplicationHome.find();
-
-			webApplicationHome.setInstance(tempWebApplication);
-
-			tempWebApplication.setStatus("Deployed");
-			tempWebApplication.setWebApplicationName(webApplicationName);
-
-			tempWebApplication.setUrl(serverURLTemp + webApplicationName);
-
-			webApplicationHome.persist();
-		}
+		//dataHolder.setOkButton(false);
 	}
 
 	public void finishCreateWebApplication() {
-		log.info("finishCreateWebApplication() called ");
+		log.info("finishCreateWebApplication() called "  + "" +  this.currentDatabaseID);
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).createWebApplicationInitial();
+		
+		log.info("finishCreateWebApplication() " + createWebApplicationThread.isCreateStatus());
+		
+		projectDatabaseHome.setId(this.currentDatabaseID);
+		ProjectDatabase tempProjectDatabase = projectDatabaseHome.find();
+
+		projectDatabaseHome.setInstance(tempProjectDatabase);
+		
+		webApplicationHome.setId(tempProjectDatabase.getWebApplication()
+				.getWebId());
+		
+		WebApplication tempWebApplication = webApplicationHome.find();
+
+		webApplicationHome.setInstance(tempWebApplication);
+		
+		if(createWebApplicationThread.isCreateStatus() == true){
+			tempWebApplication.setStatus("Deployed");
+			webApplicationHome.persist();
+		} else {
+			tempWebApplication.setStatus("NotDeployed");
+			webApplicationHome.persist();
+		}
+		dataHolder.currentStatus = "";
 	}
 
 	public void removeWebApplication(Integer projectDatabaseIDValue) {
@@ -636,6 +659,7 @@ public class CreateController {
 	public void finishRemoveWebApplication() {
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).removeWebApplicationInitial();
+		dataHolder.currentStatus = "";
 	}
 
 	public void createProjectMember() {
