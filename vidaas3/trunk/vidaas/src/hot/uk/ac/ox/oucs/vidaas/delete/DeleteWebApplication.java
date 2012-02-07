@@ -14,6 +14,8 @@ public class DeleteWebApplication {
 		
 		removeWebApplication(webApplicationName + ".war", serverLocationTemp + "/server/default/deploy/");
 		
+		removeWebApplication(webApplicationName + "-ds.xml", serverLocationTemp + "/server/default/deploy/");
+		
 		File file = new File(serverLocationTemp + "/server/default/deploy/" + webApplicationName + ".war");
 		
 		return !file.isDirectory();
