@@ -4,11 +4,11 @@ if [ x$1 == x"precustomization" ]; then
   exit 0
 fi
 
-exec &>> /var/log/customization.log
+exec 2>&1 >> /var/log/customization.log
 echo "Customization started `date`"
 
 #put your customization settings here
-vidaas_admin_repo_path=/root/
+vidaas_admin_repo_path=/root/svn/
 vidaas_node_type=project
 
 #existing settings file overrides defaults
@@ -40,4 +40,4 @@ if ! svn checkout https://vidaas.googlecode.com/svn/admin ; then
 fi
 
 # run vidaas install
-source $vidaas_config_repo_path/admin/scripts/vidaas-install
+$vidaas_config_repo_path/admin/scripts/vidaas-install
