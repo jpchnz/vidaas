@@ -10,15 +10,21 @@ public class DeleteWebApplication {
 	
 	public boolean undeployWebApplication(String webApplicationName){
 		
+		int status = -88;
+		
 		String serverLocationTemp = System.getProperty("serverLocation");
 		
-		removeWebApplication(webApplicationName + ".war", serverLocationTemp + "/server/default/deploy/");
+		status = removeWebApplication(webApplicationName + ".war", serverLocationTemp + "/server/default/deploy/");
+		if(status == 0){ 
+			status = removeWebApplication(webApplicationName + "-ds.xml", serverLocationTemp + "/server/default/deploy/");
+		}
 		
-		removeWebApplication(webApplicationName + "-ds.xml", serverLocationTemp + "/server/default/deploy/");
+		if(status == 0){ 
+			return true;
+		}
 		
-		File file = new File(serverLocationTemp + "/server/default/deploy/" + webApplicationName + ".war");
 		
-		return !file.isDirectory();
+		return false;
 	}
 
 	private int removeWebApplication(String webApplicationName, String webApplicationLocation) {
