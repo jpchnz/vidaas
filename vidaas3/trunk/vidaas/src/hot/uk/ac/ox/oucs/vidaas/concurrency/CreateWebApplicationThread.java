@@ -27,15 +27,18 @@ public class CreateWebApplicationThread  implements Runnable {
 
 	public void run(){
 		
+		boolean processOutcome = false;
 		String serverURLTemp = System.getProperty("serverURL");
 		
 		dataHolder.setOkButton(true);
 		
 		CreateWebApplication createWebApplication = new CreateWebApplication();
-		createWebApplication.createWebApplication(webApplicationName,
+		processOutcome = createWebApplication.createWebApplication(webApplicationName,
 				webApplicationLocation, databaseName, userName, password, dataHolder);
 		
-		dataHolder.setCurrentStatus("Web Application will be available at: '" + serverURLTemp + webApplicationName + "' after few minutes");
+		if (processOutcome == true){
+			dataHolder.setCurrentStatus("Web Application will be available at: '" + serverURLTemp + webApplicationName + "' after few minutes");
+		}
 		dataHolder.setOkButton(false);
 	}
 }
