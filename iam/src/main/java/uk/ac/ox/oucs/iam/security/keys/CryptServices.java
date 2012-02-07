@@ -9,7 +9,9 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -112,8 +114,8 @@ public class CryptServices extends KeyServices implements Serializable {
 			NoSuchPaddingException, InvalidKeyException {
 		ecipher = Cipher.getInstance(algorithm);
 		dcipher = Cipher.getInstance(algorithm);
-		ecipher.init(Cipher.ENCRYPT_MODE, secretKey);
-		dcipher.init(Cipher.DECRYPT_MODE, secretKey);
+		ecipher.init(Cipher.ENCRYPT_MODE, privateKey);
+		dcipher.init(Cipher.DECRYPT_MODE, privateKey);
 	}
 
 	/**
