@@ -15,6 +15,7 @@ if [ -n "$install_tools" ] ; then
   apt-get -qqy install linux-headers-2.6-amd64 make
   cd /tmp
   wget -O /tmp/VMwareTools.tgz --no-check-certificate https://vidaas.googlecode.com/svn/admin/bin/VMwareTools-8.6.0-425873.tar.gz
+  echo "Extracting VMwareTools.tgz..."
   if ! tar -xzf /tmp/VMwareTools.tgz ; then
     echo "unable to extract VMwareTools"
     exit 1
