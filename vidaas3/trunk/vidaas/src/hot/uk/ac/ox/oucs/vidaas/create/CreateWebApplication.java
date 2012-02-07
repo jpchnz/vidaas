@@ -16,7 +16,7 @@ import uk.ac.ox.oucs.vidaas.utility.SystemCommandExecutor;
 public class CreateWebApplication {
 	private DataHolder dataHolder = null;
 
-	public void createWebApplication(String webApplicationName,
+	public boolean createWebApplication(String webApplicationName,
 			String webApplicationLocation, String databaseName,
 			String userName, String password, DataHolder dataHolderValue) {
 
@@ -99,7 +99,8 @@ public class CreateWebApplication {
 								processResult = removeSeamDir(
 										webApplicationName,
 										webApplicationLocation);
-								processResult = removeProjectDir(webApplicationLocation);
+								processResult = removeProjectDir(webApplicationLocation); 
+								return true;
 								} else {
 									dataHolder
 									.setCurrentStatus("Failed to deploy Database Interface");
@@ -128,6 +129,8 @@ public class CreateWebApplication {
 			dataHolder
 			.setCurrentStatus("Failed to copy directories for the data interface");
 		}
+		
+		return false;
 
 		// dataHolder.setOkButton(false);
 	}
