@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-if [ x$1 == x"precustomization" ]; then
+if [ "x$1" = "xprecustomization" ]; then
   exit 0
 fi
 
@@ -13,7 +13,7 @@ vidaas_node_type=project
 
 #existing settings file overrides defaults
 if [ -f /etc/vidaas/settings ] ; then
-  source /etc/vidaas/settings
+  . /etc/vidaas/settings
 fi
 if [ ! -d /etc/vidaas ] ; then
   mkdir /etc/vidaas
