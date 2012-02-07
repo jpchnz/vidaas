@@ -38,8 +38,3 @@ echo "Setting up local mail and package update notifications"
 DEBIAN_FRONTEND=noninteractive apt-get -qqy install nullmailer
 echo vidaas-hosts@rt.oucs.ox.ac.uk > /etc/nullmailer/adminaddr
 echo smtp.ox.ac.uk > /etc/nullmailer/remotes
-
-if [ ! -f /etc/ssh/ssh_host_rsa_key ] ; then
-  echo "creating new hostkey..."
-  dpkg-reconfigure openssh-server
-fi
