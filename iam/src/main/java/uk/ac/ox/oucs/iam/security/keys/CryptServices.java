@@ -9,9 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -19,6 +17,10 @@ import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
 import uk.ac.ox.oucs.iam.security.utilities.exceptions.NoEncodingException;
 
 /**
+ * NOTE:
+ * Currently this class is not needed ...
+ * 
+ * 
  * Encrypt or decrypt a message for sending. If not specified, a default
  * "Blowfish" algorithm is used.
  * 
