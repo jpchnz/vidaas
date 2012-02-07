@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 import uk.ac.ox.oucs.iam.GlobalTestVars;
+import uk.ac.ox.oucs.iam.servlet.SecurePostData;
 
 
 /**
