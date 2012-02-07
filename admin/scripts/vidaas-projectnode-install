@@ -1,7 +1,10 @@
 #!/bin/bash
 
-#TODO find better place
+#defaults
 vidaas_home=/opt/VIDaaSData
+
+#load settings
+source /etc/vidaas/settings
 
 if ! adduser --system --home "$vidaas_home" --disabled-login --group vidaas --shell /bin/bash ; then
   echo "failed to create vidaas user"
