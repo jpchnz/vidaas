@@ -75,6 +75,7 @@ public class IAMRoleManager {
 		try {
 			IAMRoleManager iamPost = new IAMRoleManager();
 			
+			System.out.println("All roles are:" + iamPost.getRoles());
 			System.out.println("Checking is owner ...");
 			System.out.println(iamPost.isOwner("OWNER"));
 			System.out.println(iamPost.isOwner("Admin"));
