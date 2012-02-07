@@ -25,7 +25,6 @@ public class SendViaPost {
 	private URL url;
 	private URLConnection connection = null;
 	private OutputStreamWriter out;
-	private String postData;
 	private final boolean encrypt = true;
 	public String keyFile;
 	private boolean messagePosted = false;
@@ -62,11 +61,10 @@ public class SendViaPost {
 			DuplicateKeyException {
 		this.url = new URL(url);
 		keyFile = GeneralUtils.provideBaseKeyPairName();
-		this.postData = postData;
-		return sendPost();
+		return sendPost(postData);
 	}
 
-	private String sendPost() throws IOException, NewKeyException, KeyNotFoundException {
+	private String sendPost(String postData) throws IOException, NewKeyException, KeyNotFoundException {
 		messagePosted = false;
 		VidaasSignature vSig = null;
 

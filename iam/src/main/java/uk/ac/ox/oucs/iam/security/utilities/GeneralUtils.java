@@ -16,7 +16,7 @@ import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
 
 public class GeneralUtils {
 	/**
-	 * Utility to provide the local key paid name. I wrote this because it may
+	 * Utility to provide the local key pair name. I wrote this because it may
 	 * be that the initial naming convention for keys is changed, and this
 	 * provides a centralised means of changing their names. Key names will need
 	 * to be unique in the VIDaaS system since several (public) keys will need
