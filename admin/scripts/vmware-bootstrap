@@ -39,5 +39,5 @@ if ! svn checkout https://vidaas.googlecode.com/svn/admin ; then
   exit 1
 fi
 
-# run whatever is required next
-sh $vidaas_config_repo_path/admin/scripts/vidaas-image-minimal
+# run vidaas install
+source $vidaas_config_repo_path/admin/scripts/vidaas-install
