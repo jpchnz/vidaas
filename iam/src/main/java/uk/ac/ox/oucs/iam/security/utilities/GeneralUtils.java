@@ -1,15 +1,19 @@
 package uk.ac.ox.oucs.iam.security.utilities;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.UUID;
 
 import uk.ac.ox.oucs.iam.security.keys.KeyServices;
@@ -34,7 +38,7 @@ public class GeneralUtils {
 	 * @throws KeyNotFoundException
 	 *             the corresponding public key to the located private key was
 	 *             not found
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static String provideBaseKeyPairName() throws DuplicateKeyException, KeyNotFoundException, IOException {
 		String keyPairName = "";
@@ -54,7 +58,8 @@ public class GeneralUtils {
 				fileName = listOfFiles[i].getName();
 				if (fileName.endsWith(KeyServices.privateKeyNameExtension)) {
 					counter++;
-					keyPairName = fileName.substring(0, fileName.length()-KeyServices.privateKeyNameExtension.length());
+					keyPairName = fileName.substring(0,
+							fileName.length() - KeyServices.privateKeyNameExtension.length());
 				}
 			}
 		}
@@ -69,7 +74,8 @@ public class GeneralUtils {
 		}
 		else {
 			/*
-			 * We have no keys - first time through. Generate a new key name here.
+			 * We have no keys - first time through. Generate a new key name
+			 * here.
 			 */
 			UUID id = UUID.randomUUID();
 			keyPairName = id.toString();
@@ -78,22 +84,21 @@ public class GeneralUtils {
 		return keyPairDirectory + File.separator + keyPairName;
 	}
 
-	
 	/**
-	 * Read the contents of the system file "keyData.txt" and from that extract the location folder where
-	 * keys are stored.
+	 * Read the contents of the system file "keyData.txt" and from that extract
+	 * the location folder where keys are stored.
 	 * 
 	 * @return
 	 * @throws IOException
 	 */
 	public static String provideKeyPairDirectory() throws IOException {
-		String keyPairDirectory = null;///tmp/keyStore
+		String keyPairDirectory = null;// /tmp/keyStore
 		String keyDataText = null;
 		try {
 			keyDataText = (String) readObjectFromFile("keyData.txt");
 			if (keyDataText != null) {
 				String[] keyDataTextPair = keyDataText.split("=");
-				if ( (keyDataTextPair != null) && (keyDataTextPair.length > 1) ) {
+				if ((keyDataTextPair != null) && (keyDataTextPair.length > 1)) {
 					keyPairDirectory = keyDataTextPair[1];
 				}
 			}
@@ -107,12 +112,12 @@ public class GeneralUtils {
 				throw new IOException();
 			}
 		}
-		
+
 		if (keyPairDirectory == null) {
 			// Problem here - badly formatted data file
 			throw new IOException();
 		}
-		
+
 		return keyPairDirectory;
 	}
 
@@ -166,22 +171,20 @@ public class GeneralUtils {
 
 		return o;
 	}
-	
-	public static String readFileAsString(String filePath)
-		    throws java.io.IOException{
-		        StringBuffer fileData = new StringBuffer(1000);
-		        BufferedReader reader = new BufferedReader(
-		                new FileReader(filePath));
-		        char[] buf = new char[1024];
-		        int numRead=0;
-		        while((numRead=reader.read(buf)) != -1){
-		            String readData = String.valueOf(buf, 0, numRead);
-		            fileData.append(readData);
-		            buf = new char[1024];
-		        }
-		        reader.close();
-		        return fileData.toString();
-		    }
+
+	public static String readFileAsString(String filePath) throws java.io.IOException {
+		StringBuffer fileData = new StringBuffer(1000);
+		BufferedReader reader = new BufferedReader(new FileReader(filePath));
+		char[] buf = new char[1024];
+		int numRead = 0;
+		while ((numRead = reader.read(buf)) != -1) {
+			String readData = String.valueOf(buf, 0, numRead);
+			fileData.append(readData);
+			buf = new char[1024];
+		}
+		reader.close();
+		return fileData.toString();
+	}
 
 	/**
 	 * Create a file with specific contents (such as a key)
@@ -204,5 +207,55 @@ public class GeneralUtils {
 		catch (IOException ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	public static void appendStringToFile(String fileName, String data) {
+		try {
+			// ask user for file name to write to
+
+			FileWriter out = new FileWriter(fileName);
+			BufferedWriter writer = new BufferedWriter(out);
+			writer.write(data);
+			writer.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Get the local hostname
+	 * 
+	 * @return the hostname of the local machine
+	 */
+	public static String getLocalHostname() {
+		String hostname = null;
+		try {
+			InetAddress addr = InetAddress.getLocalHost();
+			hostname = addr.getHostName();
+		}
+		catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		return hostname;
+	}
+
+	/**
+	 * Get the local host IP address
+	 * 
+	 * TODO investigate the response with multi NICs
+	 * 
+	 * @return the ip address of the local host
+	 */
+	public static String getLocalIPAddress() {
+		InetAddress ip = null;
+		try {
+			ip = InetAddress.getLocalHost();
+		}
+		catch (UnknownHostException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return ip.getHostAddress();
 	}
 }
