@@ -36,7 +36,7 @@ To save your changes:
 svn commit
 }}}
 
-== Use subversion on the server ==
+== Use subversion on the server / VM ==
 
 Do exactly as in described under the heading above
 
