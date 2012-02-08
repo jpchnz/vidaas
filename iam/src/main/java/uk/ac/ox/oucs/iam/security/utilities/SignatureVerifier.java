@@ -49,15 +49,7 @@ public class SignatureVerifier {
 	 *             on any errors while reading the public key from disk
 	 */
 	public SignatureVerifier(String filePath) throws IOException, GeneralSecurityException {
-		if (true) {
-			this.publicKey = (PublicKey) GeneralUtils.readObjectFromFile(filePath + ".pub");
-			return;
-		}
-//		FileInputStream input = new FileInputStream(filePath + ".pub");
-//		byte[] keyBytes = new byte[input.available()];
-//		input.read(keyBytes);
-//		input.close();
-//		initPublicKey(keyBytes);
+		this.publicKey = (PublicKey) GeneralUtils.readObjectFromFile(filePath + ".pub");
 	}
 
 	/**

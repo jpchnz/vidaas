@@ -13,8 +13,17 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.EncodedKeySpec;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.UUID;
+
+import org.apache.commons.codec.binary.Base64;
 
 import uk.ac.ox.oucs.iam.security.keys.KeyServices;
 import uk.ac.ox.oucs.iam.security.utilities.exceptions.DuplicateKeyException;
@@ -171,6 +180,32 @@ public class GeneralUtils {
 
 		return o;
 	}
+	
+	
+	public static String readPublicKeyFromFileAndEncode(String filename) throws IOException {
+		String encodedPublicKey = "";
+		
+		PublicKey publicKey = (PublicKey) readObjectFromFile(filename);
+		
+		encodedPublicKey = new String(Base64.encodeBase64(publicKey.getEncoded()));
+		
+		return URLEncoder.encode(encodedPublicKey, "UTF-8");
+	}
+	
+	
+	public static void decodePublicKeyAndWriteToFile(String encodedPublicKey, String filename) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		String algorithm = "DSA";
+		byte[] decodedKey = Base64.decodeBase64(encodedPublicKey);
+		EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(decodedKey);
+		KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+		PublicKey newPublicKey = keyFactory.generatePublic(publicKeySpec);
+		GeneralUtils.writeObject(filename, newPublicKey);
+	}
+	
+	
+	
+	
+	
 
 	public static String readFileAsString(String filePath) throws java.io.IOException {
 		StringBuffer fileData = new StringBuffer(1000);

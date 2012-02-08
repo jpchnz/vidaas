@@ -25,7 +25,7 @@ public class SendViaPost {
 	private URL url;
 	private URLConnection connection = null;
 	private OutputStreamWriter out;
-	private final boolean encrypt = true;
+	private boolean encrypt = true;
 	public String keyFile;
 	private boolean messagePosted = false;
 	private final String algorithm = "HmacSHA512";
@@ -44,7 +44,8 @@ public class SendViaPost {
 	 *            the address where the POST data is to be sent
 	 * @param postData
 	 *            HTTP POST data
-	 * @return a full String representation of the data transmitted if the message was successfully sent, otherwise null
+	 * @return a full String representation of the data transmitted if the
+	 *         message was successfully sent, otherwise null
 	 * @throws IOException
 	 * @throws MalformedURLException
 	 * @throws KeyNotFoundException
@@ -60,6 +61,15 @@ public class SendViaPost {
 	public String sendPost(String url, String postData) throws IOException, NewKeyException, KeyNotFoundException,
 			DuplicateKeyException {
 		this.url = new URL(url);
+		keyFile = GeneralUtils.provideBaseKeyPairName();
+		return sendPost(postData);
+	}
+
+	// Testing only
+	public String sendPost(String url, String postData, boolean encrypt) throws IOException, NewKeyException,
+			KeyNotFoundException, DuplicateKeyException {
+		this.url = new URL(url);
+		this.encrypt = encrypt;
 		keyFile = GeneralUtils.provideBaseKeyPairName();
 		return sendPost(postData);
 	}
@@ -134,19 +144,26 @@ public class SendViaPost {
 		 */
 		String keyBaseName = new File(keyFile).getName();
 		String dataToPost;
-		if (vSig.isTimeStampInUse()) {
-			dataToPost = String.format("%s&%s=%s&%s=%s&%s=%s", postData, SignatureGenerator.KEYFILE_POST_ATTRIBUTE,
-					keyBaseName, SignatureGenerator.TIMESTAMP_POST_ATTRIBUTE, vSig.getTimestamp(),
-					SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature());
+		if (encrypt) {
+			if (vSig.isTimeStampInUse()) {
+				dataToPost = String.format("%s&%s=%s&%s=%s&%s=%s", postData, SignatureGenerator.KEYFILE_POST_ATTRIBUTE,
+						keyBaseName, SignatureGenerator.TIMESTAMP_POST_ATTRIBUTE, vSig.getTimestamp(),
+						SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature());
+			}
+			else {
+				dataToPost = String.format("%s&%s=%s&%s=%s", postData, SignatureGenerator.KEYFILE_POST_ATTRIBUTE,
+						keyBaseName, SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature());
+			}
 		}
 		else {
-			dataToPost = String.format("%s&%s=%s&%s=%s", postData, SignatureGenerator.KEYFILE_POST_ATTRIBUTE,
-					keyBaseName, SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature());
-		}// SignatureGenerator
+			dataToPost = postData;
+		}
 		System.out.println("Posting " + dataToPost);
 		out.write(dataToPost);
-		auditer.auditSometimes(String.format("Sent post <%s> to host %s with timestamp %s", postData, url.toString(),
-				vSig.isTimeStampInUse()));
+		if (encrypt) {
+			auditer.auditSometimes(String.format("Sent post <%s> to host %s with timestamp %s", postData, url.toString(),
+					vSig.isTimeStampInUse()));
+		}
 		out.flush();
 		out.close();
 		messagePosted = true;
@@ -183,8 +200,8 @@ public class SendViaPost {
 			for (int i = 0; i < 10; i++) {
 				post.sendPost(
 						"http://localhost:8081/iam/ReceivePost",
-						String.format("name=freddy%d&password=bibble%d&anotherField=oh no larry%d", new Random().nextInt(99999),
-								new Random().nextInt(99999), new Random().nextInt(99999)));
+						String.format("name=freddy%d&password=bibble%d&anotherField=oh no larry%d",
+								new Random().nextInt(99999), new Random().nextInt(99999), new Random().nextInt(99999)));
 			}
 		}
 		catch (Exception e) {
