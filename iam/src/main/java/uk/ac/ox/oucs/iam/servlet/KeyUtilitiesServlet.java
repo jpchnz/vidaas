@@ -3,9 +3,6 @@ package uk.ac.ox.oucs.iam.servlet;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.net.URLConnection;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
@@ -15,6 +12,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
 
 import uk.ac.ox.oucs.iam.audit.IamAudit;
 import uk.ac.ox.oucs.iam.postsecurely.SendViaPost;
@@ -49,7 +48,7 @@ public class KeyUtilitiesServlet extends HttpServlet {
 	public static final String HELLO_WORLD_PUBLICKEY_ATTRIBUTE = "publicKey";
 	public static final String HAVE_A_PUBLIC_KEY_ATTRIBUTE = "haveAPublicKey";
 	private IamAudit auditer = new IamAudit();
-	
+	private Logger log = Logger.getLogger(KeyUtilitiesServlet.class);
 	
 	
 
@@ -71,12 +70,13 @@ public class KeyUtilitiesServlet extends HttpServlet {
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		log.debug("doGet");
+		
 		response.setContentType("text/xml");
 		response.setHeader("Cache-Control", "no-store, no-cache");
-		
-		
+
 		if (request.getParameter(HAVE_A_PUBLIC_KEY_ATTRIBUTE) != null) {
-			System.out.println("WWWWWWWWWWWWWWWWOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+			log.debug("Public key attribute received");
 			/*
 			 * We have been sent a public key - simply add it to our key store.
 			 * Note that this should only be received on non-manager machines
@@ -84,17 +84,17 @@ public class KeyUtilitiesServlet extends HttpServlet {
 			String originatorIp = request.getParameter(HAVE_A_PUBLIC_KEY_ATTRIBUTE);
 			String hostName = request.getParameter(HELLO_WORLD_HOSTNAME_ATTRIBUTE);
 			String publicKey = request.getParameter(HELLO_WORLD_PUBLICKEY_ATTRIBUTE);
-			String publicKeyName = request.getParameter(HELLO_WORLD_PUBLICKEYNAME_ATTRIBUTE)+"yy";
-			
+			String publicKeyName = request.getParameter(HELLO_WORLD_PUBLICKEYNAME_ATTRIBUTE) + "yy";
+
 			auditer.auditAlways("Have a key message from " + hostName + " (" + originatorIp + ")");
-			
-			System.out.println(originatorIp);
-			System.out.println(hostName);
-			System.out.println(publicKey);
-			
+
+			log.debug(originatorIp);
+			log.debug(hostName);
+			log.debug(publicKey);
+
 			try {
-				GeneralUtils.decodePublicKeyAndWriteToFile(publicKey, GeneralUtils.provideKeyPairDirectory() + File.separatorChar + publicKeyName
-						+ KeyServices.publicKeyNameExtension);
+				GeneralUtils.decodePublicKeyAndWriteToFile(publicKey, GeneralUtils.provideKeyPairDirectory()
+						+ File.separatorChar + publicKeyName + KeyServices.publicKeyNameExtension);
 			}
 			catch (NoSuchAlgorithmException e) {
 				// TODO Auto-generated catch block
@@ -105,15 +105,12 @@ public class KeyUtilitiesServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
-		
-		
-		
-		
+
 		if (request.getParameter(HELLO_WORLD_ATTRIBUTE) != null) {
+			log.debug("Hello world attribute received");
 			/*
 			 * Note that this should only be received on the manager machine
 			 */
-			System.out.println("Found hello world");
 			if (vidaasHostList.size() == 0) {
 				readHosts();
 			}
@@ -122,9 +119,9 @@ public class KeyUtilitiesServlet extends HttpServlet {
 			String publicKey = request.getParameter(HELLO_WORLD_PUBLICKEY_ATTRIBUTE);
 			String publicKeyName = request.getParameter(HELLO_WORLD_PUBLICKEYNAME_ATTRIBUTE);
 			auditer.auditAlways("Hello world message from " + hostName + " (" + originatorIp + ")");
-			System.out.println(originatorIp);
-			System.out.println(hostName);
-			System.out.println(publicKey);
+			log.debug(originatorIp);
+			log.debug(hostName);
+			log.debug(publicKey);
 			boolean foundEntry = false;
 			for (VIDaaSHosts vh : vidaasHostList) {
 				if (vh.hostName.equalsIgnoreCase(hostName)) {
@@ -133,22 +130,19 @@ public class KeyUtilitiesServlet extends HttpServlet {
 				}
 			}
 			if (!foundEntry) {
-				auditer.auditAlways(hostName + " (" + originatorIp + ") - first message - write public key file " + publicKeyName);
+				auditer.auditAlways(hostName + " (" + originatorIp + ") - first message - write public key file "
+						+ publicKeyName);
 				GeneralUtils.appendStringToFile(remoteHostFile, hostName);
 				try {
-					GeneralUtils.decodePublicKeyAndWriteToFile(publicKey, GeneralUtils.provideKeyPairDirectory() + File.separatorChar + publicKeyName
-							+ KeyServices.publicKeyNameExtension);
+					GeneralUtils.decodePublicKeyAndWriteToFile(publicKey, GeneralUtils.provideKeyPairDirectory()
+							+ File.separatorChar + publicKeyName + KeyServices.publicKeyNameExtension);
 				}
 				catch (NoSuchAlgorithmException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				catch (InvalidKeySpecException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-//				GeneralUtils.writeObject(GeneralUtils.provideKeyPairDirectory() + File.separatorChar + publicKeyName
-//						+ KeyServices.publicKeyNameExtension, (Object) publicKey);
 			}
 			return;
 		}
@@ -158,6 +152,7 @@ public class KeyUtilitiesServlet extends HttpServlet {
 		File[] keys = dir.listFiles(filter);
 
 		if (request.getParameter("privateKey") != null) {
+			log.debug("Private key parameter recevied");
 			if (keys == null) {
 				response.getWriter().write("Error trying to get your information");
 				return;
@@ -179,6 +174,7 @@ public class KeyUtilitiesServlet extends HttpServlet {
 			}
 		}
 		if (request.getParameter("privateKeyNumber") != null) {
+			log.debug("Private key number parameter recevied");
 			if (keys == null) {
 				response.getWriter().write("Error trying to get your information");
 				return;
@@ -193,9 +189,11 @@ public class KeyUtilitiesServlet extends HttpServlet {
 
 		keys = getPublicKeyList();
 		if (request.getParameter("publicKeyNumber") != null) {
+			log.debug("Public key number parameter recevied");
 			response.getWriter().write(String.format("%s", keys.length));
 		}
 		if (request.getParameter("publicKeyNames") != null) {
+			log.debug("Public key names parameter recevied");
 			String result;
 			if (keys.length == 0) {
 				result = "No public keys found in " + GeneralUtils.provideKeyPairDirectory();
@@ -210,6 +208,7 @@ public class KeyUtilitiesServlet extends HttpServlet {
 		}
 
 		if (request.getParameter("remoteHosts") != null) {
+			log.debug("Remote hosts command recevied");
 			/*
 			 * User has asked for a list of all remote hosts, so that we can
 			 * potentially ship the local public key to them all. The hosts
@@ -227,6 +226,7 @@ public class KeyUtilitiesServlet extends HttpServlet {
 			}
 		}
 		if (request.getParameter("shipToHosts") != null) {
+			log.debug("Ship to hosts command recevied");
 			/*
 			 * User has asked for a list of all remote hosts, so that we can
 			 * potentially ship the local public key to them all.
@@ -237,49 +237,41 @@ public class KeyUtilitiesServlet extends HttpServlet {
 				response.getWriter().write("No hosts defined - cannot ship");
 			}
 			else {
-				if (false) {
-					response.getWriter().write("Code to be written");
-				}
-				else {
-					/*
-					 * TODO We need proper IP addresses before this will work
-					 */
-					keys = getPublicKeyList();
-					for (VIDaaSHosts vh : vidaasHostList) {
-						String destURL = "http://" + vh.hostName + ":8081/iam/KeyUtilitiesServlet";
-						System.out.println("Sending to " + destURL);
-						String publicKey;
-						for (File f : keys) {
-							try {
-								publicKey = GeneralUtils.provideBaseKeyPairName();
-								
-								String postData = String.format("%s=%s&%s=%s&%s=%s&%s=%s",
-										HAVE_A_PUBLIC_KEY_ATTRIBUTE, GeneralUtils.getLocalIPAddress(),
-										HELLO_WORLD_HOSTNAME_ATTRIBUTE, GeneralUtils.getLocalHostname(),
-										HELLO_WORLD_PUBLICKEYNAME_ATTRIBUTE, f.getName(),
-										HELLO_WORLD_PUBLICKEY_ATTRIBUTE, GeneralUtils.readPublicKeyFromFileAndEncode(publicKey));
-								SendViaPost post = new SendViaPost();//HAVE_A_PUBLIC_KEY_ATTRIBUTE
-								post.sendPost(destURL, postData, false);
-							}
-							catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							catch (NewKeyException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							catch (KeyNotFoundException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							catch (DuplicateKeyException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+				/*
+				 * TODO We need proper IP addresses before this will work
+				 */
+				keys = getPublicKeyList();
+				for (VIDaaSHosts vh : vidaasHostList) {
+					String destURL = "http://" + vh.hostName + ":8081/iam/KeyUtilitiesServlet";
+					System.out.println("Sending to " + destURL);
+					String publicKey;
+					for (File f : keys) {
+						try {
+							publicKey = GeneralUtils.provideBaseKeyPairName();
+
+							String postData = String.format("%s=%s&%s=%s&%s=%s&%s=%s", HAVE_A_PUBLIC_KEY_ATTRIBUTE,
+									GeneralUtils.getLocalIPAddress(), HELLO_WORLD_HOSTNAME_ATTRIBUTE,
+									GeneralUtils.getLocalHostname(), HELLO_WORLD_PUBLICKEYNAME_ATTRIBUTE, f.getName(),
+									HELLO_WORLD_PUBLICKEY_ATTRIBUTE,
+									GeneralUtils.readPublicKeyFromFileAndEncode(publicKey));
+							SendViaPost post = new SendViaPost();// HAVE_A_PUBLIC_KEY_ATTRIBUTE
+							post.sendPost(destURL, postData, false);
 						}
-						response.getWriter().write(vh.hostName + ":shipped");
+						catch (IOException e) {
+							e.printStackTrace();
+						}
+						catch (NewKeyException e) {
+							e.printStackTrace();
+						}
+						catch (KeyNotFoundException e) {
+							e.printStackTrace();
+						}
+						catch (DuplicateKeyException e) {
+							e.printStackTrace();
+						}
 					}
+					response.getWriter().write(vh.hostName + ":shipped");
+
 				}
 			}
 		}
@@ -304,7 +296,6 @@ public class KeyUtilitiesServlet extends HttpServlet {
 			}
 		}
 		catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
