@@ -11,10 +11,8 @@
 
 # Author:  vidaas <vidaas@rt.oucs.ox.ac.uk>
 
-# Do NOT "set -e"
+. /etc/vidaas/env
 
-JBOSS_HOME=/opt/jboss/
-export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/
 export JAVA_OPTS="-server -Xms256m -Xmx1024m -XX:MaxPermSize=512m -Dorg.jboss.resolver.warning=true -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Djava.net.preferIPv4Stack=true"
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
@@ -50,7 +48,7 @@ do_start()
 	#   1 if daemon was already running
 	#   2 if daemon could not be started
 	setuidgid vidaas $JBOSS_HOME/bin/run.sh > /dev/null &
-	# There is no way to find out if jboss started other than checking logs
+	# There is no way to find out if jboss started other than checking logs / polling
 	return 0
 }
 
@@ -64,7 +62,7 @@ do_stop()
 	#   1 if daemon was already stopped
 	#   2 if daemon could not be stopped
 	#   other if a failure occurred
-	setuidgid vidaas $JBOSS_HOME/bin/shutdown.sh -S
+	setuidgid vidaas $JBOSS_HOME/bin/shutdown.sh -S 2>&1 > /dev/null
 	return 0
 }
 
