@@ -2,8 +2,13 @@
 
 = Introduction =
 
-Add your content here.
+This are instructions for developers who would like to use a VM to do some development work (e.g update webpages, test a certain version/patch, etc.)
 
+== Setup ==
+
+ * Create the image a usual
+ * Create a user for developer
+ * Add this user to the vidaas group
 
 = Changing Files =
 
