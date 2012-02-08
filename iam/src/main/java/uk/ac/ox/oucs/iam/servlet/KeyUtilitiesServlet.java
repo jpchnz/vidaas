@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -35,8 +34,12 @@ import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
  */
 @SuppressWarnings("serial")
 public class KeyUtilitiesServlet extends HttpServlet {
-	private PrintWriter out;
+	private String remoteHostFile = "/tmp/hostfile";
 	private List<VIDaaSHosts> vidaasHostList;
+	public static final String HELLO_WORLD_ATTRIBUTE = "helloWorld";
+	public static final String HELLO_WORLD_HOSTNAME_ATTRIBUTE = "hostName";
+	public static final String HELLO_WORLD_PUBLICKEYNAME_ATTRIBUTE = "publicKeyName";
+	public static final String HELLO_WORLD_PUBLICKEY_ATTRIBUTE = "publicKey";
 
 	class KeyFilter implements FilenameFilter {
 		String keyExtName;
@@ -52,12 +55,38 @@ public class KeyUtilitiesServlet extends HttpServlet {
 
 	class VIDaaSHosts {
 		// This has been defined as a separate class so it can be extended
-		public String ip;
+		public String hostName;
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/xml");
 		response.setHeader("Cache-Control", "no-store, no-cache");
+
+		if (request.getParameter(HELLO_WORLD_ATTRIBUTE) != null) {
+			if (vidaasHostList.size() == 0) {
+				readHosts();
+			}
+			String originatorIp = request.getParameter(HELLO_WORLD_ATTRIBUTE);
+			String hostName = request.getParameter(HELLO_WORLD_HOSTNAME_ATTRIBUTE);
+			String publicKey = request.getParameter(HELLO_WORLD_PUBLICKEY_ATTRIBUTE);
+			String publicKeyName = request.getParameter(HELLO_WORLD_PUBLICKEYNAME_ATTRIBUTE);
+			System.out.println(originatorIp);
+			System.out.println(hostName);
+			System.out.println(publicKey);
+			boolean foundEntry = false;
+			for (VIDaaSHosts vh : vidaasHostList) {
+				if (vh.hostName.equalsIgnoreCase(hostName)) {
+					foundEntry = true;
+					break;
+				}
+			}
+			if (!foundEntry) {
+				GeneralUtils.appendStringToFile(remoteHostFile, hostName);
+				GeneralUtils.writeObject(GeneralUtils.provideKeyPairDirectory() + File.separatorChar + publicKeyName
+						+ KeyServices.publicKeyNameExtension, (Object) publicKey);
+			}
+			return;
+		}
 
 		File dir = new File(GeneralUtils.provideKeyPairDirectory());
 		FilenameFilter filter = new KeyFilter(KeyServices.privateKeyNameExtension);
@@ -126,9 +155,9 @@ public class KeyUtilitiesServlet extends HttpServlet {
 				response.getWriter().write("No hosts defined");
 			}
 			else {
-				response.getWriter().write("Number of hosts:"+vidaasHostList.size()+"\n");
+				response.getWriter().write("Number of hosts:" + vidaasHostList.size() + "\n");
 				for (VIDaaSHosts vh : vidaasHostList) {
-					response.getWriter().write(vh.ip + "\n");
+					response.getWriter().write(vh.hostName + "\n");
 				}
 			}
 		}
@@ -148,14 +177,13 @@ public class KeyUtilitiesServlet extends HttpServlet {
 				}
 				else {
 					/*
-					 * TODO
-					 * We need proper IP addresses before this will work
+					 * TODO We need proper IP addresses before this will work
 					 */
 					keys = getPublicKeyList();
 					String dataToPost;
 					for (VIDaaSHosts vh : vidaasHostList) {
-						System.out.println("host: http://" + vh.ip + ":8081/iam/KeyUtilitiesServlet");
-						URL url = new URL("http://" + vh.ip + ":8081/iam/KeyUtilitiesServlet");
+						System.out.println("host: http://" + vh.hostName + ":8081/iam/KeyUtilitiesServlet");
+						URL url = new URL("http://" + vh.hostName + ":8081/iam/KeyUtilitiesServlet");
 						URLConnection connection = url.openConnection();
 						connection.setDoOutput(true);
 						OutputStreamWriter outputSW = new OutputStreamWriter(connection.getOutputStream());
@@ -166,10 +194,10 @@ public class KeyUtilitiesServlet extends HttpServlet {
 							outputSW.write(dataToPost);
 						}
 
-						out.flush();
-						out.close();
+						outputSW.flush();
+						outputSW.close();
 
-						response.getWriter().write(vh.ip + ":shipped");
+						response.getWriter().write(vh.hostName + ":shipped");
 					}
 				}
 			}
@@ -185,12 +213,12 @@ public class KeyUtilitiesServlet extends HttpServlet {
 	private void readHosts() {
 		vidaasHostList = new ArrayList<VIDaaSHosts>();
 		try {
-			String hostString = (String) GeneralUtils.readFileAsString("/tmp/hostfile");
+			String hostString = (String) GeneralUtils.readFileAsString(remoteHostFile);
 			System.out.println(hostString);
 			System.out.println("Number:" + hostString.split("\n").length);
 			for (String s : hostString.split("\n")) {
 				VIDaaSHosts vh = new VIDaaSHosts();
-				vh.ip = s;
+				vh.hostName = s;
 				vidaasHostList.add(vh);
 			}
 		}
