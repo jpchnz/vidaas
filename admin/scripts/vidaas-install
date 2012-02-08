@@ -5,7 +5,7 @@ source /etc/vidaas/settings
 default_packages="vim apticron ssh"
 
 echo "Unattended update/upgrade of minimal image..."
-if apt-get -qq update ; then
+if apt-get -qqy update ; then
   if ! apt-get -qqy upgrade ; then
     echo "upgrade failed"
     exit 1
