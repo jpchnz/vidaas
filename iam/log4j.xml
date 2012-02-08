@@ -13,12 +13,27 @@
 			<param name="ConversionPattern" value="%d [%t] %-5p %C{6} (%F:%L) - %m%n" />
 		</layout>
 	</appender>
+	
+	<appender name="normalAppender" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="/tmp/logFile.log" />
+		<param name="datePattern" value="'.'yyyy-MM-dd" />
+		<param name="append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %C{6} (%F:%L) - %m%n" />
+		</layout>
+	</appender>
 
 	<!-- LOGGER LIST -->
 	<!-- log all classes in org.developers package -->
-	<logger name="uk.ac.ox.oucs.iam">
+	<logger name="uk.ac.ox.oucs.iam.audit">
 		<!-- level info logs -->
 		<level value="DEBUG" />
 		<appender-ref ref="auditAppender" />
+	</logger>
+	
+	<logger name="uk.ac.ox.oucs.iam">
+		<!-- level info logs -->
+		<level value="DEBUG" />
+		<appender-ref ref="normalAppender" />
 	</logger>
 </log4j:configuration>

@@ -26,7 +26,7 @@ public class ApplicationServletContextListener implements ServletContextListener
 		 * TODO
 		 * Send a ping to the manager node so that it knows where to send public keys to.
 		 */
-		prepareAndSendPublicKey(true); // Set to false to actually send the text
+		//prepareAndSendPublicKey(true); // Set to false to actually send the text
 		
 		
 		/*
