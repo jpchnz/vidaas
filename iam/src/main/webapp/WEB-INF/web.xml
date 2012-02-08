@@ -6,7 +6,7 @@
 	<display-name>Archetype Created Web Application</display-name>
 	<listener>
 		<listener-class>
-			uk.ac.ox.oucs.iam.ApplicationServletContextListener
+			uk.ac.ox.oucs.iam.servlet.ApplicationServletContextListener
 		</listener-class>
 	</listener>
 	<servlet>
