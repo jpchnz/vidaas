@@ -33,7 +33,11 @@ if [ ! -f /usr/bin/svn ] ; then
     exit 1
   fi
 fi
-cd $vidaas_config_repo_path
+mkdir -p $vidaas_config_repo_path 2> /dev/null
+if ! cd $vidaas_config_repo_path ; then
+  echo "repository path $vidaas_config_repo_path invalid"
+  exit 1
+fi
 if ! svn checkout https://vidaas.googlecode.com/svn/admin ; then
   echo "svn checkout failed"
   exit 1
