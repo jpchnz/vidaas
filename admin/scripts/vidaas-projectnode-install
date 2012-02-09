@@ -52,51 +52,61 @@ if ! [ -f /tmp/jboss-seam-2.2.2.Final.tar.gz ] ; then
 fi
 
 echo "Stopping jboss..."
-/etc/init.d/jboss51 stop 2>&1 > /dev/null
+service jboss51 stop
 echo "Deleting old jboss installation..."
-rm -rf $jboss_install_dir/jboss-5.1.0.GA
-rm -rf /tmp/jboss-setup/ 2>&1 > /dev/null
+rm -rf $target_dir/jboss-5.1.0.GA
 
-mkdir -p /tmp/jboss-setup/
-if cd /tmp/jboss-setup/ ; then
-  echo "extracting jboss..."
-  if unzip -q /tmp/jboss-5.1.0.GA-jdk6.zip ; then
-    if ! mv -f * $jboss_install_dir ; then
-      echo "failed moving jboss to $jboss_install_dir"
-      exit 1
-    fi
-    #convenience symlink
-    ln -s $jboss_install_dir/jboss-5.1.0.GA $jboss_install_dir/jboss
-    #chown to vidaas system user
-    chown -R vidaas:vidaas $jboss_install_dir/jboss-5.1.0.GA
-    #sanity check
-    if [ ! -f $jboss_install_dir/jboss/bin/run.sh ] ; then
-      echo "Can't find $jboss_install_dir/jboss/bin/run.sh - install failed"
-      exit 1
-    fi
-    #save env
-    export JBOSS_HOME=$jboss_install_dir/jboss/
-    echo "export JBOSS_HOME=$JBOSS_HOME" >> /etc/vidaas/env
-    #remove vulnerable/unwanted files
-    rm -rf $jboss_install_dir/jboss/server/default/deploy/admin-console.war
-    rm -rf $jboss_install_dir/jboss/server/default/deploy/jmx-console.war
-    rm -rf $jboss_install_dir/jboss/server/default/deploy/management
-    #install startup script
-    cp $vidaas_admin_repo_path/admin/root/etc/init.d/jboss51 /etc/init.d/jboss51
-    chmod +x /etc/init.d/jboss51
-    if ! update-rc.d jboss51 defaults ; then
-      echo "failed to install jboss init script"
-      exit 1
-    fi
-    #symlink database drivers
-    ln -s /usr/share/java/mysql.jar $JBOSS_HOME/server/default/lib/mysql.jar
-    ln -s /usr/share/java/postgresql.jar $JBOSS_HOME/server/default/lib/postgresql.jar
-    mkdir -p $target_dir/DatabaseDrivers/
-    ln -s /usr/share/java/postgresql.jar $target_dir/DatabaseDrivers/postgresql.jar
-  else
-    echo "failed to unzip jboss"
-    exit 1
+echo "Extracting jboss..."
+if cd $target_dir && unzip -q /tmp/jboss-5.1.0.GA-jdk6.zip ; then
+  #convenience symlink
+  ln -s $target_dir/jboss-5.1.0.GA $target_dir/jboss
+  #chown to vidaas system user
+  chown -R vidaas:vidaas $target_dir/jboss-5.1.0.GA
+  #sanity check
+  if [ ! -f $target_dir/jboss/bin/run.sh ] ; then
+    echo "Can't find $target_dir/jboss/bin/run.sh - install failed" ; exit 1
   fi
+  #save env
+  export JBOSS_HOME=$target_dir/jboss/
+  echo "export JBOSS_HOME=$JBOSS_HOME" >> /etc/vidaas/env
+  #remove vulnerable/unwanted files
+  rm -rf $target_dir/jboss/server/default/deploy/admin-console.war
+  rm -rf $target_dir/jboss/server/default/deploy/jmx-console.war
+  rm -rf $target_dir/jboss/server/default/deploy/management
+  #install startup script
+  cp $vidaas_admin_repo_path/admin/root/etc/init.d/jboss51 /etc/init.d/jboss51
+  chmod +x /etc/init.d/jboss51
+  if ! update-rc.d jboss51 defaults ; then
+    echo "failed to install jboss init script" ; exit 1
+  fi
+  #symlink database drivers
+  ln -s /usr/share/java/mysql.jar $JBOSS_HOME/server/default/lib/mysql.jar
+  ln -s /usr/share/java/postgresql.jar $JBOSS_HOME/server/default/lib/postgresql.jar
+  #not sure this is still required. TODO check with asif
+  mkdir -p $target_dir/DatabaseDrivers/
+  if ! [ -h $target_dir/DatabaseDrivers/postgresql.jar ] ; then
+    ln -s /usr/share/java/postgresql.jar $target_dir/DatabaseDrivers/postgresql.jar
+  fi
+else
+  echo "failed to unzip jboss" ; exit 1
+fi
+
+echo "Deleting old seam installation..."
+rm -rf $target_dir/jboss-seam-2.2.2.Final/
+echo "Extracting seam..."
+if cd $target_dir && tar -xzf /tmp/jboss-seam-2.2.2.Final.tar.gz ; then
+  #convenience symlink
+  ln -s $target_dir/jboss-seam-2.2.2.Final $target_dir/seam
+  #patch
+  wget --no-verbose -O /tmp/vidaas-seam.patch https://vidaas.googlecode.com/svn/vidaas3/trunk/seam/vidaas-seam.patch
+  if cd $target_dir/seam && patch -p1 < /tmp/vidaas-seam.patch ; then
+    echo "Seam patch applied"
+  else
+    echo "patching seam failed" ; exit 1
+  fi
+  chmod +x $target_dir/seam/VIDaaS-SeamScript.sh
+else
+  echo "Seam extraction failed." ; exit 1
 fi
 
 if ! [ -e /etc/vidaas/cred_sudamihAdmin ] ; then
@@ -130,12 +140,27 @@ if ! [ -e /etc/vidaas/cred_mysqlroot ] ; then
   if ! mysqladmin -u root password `cat /etc/vidaas/cred_mysqlroot` ; then
     echo "Failed to set mysql root password" ; exit 1
   fi
+  echo "create database vidaas_v3;" | mysql --user=root --password=`cat /etc/vidaas/cred_mysqlroot`
   service mysql restart
 fi
 
 echo "Building vidaas sources..."
-if ! su -c "cd ~ && svn checkout https://vidaas.googlecode.com/svn/vidaas3/trunk && cd trunk/vidaas && mvn package" vidaas 2>&1 > /var/log/vidaas-build.log ; then
-  echo "Build failed see /var/log/vidaas-build.log" ; exit 1
+if su -c "cd ~ && svn --quiet checkout https://vidaas.googlecode.com/svn/vidaas3/trunk" ; then
+  #patch dreaded sudamih.properties
+(
+cat <<EndOfFile
+uk.ac.ox.oucs.sudamih.adminUserName = sudamihAdmin
+uk.ac.ox.oucs.sudamih.adminUserNamePW = `cat /etc/vidaas/cred_sudamihAdmin`
+uk.ac.ox.oucs.sudamih.databaseName = sudamihtestdb
+uk.ac.ox.oucs.sudamih.driverName = org.postgresql.Driver
+uk.ac.ox.oucs.sudamih.databaseURL = jdbc:postgresql:
+EndOfFile
+) > $vidaas_home/trunk/vidaas/src/hot/uk/ac/ox/oucs/vidaas/manager/sudamih.properties
+  if ! su -c "cd ~/trunk/vidaas/ && mvn package" vidaas 2>&1 > /var/log/vidaas-build.log ; then
+    echo "Build failed see /var/log/vidaas-build.log" ; exit 1
+  fi
+else
+  echo "code checkout failed" ; exit 1
 fi
 
 echo "Deploying webapp"
@@ -170,7 +195,7 @@ cat <<EndOfFile
     serverLocation=$JBOSS_HOME
     serverURL=http://`/sbin/ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`/
     VIDaaSDataLocation=$vidaas_home
-    jdbcDriverJar=$target_dir/DatabaseDrivers/postgresql.jar
+    jdbcDriverJar=/usr/share/java/postgresql.jar
  </attribute>
 </mbean>
 EndOfFile
@@ -179,18 +204,34 @@ else
   echo "Could not create vidaas-service.xml" ; exit 1
 fi
 
-#su -m -c "cp -r ~/ " vidaas
+#deploy war file
+if ! su -c "cp -r ~/trunk/vidaas/target/vidaas-0.3 $JBOSS_HOME/server/default/deploy/" vidaas ; then
+  echo "Deployment to appserver failed" ; exit 1
+fi
 
+service jboss51 start
+
+#apache config
 #TODO move to template
-#chmod 600 
-
-#cd $seam_install_dir
-#rm seam
-#tar -xzf /tmp/jboss-seam-2.2.2.Final.tar.gz
-
-#symlink database drivers
-
-# is fixed but needs testing (remove when tested)
-#chown vidaas:vidaas /opt
-
-
+if ! [ -h /etc/apache2/mods-enabled/rewrite.load ] ; then
+  ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
+fi
+(
+cat <<EndOfFile
+JkWorkerProperty worker.list=vidaas
+JkWorkerProperty worker.vidaas.port=8009
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    #redirect docroot
+    RewriteEngine on
+    RewriteRule ^/$ /vidaas-0.3/ [R]
+    #mount vidaas
+    JkMount /* vidaas
+    #logging
+    ErrorLog \${APACHE_LOG_DIR}/error.log
+    LogLevel warn
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+EndOfFile
+) > /etc/apache2/sites-enabled/000-default
+service apache2 restart
