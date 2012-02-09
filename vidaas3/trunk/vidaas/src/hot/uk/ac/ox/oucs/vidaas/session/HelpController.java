@@ -21,6 +21,10 @@ public class HelpController {
 	private Log log;
 	
 	public HelpController() {
+		if (true) {
+			helpTextGenerator = null;
+			return;
+		}
 		try {
 			helpTextGenerator = new HelpTextGenerator(log);
 		}
