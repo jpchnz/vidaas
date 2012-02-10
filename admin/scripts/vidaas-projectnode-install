@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #defaults
-vidaas_home=/opt/VIDaaSData/
-#vidaas_home=/var/lib/VIDaaSData/
+#vidaas_home=/opt/VIDaaSData/
+vidaas_home=/var/lib/VIDaaSData/
 target_dir=/opt/
 jboss_install_dir=$target_dir #obsolete
 seam_install_dir=$target_dir #obsolete
