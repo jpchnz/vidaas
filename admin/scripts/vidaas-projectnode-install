@@ -145,7 +145,7 @@ if ! [ -e /etc/vidaas/cred_mysqlroot ] ; then
 fi
 
 echo "Building vidaas sources..."
-if su -c "cd ~ && svn --quiet checkout https://vidaas.googlecode.com/svn/vidaas3/trunk" ; then
+if su -c "cd ~ && svn --quiet checkout https://vidaas.googlecode.com/svn/vidaas3/trunk" vidaas ; then
   #patch dreaded sudamih.properties
 (
 cat <<EndOfFile
