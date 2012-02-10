@@ -101,6 +101,15 @@ and if you see the expected change you can commit it to the repository using
 svn commit
 }}}
 
+== Restart jboss ==
+
+{{{
+sudo /etc/init.d/jboss51 stop
+tail -F /opt/jboss/server/default/log/server.log   #wait till shutdown complete then press Ctrl-C
+sudo /etc/init.d/jboss51 start
+#you can use the same command as above to look at the log file to see check server startup has completed
+}}}
+
 == If you get error pages ==
 
  * Please report the error via email or the issue tracker
