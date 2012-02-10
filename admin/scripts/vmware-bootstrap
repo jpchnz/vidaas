@@ -26,7 +26,7 @@ vidaas_node_type=$vidaas_node_type
 EndOfFile
 ) > /etc/vidaas/settings
 
-echo "Checking out admin repository into $vidaas_config_repo_path"
+echo "Checking out admin repository into $vidaas_admin_repo_path"
 if [ ! -f /usr/bin/svn ] ; then
   if ! apt-get -qqy install subversion ; then
     echo "Unable to install subversion package"
