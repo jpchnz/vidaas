@@ -9,6 +9,14 @@ This are instructions for developers who would like to use a VM to do some devel
  * Create the image a usual
  * Create a user for developer
  * Add this user to the vidaas group
+ * Install sudo if jboss restart required
+
+add this to your /etc/sudoers , add users to VIDAAS_DEV 
+{{{
+User_Alias      VIDAAS_DEV = vidaas
+Cmnd_Alias      JBOSS51 = /etc/init.d/jboss51
+VIDAAS_DEV      ALL = NOPASSWD: JBOSS51
+}}}
 
 = Editing Files =
 
