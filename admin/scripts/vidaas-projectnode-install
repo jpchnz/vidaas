@@ -120,7 +120,7 @@ if ! [ -e /etc/vidaas/cred_sudamihAdmin ] ; then
     echo "failed to create sudamihAdmin postgres role" ; exit 1
   fi
   echo "creating database..."
-  if ! su -p -c "createdb -O sudamihAdmin -E UTF8 sudamihtestdb" postgres ; then
+  if ! su -p -c "createdb -T template0 -O sudamihAdmin -E UTF8 sudamihtestdb" postgres ; then
     echo "failed to create postgres database"
     exit 1
   fi
