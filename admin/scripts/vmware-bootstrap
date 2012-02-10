@@ -33,9 +33,9 @@ if [ ! -f /usr/bin/svn ] ; then
     exit 1
   fi
 fi
-mkdir -p $vidaas_config_repo_path 2> /dev/null
-if ! cd $vidaas_config_repo_path ; then
-  echo "repository path $vidaas_config_repo_path invalid"
+mkdir -p $vidaas_admin_repo_path 2> /dev/null
+if ! cd $vidaas_admin_repo_path ; then
+  echo "repository path $vidaas_admin_repo_path invalid"
   exit 1
 fi
 if ! svn checkout https://vidaas.googlecode.com/svn/admin ; then
@@ -44,4 +44,4 @@ if ! svn checkout https://vidaas.googlecode.com/svn/admin ; then
 fi
 
 # run vidaas install
-$vidaas_config_repo_path/admin/scripts/vidaas-install
+$vidaas_admin_repo_path/admin/scripts/vidaas-install
