@@ -14,6 +14,7 @@
 	<name>vidaas</name>
 	<description />
 	<build>
+		<finalName>vidaas</finalName>
 		<sourceDirectory>${basedir}/src/main</sourceDirectory>
 		<outputDirectory>${basedir}/vidaas/build/classes</outputDirectory>
 		<resources>
@@ -39,11 +40,11 @@
 						<configuration>
 							<tasks>
 								<!-- versioning -->
-								<delete file="${basedir}/target/vidaas-0.3/layout/version.xhtml"/>
+								<delete file="${basedir}/target/vidaas/layout/version.xhtml"/>
 								<tstamp>
 									<format property="rightNow" pattern="HH:mm dd MMM yyyy" locale="en" />
 								</tstamp>
-								<copy todir="${basedir}/target/vidaas-0.3/layout">
+								<copy todir="${basedir}/target/vidaas/layout">
 									<fileset dir="${basedir}/WebContent/layout">
 										<include name="version.xhtml" />
 									</fileset>
