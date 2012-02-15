@@ -1,5 +1,6 @@
 package uk.ac.ox.oucs.vidaas.session;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.ExternalContext;
@@ -44,8 +45,19 @@ public class Authenticator {
         
         private boolean loginAttemptedAndFailed = false;
         private boolean disableLogin = false;
-
+        private SsoAuthenticator ssoAuthenticator;
         private String loginFailed = "";
+        public static boolean useSso = false;
+        public void setUseSso(boolean useSso) {
+			Authenticator.useSso = useSso;
+		}
+
+
+		private boolean performAutomaticRegistration = true;
+        
+        public Authenticator() {
+        	ssoAuthenticator = new SsoAuthenticator();
+        }
         
 
         public boolean isLoginAttemptedAndFailed() {
@@ -71,32 +83,13 @@ public class Authenticator {
         public void setDisableLogin(boolean disableLogin) {
                 this.disableLogin = disableLogin;
         }
-        
-        public boolean authenticateUsingShib() {
-      		boolean ret = false;
-      		
-      		boolean debug = false;
-      		if (debug) {
-      			// Print vars
-      			Map<String, String> env = System.getenv();
-      	        for (String envName : env.keySet()) {
-      	        	System.out.println("Here we go...");
-      	            System.out.format("%s=%s%n",
-      	                              envName,
-      	                              env.get(envName));
-      	        }
-      		}
-      		
-      		/*
-      		 * We should <somehow> be able to get at the header variable AJP_targeted-id, passed from Apache2 into
-      		 * Seam. I need to find out how. For now, assume we can access it. 
-      		 */
-      		
-      		
-      		return ret;
-      	}
 
         public boolean authenticate() {
+        	log.debug("Authenticate with sso == " + useSso);
+        	if (useSso) {
+        		return authenticateViaSso();
+        	}
+        	//checkHeaderForTargetedId();
                 ((NavigationController) Contexts.getSessionContext().get(
                                 "navigationController")).defaultHomePage();
 
@@ -143,13 +136,121 @@ public class Authenticator {
                 return false;
         }
         
+	
+	private String checkEmailAddress() {
+		String email = ssoAuthenticator.getEmailAddress();
+		log.debug(String.format("Email is:%s", email));
+		List<Users> userList = usersHome.findUserByEmail(email);
+		log.debug(String.format("We have %d entries", userList.size()));
+		
+		if (userList.size() == 0) {
+			return null;
+		}
+		else if (userList.size() == 1) {
+			// We have the user
+		}
+		else {
+			/*
+			 * This should surely not happen - more than 1 user with the same email address.
+			 * For now, let us log this as an error and continue
+			 */
+			log.error("More than 1 user registered with email address " + email);
+		}
+		
+		return email;
+	}
+	
+	public String whichPanel() {
+		String ret;
+		String email = checkEmailAddress();
+		if (email == null) {
+			ret = "registrationPanel-1";
+			((RegistrationBean) Contexts.getSessionContext().get(
+                    "registration")).setEmailField(ssoAuthenticator.getEmailAddress());
+		}
+		else {
+			ret = "loginUsingShibPanel";
+		}
+		log.debug("whichPanel:" + ret);
+		return ret;
+	}
+        
+	private boolean authenticateViaSso() {
+		log.debug("authenticateViaSso");
+		
+		((NavigationController) Contexts.getSessionContext().get("navigationController")).defaultHomePage();
+		
+		disableLogin = true;
+		loginFailed = "";
+		loginAttemptedAndFailed = false;
+		
+		
+		String email = checkEmailAddress();
+		if (email == null) {
+			log.warn("No email found for this user");
+			/*
+			 * No entries exist - the user first needs to register themselves.
+			 * Or, we could register them ourselves!
+			 */
+			if (performAutomaticRegistration) {
+				log.debug("Creating the user automatically");
+				user = usersHome.getInstance();
+				user.setEmail(email);
+				Logins logins = loginsHome.getInstance();
+				usersHome.setId(user.getUserId());
+				logins.setUserName(email);
+				logins.setUsers(usersHome.getInstance());
+				log.debug("User created automatically");
+			}
+			else {
+				log.error("Yet to be implemented");
+			}
+		}
+		
+		
+
+		try {
+			log.debug(String.format("About to set up system for user %s", email));
+			loginsHome.setLoginsUserName(email);
+			log.debug("Email set");
+			Logins login = loginsHome.getInstance();
+
+			log.debug("We have logins home var set up");
+			user = login.getUsers();
+			log.debug("User got");
+			identity.addRole(user.getPosition());
+
+			usersHome.setId(user.getUserId());
+			usersHome.getInstance().setUserId(user.getUserId());
+			
+			log.debug("Set contexts now");
+
+			Contexts.getSessionContext().set("userMain", user);
+			Contexts.getSessionContext().set("loginMain", login);
+
+			log.debug(String.format("User's first name is:", user.getFirstName()));
+
+			loginAttemptedAndFailed = false;
+			return true;
+		}
+		catch (org.jboss.seam.framework.EntityNotFoundException exception) {
+			loginAttemptedAndFailed = true;
+			loginFailed = "Username not found. Please, try Again";
+			log.error("Entity not found");
+		}
+		// disableLogin = false;
+		return false;
+	}
+	
+	
+        
         /**
     	 * Check the current header value of AJP_targeted-id
     	 * @return the header value, or "" if not present
     	 */
     	public static String checkHeaderForTargetedId() {
     		String targetedId = "";
-    		boolean printAllHeaderValues = false;
+    		boolean printAllHeaderValues = true;
     		
     		FacesContext fc = FacesContext.getCurrentInstance();
     		ExternalContext ec = fc.getExternalContext();
@@ -182,5 +283,12 @@ public class Authenticator {
                 // return result;
         }
 
+		public SsoAuthenticator getSsoAuthenticator() {
+			return ssoAuthenticator;
+		}
 
+
+		public boolean isUseSso() {
+			return useSso;
+		}
 }
