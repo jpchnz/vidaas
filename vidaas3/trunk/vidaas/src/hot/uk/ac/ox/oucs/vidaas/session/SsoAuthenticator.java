@@ -5,17 +5,26 @@ import java.util.Map;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-import org.jboss.seam.contexts.Contexts;
-
 import uk.ac.ox.oucs.vidaas.utility.SystemVars;
 
+
+/**
+ * A helper class to deal with Single Sign On authentication
+ * 
+ * @author oucs0153
+ *
+ */
 public class SsoAuthenticator {
 	private String targettedId, allDetails;
 	private String email, surname;
 
-	public SsoAuthenticator() {
-	}
 
+	
+	/**
+	 * Provide details about the current environment, currently via headers set by Shibboleth
+	 * 
+	 * @return A String with the users email address in a format suitable for display
+	 */
 	public String getAllDetails() {
 		setupShibbolethVariables();
 		// allDetails = "\nTargeted id:" + targettedId;
@@ -25,20 +34,39 @@ public class SsoAuthenticator {
 		return allDetails;
 	}
 
+	
+	/**
+	 * Get the Shibboleth Targetted Id variable
+	 * @return
+	 */
 	public String getTargettedId() {
 		setupShibbolethVariables();
 		return targettedId;
 	}
 
+	
+	/**
+	 * Determine if the Shibboleth Targetted Id variable has been set in the headers.
+	 * if it has not been set, this will typically indicate an error, like the Apache web server
+	 * has not been set up correctly. Used to determine how to display certain menu options in the web site.
+	 * 
+	 * @return true if the variable has been found and set, else false
+	 */
 	public boolean isTargettedIdSet() {
 		setupShibbolethVariables();
 		return (!((targettedId == null) || (targettedId.length() == 0)));
 	}
 
 	/**
-	 * Check the current header value of AJP_targeted-id
+	 * Check the current header value of AJP_targeted-id, email and surname variables.
+	 * This should be extended to forename also.
+	 * FIXME
+	 * Currently, though I have been told that surname and forename are being supplied 
+	 * by the IdP to my Shibboleth SP, I cannot get the information supposedly set - only
+	 * the email address seems findable.   This may be an SP configuration error - or maybe the IdP 
+	 * is not sending the variables.
 	 * 
-	 * @return the header value, or "" if not present
+	 * @return
 	 */
 	public void setupShibbolethVariables() {
 		boolean printAllHeaderValues = false;
@@ -72,7 +100,12 @@ public class SsoAuthenticator {
 	}
 	
 	
-	
+	/**
+	 * Once SSO authenticated, the user's email address should be set in the associated
+	 * Apache headers 
+	 * 
+	 * @return the Shibboleth email address
+	 */
 	protected String getEmailAddress() {
 		setupShibbolethVariables();
 		return getEmail();
