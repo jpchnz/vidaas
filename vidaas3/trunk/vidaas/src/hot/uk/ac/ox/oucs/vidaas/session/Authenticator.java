@@ -137,6 +137,11 @@ public class Authenticator {
         }
         
 	
+	/**
+	 * Determine the email address that the user will authenticate under in an SSO environemnt.
+	 * 
+	 * @return null if the user has not registered, else their email address
+	 */
 	private String checkEmailAddress() {
 		String email = ssoAuthenticator.getEmailAddress();
 		log.debug(String.format("Email is:%s", email));
@@ -160,6 +165,16 @@ public class Authenticator {
 		return email;
 	}
 	
+	
+	/**
+	 * Determine which panel menu.xhtml will show when the user tries to log in. 
+	 * If the user has registered themselves with VIDaaS then loginUsingShibPanel
+	 * is shown to them, telling them the user email they are about to log in with. 
+	 * If they haven't, registrationPanel-1 is shown to them, allowing them to
+	 * register themselves.
+	 * 
+	 * @return the panel they are to be shown when they click on the login link on the web page
+	 */
 	public String whichPanel() {
 		String ret;
 		String email = checkEmailAddress();
@@ -175,6 +190,12 @@ public class Authenticator {
 		return ret;
 	}
         
+	
+	/**
+	 * Provides user authentication for environments with SSO enabled
+	 * 
+	 * @return true if authentication was setup correctly, else false
+	 */
 	private boolean authenticateViaSso() {
 		log.debug("authenticateViaSso");
 		
@@ -244,51 +265,50 @@ public class Authenticator {
 	
 	
         
-        /**
-    	 * Check the current header value of AJP_targeted-id
-    	 * @return the header value, or "" if not present
-    	 */
-    	public static String checkHeaderForTargetedId() {
-    		String targetedId = "";
-    		boolean printAllHeaderValues = true;
-    		
-    		FacesContext fc = FacesContext.getCurrentInstance();
-    		ExternalContext ec = fc.getExternalContext();
-    		Map<String, String> headers = ec.getRequestHeaderMap();
-    		if (SystemVars.USE_SSO_IF_AVAILABLE) {
-    			targetedId = headers.get("AJP_targeted-id");
-    			if (targetedId == null) {
-    				targetedId = "";
-    			}
-    			if (printAllHeaderValues) {
-    				for (String h : headers.keySet()) {
-    					if ( (headers.get(h) != null) && (headers.get(h).length() != 0) ) {
-    						System.out.println("Header: " + h + " - value: <" + headers.get(h) + ">");
-    					}
-    				}
-    			}
-    		}
+	/**
+	 * Check the current header value of AJP_targeted-id
+	 * 
+	 * @return the header value, or "" if not present
+	 */
+	public static String checkHeaderForTargetedId() {
+		String targetedId = "";
+		boolean printAllHeaderValues = true;
+
+		FacesContext fc = FacesContext.getCurrentInstance();
+		ExternalContext ec = fc.getExternalContext();
+		Map<String, String> headers = ec.getRequestHeaderMap();
+		if (SystemVars.USE_SSO_IF_AVAILABLE) {
+			targetedId = headers.get("AJP_targeted-id");
+			if (targetedId == null) {
+				targetedId = "";
+			}
+			if (printAllHeaderValues) {
+				for (String h : headers.keySet()) {
+					if ((headers.get(h) != null) && (headers.get(h).length() != 0)) {
+						System.out.println("Header: " + h + " - value: <" + headers.get(h) + ">");
+					}
+				}
+			}
+		}
     		
     		 
-    		return targetedId;
-    	}
+		return targetedId;
+	}
 
-        public void logout() {
-                log.info("Authenticator Logout called", "");
-                ((NavigationController) Contexts.getSessionContext().get(
-                                "navigationController")).defaultHomePage();
-                Session session = Session.instance();
-                session.invalidate();
-                identity.logout();
-                // return result;
-        }
+	public void logout() {
+		log.info("Authenticator Logout called", "");
+		((NavigationController) Contexts.getSessionContext().get("navigationController")).defaultHomePage();
+		Session session = Session.instance();
+		session.invalidate();
+		identity.logout();
+		// return result;
+	}
 
-		public SsoAuthenticator getSsoAuthenticator() {
-			return ssoAuthenticator;
-		}
+	public SsoAuthenticator getSsoAuthenticator() {
+		return ssoAuthenticator;
+	}
 
-
-		public boolean isUseSso() {
-			return useSso;
-		}
+	public boolean isUseSso() {
+		return useSso;
+	}
 }
