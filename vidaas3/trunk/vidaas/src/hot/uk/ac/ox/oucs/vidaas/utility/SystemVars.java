@@ -13,7 +13,7 @@ public class SystemVars {
 	/*
 	 * Use this flag to determine if SSO functions are used within VIDaaS
 	 */
-	public static final boolean USE_SSO_IF_AVAILABLE = false;
+	public static final boolean USE_SSO_IF_AVAILABLE = true;
 	
 	
 	
