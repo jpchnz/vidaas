@@ -5,20 +5,19 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:rich="http://richfaces.org/rich">
-	
+
 	<!--  
 	<a4j:form id="testForm" ajaxSubmit="true">
 		<a4j:commandLink action="#{createController.testingString()}" reRender="homePageMainBodyInclude, homeMainPanel"
 				id="testButton" value="Test String" style="float:left"/>
 	</a4j:form>
 -->
-	<rich:panel >
+	<rich:panel>
 		<f:facet name="header">
-			<h:outputText
-				value="Summary of database '#{currentProject.name}'"></h:outputText>
+			<h:outputText value="Summary of database '#{currentProject.name}'"></h:outputText>
 		</f:facet>
 		<h:panelGrid id="projectPanel" columns="1">
-		<!--  
+			<!--  
 			<h:outputText
 				value="Test String: '#{createController.testString}'"></h:outputText> -->
 			<h:panelGroup>
@@ -63,46 +62,72 @@
 				<h:outputLabel value="#{currentDataspace.databaseSize} gb" />
 			</h:panelGroup>
 		</h:panelGrid>
+		<br />
+		<a4j:form ajaxSubmit="true">
+			<a4j:commandLink id="editDataspaceLink" value="Edit Database"
+				action="#{navigationController.setCurrentDataspace(currentDataspace.dataSpaceId)}"
+				reRender="editDataspaceFormInclude" style="float:left">
+				<f:param name="dataspaceIDValue"
+					value="#{currentDataspace.dataSpaceId}" />
+				<rich:componentControl for="editDataspacePanel"
+					attachTo="editDataspaceLink" operation="show" event="onclick" />
+			</a4j:commandLink>
+
+			<a4j:commandLink id="deleteDataspaceLink" value="Delete Database"
+				action="#{navigationController.setCurrentDataspace(currentDataspace.dataSpaceId)}"
+				reRender="deleteDataspaceFormInclude" style="float:right">
+				<f:param name="dataspaceIDValue"
+					value="#{currentDataspace.dataSpaceId}" />
+				<rich:componentControl for="deleteDataspacePanel"
+					attachTo="deleteDataspaceLink" operation="show" event="onclick" />
+			</a4j:commandLink>
+		</a4j:form>
+		<br />
 	</rich:panel>
-	
-	<h:panelGrid id="dataspaceButtonPanel" columns="1"
+
+	<rich:panel
 		rendered="#{empty navigationController.listDatabaseByDataspace()}">
-		
-		<h:panelGroup rendered="#{currentDataspace.databaseType =='relational'}">
+
+
+		<h:panelGroup
+			rendered="#{currentDataspace.databaseType =='relational'}"
+			style="width:100%">
 			<a4j:form id="dataspaceSQLButtonForm" ajaxSubmit="true">
-				<div class="actionButtons"><a4j:commandLink
-					id="createDatabaseFromSchemaButton"
-					value="Upload existing Database"
-					style="float:left">
+				<div class="actionButtons"></div>
+
+				<a4j:commandLink id="createDatabaseFromSchemaButton"
+					value="Upload existing Database" style="float:left">
 					<rich:componentControl for="createDatabasePanel"
-						attachTo="createDatabaseFromSchemaButton" operation="show" event="onclick" />
-				</a4j:commandLink> 
+						attachTo="createDatabaseFromSchemaButton" operation="show"
+						event="onclick" />
+				</a4j:commandLink>
 				<a4j:commandButton id="createDatabaseByDesignButton"
 					value="Design Database" status="submitStatus" style="float:right"
 					disabled="true">
-				</a4j:commandButton> <a4j:region>
+				</a4j:commandButton>
+				<a4j:region>
 					<a4j:status id="submitStatus">
 						<f:facet name="start">
 							<h:graphicImage value="/img/wait.gif" height="28px" width="28px"
 								style="float:right" />
 						</f:facet>
 					</a4j:status>
-				</a4j:region></div>
+				</a4j:region>
+
 			</a4j:form>
-		</h:panelGroup>				
-		
+		</h:panelGroup>
+
 		<h:panelGroup rendered="#{currentDataspace.databaseType =='xml'}">
 			<a4j:form id="dataspaceXMLButtonForm" ajaxSubmit="true">
 				<div class="actionButtons"><a4j:commandLink
-					id="createDatabaseFromXMLButton"
-					value="Create XML Database"
+					id="createDatabaseFromXMLButton" value="Create XML Database"
 					style="float:left">
 					<rich:componentControl for="createXMLDatabasePanel"
-						attachTo="createDatabaseFromXMLButton" operation="show" event="onclick" />
-				</a4j:commandLink> 
-				<a4j:commandButton id="createXMLDatabaseByDesignButton"
-					value="Design XML Database" status="submitStatusXML" style="float:right"
-					disabled="true">
+						attachTo="createDatabaseFromXMLButton" operation="show"
+						event="onclick" />
+				</a4j:commandLink> <a4j:commandButton id="createXMLDatabaseByDesignButton"
+					value="Design XML Database" status="submitStatusXML"
+					style="float:right" disabled="true">
 				</a4j:commandButton> <a4j:region>
 					<a4j:status id="submitStatusXML">
 						<f:facet name="start">
@@ -113,21 +138,22 @@
 				</a4j:region></div>
 			</a4j:form>
 		</h:panelGroup>
-	</h:panelGrid>
 
+	</rich:panel>
 	<rich:dataGrid id="datbasesDataGrid"
 		value="#{navigationController.listDatabaseByDataspace()}"
 		var="_database" columns="3" elements="9"
 		rendered="#{not empty navigationController.listDatabaseByDataspace()}"
 		width="1105px">
 		<f:facet name="header">
-			<h:outputText
-				value="Detailed summary of database version(s)"></h:outputText>
+			<h:outputText value="Detailed summary of database version(s)"></h:outputText>
 		</f:facet>
 		<h:panelGrid id="databasePanel" columns="3" border="1">
 
-			<a4j:include viewId="/include/relationalDatabase.xhtml" rendered="#{currentDataspace.databaseType =='relational'}"></a4j:include>
-			<a4j:include viewId="/include/xmlDatabase.xhtml" rendered="#{currentDataspace.databaseType =='xml'}"></a4j:include>
+			<a4j:include viewId="/include/relationalDatabase.xhtml"
+				rendered="#{currentDataspace.databaseType =='relational'}"></a4j:include>
+			<a4j:include viewId="/include/xmlDatabase.xhtml"
+				rendered="#{currentDataspace.databaseType =='xml'}"></a4j:include>
 		</h:panelGrid>
 	</rich:dataGrid>
 
