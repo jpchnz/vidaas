@@ -13,6 +13,7 @@ import java.nio.channels.FileChannel;
 import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import uk.ac.ox.oucs.vidaas.concurrency.CreateWebApplicationThread;
 import uk.ac.ox.oucs.vidaas.concurrency.DatabaseTablesCreatorThread;
@@ -37,6 +38,7 @@ import uk.ac.ox.oucs.vidaas.download.DownloadDatabase;
 
 import uk.ac.ox.oucs.vidaas.manager.ConnectionManager;
 import uk.ac.ox.oucs.vidaas.session.NavigationController;
+import uk.ac.ox.oucs.vidaas.utility.DirectoryUtilities;
 import uk.ac.ox.oucs.vidaas.utility.LoadXMLContainer;
 
 import org.hibernate.validator.InvalidStateException;
@@ -74,6 +76,8 @@ import javax.servlet.http.HttpServletResponse;
 public class CreateController {
 
 	public String testString = "Test String";
+	
+	private final String rootStorageDirectory = System.getProperty("VIDaaSDataLocation");
 
 	public String getTestString() {
 		return testString;
@@ -140,7 +144,9 @@ public class CreateController {
 	private Integer currentDatabaseID;
 
 	private String createProjectConfirmationMessage = "";
+	private String deleteProjectConfirmationMessage = "";
 	private String createProjectDataspaceConfirmationMessage = "";
+	private String deleteProjectDataspaceConfirmationMessage = "";
 	private String createDatabaseConfirmationMessage = "";
 	private String addProjectMemberConfirmationMessage = "";
 	private String dropDatabaseConfirmationMessage = "";
@@ -167,6 +173,15 @@ public class CreateController {
 		this.createProjectConfirmationMessage = createProjectConfirmationMessage;
 	}
 
+	public String getDeleteProjectConfirmationMessage() {
+		return deleteProjectConfirmationMessage;
+	}
+
+	public void setDeleteProjectConfirmationMessage(
+			String deleteProjectConfirmationMessage) {
+		this.deleteProjectConfirmationMessage = deleteProjectConfirmationMessage;
+	}
+
 	public String getCreateProjectDataspaceConfirmationMessage() {
 		return createProjectDataspaceConfirmationMessage;
 	}
@@ -174,6 +189,15 @@ public class CreateController {
 	public void setCreateProjectDataspaceConfirmationMessage(
 			String createProjectDataspaceConfirmationMessage) {
 		this.createProjectDataspaceConfirmationMessage = createProjectDataspaceConfirmationMessage;
+	}
+
+	public String getDeleteProjectDataspaceConfirmationMessage() {
+		return deleteProjectDataspaceConfirmationMessage;
+	}
+
+	public void setDeleteProjectDataspaceConfirmationMessage(
+			String deleteProjectDataspaceConfirmationMessage) {
+		this.deleteProjectDataspaceConfirmationMessage = deleteProjectDataspaceConfirmationMessage;
 	}
 
 	public String getCreateDatabaseConfirmationMessage() {
@@ -279,6 +303,68 @@ public class CreateController {
 				"navigationController")).createProjectConfirmation();
 	}
 
+	public void updateProject() {
+		Project tempProject = ((Project) Contexts.getSessionContext().get(
+				"currentProject"));
+		log.info("updateProject {0} {1}", tempProject.getProjectId(),
+				tempProject.getName());
+
+		projectHome.setId(tempProject.getProjectId());
+
+		Project tempProjectNew = projectHome.find();
+
+		tempProjectNew.setName(tempProject.getName());
+		tempProjectNew.setStartDate(tempProject.getStartDate());
+		tempProjectNew.setEndDate(tempProject.getEndDate());
+		tempProjectNew.setDescription(tempProject.getDescription());
+
+		projectHome.persist();
+	}
+
+	public void deleteProject(Integer projectIDValue) {
+		Project tempProject = ((Project) Contexts.getSessionContext().get(
+				"currentProject"));
+
+		String projectName = tempProject.getName();
+		Integer projectId = tempProject.getProjectId();
+		
+		log.info("deleteProject {0} {1}", tempProject.getProjectId(),
+				tempProject.getName());
+
+		projectHome.setId(tempProject.getProjectId());
+
+		Project tempProjectNew = projectHome.find();
+
+		Set<Dataspace> dataspaces = tempProjectNew.getDataspaces();
+		if (dataspaces.size() == 0) {
+			List<UserProject> userProjectList = userProjectHome
+					.findByProjectID(tempProject.getProjectId());
+			for (int i = 0; i < userProjectList.size(); i++) {
+				UserProject tempUserProject = userProjectList.get(i);
+				userProjectHome.setId(tempUserProject.getId());
+
+				userProjectHome.find();
+
+				userProjectHome.remove();
+			}
+			projectHome.remove();
+			new DirectoryUtilities().removeProjectDir(rootStorageDirectory + "/project_" + projectId);
+			deleteProjectConfirmationMessage = "Project '" + projectName
+					+ "' successfully deleted.";
+		} else {
+			deleteProjectConfirmationMessage = "Project has active database/s. Please, delete each database before deleting project.";
+		}
+
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController")).deleteProjectConfirmation();
+	}
+
+	public void finishDeleteProject() {
+		log.info("finishDeleteProject");
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController")).deleteProjectInitial();
+	}
+
 	public void createDataSpace(/* Integer projectIDValue */) {
 		// if
 		// (validateString(dataspaceHome.getInstance().getDataspaceUserFriendlyName()))
@@ -320,6 +406,69 @@ public class CreateController {
 		 * } else { validationError =
 		 * "Databace Name should not contain special character or space"; }
 		 */
+	}
+
+	public void updateDataSpace() {
+		Dataspace tempDataspace = ((Dataspace) Contexts.getSessionContext()
+				.get("currentDataspace"));
+
+		dataspaceHome.setId(tempDataspace.getDataSpaceId());
+
+		Dataspace tempDataspaceNew = dataspaceHome.find();
+
+		tempDataspaceNew.setDataspaceUserFriendlyName(tempDataspace
+				.getDataspaceUserFriendlyName());
+		tempDataspaceNew.setDatabaseBackupPolicy(tempDataspace
+				.getDatabaseBackupPolicy());
+		tempDataspaceNew.setCreationDate(tempDataspace.getCreationDate());
+		tempDataspaceNew.setDatabaseDescription(tempDataspace
+				.getDatabaseDescription());
+		tempDataspaceNew.setDatabaseExpandablePolicy(tempDataspace
+				.getDatabaseExpandablePolicy());
+		tempDataspaceNew.setDatabaseSize(tempDataspace.getDatabaseSize());
+
+		dataspaceHome.persist();
+
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController"))
+				.setHomePageMainBodyNavigation("/custom/singleDataspaceByProject.xhtml");
+	}
+
+	public void deleteDataSpace(Integer DataSpaceIdValue) {
+		Dataspace tempDataspace = ((Dataspace) Contexts.getSessionContext()
+				.get("currentDataspace"));
+		String dataspaceUserFriendlyName = tempDataspace
+				.getDataspaceUserFriendlyName();
+
+		dataspaceHome.setId(tempDataspace.getDataSpaceId());
+
+		Dataspace tempDataspaceNew = dataspaceHome.find();
+
+		Set<ProjectDatabase> projectDatabases = tempDataspaceNew
+				.getProjectDatabases();
+		if (projectDatabases.size() == 0) {
+			dataspaceHome.remove();
+			deleteProjectDataspaceConfirmationMessage = "Database '"
+					+ dataspaceUserFriendlyName + "'" + "successfully deleted.";
+			((NavigationController) Contexts.getSessionContext().get(
+					"navigationController"))
+					.setHomePageMainBodyNavigation("/custom/projectByUserList.xhtml");
+		} else {
+			deleteProjectDataspaceConfirmationMessage = "Database '"
+					+ dataspaceUserFriendlyName
+					+ "' "
+					+ "has active version/s. Please, delete each version before deleting database.";
+		}
+
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController")).deleteDataspaceConfirmation();
+	}
+
+	public void finishDeleteDataSpace() {
+		log.info("finishDeleteDataSpace");
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController")).deleteDataspaceInitial();
+
 	}
 
 	public void createDatabaseFromSchema() {
@@ -526,18 +675,25 @@ public class CreateController {
 
 			databaseStructureHome.persist();
 		} else {
-
 			dropDatabase(tempProjectDatabase.getDatabaseName());
-
 		}
+
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController"))
+				.setCurrentDataspace(tempProjectDatabase.getDataspace()
+						.getDataSpaceId());
+
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController"))
+				.setHomePageMainBodyNavigation("/custom/singleDataspaceByProject.xhtml");
 	}
 
 	public void createWebApplication(Integer projectDatabaseIDValue) {
 		dataHolder.setOkButton(true);
 		dataHolder.currentStatus = "";
-		log.info("createWebApplication() called "  + "" +  projectDatabaseIDValue);
+		log.info("createWebApplication() called " + "" + projectDatabaseIDValue);
 		this.currentDatabaseID = projectDatabaseIDValue;
-		
+
 		String serverURLTemp = System.getProperty("serverURL");
 
 		((NavigationController) Contexts.getSessionContext().get(
@@ -572,11 +728,10 @@ public class CreateController {
 
 			webApplicationHome.setInstance(tempWebApplication);
 
-			
 			tempWebApplication.setWebApplicationName(webApplicationName);
 
 			tempWebApplication.setUrl(serverURLTemp + webApplicationName);
-			
+
 			createWebApplicationThread = new CreateWebApplicationThread(
 					webApplicationName, webApplicationLocation, databaseName,
 					userName.toLowerCase(), password, dataHolder);
@@ -589,29 +744,31 @@ public class CreateController {
 			dataHolder.currentStatus = "Failed to initiate Data Interface creation process";
 			dataHolder.setOkButton(false);
 		}
-		//dataHolder.setOkButton(false);
+		// dataHolder.setOkButton(false);
 	}
 
 	public void finishCreateWebApplication() {
-		log.info("finishCreateWebApplication() called "  + "" +  this.currentDatabaseID);
+		log.info("finishCreateWebApplication() called " + ""
+				+ this.currentDatabaseID);
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).createWebApplicationInitial();
-		
-		log.info("finishCreateWebApplication() " + createWebApplicationThread.isCreateStatus());
-		
+
+		log.info("finishCreateWebApplication() "
+				+ createWebApplicationThread.isCreateStatus());
+
 		projectDatabaseHome.setId(this.currentDatabaseID);
 		ProjectDatabase tempProjectDatabase = projectDatabaseHome.find();
 
 		projectDatabaseHome.setInstance(tempProjectDatabase);
-		
+
 		webApplicationHome.setId(tempProjectDatabase.getWebApplication()
 				.getWebId());
-		
+
 		WebApplication tempWebApplication = webApplicationHome.find();
 
 		webApplicationHome.setInstance(tempWebApplication);
-		
-		if(createWebApplicationThread.isCreateStatus() == true){
+
+		if (createWebApplicationThread.isCreateStatus() == true) {
 			tempWebApplication.setStatus("Deployed");
 			webApplicationHome.persist();
 		} else {
@@ -660,6 +817,29 @@ public class CreateController {
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).removeWebApplicationInitial();
 		dataHolder.currentStatus = "";
+	}
+
+	public void editProjectMember() {
+		UserProject userProject = ((UserProject) Contexts.getSessionContext()
+				.get("currentUserProject"));
+
+		userProjectHome.setId(userProject.getId());
+
+		UserProject userProjectNew = userProjectHome.find();
+
+		userProjectNew.setUserRole(userProject.getUserRole());
+
+		userProjectHome.persist();
+	}
+	
+	public void deleteProjectMember() {
+		UserProject userProject = ((UserProject) Contexts.getSessionContext()
+				.get("currentUserProject"));
+
+		userProjectHome.setId(userProject.getId());
+
+		UserProject userProjectNew = userProjectHome.find();
+		userProjectHome.remove();
 	}
 
 	public void createProjectMember() {
