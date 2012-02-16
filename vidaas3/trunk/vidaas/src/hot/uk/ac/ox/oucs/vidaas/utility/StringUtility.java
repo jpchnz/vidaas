@@ -12,7 +12,6 @@ public class StringUtility {
 		String newString2 = escaper2.matcher(newString).replaceAll("");
 
 		return newString2;
-
 	}
 
 }
