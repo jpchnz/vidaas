@@ -16,7 +16,7 @@
 		<h:outputText value="You are involved in the following Project(s)."
 			rendered="#{not empty navigationController.userProjectsList()}" />
 		<rich:dataTable id="userProjectList" var="_userProject"
-			style="border-width: 1px; border-radius:20px" 
+			style="border-width: 1px; border-radius:20px"
 			value="#{navigationController.userProjectsList()}"
 			rendered="#{not empty navigationController.userProjectsList()}">
 			<f:facet name="header">
@@ -25,10 +25,26 @@
 
 			<rich:column sortBy="#{_userProject.project.title}">
 				<f:facet name="header">Project Name</f:facet>
-					
+				<a4j:commandLink id="editProjectLink" value="Edit Project"
+					action="#{navigationController.setCurrentProject(_userProject.id.projectId)}"
+					reRender="editFormInclude" style="float:right">
+					<f:param name="projectIDValue" value="#{_userProject.id.projectId}" />
+					<rich:componentControl for="editProjectPanel"
+						attachTo="editProjectLink" operation="show" event="onclick" />
+				</a4j:commandLink>
+				<br />
 				<h:outputText value="#{_userProject.project.name}" />
+				<br />
+				<a4j:commandLink id="deleteProjectLink" value="Delete Project"
+					action="#{navigationController.setCurrentProject(_userProject.id.projectId)}"
+					reRender="deleteProjectFormInclude" style="float:right">
+					<f:param name="projectIDValue" value="#{_userProject.id.projectId}" />
+					<rich:componentControl for="deleteProjectPanel"
+						attachTo="deleteProjectLink" operation="show" event="onclick" />
+				</a4j:commandLink>
 			</rich:column>
-			<rich:column headerClass="descriptionWidth" sortBy="#{_userProject.project.description}">
+			<rich:column headerClass="descriptionWidth"
+				sortBy="#{_userProject.project.description}">
 				<f:facet name="header">Description
 				</f:facet>
 				<h:outputText value="#{_userProject.project.description}" />
@@ -38,102 +54,59 @@
 				<!--  This is working with @RequestParameter but may need to look @DataModel  -->
 				<f:facet name="header">Database(s)
 				</f:facet>
-				
-			
+
+
 				<rich:dataTable var="_dataspaces"
 					value="#{navigationController.listProjectDataspaces(_userProject.id.projectId)}"
 					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'"
 					style="border:0px">
 					<rich:column style="border:0px">
-					<!--  -->	
-						<a4j:commandLink value="#{_dataspaces.dataspaceUserFriendlyName}" action="#{navigationController.singleDataspaceDisplayPage()}" 
+						<!--  -->
+						<a4j:commandLink value="#{_dataspaces.dataspaceUserFriendlyName}"
+							action="#{navigationController.singleDataspaceDisplayPage()}"
 							reRender="homeMainPanel, homePageMainBodyInclude">
-							<f:param name="projectIDValue" value="#{_userProject.id.projectId}" />
-							<f:param name="dataspaceIDValue" value="#{_dataspaces.dataSpaceId}" />
+							<f:param name="projectIDValue"
+								value="#{_userProject.id.projectId}" />
+							<f:param name="dataspaceIDValue"
+								value="#{_dataspaces.dataSpaceId}" />
 						</a4j:commandLink>
-											
-					</rich:column>
-				</rich:dataTable>
-				<a4j:commandLink id="createDataspaceLink" value="Create Data Space" rendered="#{createController.addNewDataspaceAllowed(_userProject.id.projectId)}"
-							action="#{createController.setCurrentProject(_userProject.id.projectId)}" style="float:right">
-							<f:param name="projectIDValue" value="#{_userProject.id.projectId}" />
-							<rich:componentControl for="createDataSpacePanel"
-								attachTo="createDataspaceLink" operation="show" event="onclick" />
-				</a4j:commandLink>
-			</rich:column>
-<!--  
-			<h:column>
-				<f:facet name="header">
-					<ui:include src="/layout/sort.xhtml">
-						<ui:param name="propertyLabel" value="Action" />
-					</ui:include>
-				</f:facet>
-				<a4j:commandLink
-					action="#{navigationController.listProjectDatabase()}"
-					value="View Databases"
-					reRender="homeMainPanel, homePageMainBodyInclude">
-					<f:param name="projectIDValue" value="#{_userProject.id.projectId}" />
-				</a4j:commandLink>
-			</h:column>
--->
 
-<!-- 
-			<h:column>
-				<f:facet name="header">
-					<ui:include src="/layout/sort.xhtml">
-						<ui:param name="propertyLabel" value="Action" />
-					</ui:include>
-				</f:facet>
-				<s:link action="#{navigationController.listProjectMembers()}"
-					value="View Project Members">
-					<f:param name="projectIDValue" value="#{_userProject.id.projectId}" />
-				</s:link>
-			</h:column>
- -->
-			<!-- <h:column>
-				<f:facet name="header">
-					<ui:include src="/layout/sort.xhtml">
-						<ui:param name="propertyLabel" value="Project Members" />
-					</ui:include>
-				</f:facet>
-				
-				<rich:dataTable var="_userProjectMembers"
-					value="#{navigationController.listProjectMembers(_userProject.id.projectId)}"
-					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'"
-					style="border:0px">
-					<rich:column style="border:0px" sortBy="#{_userProjectMembers.users.lastName}">
-						<f:facet name="header">Name</f:facet>
-						<h:outputText value="#{_userProjectMembers.users.lastName}, #{_userProjectMembers.users.firstName}" />
-					</rich:column>
-					<rich:column style="border:0px">
-						<f:facet name="header">Authority</f:facet>
-						<h:outputText value="#{_userProjectMembers.users.lastName}, #{_userProjectMembers.users.firstName}" />
 					</rich:column>
 				</rich:dataTable>
-				<a4j:commandLink id="addProjectMemberLink" value="Add New Member"
-					action="#{navigationController.createProjectMember()}"
+				<a4j:commandLink id="createDataspaceLink" value="Create Database"
+					rendered="#{createController.addNewDataspaceAllowed(_userProject.id.projectId)}"
+					action="#{createController.setCurrentProject(_userProject.id.projectId)}"
 					style="float:right">
 					<f:param name="projectIDValue" value="#{_userProject.id.projectId}" />
-					<rich:componentControl for="addProjectMemberPanel"
-						attachTo="addProjectMemberLink" operation="show" event="onclick" />
+					<rich:componentControl for="createDataSpacePanel"
+						attachTo="createDataspaceLink" operation="show" event="onclick" />
 				</a4j:commandLink>
-			</h:column>-->
-			
-			<h:column>
+			</rich:column>
+
+
+			<rich:column colspan="2">
 				<f:facet name="header">Project Members</f:facet>
-				
+
 				<rich:dataTable var="_userProjectMembers"
 					value="#{navigationController.listProjectMembers(_userProject.id.projectId)}"
 					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'"
 					style="border:0px">
-					<rich:column style="border:0px" sortBy="#{_userProjectMembers.users.lastName}">
+					<rich:column style="border:0px"
+						sortBy="#{_userProjectMembers.users.lastName}">
 						<f:facet name="header">Name</f:facet>
-						<h:outputText value="#{_userProjectMembers.users.lastName}, #{_userProjectMembers.users.firstName}" />
+						<a4j:commandLink id="editProjectMemberLink" action="#{navigationController.modifyProjectMember()}" reRender="editProjectMemberFormInclude"
+							value="#{_userProjectMembers.users.firstName} #{_userProjectMembers.users.lastName}">
+							<f:param name="projectIDValue"
+								value="#{_userProjectMembers.id.projectId}" />
+							<f:param name="userIDValue" value="#{_userProjectMembers.id.userId}" />
+							<rich:componentControl for="editProjectMemberPanel"
+						attachTo="editProjectMemberLink" operation="show" event="onclick" />
+						</a4j:commandLink>
 					</rich:column>
-					<rich:column style="border:0px" sortBy="#{_userProjectMembers.userRole}">
+					<rich:column style="border:0px"
+						sortBy="#{_userProjectMembers.userRole}">
 						<f:facet name="header">Role</f:facet>
 						<h:outputText value="#{_userProjectMembers.userRole}" />
 					</rich:column>
@@ -145,7 +118,7 @@
 					<rich:componentControl for="addProjectMemberPanel"
 						attachTo="addProjectMemberLink" operation="show" event="onclick" />
 				</a4j:commandLink>
-			</h:column>
+			</rich:column>
 		</rich:dataTable>
 	</a4j:form>
 
