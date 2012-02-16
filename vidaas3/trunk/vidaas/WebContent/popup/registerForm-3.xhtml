@@ -19,7 +19,7 @@
 		</div>
 		<div class="actionButtons">
 			<a4j:commandButton value="Finish" action="#{registration.registrationSuccessful()}" id="registrationFormHideButton" 
-				reRender="registrationFormInclude">
+				reRender="registrationFormInclude, topToolBarForm, rightTopToolBarGroup">
 				<rich:componentControl for="registrationPanel-1" attachTo="registrationFormHideButton"
 					operation="hide" event="onclick" />
 			</a4j:commandButton>

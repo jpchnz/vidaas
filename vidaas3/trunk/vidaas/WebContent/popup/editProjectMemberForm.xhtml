@@ -1,5 +1,5 @@
-<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+                      
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:s="http://jboss.com/products/seam/taglib"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -8,37 +8,76 @@
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:rich="http://richfaces.org/rich">
 	
-	<a4j:form ajaxSubmit="true" reRender="homePageMainBodyInclude" id="createEditProjectMemberForm">
-		<h:outputText value="You are not involved in any Project."
-			rendered="#{empty navigationController.userProjectsList()}" />
-		<h:outputText value="You are involved in the following Project(s)."
-			rendered="#{not empty navigationController.userProjectsList()}" />
-		<rich:dataTable id="userProjectList" var="_userProject"
-			style="border-width: 1px; border-radius:20px" 
-			value="#{navigationController.userProjectsList()}"
-			rendered="#{not empty navigationController.userProjectsList()}">
-			<f:facet name="header">
-				<h:outputText value="Projects List" />
-			</f:facet>
-			<h:column>
-				<f:facet name="header">Project Members</f:facet>
-				<rich:dataTable var="_userProjectMembers"
-					value="#{navigationController.listProjectMembers(_userProject.id.projectId)}"
-					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'"
-					style="border:0px">
-					
-					<rich:column style="border:0px" sortBy="#{_userProjectMembers.users.lastName}">
-						<f:facet name="header">Name</f:facet>
-						<h:outputText value="#{_userProjectMembers.users.lastName}, #{_userProjectMembers.users.firstName}" />
-					</rich:column>
-					<rich:column style="border:0px" sortBy="#{_userProjectMembers.userRole}">
-						<f:facet name="header">Role</f:facet>
-						<h:outputText value="#{_userProjectMembers.userRole}" />
-					</rich:column>
-				</rich:dataTable>
-			</h:column>
-		</rich:dataTable>
+	<a4j:form ajaxSubmit="true" reRender="homePageMainBodyInclude" id="editProjectMemberForm">
+
+
+		<div><h:panelGrid columns="3" rowClasses="prop"
+			columnClasses="name,value,errorMessage">
+			<h:outputLabel for="firstName">First Name</h:outputLabel>
+			<h:inputText id="firstName" value="#{currentUserProject.users.firstName}"
+				disabled="true" />
+			<rich:message for="firstName" style="width : 184px;" />
+
+			<h:outputLabel for="lastName">Last Name</h:outputLabel>
+			<h:inputText id="lastName" value="#{currentUserProject.users.lastName}"
+				disabled="true" />
+			<rich:message for="lastName" style="width : 184px;" />
+
+			<h:outputLabel for="email">Email</h:outputLabel>
+			<h:inputText id="email" value="#{currentUserProject.users.email}"
+				disabled="true" />
+			<rich:message for="email" style="width : 184px;" />
+
+			<h:outputLabel for="memberRole">
+				<a class="tooltip" href="#">Role<span class="custom help">
+				<img src="images/Help.png" alt="Help" height="48" width="48" /><em>#{helpController.getHelpTitle('AddNewMembersPopup_Role')}</em>#{helpController.setupHelpText('AddNewMembersPopup_Role')}
+				</span></a>
+			</h:outputLabel>
+			<h:selectOneMenu id="memberRole" required="true"
+				value="#{currentUserProject.userRole}" style="width:184px;">
+				<f:selectItem id="memberRole_item1" itemLabel="Admin"
+					itemValue="admin" />
+				<f:selectItem id="memberRole_item2" itemLabel="Researcher"
+					itemValue="researcher" />
+				<f:selectItem id="memberRole_item3" itemLabel="User"
+					itemValue="user" />
+				<f:selectItem id="memberRole_item4" itemLabel="Someone"
+					itemValue="Someone" itemDisabled="true" />
+			</h:selectOneMenu>
+			<rich:message for="memberRole" style="width : 184px;" />
+
+		</h:panelGrid></div>
+
+		<div class="actionButtons">
+										
+					<a4j:commandButton id="editProjectMemberCancelButton" value="Cancel" style="float:left">
+			    	 <rich:componentControl for="editProjectMemberPanel" attachTo="editProjectMemberCancelButton" operation="hide" event="onclick"/>
+			    </a4j:commandButton>
+			    
+			    <a4j:commandButton id="editProjectMemberButton" value="Edit Member Role" action="#{createController.editProjectMember}" 
+				    onclick="this.disabled=true" status="submitStatus"
+					reRender="homeMainPanel, editProjectMemberFormInclude" style="float:center">
+					<rich:componentControl for="editProjectMemberPanel" attachTo="editProjectMemberButton" operation="hide" event="onclick"/>
+			    </a4j:commandButton>
+			    
+			    <a4j:commandButton id="deleteProjectMemberButton" value="Delete Member Role" action="#{createController.deleteProjectMember}" 
+				    onclick="this.disabled=true" status="submitStatus"
+					reRender="homeMainPanel, editProjectMemberFormInclude" style="float:right">
+					<rich:componentControl for="editProjectMemberPanel" attachTo="deleteProjectMemberButton" operation="hide" event="onclick"/>
+			    </a4j:commandButton>
+			    
+			    <a4j:region>
+					<a4j:status id="submitStatus">
+						<f:facet name="start">
+							<h:graphicImage value="/img/wait.gif" height="28px" width="28px"
+								style="float:right" />
+						</f:facet>
+					</a4j:status>
+				</a4j:region>
+				</div>
+	
+	       
+	    
     </a4j:form>
 	
 </ui:composition>

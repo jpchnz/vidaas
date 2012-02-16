@@ -6,7 +6,7 @@
 	xmlns:s="http://jboss.com/products/seam/taglib"
 	xmlns:rich="http://richfaces.org/rich">
 	<rich:modalPanel id="registrationPanel-1" width="350" autosized="true" 
-			style="border-radius: 30px"
+			style="border-radius: 30px" onhide="window.location.reload()"
 			showWhenRendered="#{registration.level1Registration}" >
 		<f:facet name="header">
 			<h:panelGroup>
