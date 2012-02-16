@@ -9,7 +9,7 @@
 	<a4j:form ajaxSubmit="true" reRender="homePageMainBodyInclude, homeMainPanel">
 		<h:outputText value="#{createController.dropDatabaseConfirmationMessage}" />
 		<br/>
-		<a4j:commandLink value="OK" reRender="homePageMainBodyInclude, homeMainPanel, dropDatabasePanel, dropDatabaseFormInclude" 
+		<a4j:commandLink value="OK" reRender="datbasesDataGrid, homePageMainBodyInclude, homeMainPanel, dropDatabasePanel, dropDatabaseFormInclude" 
 			action="#{navigationController.dropDatabaseInitial()}" id="dropDatabaseConfirmationOKLink">
 			 <rich:componentControl for="dropDatabasePanel" attachTo="dropDatabaseConfirmationOKLink" operation="hide" event="onclick"/>
 		</a4j:commandLink>		
