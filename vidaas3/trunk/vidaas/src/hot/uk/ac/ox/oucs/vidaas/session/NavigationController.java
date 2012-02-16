@@ -51,15 +51,19 @@ public class NavigationController {
 	private Project currentProject;
 	private Dataspace currentDataspace;
 	private ProjectDatabase currentProjectDatabase;
+	private UserProject currentUserProject;
 
 	@RequestParameter("projectIDValue")
 	private Integer projectIDValue;
 
 	@RequestParameter("dataspaceIDValue")
 	private Integer dataspaceIDValue;
-	
+
 	@RequestParameter("databaseIDValue")
 	private Integer databaseIDValue;
+
+	@RequestParameter("userIDValue")
+	private Integer userIDValue;
 
 	/*
 	 * @RequestParameter("dataspaceIDValue") private Integer
@@ -83,7 +87,7 @@ public class NavigationController {
 
 	private String dropDatabaseInclude = "/popup/dropDatabaseForm.xhtml";
 	private boolean dropDatabaseFormRender = false;
-	
+
 	private String downloadDatabaseInclude = "/popup/downloadDatabaseForm.xhtml";
 	private boolean downloadDatabaseFormRender = false;
 
@@ -98,22 +102,36 @@ public class NavigationController {
 
 	private String testDatabaseInclude = "/popup/testDatabaseForm.xhtml";
 	private boolean testDatabaseFormRender = false;
-	
+
 	private String restoreDatabaseInclude = "/popup/restoreDatabaseForm.xhtml";
 	private boolean restoreDatabaseFormRender = false;
 
 	private String testXMLDatabaseInclude = "/popup/testXMLDatabaseForm.xhtml";
 	private boolean testXMLDatabaseFormRender = false;
-	
+
 	private String createWebApplicationInclude = "/popup/createWebApplicationForm.xhtml";
 	private boolean createWebApplicationFormRender = false;
-	
+
 	private String removeWebApplicationInclude = "/popup/removeWebApplicationForm.xhtml";
 	private boolean removeWebApplicationFormRender = false;
-	
+
 	private String editProjectMemberInclude = "/popup/editProjectMemberForm.xhtml";
 	private boolean editProjectMemberFormRender = false;
 
+	private String editProjectInclude = "/popup/editProjectForm.xhtml";
+	private boolean editProjectFormRender = false;
+
+	private String deleteProjectInclude = "/popup/deleteProjectForm.xhtml";
+	private boolean deleteProjectFormRender = false;
+
+	private String editDataspaceInclude = "/popup/editDataspaceForm.xhtml";
+	private boolean editDataspaceFormRender = false;
+
+	private String deleteDataspaceInclude = "/popup/deleteDataspaceForm.xhtml";
+	private boolean deleteDataspaceFormRender = false;
+
+	private String editProjectMemberErrorMessage = "Failed to change the user role.";
+	
 	public String getHomePageMainBodyNavigation() {
 		return homePageMainBodyNavigation;
 	}
@@ -139,7 +157,7 @@ public class NavigationController {
 		log.info("setProjectIDValue {0}", projectIDValue);
 		this.projectIDValue = projectIDValue;
 	}
-	
+
 	public Integer getDataspaceIDValue() {
 		return dataspaceIDValue;
 	}
@@ -154,13 +172,21 @@ public class NavigationController {
 
 	public void setDatabaseIDValue(Integer databaseIDValue) {
 		log.info("setDatabaseIDValue {0}", databaseIDValue);
-		
+
 		this.databaseIDValue = databaseIDValue;
-		
+
 		projectDatabaseHome.setId(databaseIDValue);
 		this.currentProjectDatabase = projectDatabaseHome.getInstance();
 		Contexts.getSessionContext().set("currentProjectDatabase",
 				this.currentProjectDatabase);
+	}
+
+	public Integer getUserIDValue() {
+		return userIDValue;
+	}
+
+	public void setUserIDValue(Integer userIDValue) {
+		this.userIDValue = userIDValue;
 	}
 
 	public String getCreateProjectFormInclude() {
@@ -258,7 +284,7 @@ public class NavigationController {
 	public void setDropDatabaseFormRender(boolean dropDatabaseFormRender) {
 		this.dropDatabaseFormRender = dropDatabaseFormRender;
 	}
-	
+
 	public String getDownloadDatabaseInclude() {
 		return downloadDatabaseInclude;
 	}
@@ -306,7 +332,7 @@ public class NavigationController {
 	public void setTestDatabaseFormRender(boolean testDatabaseFormRender) {
 		this.testDatabaseFormRender = testDatabaseFormRender;
 	}
-	
+
 	public String getRestoreDatabaseInclude() {
 		return restoreDatabaseInclude;
 	}
@@ -359,7 +385,8 @@ public class NavigationController {
 		return createWebApplicationInclude;
 	}
 
-	public void setCreateWebApplicationInclude(String createWebApplicationInclude) {
+	public void setCreateWebApplicationInclude(
+			String createWebApplicationInclude) {
 		this.createWebApplicationInclude = createWebApplicationInclude;
 	}
 
@@ -376,7 +403,8 @@ public class NavigationController {
 		return removeWebApplicationInclude;
 	}
 
-	public void setRemoveWebApplicationInclude(String removeWebApplicationInclude) {
+	public void setRemoveWebApplicationInclude(
+			String removeWebApplicationInclude) {
 		this.removeWebApplicationInclude = removeWebApplicationInclude;
 	}
 
@@ -388,11 +416,11 @@ public class NavigationController {
 			boolean removeWebApplicationFormRender) {
 		this.removeWebApplicationFormRender = removeWebApplicationFormRender;
 	}
-	
+
 	public String getEditProjectMemberInclude() {
 		return editProjectMemberInclude;
 	}
-	
+
 	public void setEditProjectMemberInclude(String editProjectMemberInclude) {
 		this.editProjectMemberInclude = editProjectMemberInclude;
 	}
@@ -401,10 +429,84 @@ public class NavigationController {
 		return editProjectMemberFormRender;
 	}
 
-	public void setEditProjectMemberFormRender(boolean editProjectMemberFormRender) {
+	public void setEditProjectMemberFormRender(
+			boolean editProjectMemberFormRender) {
 		this.editProjectMemberFormRender = editProjectMemberFormRender;
 	}
-	
+
+	public String getEditProjectInclude() {
+		return editProjectInclude;
+	}
+
+	public void setEditProjectInclude(String editProjectInclude) {
+		this.editProjectInclude = editProjectInclude;
+	}
+
+	public boolean isEditProjectFormRender() {
+		return editProjectFormRender;
+	}
+
+	public void setEditProjectFormRender(boolean editProjectFormRender) {
+		this.editProjectFormRender = editProjectFormRender;
+	}
+
+	public String getDeleteProjectInclude() {
+		return deleteProjectInclude;
+	}
+
+	public void setDeleteProjectInclude(String deleteProjectInclude) {
+		this.deleteProjectInclude = deleteProjectInclude;
+	}
+
+	public boolean isDeleteProjectFormRender() {
+		return deleteProjectFormRender;
+	}
+
+	public void setDeleteProjectFormRender(boolean deleteProjectFormRender) {
+		this.deleteProjectFormRender = deleteProjectFormRender;
+	}
+
+	public String getEditDataspaceInclude() {
+		return editDataspaceInclude;
+	}
+
+	public void setEditDataspaceInclude(String editDataspaceInclude) {
+		this.editDataspaceInclude = editDataspaceInclude;
+	}
+
+	public boolean isEditDataspaceFormRender() {
+		return editDataspaceFormRender;
+	}
+
+	public void setEditDataspaceFormRender(boolean editDataspaceFormRender) {
+		this.editDataspaceFormRender = editDataspaceFormRender;
+	}
+
+	public String getDeleteDataspaceInclude() {
+		return deleteDataspaceInclude;
+	}
+
+	public void setDeleteDataspaceInclude(String deleteDataspaceInclude) {
+		this.deleteDataspaceInclude = deleteDataspaceInclude;
+	}
+
+	public boolean isDeleteDataspaceFormRender() {
+		return deleteDataspaceFormRender;
+	}
+
+	public void setDeleteDataspaceFormRender(boolean deleteDataspaceFormRender) {
+		this.deleteDataspaceFormRender = deleteDataspaceFormRender;
+	}
+
+	public String getEditProjectMemberErrorMessage() {
+		return editProjectMemberErrorMessage;
+	}
+
+	public void setEditProjectMemberErrorMessage(
+			String editProjectMemberErrorMessage) {
+		this.editProjectMemberErrorMessage = editProjectMemberErrorMessage;
+	}
+
 	public Users getUserMain() {
 		if (userMain == null) {
 			userMain = ((Users) Contexts.getSessionContext().get("userMain"));
@@ -427,13 +529,13 @@ public class NavigationController {
 	}
 
 	public void listUserProjects() {
-		//log.info("listUserProjects {0}", homePageMainBodyNavigation);
+		// log.info("listUserProjects {0}", homePageMainBodyNavigation);
 		if (getUserMain() != null) {
 			homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
 		} else {
 			homePageMainBodyNavigation = "homeWelcome.xhtml";
 		}
-		//log.info("listUserProjects {0}", homePageMainBodyNavigation);
+		// log.info("listUserProjects {0}", homePageMainBodyNavigation);
 	}
 
 	public List<UserProject> userProjectsList() {
@@ -456,11 +558,16 @@ public class NavigationController {
 	 */
 
 	public List<ProjectDatabase> listDatabaseByDataspace() {
+		dataspaceHome.setId(currentDataspace.getDataSpaceId());
+
+		currentDataspace = dataspaceHome.find();
+
 		Set<ProjectDatabase> tempProjectDatabaseSet = currentDataspace
 				.getProjectDatabases();
-		/*log.info("currentDataspace.getDataSpaceId() {0} Number of Databases: {1}",
+		/**/log.info(
+				"currentDataspace.getDataSpaceId() {0} Number of Databases: {1}",
 				currentDataspace.getDataSpaceId(),
-				tempProjectDatabaseSet.size());*/
+				tempProjectDatabaseSet.size());
 
 		List<ProjectDatabase> list = new ArrayList<ProjectDatabase>(
 				tempProjectDatabaseSet);
@@ -487,16 +594,16 @@ public class NavigationController {
 		List<Dataspace> dataspacesList = dataspaceHome
 				.findByProjectID(projectIDValue);
 		/*
-		log.info(
-				"listProjectDataspaces ***************************************   dataspaceIDValue:  {0} {1}",
-				dataspacesList.size(), projectIDValue);
-				*/
+		 * log.info(
+		 * "listProjectDataspaces ***************************************   dataspaceIDValue:  {0} {1}"
+		 * , dataspacesList.size(), projectIDValue);
+		 */
 		return dataspacesList;
 	}
 
 	public void addProjectMemberInitial() {
 		projectMemberFormRender = false;
-		//log.info("addProjectMemberInitial() ................................................................... addProjectMemberInitial()");
+		// log.info("addProjectMemberInitial() ................................................................... addProjectMemberInitial()");
 		addProjectMemberInclude = "/popup/addProjectMemberForm.xhtml";
 	}
 
@@ -541,54 +648,56 @@ public class NavigationController {
 	public void dropDatabaseInitial() {
 		this.dropDatabaseFormRender = false;
 		dropDatabaseInclude = "/popup/dropDatabaseForm.xhtml";
-		homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
+		// homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
+		homePageMainBodyNavigation = "/custom/singleDataspaceByProject.xhtml";
 	}
 
 	public void dropDatabaseConfirmation() {
 		System.out.println("dropDatabaseConfirmation: ");
 		this.dropDatabaseFormRender = true;
 		dropDatabaseInclude = "/popup/dropDatabaseConfirmation.xhtml";
+		// homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
 	}
 
 	public void backupDatabaseInitial() {
 		backupDatabaseFormRender = false;
 		backupDatabaseInclude = "/popup/backupDatabaseForm.xhtml";
-		homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
+		// homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
 	}
 
 	public void backupDatabaseConfirmation() {
 		backupDatabaseFormRender = true;
 		backupDatabaseInclude = "/popup/backupDatabaseConfirmation.xhtml";
 	}
-	
+
 	public void restoreDatabaseInitial() {
 		restoreDatabaseFormRender = false;
 		restoreDatabaseInclude = "/popup/restoreDatabaseForm.xhtml";
-		homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
+		// homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
 	}
-	
+
 	public void restoreDatabaseConfirmation() {
 		restoreDatabaseFormRender = true;
 		restoreDatabaseInclude = "/popup/restoreDatabaseConfirmation.xhtml";
 	}
-	
+
 	public void createWebApplicationInitial() {
 		createWebApplicationFormRender = false;
 		createWebApplicationInclude = "/popup/createWebApplicationForm.xhtml";
-		homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
+		// homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
 	}
-	
+
 	public void createWebApplicationConfirmation() {
 		createWebApplicationFormRender = true;
 		createWebApplicationInclude = "/popup/createWebApplicationConfirmation.xhtml";
 	}
-	
+
 	public void removeWebApplicationInitial() {
 		removeWebApplicationFormRender = false;
 		removeWebApplicationInclude = "/popup/removeWebApplicationForm.xhtml";
-		homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
+		// homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
 	}
-	
+
 	public void removeWebApplicationConfirmation() {
 		removeWebApplicationFormRender = true;
 		removeWebApplicationInclude = "/popup/removeWebApplicationConfirmation.xhtml";
@@ -597,26 +706,58 @@ public class NavigationController {
 	public void testDatabaseInitial() {
 		testDatabaseFormRender = false;
 		testDatabaseInclude = "/popup/testDatabaseForm.xhtml";
-		homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
+		// homePageMainBodyNavigation = "/custom/projectByUserList.xhtml";
 	}
 
 	public void testDatabaseConfirmation() {
 		testDatabaseFormRender = true;
 		testDatabaseInclude = "/popup/testDatabaseConfirmation.xhtml";
 	}
-	
+
 	public void editProjectMemberInitial() {
 		editProjectMemberFormRender = false;
 		editProjectMemberInclude = "/popup/editProjectMemberForm.xhtml";
 	}
-	
+
 	public void editProjectMemberConfirmation() {
 		editProjectMemberFormRender = true;
 		editProjectMemberInclude = "/popup/editProjectMemberConfirmation.xhtml";
 	}
 
+	public void editProjectInitial() {
+		editProjectMemberFormRender = false;
+		editProjectMemberInclude = "/popup/editProjectForm.xhtml";
+	}
+
+	public void editProjectConfirmation() {
+		editProjectMemberFormRender = true;
+		editProjectMemberInclude = "/popup/editProjectConfirmation.xhtml";
+	}
+
+	public void deleteProjectInitial() {
+		deleteProjectFormRender = false;
+		deleteProjectInclude = "/popup/deleteProjectForm.xhtml";
+	}
+
+	public void deleteProjectConfirmation() {
+		deleteProjectFormRender = true;
+		deleteProjectInclude = "/popup/deleteProjectConfirmation.xhtml";
+	}
+
+	public void deleteDataspaceInitial() {
+		deleteDataspaceFormRender = false;
+		deleteDataspaceInclude = "/popup/deleteDataspaceForm.xhtml";
+	}
+
+	public void deleteDataspaceConfirmation() {
+		deleteDataspaceFormRender = true;
+		deleteDataspaceInclude = "/popup/deleteDataspaceConfirmation.xhtml";
+	}
+
 	public void singleDataspaceDisplayPage() {
-		log.info("singleDatabaseDisplayPage dataspaceIDValue: {0} projectIDValue: {1}", dataspaceIDValue, projectIDValue);		
+		log.info(
+				"singleDatabaseDisplayPage dataspaceIDValue: {0} projectIDValue: {1}",
+				dataspaceIDValue, projectIDValue);
 
 		projectHome.setId(projectIDValue);
 		currentProject = projectHome.getInstance();
@@ -629,9 +770,18 @@ public class NavigationController {
 		homePageMainBodyNavigation = "/custom/singleDataspaceByProject.xhtml";
 	}
 
+	public void setCurrentDataspace(Integer currentDataspaceIDValue) {
+		log.info("setCurrentDataspace currentDataspaceIDValue: "
+				+ currentDataspaceIDValue);
+		currentDataspace = null;
+		dataspaceHome.setId(currentDataspaceIDValue);
+		currentDataspace = dataspaceHome.getInstance();
+
+		Contexts.getSessionContext().set("currentDataspace", currentDataspace);
+	}
+
 	public void createProjectMember() {
-		log.info("createProjectMember projectIDValue: "
-				+ projectIDValue);
+		log.info("createProjectMember projectIDValue: " + projectIDValue);
 		if (projectIDValue != null) {
 			Contexts.getSessionContext().set("projectIDValue", projectIDValue);
 		} else {
@@ -645,39 +795,123 @@ public class NavigationController {
 		// homePageMainBodyNavigation = "/custom/createUserForm.xhtml";
 	}
 
+	public void modifyProjectMember() {
+		System.out.println("userIDValue: " + userIDValue);
+		this.userProjectHome.setId(new UserProjectId(projectIDValue,
+				userIDValue));
+		currentUserProject = this.userProjectHome.getInstance();
+
+		List<UserProject> userProjectList = userProjectHome
+				.findByProjectID(currentUserProject.getId().getProjectId());
+		System.out.println(userProjectList.size());
+		if (userProjectList.size() == 1) {
+
+			if (userProjectList.get(0).getId().getUserId() == currentUserProject
+					.getId().getUserId()) {
+				if (userProjectList.get(0).getUserRole()
+						.equalsIgnoreCase("admin")
+						|| userProjectList.get(0).getUserRole()
+								.equalsIgnoreCase("owner")) {
+					// Don't update the role ...
+					// there should always be one admin/owner of the project
+					//System.out.println("Single User is owner");
+					editProjectMemberErrorMessage = " Selected member is  sole Owner/Admin of the project. Change in role not allowed";
+					editProjectMemberInclude = "/popup/editProjectMemberError.xhtml";
+				} else {
+					editProjectMemberErrorMessage = "Project should have at least one member. Change in role not allowed";
+					editProjectMemberInclude = "/popup/editProjectMemberError.xhtml";
+				}
+			}
+		} else if (userProjectList.size() > 1) {
+			if (userProjectList.get(0).getUserRole().equalsIgnoreCase("admin")
+					|| userProjectList.get(0).getUserRole()
+							.equalsIgnoreCase("owner")) {
+				boolean anyOtherOwner = false;
+				for (int i = 0; i < userProjectList.size(); i++) {
+					UserProject tempUserProject = userProjectList.get(i);
+					if (tempUserProject.getId().getUserId() != currentUserProject
+							.getId().getUserId())
+						if (tempUserProject.getUserRole().equalsIgnoreCase(
+								"admin")
+								|| tempUserProject.getUserRole()
+										.equalsIgnoreCase("owner")) {
+							anyOtherOwner = true;
+							break;
+						}
+				}
+				if (anyOtherOwner) {
+					editProjectMemberInclude = "/popup/editProjectMemberForm.xhtml";
+				} else {
+					editProjectMemberErrorMessage = "At lease one member of the project should be Owner/Admin of the project. Change in role not allowed";
+					editProjectMemberInclude = "/popup/editProjectMemberError.xhtml";
+				}
+
+			}
+		}
+		Contexts.getSessionContext().set("currentUserProject",
+				currentUserProject);
+	}
+
+	public void setCurrentProject(Integer currentProjectIDValue) {
+		log.info("setCurrentProject projectIDValue: " + projectIDValue + "  "
+				+ currentProjectIDValue);
+		if (projectIDValue != null) {
+			Contexts.getSessionContext().set("projectIDValue", projectIDValue);
+		} else {
+			projectIDValue = (Integer) Contexts.getSessionContext().get(
+					"projectIDValue");
+		}
+
+		projectHome.setId(projectIDValue);
+		currentProject = projectHome.getInstance();
+		Contexts.getSessionContext().set("currentProject", currentProject);
+	}
+
 	public boolean setCurrentDatabase(Integer currentDatabaseIDValue) {
-		Contexts.getSessionContext().set("currentProjectDatabase",
-				null);
+		Contexts.getSessionContext().set("currentProjectDatabase", null);
 		log.info("setCurrentDatabase  currentDatabaseIDValue: "
 				+ currentDatabaseIDValue);
+		
+		this.currentProjectDatabase = null;
+		
 		projectDatabaseHome.setId(currentDatabaseIDValue);
 		this.currentProjectDatabase = projectDatabaseHome.getInstance();
-		//log.info("Database Name: {0}", currentProjectDatabase.getDatabaseName());
-/**/
+
+		setCurrentDataspace(this.currentProjectDatabase.getDataspace()
+				.getDataSpaceId());
+
 		Contexts.getSessionContext().set("currentProjectDatabase",
 				this.currentProjectDatabase);
 		return true;
 	}
 
 	public ProjectDatabase getCurrentProjectDatabase() {
-		log.info(" *******************************************************   getCurrentProjectDatabase()");
-		if(currentProjectDatabase != null){
-			log.info("getCurrentProjectDatabase() Database Name: {0}", currentProjectDatabase.getDatabaseName());
+		//log.info(" *******************************************************   getCurrentProjectDatabase()");
+		if (currentProjectDatabase != null) {
+			log.info("getCurrentProjectDatabase() Database Name: {0}",
+					currentProjectDatabase.getDatabaseName());
 		}
 		return currentProjectDatabase;
+	}
+
+	public Project getCurrentProject() {
+		if (currentProject != null) {
+			log.info("getCurrentProject() Project Name: {0}",
+					currentProject.getName());
+		}
+		return currentProject;
 	}
 
 	public void setCurrentProjectDatabase(ProjectDatabase currentProjectDatabase) {
 		this.currentProjectDatabase = currentProjectDatabase;
 	}
-	
-	public void actionTest(){
+
+	public void actionTest() {
 		log.info("actionTest()");
 	}
-	
-	public void onCompleteTest(){
+
+	public void onCompleteTest() {
 		log.info("onCompleteTest()");
 	}
-	
 
 }
