@@ -16,6 +16,13 @@ public class SystemVars {
 	public static final boolean USE_SSO_IF_AVAILABLE = true;
 	
 	
+	/*
+	 * Set this to have user role functions enabled.
+	 * Normally this should be set to true, but is currently included
+	 * so that new code won't impact other users until fully tested.
+	 */
+	public static final boolean USE_USER_ROLES = true;
+	
 	
 	/**
 	 * Define the possible roles associated with a user
