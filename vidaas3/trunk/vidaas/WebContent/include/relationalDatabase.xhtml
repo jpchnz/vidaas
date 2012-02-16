@@ -6,7 +6,7 @@
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:rich="http://richfaces.org/rich">
 
-	<rich:panel>
+	<rich:panel id="databaseVersionPanel">
 		<f:facet name="header">
 			<h:outputText
 				value="Detailed summary of '#{currentDataspace.dataspaceUserFriendlyName}'"></h:outputText>
@@ -130,7 +130,7 @@
 					rendered="#{_database.databaseType=='main'  and createController.hasBackupDatabase(_database.databaseId)}"
 					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
 					reRender="backupDatabaseFormInclude" id="backupDatabaseButton"
-					value="create milestone database"
+					value="Create milestone database"
 					oncomplete="Richfaces.showModalPanel('backupDatabasePanel');">
 					<!--  
 							<rich:componentControl for="backupDatabasePanel"
