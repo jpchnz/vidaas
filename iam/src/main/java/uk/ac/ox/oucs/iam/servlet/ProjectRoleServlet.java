@@ -114,7 +114,7 @@ public class ProjectRoleServlet extends HttpServlet {
 		command = request.getParameter("getRoles");
 		if (command != null) {
 			getRoles();
-			out.println(userRoles.isAllowedToCreateDatabaseByRole(command));
+			//out.println(userRoles.isAllowedToCreateDatabaseByRole(command));
 		}
 	}
 	
