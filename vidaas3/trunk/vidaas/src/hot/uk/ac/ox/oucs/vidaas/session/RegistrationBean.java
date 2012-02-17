@@ -47,7 +47,9 @@ public class RegistrationBean {
 	private String postion;
 	private String department;
 	private String grp;
+	private String emailText;
 
+	
 	@Email
 	private String email;
 
@@ -69,6 +71,13 @@ public class RegistrationBean {
 
 	private String registrationMessage1 = "";
 	private String registrationMessage2 = "";
+	
+	public RegistrationBean() {
+		if (Authenticator.useSso) {
+			emailText = "Our records indicate that you have not registered with VIDaaS using your SSO email address. ";
+			emailText += "Since the University's SSO system is in use, the email address you must register with has been fixed.";
+		}
+	}
 
 	public int getUserId() {
 		return userId;
@@ -117,9 +126,25 @@ public class RegistrationBean {
 	public void setGrp(String grp) {
 		this.grp = grp;
 	}
+	
+	
 
 	public String getEmail() {
+		SsoAuthenticator sso = new SsoAuthenticator();
+		sso.setupShibbolethVariables();
+		String emailField = sso.getEmail();
+		if (emailField != null) {
+			return emailField;
+		}
 		return email;
+	}
+	
+	public String getEmailText() {
+		return emailText;
+	}
+
+	public void setEmailText(String emailText) {
+		this.emailText = emailText;
 	}
 
 	public void setEmail(String email) {
@@ -200,10 +225,10 @@ public class RegistrationBean {
 
 	public boolean registrationLevel1() {
 		level1Registration = true;
-
+		
 		((NavigationController) Contexts.getSessionContext().get(
-				"navigationController")).defaultHomePage();
-
+		"navigationController")).defaultHomePage();
+		
 		if (usersHome.findUserByEmail(email).isEmpty()) {
 
 			user = usersHome.getInstance();
@@ -213,6 +238,11 @@ public class RegistrationBean {
 			user.setPosition(postion);
 			user.setDepartment(department);
 			user.setGrp(grp);
+			
+			if (emailField != null) {
+				System.out.println("We shall use:" + emailField);
+				email = emailField;
+			}
 			user.setEmail(email);
 
 			String tempPersistResult = usersHome.persist();
@@ -225,8 +255,33 @@ public class RegistrationBean {
 				level1Registration = false;
 				level1Registration2 = true;
 				registrationMessage1 = "";
-				registrationFormInclude = "/popup/registerForm-2.xhtml";
+				if (Authenticator.useSso) {
+					/*
+					 * Since we are using single sign on, the user doesn't need their own login
+					 * id - it is provided for us.
+					 */
+					registrationFormInclude = "/popup/registerForm-3.xhtml";
+					
+					/*
+					 * We should automatically create a user entry
+					 */
+					password = "AKTB1348dhnyt";
+					password2 = password;
+					userName = email;
+					registrationLevel2();
+				}
+				else {
+					registrationFormInclude = "/popup/registerForm-2.xhtml";
+				}
 				emailUniqueViolation = "";
+				
+				if (loginsHome.findByUserName(email).isEmpty()) {
+					logins = loginsHome.getInstance();
+					logins.setUserName(email);
+					logins.setPassword("not being used");
+					usersHome.setId(this.userId);
+					logins.setUsers(usersHome.getInstance());
+				}
 			}
 		} else {
 			emailUniqueViolation = "'" + email + "' already registered";
@@ -236,8 +291,8 @@ public class RegistrationBean {
 
 	public boolean registrationLevel2() {
 		((NavigationController) Contexts.getSessionContext().get(
-				"navigationController")).defaultHomePage();
-
+		"navigationController")).defaultHomePage();
+		
 		if (loginsHome.findByUserName(userName).isEmpty()) {
 			if (password.equals(password2)) {
 				logins = loginsHome.getInstance();
@@ -281,7 +336,15 @@ public class RegistrationBean {
 
 		return false;
 	}
+	
 
+	String emailField = null;
+	public void setEmailField(String emailField) {
+		System.out.println("Setting email field:" + emailField);
+		this.emailField = emailField;
+		setEmail(emailField);
+	}
+	
 	private void clearFields() {
 		firstName = "";
 		lastName = "";
@@ -296,10 +359,9 @@ public class RegistrationBean {
 		registrationMessage1 = "";
 		registrationMessage2 = "";
 	}
-
-	public void registrationSuccessful() {
+	
+	public void registrationSuccessful(){
 		clearFields();
-		registrationFormInclude = "/popup/registerForm-1.xhtml";
-	}
-
+    	registrationFormInclude = "/popup/registerForm-1.xhtml";
+    }
 }
