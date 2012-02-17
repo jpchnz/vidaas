@@ -94,6 +94,13 @@
 	</helpGroup>
 	<helpGroup description="Add new members to project popup">
 		<helpField>
+			<helpId>AddNewMembersPopup_Email</helpId>
+			<title>Email</title>
+			<text>This needs to be the email of the user you wish to join your project that they have used to register with ORDS.
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
 			<helpId>AddNewMembersPopup_Role</helpId>
 			<title>Role</title>
 			<text>Project members will have one of the following roles:

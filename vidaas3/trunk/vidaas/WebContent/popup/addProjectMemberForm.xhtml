@@ -23,7 +23,11 @@
 	                                value="#{usersHome.instance.lastName}" required="true"/>	                     
 						<rich:message for="lastName" style="width : 184px;" />
 						
-						<h:outputLabel for="email">Email</h:outputLabel>
+						<h:outputLabel for="email"><a class="tooltip" href="#">Email<span class="custom help">
+								<img src="images/Help.png" alt="Help" height="48" width="48" />
+								<em>#{helpController.getHelpTitle('AddNewMembersPopup_Email')}</em>
+								#{helpController.setupHelpText('AddNewMembersPopup_Email')}
+							</span></a></h:outputLabel>
 	                    <h:inputText id="email" 
 	                                value="#{usersHome.instance.email}" required="true"/>	                     
 						<rich:message for="email" style="width : 184px;" />
