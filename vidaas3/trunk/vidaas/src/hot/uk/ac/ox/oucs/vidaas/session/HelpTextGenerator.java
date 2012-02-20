@@ -51,7 +51,6 @@ public class HelpTextGenerator {
 			System.out.println("Unable to get help file resource");
 			ret = false;
 		}
-		System.out.println("We have our input stream");
 		return ret;
 	}
 
