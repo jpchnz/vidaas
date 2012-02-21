@@ -154,4 +154,19 @@ public class ProjectAuthentication  {
 		String result = rolePoster.sendPost("isAllowedToRemoveProjectByRole=" + role);
 		return (result.startsWith("true"));
 	}
+	
+	/**
+	 * Check if the user with the defined role is allowed to edit the project.
+	 * 
+	 * Note. This is back end processing. It assumes the project is known by the caller.
+	 * So the caller can simply get the relevant data string from the database for the project and
+	 * verify its value against this function.
+	 * @param role the role to test
+	 * @return true if the user is allowed to, else false
+	 * @throws IOException
+	 */
+	public boolean isAllowedToEditProject(String role) throws IOException {
+		String result = rolePoster.sendPost("isAllowedToEditProjectByRole=" + role);
+		return (result.startsWith("true"));
+	}
 }

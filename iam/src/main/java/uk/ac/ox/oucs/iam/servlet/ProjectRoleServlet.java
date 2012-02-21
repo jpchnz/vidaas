@@ -109,11 +109,22 @@ public class ProjectRoleServlet extends HttpServlet {
 		if (command != null) {
 			out.println(userRoles.isAllowedToRemoveProjectByRole(command));
 		}
+		
+		command = request.getParameter("isAllowedToEditProjectByRole");
+		if (command != null) {
+			out.println(userRoles.isAllowedToEditProjectByRole(command));
+		}
 
 		
 		command = request.getParameter("getRoles");
 		if (command != null) {
 			getRoles();
+			//out.println(userRoles.isAllowedToCreateDatabaseByRole(command));
+		}
+		
+		command = request.getParameter("getRolesWithoutOwner");
+		if (command != null) {
+			getRolesExcludeOwner();
 			//out.println(userRoles.isAllowedToCreateDatabaseByRole(command));
 		}
 	}
@@ -124,6 +135,16 @@ public class ProjectRoleServlet extends HttpServlet {
 	 */
 	private void getRoles() {
 		String [] result = userRoles.getRolesAsArray();
+		for (int count = 0; count < result.length; count++) {
+			out.println(result[count]);
+		}
+	}
+	
+	/**
+	 * List all available roles within IAM except for the (special) owner role
+	 */
+	private void getRolesExcludeOwner() {
+		String [] result = userRoles.getRolesAsArrayExcludeOwner();
 		for (int count = 0; count < result.length; count++) {
 			out.println(result[count]);
 		}

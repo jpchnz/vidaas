@@ -73,7 +73,7 @@ public class IAMRoleManager {
 	
 	public static void main(String[] args) {
 		try {
-			IAMRoleManager iamPost = new IAMRoleManager();
+			IAMRoleManager iamPost = new IAMRoleManager("http://129.67.101.252/iam/ProjectRoleServlet");
 			
 			System.out.println("All roles are:" + iamPost.getRoles());
 			System.out.println("Checking is owner ...");

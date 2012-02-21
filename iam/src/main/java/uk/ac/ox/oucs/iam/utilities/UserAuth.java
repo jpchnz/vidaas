@@ -5,13 +5,14 @@ public class UserAuth {
 	 * The following two variables must be in sync
 	 */
 	protected static String[] rolesAvailable = { "Owner", "Project Administrator", "Contributor", "Viewer" };
+	protected static String[] rolesAvailableExcludeOwner = { "Project Administrator", "Contributor", "Viewer" };
 
 	protected static enum RolesAvailableEnum {
 		Owner, ProjectAdministrator, Contributor, Viewer
 	}; // NOTE: Viewer must be the last entry
 
 	public static enum FunctonsAvailableEnum {
-		IsOwner, AddProject, DeleteProject, AddUserToProject,
+		IsOwner, AddProject, DeleteProject, EditProject, AddUserToProject,
 		RemoveUserFromProject, EditUsersRightsForProject,
 		CreateDB, EditDB, DeleteDB, AddRemoveEditDataInDB,
 		CreateWebApp, DeleteWebApp, ViewProjectData, CreatePublicViewsOfData
@@ -19,6 +20,10 @@ public class UserAuth {
 
 	public String[] getRolesAvailable() {
 		return rolesAvailable;
+	}
+	
+	public String[] getRolesAvailableExcludeOwner() {
+		return rolesAvailableExcludeOwner;
 	}
 
 	public boolean isAuthorised(String roleIn, FunctonsAvailableEnum function) {
@@ -39,6 +44,7 @@ public class UserAuth {
 		case AddUserToProject:
 		case RemoveUserFromProject:
 		case EditUsersRightsForProject:
+		case EditProject:
 			ret = role.equalsIgnoreCase(RolesAvailableEnum.Owner.toString())
 					|| role.equalsIgnoreCase(RolesAvailableEnum.ProjectAdministrator.toString());
 			break;

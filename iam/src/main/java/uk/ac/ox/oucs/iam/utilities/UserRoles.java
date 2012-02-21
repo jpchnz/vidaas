@@ -24,6 +24,14 @@ public class UserRoles {
 	
 	
 	/**
+	 * Return a list of all roles available except the special owner role
+	 * @return
+	 */
+	public String[] getRolesAsArrayExcludeOwner() {
+		return userAuth.getRolesAvailableExcludeOwner();
+	}
+	
+	/**
 	 * Routine to determine if the role denotes owner
 	 * @param usersRole of user to query
 	 * @return true if owner, else false
@@ -150,12 +158,21 @@ public class UserRoles {
 	
 	
 	/**
-	 * Check if the user with the defined role is allowed to create public views of project data
+	 * Check if the user with the defined role is allowed to remove a project
 	 * @param usersRole The role of the user
 	 * @return true if the user has authority, else false
 	 */
 	public boolean isAllowedToRemoveProjectByRole(String usersRole) {
 		return userAuth.isAuthorised(usersRole,FunctonsAvailableEnum.DeleteProject);
+	}
+	
+	/**
+	 * Check if the user with the defined role is allowed to edit a project
+	 * @param usersRole The role of the user
+	 * @return true if the user has authority, else false
+	 */
+	public boolean isAllowedToEditProjectByRole(String usersRole) {
+		return userAuth.isAuthorised(usersRole,FunctonsAvailableEnum.EditProject);
 	}
 	
 	
