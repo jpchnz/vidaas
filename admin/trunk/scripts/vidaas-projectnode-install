@@ -8,7 +8,7 @@ jboss_install_dir=$target_dir #obsolete
 seam_install_dir=$target_dir #obsolete
 
 #load settings
-. /etc/vidaas/settings
+. /etc/vidaas/system-settings
 . /etc/vidaas/env
 
 projectnode_packages="maven2 less vim unzip postgresql libmysql-java libpg-java openjdk-6-jdk ant apache2 libapache2-mod-jk daemontools patch pwgen"
