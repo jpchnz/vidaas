@@ -36,7 +36,7 @@ fi
 cd
 if ! [ -f /tmp/jboss-5.1.0.GA-jdk6.zip ] ; then
   echo "Downloading jboss..."
-  if ! wget --no-verbose -O /tmp/jboss-5.1.0.GA-jdk6.zip http://downloads.sourceforge.net/project/jboss/JBoss/JBoss-5.1.0.GA/jboss-5.1.0.GA-jdk6.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fjboss%2Ffiles%2FJBoss%2FJBoss-5.1.0.GA%2F ; then
+  if ! wget --no-verbose -O /tmp/jboss-5.1.0.GA-jdk6.zip $vidaas_jboss51_url ; then
     rm /tmp/jboss-5.1.0.GA-jdk6.zip
     echo "Unable to download jboss 5.1"
     exit 1
@@ -44,7 +44,7 @@ if ! [ -f /tmp/jboss-5.1.0.GA-jdk6.zip ] ; then
 fi
 if ! [ -f /tmp/jboss-seam-2.2.2.Final.tar.gz ] ; then 
   echo "Downloading seam..."
-  if ! wget --no-verbose -O /tmp/jboss-seam-2.2.2.Final.tar.gz http://downloads.sourceforge.net/project/jboss/JBoss%20Seam/2.2.2.Final/jboss-seam-2.2.2.Final.tar.gz ; then
+  if ! wget --no-verbose -O /tmp/jboss-seam-2.2.2.Final.tar.gz $vidaas_seam222_url ; then
     rm /tmp/jboss-seam-2.2.2.Final.tar.gz
     echo "Unable to download Seam 2.2.2"
     exit 1
@@ -74,7 +74,7 @@ if cd $target_dir && unzip -q /tmp/jboss-5.1.0.GA-jdk6.zip ; then
   rm -rf $target_dir/jboss/server/default/deploy/jmx-console.war
   rm -rf $target_dir/jboss/server/default/deploy/management
   #install startup script
-  cp $vidaas_admin_repo_path/admin/root/etc/init.d/jboss51 /etc/init.d/jboss51
+  cp $vidaas_admin_repo_path/admin/$vidaas_branch/root/etc/init.d/jboss51 /etc/init.d/jboss51
   chmod +x /etc/init.d/jboss51
   if ! update-rc.d jboss51 defaults ; then
     echo "failed to install jboss init script" ; exit 1
