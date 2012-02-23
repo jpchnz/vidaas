@@ -67,8 +67,7 @@ public class IAMRoleManager {
 	
 	
 	public String getOwnerRole() throws IOException {
-		String ret =  rolePoster.sendPost("getOwnerRole=true");
-		System.out.println("TTTTT:" + ret + ":");
+		String ret =  rolePoster.sendPost("getOwnerRole=true").replaceAll("\n", "");
 		if (ret.compareTo("true") == 0) {
 			ret = "Owner";
 		}
