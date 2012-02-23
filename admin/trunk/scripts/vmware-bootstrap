@@ -9,7 +9,6 @@ echo "Customization started `date`"
 
 #put your customization settings here
 vidaas_admin_repo_path=/root/svn/
-vidaas_node_type=project
 
 #existing settings file overrides defaults
 if [ -f /etc/vidaas/settings ] ; then
@@ -22,7 +21,6 @@ echo "Updating settings file..."
 (
 cat <<EndOfFile
 vidaas_admin_repo_path=$vidaas_admin_repo_path
-vidaas_node_type=$vidaas_node_type
 EndOfFile
 ) > /etc/vidaas/settings
 
@@ -43,5 +41,12 @@ if ! svn checkout https://vidaas.googlecode.com/svn/admin ; then
   exit 1
 fi
 
+if [ -f $vidaas_admin_repo_path/admin/systems/`cat /etc/hostname` ] ; then
+  . $vidaas_admin_repo_path/admin/systems/`cat /etc/hostname`
+else
+  echo "no config in $vidaas_admin_repo_path/admin/systems/`cat /etc/hostname`"
+fi
+echo "boostrap completed, running installation script $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/vidaas-install"
+
 # run vidaas install
-$vidaas_admin_repo_path/admin/scripts/vidaas-install
+$vidaas_admin_repo_path/admin/$vidaas_branch/scripts/vidaas-install
