@@ -10,19 +10,15 @@ echo "Customization started `date`"
 #put your customization settings here
 vidaas_admin_repo_path=/root/svn/
 
-#existing settings file overrides defaults
-if [ -f /etc/vidaas/settings ] ; then
-  . /etc/vidaas/settings
-fi
 if [ ! -d /etc/vidaas ] ; then
   mkdir /etc/vidaas
 fi
-echo "Updating settings file..."
+echo "Writing settings file..."
 (
 cat <<EndOfFile
 vidaas_admin_repo_path=$vidaas_admin_repo_path
 EndOfFile
-) > /etc/vidaas/settings
+) > /etc/vidaas/bootstrap-settings
 
 echo "Checking out admin repository into $vidaas_admin_repo_path"
 if [ ! -f /usr/bin/svn ] ; then
