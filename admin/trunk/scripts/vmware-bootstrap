@@ -50,4 +50,4 @@ fi
 echo "boostrap completed"
 
 # run vidaas install
-#$vidaas_admin_repo_path/admin/$vidaas_branch/scripts/vidaas-install
+$vidaas_admin_repo_path/admin/$vidaas_branch/scripts/vidaas-install
