@@ -42,11 +42,12 @@ if ! svn checkout https://vidaas.googlecode.com/svn/admin ; then
 fi
 
 if [ -f $vidaas_admin_repo_path/admin/systems/`cat /etc/hostname` ] ; then
-  . $vidaas_admin_repo_path/admin/systems/`cat /etc/hostname`
+  ln -s $vidaas_admin_repo_path/admin/systems/`cat /etc/hostname` /etc/vidaas/system-settings
+  . /etc/vidaas/system-settings
 else
   echo "no config in $vidaas_admin_repo_path/admin/systems/`cat /etc/hostname`"
 fi
-echo "boostrap completed, running installation script $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/vidaas-install"
+echo "boostrap completed"
 
 # run vidaas install
-$vidaas_admin_repo_path/admin/$vidaas_branch/scripts/vidaas-install
+#$vidaas_admin_repo_path/admin/$vidaas_branch/scripts/vidaas-install
