@@ -7,9 +7,4 @@ vidaas_node_type=project
 vidaas_branch=trunk
 
 # install shibboleth (true/false)
-vidaas_shib=false q
-
-### it's usually not required to touch any of the options below
-
-#put your customization settings here
-vidaas_admin_repo_path=/root/svn/
+vidaas_shib=false 
