@@ -98,7 +98,7 @@ if cd $target_dir && tar -xzf /tmp/jboss-seam-2.2.2.Final.tar.gz ; then
   #convenience symlink
   ln -s $target_dir/jboss-seam-2.2.2.Final $target_dir/seam
   #patch
-  wget --no-verbose -O /tmp/vidaas-seam.patch https://vidaas.googlecode.com/svn/vidaas3/trunk/seam/vidaas-seam.patch
+  wget --no-verbose -O /tmp/vidaas-seam.patch https://vidaas.googlecode.com/svn/vidaas3/$vidaas_branch/seam/vidaas-seam.patch
   if cd $target_dir/seam && patch -p1 < /tmp/vidaas-seam.patch ; then
     echo "Seam patch applied"
   else
@@ -145,7 +145,7 @@ if ! [ -e /etc/vidaas/cred_mysqlroot ] ; then
 fi
 
 echo "Building vidaas sources..."
-if su -c "cd ~ && svn --quiet checkout https://vidaas.googlecode.com/svn/vidaas3/trunk" vidaas ; then
+if su -c "cd ~ && svn --quiet checkout https://vidaas.googlecode.com/svn/vidaas3/$vidaas_branch" vidaas ; then
   #patch dreaded sudamih.properties
 (
 cat <<EndOfFile
@@ -155,8 +155,8 @@ uk.ac.ox.oucs.sudamih.databaseName = sudamihtestdb
 uk.ac.ox.oucs.sudamih.driverName = org.postgresql.Driver
 uk.ac.ox.oucs.sudamih.databaseURL = jdbc:postgresql:
 EndOfFile
-) > $vidaas_home/trunk/vidaas/src/hot/uk/ac/ox/oucs/vidaas/manager/sudamih.properties
-  if ! su -c "cd ~/trunk/vidaas/ && mvn package" vidaas 2>&1 > /var/log/vidaas-build.log ; then
+) > $vidaas_home/$vidaas_branch/vidaas/src/hot/uk/ac/ox/oucs/vidaas/manager/sudamih.properties
+  if ! su -c "cd ~/$vidaas_branch/vidaas/ && mvn package" vidaas 2>&1 > /var/log/vidaas-build.log ; then
     echo "Build failed see /var/log/vidaas-build.log" ; exit 1
   fi
 else
@@ -205,7 +205,7 @@ else
 fi
 
 #deploy war file
-if ! su -c "cp -r ~/trunk/vidaas/target/vidaas-0.3 $JBOSS_HOME/server/default/deploy/" vidaas ; then
+if ! su -c "cp -r ~/$vidaas_branch/vidaas/target/vidaas-0.3 $JBOSS_HOME/server/default/deploy/" vidaas ; then
   echo "Deployment to appserver failed" ; exit 1
 fi
 
