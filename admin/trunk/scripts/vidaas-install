@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source /etc/vidaas/settings
+. /etc/vidaas/bootstrap-settings
+. /etc/vidaas/system-settings
 
 default_packages="vim apticron ssh"
 
