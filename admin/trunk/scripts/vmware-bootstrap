@@ -9,6 +9,7 @@ echo "Customization started `date`"
 
 #put your customization settings here
 vidaas_admin_repo_path=/root/svn/
+vidaas_admin_repo_url=https://vidaas.googlecode.com/svn/admin
 
 if [ ! -d /etc/vidaas ] ; then
   mkdir /etc/vidaas
@@ -17,6 +18,7 @@ echo "Writing settings file..."
 (
 cat <<EndOfFile
 vidaas_admin_repo_path=$vidaas_admin_repo_path
+vidaas_admin_repo_url=$vidaas_admin_repo_url
 EndOfFile
 ) > /etc/vidaas/bootstrap-settings
 
@@ -32,7 +34,7 @@ if ! cd $vidaas_admin_repo_path ; then
   echo "repository path $vidaas_admin_repo_path invalid"
   exit 1
 fi
-if ! svn checkout https://vidaas.googlecode.com/svn/admin ; then
+if ! svn checkout $vidaas_admin_repo_url ; then
   echo "svn checkout failed"
   exit 1
 fi
