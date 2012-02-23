@@ -22,4 +22,4 @@ if ! apt-get -qqy install $default_packages ; then
   exit 1
 fi
 
-. $vidaas_admin_repo_path/admin/scripts/vidaas-${vidaas_node_type}node-install
+. $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/vidaas-${vidaas_node_type}node-install
