@@ -453,21 +453,21 @@ font-weight: normal;
 }
 
 .classic {
-	background: #FFFFAA;
+	background: #f7f7ea;
 	border: 1px solid #FFAD33;
 }
 
 .critical {
-	background: #FFCCAA;
-	border: 1px solid #FF3334;
+	background: #f5d8c4;
+	border: 1px solid #d52f26;
 }
 
 .help {
-	background: #9FDAEE;
-	border: 1px solid #2BB0D7;
+	background: #ebf4fd;
+	border: 1px solid #63777d;
 }
 
 .warning {
-	background: #FFFFAA;
-	border: 1px solid #FFAD33;
+	background: #fbeedb;
+	border: 1px solid #f6c47a;
 }
