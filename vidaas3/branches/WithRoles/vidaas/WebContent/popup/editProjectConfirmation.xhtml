@@ -1,0 +1,21 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	
+	<a4j:form id="editProjectConfirmationForm" ajaxSubmit="true">
+		<h:outputLabel id="editProjectStatus"
+					value="#{createController.editProjectConfirmationMessage}" />
+					<br/>
+				<a4j:commandButton id="okButtonEditProject"
+					value="OK" reRender="homeMainPanel, homePageMainBodyInclude, editProjectPanel, editProjectFormInclude"
+					action="#{createController.finishEditProject()}">
+					<rich:componentControl for="deleteProjectPanel"
+						attachTo="okButtonEditProject" operation="hide"
+						event="onclick" />
+				</a4j:commandButton>
+	</a4j:form>
+</ui:composition>

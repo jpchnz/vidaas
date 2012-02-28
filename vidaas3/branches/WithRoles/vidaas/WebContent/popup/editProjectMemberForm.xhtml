@@ -30,19 +30,12 @@
 
 			<h:outputLabel for="memberRole">
 				<a class="tooltip" href="#">Role<span class="custom help">
-				<img src="images/Help.png" alt="Help" height="48" width="48" /><em>#{helpController.getHelpTitle('AddNewMembersPopup_Role')}</em>#{helpController.setupHelpText('AddNewMembersPopup_Role')}
+				<img src="images/Help.png" alt="Help" height="48" width="48" />
+				<em>#{helpController.getHelpTitle('AddNewMembersPopup_Role')}</em>#{helpController.setupHelpText('AddNewMembersPopup_Role')}
 				</span></a>
 			</h:outputLabel>
-			<h:selectOneMenu id="memberRole" required="true"
-				value="#{currentUserProject.userRole}" style="width:184px;">
-				<f:selectItem id="memberRole_item1" itemLabel="Admin"
-					itemValue="admin" />
-				<f:selectItem id="memberRole_item2" itemLabel="Researcher"
-					itemValue="researcher" />
-				<f:selectItem id="memberRole_item3" itemLabel="User"
-					itemValue="user" />
-				<f:selectItem id="memberRole_item4" itemLabel="Someone"
-					itemValue="Someone" itemDisabled="true" />
+			<h:selectOneMenu id="memberRole" value="#{createController.requiredRole}">
+				<f:selectItems value="#{navigationController.rolesListMap}" />
 			</h:selectOneMenu>
 			<rich:message for="memberRole" style="width : 184px;" />
 
@@ -54,13 +47,13 @@
 			    	 <rich:componentControl for="editProjectMemberPanel" attachTo="editProjectMemberCancelButton" operation="hide" event="onclick"/>
 			    </a4j:commandButton>
 			    
-			    <a4j:commandButton id="editProjectMemberButton" value="Edit Member Role" action="#{createController.editProjectMember}" 
+			    <a4j:commandButton id="editProjectMemberButton" value="Commit" action="#{createController.editProjectMember}" 
 				    onclick="this.disabled=true" status="submitStatus"
 					reRender="homeMainPanel, editProjectMemberFormInclude" style="float:center">
 					<rich:componentControl for="editProjectMemberPanel" attachTo="editProjectMemberButton" operation="hide" event="onclick"/>
 			    </a4j:commandButton>
 			    
-			    <a4j:commandButton id="deleteProjectMemberButton" value="Delete Member Role" action="#{createController.deleteProjectMember}" 
+			    <a4j:commandButton id="deleteProjectMemberButton" value="Remove project member" action="#{createController.deleteProjectMember}" 
 				    onclick="this.disabled=true" status="submitStatus"
 					reRender="homeMainPanel, editProjectMemberFormInclude" style="float:right">
 					<rich:componentControl for="editProjectMemberPanel" attachTo="deleteProjectMemberButton" operation="hide" event="onclick"/>
