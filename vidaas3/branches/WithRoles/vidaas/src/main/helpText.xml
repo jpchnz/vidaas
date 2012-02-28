@@ -1,0 +1,115 @@
+<helpText language="En_US">
+	<helpGroup
+		description="Fields shown when a user creates a new database (aka'dataspace') within a project">
+		<helpField>
+			<helpId>DatabaseCreationPopup_DatabaseName</helpId>
+			<title>Database name</title>
+			<text>The database name you choose can only contain alphabetic and
+				numeric characters, i.e. a..z, 0..9, and cannot contain spaces.
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
+			<helpId>DatabaseCreationPopup_DatabaseDescription</helpId>
+			<title>Database description</title>
+			<text>This field should be used to describe the content and scope of
+				the database, to record who created or compiled the data (and for
+				what purpose), to state when the data was collected or digitized,
+				and to supply any other information that may be needed to permit
+				proper interpretation of the data at a later date, such as whether
+				the data has been edited or manipulated since collection.
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
+			<helpId>DatabaseCreationPopup_EstimatedSize</helpId>
+			<title>Estimated database size</title>
+			<text>This defines the total space that will be available to your
+				project for hosting databases. Please be aware that if you intend to
+				create more than one version of any given database within your
+				project (i.e. a separate test copy or ‘milestone’ copy), this will
+				create a duplicate of that database, thus increasing your total
+				space usage. The 25 GB option should be ample for research databases
+				that do not contain more than 100,000 records and do not include
+				images, audio files, or other multimedia, even if you make two
+				duplicates. If you are intending to build a database larger than
+				this, or which contains multimedia, you may wish to consider the 100
+				GB option. If you exceed your allotted space you will be asked if
+				you would like to switch to a larger allowance, but this will entail
+				moving to a different pricing plan. The ORDS is not designed to cope
+				with very large databases although if you think you might require
+				more than 100 GB we may be able to create a customized virtual
+				machine that will suit your requirement. Please email us if that is
+				the case.
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
+			<helpId>DatabaseCreationPopup_WebAppName</helpId>
+			<title>Database interface name</title>
+			<text>This text will form part of the URL where your database can be
+				accessed online. It must consist only of alphabetic and numeric
+				characters, i.e. a..z, 0..9, and cannot contain spaces.
+			</text>
+			<image>help</image>
+		</helpField>
+	</helpGroup>
+	<helpGroup description="Login popup">
+		<helpField>
+			<helpId>LoginPopup_RememberMe</helpId>
+			<title>Remember me</title>
+			<text>Only select this option if you are the only person using this
+				computer.
+			</text>
+			<image>help</image>
+		</helpField>
+	</helpGroup>
+	<helpGroup description="Project Creation popup">
+		<helpField>
+			<helpId>ProjectCreationPopup_StartDate</helpId>
+			<title>Start Date</title>
+			<text>James to write this
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
+			<helpId>ProjectCreationPopup_EndDate</helpId>
+			<title>End Date</title>
+			<text>James to write this
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
+			<helpId>ProjectCreationPopup_Description</helpId>
+			<title>Description</title>
+			<text>This description will appear on your ORDS project list page. It
+				will be visible to everyone who is a member of the project, and will
+				act as a summary of what the project is about. This field can be
+				used to describe the subject matter and scope of the project, and to
+				supply other relevant information such as details of the people
+				involved, or the URL of a project website.
+			</text>
+			<image>help</image>
+		</helpField>
+	</helpGroup>
+	<helpGroup description="Add new members to project popup">
+		<helpField>
+			<helpId>AddNewMembersPopup_Email</helpId>
+			<title>Email</title>
+			<text>This needs to be the email of the user you wish to join your project that they have used to register with ORDS.
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
+			<helpId>AddNewMembersPopup_Role</helpId>
+			<title>Role</title>
+			<text>Project members will have one of the following roles:
+				Project
+				Administrator; Contributor; Viewer. Additionally, the person who
+				initiated the project will automatically inherit the role of Project
+				Owner.
+			</text>
+			<image>help</image>
+		</helpField>
+	</helpGroup>
+</helpText>

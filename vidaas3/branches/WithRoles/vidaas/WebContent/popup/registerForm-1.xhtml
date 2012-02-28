@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+	<h:outputLabel value="#{registration.registrationMessage1}" />
+	<a4j:form ajaxSubmit="true" id="registrationLevel1">
+		<h:outputText value="#{registration.emailText}" rendered="#{authenticator.useSso}"/>
+		<s:validateAll>
+			<div><h:panelGrid columns="3"
+				columnClasses="name,value,errorMessage">
+				<h:outputLabel for="firstName">First Name</h:outputLabel>
+				<h:inputText id="firstName" value="#{registration.firstName}"
+					required="true" />
+				<rich:message for="firstName" />
+
+				<h:outputLabel for="lastName">Last Name</h:outputLabel>
+				<h:inputText id="lastName" value="#{registration.lastName}"
+					required="true" />
+				<rich:message for="lastName" />
+
+				<h:outputLabel for="department">Department</h:outputLabel>
+				<h:inputText id="department" value="#{registration.department}"
+					required="true" />
+				<rich:message for="department" />
+
+				<h:outputLabel for="group">Group</h:outputLabel>
+				<h:inputText id="group" value="#{registration.grp}" />
+				<rich:message for="group" />
+
+				<h:outputLabel for="position">Position</h:outputLabel>
+				<h:inputText id="position" value="#{registration.postion}"
+					required="true" />
+				<rich:message for="position" />
+
+				<h:outputLabel for="email">Email</h:outputLabel>
+				<h:inputText id="email" value="#{registration.email}"
+					required="true" disabled="#{authenticator.useSso}">
+				</h:inputText>
+				<rich:message for="email" />
+
+			</h:panelGrid>
+				<h:outputText value="#{registration.emailUniqueViolation}" styleClass="errorMessage"></h:outputText>		
+			</div>
+
+			<div class="actionButtons"><a4j:commandButton
+				id="registrationForm1Next" value="Next" 
+				onclick="this.disabled=true" status="submitStatus"
+				reRender="registrationFormInclude"
+				action="#{registration.registrationLevel1}" /> <a4j:region>
+				<a4j:status id="submitStatus">
+					<f:facet name="start">
+						<h:graphicImage value="/img/wait.gif" height="28px" width="28px"
+							style="float:right" />
+					</f:facet>
+				</a4j:status>
+			</a4j:region></div>
+		</s:validateAll>
+	</a4j:form>
+</ui:composition>

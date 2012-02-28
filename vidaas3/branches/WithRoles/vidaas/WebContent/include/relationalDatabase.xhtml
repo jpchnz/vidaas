@@ -1,0 +1,155 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:panel id="databaseVersionPanel">
+		<f:facet name="header">
+			<h:outputText
+				value="Detailed summary of '#{currentDataspace.dataspaceUserFriendlyName}'"></h:outputText>
+		</f:facet>
+		<h:panelGrid id="databaseStructurePanel_1" columns="1" border="1"
+			width="100%">
+			<h:panelGroup>
+				<h:outputLabel value="Database Name: " />
+				<h:outputLabel value="#{_database.databaseName}" />
+			</h:panelGroup>
+
+			<h:panelGroup>
+				<h:outputLabel value="Database ID: " />
+				<h:outputLabel value="#{_database.databaseId}" />
+			</h:panelGroup>
+
+			<h:panelGroup>
+				<h:outputLabel value="Content Type: " />
+				<h:outputLabel
+					value="#{_database.getDatabaseStructure().getContentType()}" />
+			</h:panelGroup>
+
+			<h:panelGroup>
+				<h:outputLabel value="Status: " />
+				<h:outputLabel value="#{_database.databaseStructure.status}" />
+			</h:panelGroup>
+
+			<h:panelGroup>
+				<h:outputLabel value="Uploaded File: " />
+				<h:outputLabel value="#{_database.databaseStructure.file}" />
+			</h:panelGroup>
+
+			<h:panelGroup>
+				<h:outputLabel value="Upload Type: " />
+				<h:outputLabel value="#{_database.databaseStructure.schemaType}" />
+			</h:panelGroup>
+
+			<h:panelGroup>
+				<h:outputLabel value="Database Size: " />
+				<h:outputLabel value="#{_database.databaseStructure.size} bytes" />
+			</h:panelGroup>
+
+			<h:panelGroup
+				rendered="#{_database.databaseStructure.status == 'Uploaded'}">
+				<a4j:commandLink value="Parse It"
+					rendered="#{_database.databaseStructure.status == 'Uploaded'}">
+				</a4j:commandLink>
+			</h:panelGroup>
+
+			<h:panelGroup
+				rendered="#{_database.databaseStructure.status == 'Loaded'}">
+				<a4j:commandLink value="Delete"
+					rendered="#{_database.databaseStructure.status == 'Loaded'}">
+				</a4j:commandLink>
+			</h:panelGroup>
+
+			<h:panelGroup
+				rendered="#{_database.webApplication.status=='Deployed'}">
+				<h:outputLabel value="Database Interface URL: " />
+				<s:link rendered="#{_database.webApplication.status=='Deployed'}"
+					onclick="window.open('#{_database.webApplication.url}','htmlwindow','scrollbars=yes, resizable=yes,toolbar=yes, width=980,height=800')"
+					disabled="false">
+					<h:outputLabel value="#{_database.webApplication.url}" />
+				</s:link>
+			</h:panelGroup>
+
+			<a4j:form id="webApplicationButtonForm" ajaxSubmit="true">
+				<div class="actionButtons"><a4j:commandButton
+					rendered="#{_database.webApplication.status=='NotDeployed'}"
+					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
+					reRender="createWebApplicationFormInclude"
+					id="createWebApplicationButton" value="Create Web Application"
+					style="float:left">
+					<rich:componentControl for="createWebApplicationPanel"
+						attachTo="createWebApplicationButton" operation="show"
+						event="onclick" />
+				</a4j:commandButton> <a4j:commandButton
+					rendered="#{_database.webApplication.status=='Deployed'}"
+					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
+					reRender="removeWebApplicationFormInclude"
+					id="removeWebApplicationButton" value="Remove Web Application"
+					style="float:right">
+					<rich:componentControl for="removeWebApplicationPanel"
+						attachTo="removeWebApplicationButton" operation="show"
+						event="onclick" />
+				</a4j:commandButton></div>
+			</a4j:form>
+
+			<h:form id="downloadDatabaseButtonForm">
+				<!-- -->
+				<s:link value="Download CSV"
+					action="#{createController.downloadDatabase()}">
+					<f:param name="databaseIDValue" value="#{_database.databaseId}" />
+					<f:param name="dataspaceIDValue"
+						value="#{currentDataspace.dataSpaceId}" />
+					<f:param name="projectIDValue" value="#{currentProject.projectId}" />
+				</s:link>
+			</h:form>
+
+			<a4j:form id="databaseButtonForm">
+				<div class="actionButtons"><a4j:commandButton
+					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
+					id="dropDatabaseButton" value="Delete Database" style="float:left"
+					reRender="dropDatabaseFormInclude"
+					oncomplete="javascript:Richfaces.showModalPanel('dropDatabasePanel');">
+					<!--  
+							<rich:componentControl for="dropDatabasePanel"
+								attachTo="dropDatabaseButton" operation="show" event="onclick" />
+								-->
+				</a4j:commandButton> <a4j:commandButton
+					rendered="#{_database.databaseType=='main' and createController.hasTestDatabase(_database.databaseId)}"
+					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
+					reRender="testDatabaseFormInclude" id="testDatabaseButton"
+					value="Create Test Database"
+					oncomplete="Richfaces.showModalPanel('testDatabasePanel');">
+					<!--  
+								<rich:componentControl for="testDatabasePanel"
+									attachTo="testDatabaseButton" operation="show" event="onclick" />		
+									-->
+				</a4j:commandButton> <a4j:commandButton
+					rendered="#{_database.databaseType=='main'  and createController.hasBackupDatabase(_database.databaseId)}"
+					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
+					reRender="backupDatabaseFormInclude" id="backupDatabaseButton"
+					value="Create milestone database"
+					oncomplete="Richfaces.showModalPanel('backupDatabasePanel');">
+					<!--  
+							<rich:componentControl for="backupDatabasePanel"
+									attachTo="backupDatabaseButton" operation="show" event="onclick" />			
+									-->
+				</a4j:commandButton> <a4j:commandButton
+					rendered="#{_database.databaseType!='main'  and createController.hasMainDatabase(_database.databaseId)}"
+					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
+					reRender="restoreDatabaseFormInclude" id="restoreDatabaseButton"
+					value="Restore Database"
+					oncomplete=" Richfaces.showModalPanel('restoreDatabasePanel');">
+					<!--  
+							<rich:componentControl for="backupDatabasePanel"
+									attachTo="restoreDatabaseButton" operation="show" event="onclick" />		
+									-->
+				</a4j:commandButton></div>
+			</a4j:form>
+		</h:panelGrid>
+
+	</rich:panel>
+
+</ui:composition>
