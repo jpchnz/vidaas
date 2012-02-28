@@ -5,41 +5,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.channels.FileChannel;
 import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
-import uk.ac.ox.oucs.vidaas.concurrency.CreateWebApplicationThread;
-import uk.ac.ox.oucs.vidaas.concurrency.DatabaseTablesCreatorThread;
-import uk.ac.ox.oucs.vidaas.concurrency.MDBParserThread;
-import uk.ac.ox.oucs.vidaas.concurrency.ParseCreateLoaderThread;
-import uk.ac.ox.oucs.vidaas.concurrency.CreateBerkeleyXMLDatabaseThread;
-import uk.ac.ox.oucs.vidaas.create.CreateBerkeleyXMLDatabase;
-import uk.ac.ox.oucs.vidaas.create.CreateWebApplication;
-import uk.ac.ox.oucs.vidaas.dao.ProjectDatabaseHome;
-import uk.ac.ox.oucs.vidaas.dao.ProjectHome;
-import uk.ac.ox.oucs.vidaas.dao.UserProjectHome;
-import uk.ac.ox.oucs.vidaas.dao.DataspaceHome;
-import uk.ac.ox.oucs.vidaas.dao.DatabaseStructureHome;
-import uk.ac.ox.oucs.vidaas.dao.WebApplicationHome;
-import uk.ac.ox.oucs.vidaas.dao.UsersHome;
-import uk.ac.ox.oucs.vidaas.dao.XMLFilesHome;
-import uk.ac.ox.oucs.vidaas.data.holder.DataHolder;
-import uk.ac.ox.oucs.vidaas.delete.DeleteDatabase;
-import uk.ac.ox.oucs.vidaas.delete.DeleteWebApplication;
-import uk.ac.ox.oucs.vidaas.delete.DeleteXMLFileFromDatabase;
-import uk.ac.ox.oucs.vidaas.download.DownloadDatabase;
-
-import uk.ac.ox.oucs.vidaas.manager.ConnectionManager;
-import uk.ac.ox.oucs.vidaas.session.NavigationController;
-import uk.ac.ox.oucs.vidaas.utility.DirectoryUtilities;
-import uk.ac.ox.oucs.vidaas.utility.LoadXMLContainer;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.validator.InvalidStateException;
 import org.hibernate.validator.InvalidValue;
@@ -52,28 +31,42 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.log.Log;
 
+import uk.ac.ox.oucs.iam.interfaces.roles.IAMRoleManager;
+import uk.ac.ox.oucs.vidaas.concurrency.CreateBerkeleyXMLDatabaseThread;
+import uk.ac.ox.oucs.vidaas.concurrency.CreateWebApplicationThread;
+import uk.ac.ox.oucs.vidaas.concurrency.ParseCreateLoaderThread;
+import uk.ac.ox.oucs.vidaas.dao.DatabaseStructureHome;
+import uk.ac.ox.oucs.vidaas.dao.DataspaceHome;
+import uk.ac.ox.oucs.vidaas.dao.ProjectDatabaseHome;
+import uk.ac.ox.oucs.vidaas.dao.ProjectHome;
+import uk.ac.ox.oucs.vidaas.dao.UserProjectHome;
+import uk.ac.ox.oucs.vidaas.dao.UsersHome;
+import uk.ac.ox.oucs.vidaas.dao.WebApplicationHome;
+import uk.ac.ox.oucs.vidaas.dao.XMLFilesHome;
+import uk.ac.ox.oucs.vidaas.data.holder.DataHolder;
+import uk.ac.ox.oucs.vidaas.delete.DeleteDatabase;
+import uk.ac.ox.oucs.vidaas.delete.DeleteWebApplication;
+import uk.ac.ox.oucs.vidaas.delete.DeleteXMLFileFromDatabase;
+import uk.ac.ox.oucs.vidaas.download.DownloadDatabase;
+import uk.ac.ox.oucs.vidaas.entity.DatabaseStructure;
+import uk.ac.ox.oucs.vidaas.entity.Dataspace;
 import uk.ac.ox.oucs.vidaas.entity.Logins;
+import uk.ac.ox.oucs.vidaas.entity.Project;
 import uk.ac.ox.oucs.vidaas.entity.ProjectDatabase;
 import uk.ac.ox.oucs.vidaas.entity.UserProject;
-import uk.ac.ox.oucs.vidaas.entity.Users;
-import uk.ac.ox.oucs.vidaas.entity.Dataspace;
-import uk.ac.ox.oucs.vidaas.entity.Project;
-import uk.ac.ox.oucs.vidaas.entity.DatabaseStructure;
-import uk.ac.ox.oucs.vidaas.entity.WebApplication;
 import uk.ac.ox.oucs.vidaas.entity.UserProjectId;
+import uk.ac.ox.oucs.vidaas.entity.Users;
+import uk.ac.ox.oucs.vidaas.entity.WebApplication;
 import uk.ac.ox.oucs.vidaas.entity.XMLFiles;
-
-import java.util.regex.Pattern;
-
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
+import uk.ac.ox.oucs.vidaas.manager.ConnectionManager;
+import uk.ac.ox.oucs.vidaas.utility.DirectoryUtilities;
+import uk.ac.ox.oucs.vidaas.utility.SystemVars;
 
 @Name("createController")
 @Scope(ScopeType.SESSION)
 @SuppressWarnings("unused")
 public class CreateController {
+	private String requiredRole = "undefined";
 
 	public String testString = "Test String";
 	
@@ -95,6 +88,7 @@ public class CreateController {
 
 	@In(required = true)
 	DataHolder dataHolder;
+	
 
 	private ParseCreateLoaderThread parseCreateLoaderThread = null;
 	private CreateWebApplicationThread createWebApplicationThread = null;
@@ -145,9 +139,11 @@ public class CreateController {
 
 	private String createProjectConfirmationMessage = "";
 	private String deleteProjectConfirmationMessage = "";
+	private String editProjectConfirmationMessage = "";
 	private String createProjectDataspaceConfirmationMessage = "";
 	private String deleteProjectDataspaceConfirmationMessage = "";
 	private String createDatabaseConfirmationMessage = "";
+	private String createDatabaseConfirmationLinkText = "";
 	private String addProjectMemberConfirmationMessage = "";
 	private String dropDatabaseConfirmationMessage = "";
 	private String backupDatabaseConfirmationMessage = "";
@@ -308,17 +304,41 @@ public class CreateController {
 				"currentProject"));
 		log.info("updateProject {0} {1}", tempProject.getProjectId(),
 				tempProject.getName());
+		
+		String currentRole = ((String) Contexts.getSessionContext().get("currentRole"));
+		boolean actionAuthorised = false;
+		try {
+			actionAuthorised = IAMRoleManager.getInstance().getProjectAuthentication().isAllowedToEditProject(currentRole)
+					|| SystemVars.treatAdminAsOwner(currentRole);
+		}
+		catch (MalformedURLException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
 
-		projectHome.setId(tempProject.getProjectId());
-
-		Project tempProjectNew = projectHome.find();
-
-		tempProjectNew.setName(tempProject.getName());
-		tempProjectNew.setStartDate(tempProject.getStartDate());
-		tempProjectNew.setEndDate(tempProject.getEndDate());
-		tempProjectNew.setDescription(tempProject.getDescription());
-
-		projectHome.persist();
+		if (actionAuthorised) {
+			System.out.println("User authorised to do that");
+			projectHome.setId(tempProject.getProjectId());
+	
+			Project tempProjectNew = projectHome.find();
+	
+			tempProjectNew.setName(tempProject.getName());
+			tempProjectNew.setStartDate(tempProject.getStartDate());
+			tempProjectNew.setEndDate(tempProject.getEndDate());
+			tempProjectNew.setDescription(tempProject.getDescription());
+	
+			projectHome.persist();
+		}
+		else {
+			System.out.println("User not authorised");
+			editProjectConfirmationMessage = "You are not authorised to edit this project.";
+			((NavigationController) Contexts.getSessionContext().get(
+					"navigationController")).editProjectConfirmation();
+		}
 	}
 
 	public void deleteProject(Integer projectIDValue) {
@@ -334,25 +354,50 @@ public class CreateController {
 		projectHome.setId(tempProject.getProjectId());
 
 		Project tempProjectNew = projectHome.find();
+		
+		String currentRole = ((String) Contexts.getSessionContext().get("currentRole"));
+		System.out.println(String.format("Check authorisation for role <%s>", currentRole));
+		boolean actionAuthorised = false;
+		try {
+			actionAuthorised = IAMRoleManager.getInstance().getProjectAuthentication().isAllowedToRemoveProject(currentRole)
+					|| SystemVars.treatAdminAsOwner(currentRole);
+		}
+		catch (MalformedURLException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
 
-		Set<Dataspace> dataspaces = tempProjectNew.getDataspaces();
-		if (dataspaces.size() == 0) {
-			List<UserProject> userProjectList = userProjectHome
-					.findByProjectID(tempProject.getProjectId());
-			for (int i = 0; i < userProjectList.size(); i++) {
-				UserProject tempUserProject = userProjectList.get(i);
-				userProjectHome.setId(tempUserProject.getId());
-
-				userProjectHome.find();
-
-				userProjectHome.remove();
+		if (actionAuthorised) {
+			Set<Dataspace> dataspaces = tempProjectNew.getDataspaces();
+			if (dataspaces.size() == 0) {
+				List<UserProject> userProjectList = userProjectHome
+						.findByProjectID(tempProject.getProjectId());
+				for (int i = 0; i < userProjectList.size(); i++) {
+					UserProject tempUserProject = userProjectList.get(i);
+					userProjectHome.setId(tempUserProject.getId());
+	
+					userProjectHome.find();
+	
+					userProjectHome.remove();
+				}
+				projectHome.remove();
+				new DirectoryUtilities().removeProjectDir(rootStorageDirectory + "/project_" + projectId);
+				deleteProjectConfirmationMessage = "Project '" + projectName
+						+ "' successfully deleted.";
+			} else {
+				boolean moreThanOneDatabase = (dataspaces.size() > 1);
+				deleteProjectConfirmationMessage = String.format("The project has %s active database%s. Please delete %s database before deleting the project.",
+						moreThanOneDatabase ? "some" : "an",
+						moreThanOneDatabase ? "s" : "",
+						moreThanOneDatabase ? "each" : "the");
 			}
-			projectHome.remove();
-			new DirectoryUtilities().removeProjectDir(rootStorageDirectory + "/project_" + projectId);
-			deleteProjectConfirmationMessage = "Project '" + projectName
-					+ "' successfully deleted.";
-		} else {
-			deleteProjectConfirmationMessage = "Project has active database/s. Please, delete each database before deleting project.";
+		}
+		else {
+			deleteProjectConfirmationMessage = "You are not authorised to delete this project.";
 		}
 
 		((NavigationController) Contexts.getSessionContext().get(
@@ -363,6 +408,13 @@ public class CreateController {
 		log.info("finishDeleteProject");
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).deleteProjectInitial();
+	}
+	
+	
+	public void finishEditProject() {
+		log.info("finishEditProject");
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController")).editProjectInitial();
 	}
 
 	public void createDataSpace(/* Integer projectIDValue */) {
@@ -378,24 +430,45 @@ public class CreateController {
 					.findByUserIDAndProjectID(getUserMain().getUserId(),
 							this.currentProjectID);
 
+			if (projectsList.size() > 1) {
+				log.error("Too many projects found - internal problem.");
+			}
 			log.info("projectsList.size() {0}", projectsList.size());
 			log.info("projectsList.get(0).getUserRole() {0}",
 					projectsList.get(0).getUserRole());
 
-			if (projectsList.get(0).getUserRole().equalsIgnoreCase("admin")
-					|| projectsList.get(0).getUserRole()
-							.equalsIgnoreCase("Owner")) {
+			boolean actionAuthorised = false;
+			try {
+				System.out.println("Check authorisation");
+				actionAuthorised = IAMRoleManager.getInstance().getProjectAuthentication().isAllowedToCreateDatabaseByRole(projectsList.get(0).getUserRole())
+						|| SystemVars.treatAdminAsOwner(projectsList.get(0).getUserRole());
+				System.out.println(String.format("Role <%s> is %sauthorised to create a dataspace here", projectsList.get(0).getUserRole(), actionAuthorised ? "" : "not "));
+			}
+			catch (MalformedURLException e) {
+				e.printStackTrace();
+				actionAuthorised = false;
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+				actionAuthorised = false;
+			}
+			if (actionAuthorised) {
+				System.out.println("Authorised to perform action");
 				new CreateDataSpaceController().createDataSpace(getUserMain(),
 						projectsList.get(0).getProject(), dataspaceHome, today,
 						log);
+			
+
+				createProjectDataspaceConfirmationMessage = "Database '"
+						+ dataspaceHome.getInstance().getDataspaceName()
+						+ "' for the Project: '"
+						+ projectsList.get(0).getProject().getTitle()
+						+ "' has been successfully created.";
 			}
-
-			createProjectDataspaceConfirmationMessage = "Databace '"
-					+ dataspaceHome.getInstance().getDataspaceName()
-					+ "' for the Project: '"
-					+ projectsList.get(0).getProject().getTitle()
-					+ "' has been successfully created.";
-
+			else {
+				System.out.println("Not authorised to perform action");
+				createProjectDataspaceConfirmationMessage = "You are not authorised to create a project database for this project";	
+			}
 			((NavigationController) Contexts.getSessionContext().get(
 					"navigationController"))
 					.createProjectDataspaceConfirmation();
@@ -411,53 +484,97 @@ public class CreateController {
 	public void updateDataSpace() {
 		Dataspace tempDataspace = ((Dataspace) Contexts.getSessionContext()
 				.get("currentDataspace"));
+		
 
-		dataspaceHome.setId(tempDataspace.getDataSpaceId());
+		String currentRole = ((String) Contexts.getSessionContext().get("currentRole"));
+		boolean actionAuthorised = false;
+		try {
+			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+					|| SystemVars.treatAdminAsOwner(currentRole);
+		}
+		catch (MalformedURLException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
 
-		Dataspace tempDataspaceNew = dataspaceHome.find();
-
-		tempDataspaceNew.setDataspaceUserFriendlyName(tempDataspace
-				.getDataspaceUserFriendlyName());
-		tempDataspaceNew.setDatabaseBackupPolicy(tempDataspace
-				.getDatabaseBackupPolicy());
-		tempDataspaceNew.setCreationDate(tempDataspace.getCreationDate());
-		tempDataspaceNew.setDatabaseDescription(tempDataspace
-				.getDatabaseDescription());
-		tempDataspaceNew.setDatabaseExpandablePolicy(tempDataspace
-				.getDatabaseExpandablePolicy());
-		tempDataspaceNew.setDatabaseSize(tempDataspace.getDatabaseSize());
-
-		dataspaceHome.persist();
+		if (actionAuthorised) {
+			dataspaceHome.setId(tempDataspace.getDataSpaceId());
+	
+			Dataspace tempDataspaceNew = dataspaceHome.find();
+	
+			tempDataspaceNew.setDataspaceUserFriendlyName(tempDataspace
+					.getDataspaceUserFriendlyName());
+			tempDataspaceNew.setDatabaseBackupPolicy(tempDataspace
+					.getDatabaseBackupPolicy());
+			tempDataspaceNew.setCreationDate(tempDataspace.getCreationDate());
+			tempDataspaceNew.setDatabaseDescription(tempDataspace
+					.getDatabaseDescription());
+			tempDataspaceNew.setDatabaseExpandablePolicy(tempDataspace
+					.getDatabaseExpandablePolicy());
+			tempDataspaceNew.setDatabaseSize(tempDataspace.getDatabaseSize());
+	
+			dataspaceHome.persist();
+		}
 
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController"))
 				.setHomePageMainBodyNavigation("/custom/singleDataspaceByProject.xhtml");
 	}
+	
+	
 
 	public void deleteDataSpace(Integer DataSpaceIdValue) {
-		Dataspace tempDataspace = ((Dataspace) Contexts.getSessionContext()
+		System.out.println("deleteDataSpace:" + DataSpaceIdValue);
+
+		Dataspace workingDataspace = ((Dataspace) Contexts.getSessionContext()
 				.get("currentDataspace"));
-		String dataspaceUserFriendlyName = tempDataspace
-				.getDataspaceUserFriendlyName();
-
-		dataspaceHome.setId(tempDataspace.getDataSpaceId());
-
+		dataspaceHome.setId(workingDataspace.getDataSpaceId());
+		
 		Dataspace tempDataspaceNew = dataspaceHome.find();
 
-		Set<ProjectDatabase> projectDatabases = tempDataspaceNew
-				.getProjectDatabases();
-		if (projectDatabases.size() == 0) {
-			dataspaceHome.remove();
-			deleteProjectDataspaceConfirmationMessage = "Database '"
-					+ dataspaceUserFriendlyName + "'" + "successfully deleted.";
-			((NavigationController) Contexts.getSessionContext().get(
-					"navigationController"))
-					.setHomePageMainBodyNavigation("/custom/projectByUserList.xhtml");
-		} else {
-			deleteProjectDataspaceConfirmationMessage = "Database '"
-					+ dataspaceUserFriendlyName
-					+ "' "
-					+ "has active version/s. Please, delete each version before deleting database.";
+		String currentRole = ((String) Contexts.getSessionContext().get("currentRole"));
+		boolean actionAuthorised = true;
+		try {
+			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+					|| SystemVars.treatAdminAsOwner(currentRole);
+		}
+		catch (MalformedURLException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
+		
+		if (actionAuthorised) {
+			String dataspaceUserFriendlyName = workingDataspace
+					.getDataspaceUserFriendlyName();
+	
+			
+			System.out.println("Check size");
+			Set<ProjectDatabase> projectDatabases = tempDataspaceNew
+					.getProjectDatabases();
+			if (projectDatabases.size() == 0) {
+				dataspaceHome.remove();
+				deleteProjectDataspaceConfirmationMessage = "Database '"
+						+ dataspaceUserFriendlyName + "'" + "successfully deleted.";
+				((NavigationController) Contexts.getSessionContext().get(
+						"navigationController"))
+						.setHomePageMainBodyNavigation("/custom/projectByUserList.xhtml");
+			} else {
+				deleteProjectDataspaceConfirmationMessage = 
+						String.format("Database '%s' has %s active version%s. You need to delete each version before deleting database",
+								dataspaceUserFriendlyName, (projectDatabases.size() > 1 ? "some" : "an"),
+								(projectDatabases.size() > 1 ? "s" : ""));
+			}
+		}
+		else {
+			deleteProjectDataspaceConfirmationMessage = "You are not authorised to delete a project database for this project";
 		}
 
 		((NavigationController) Contexts.getSessionContext().get(
@@ -473,61 +590,171 @@ public class CreateController {
 
 	public void createDatabaseFromSchema() {
 		// log.info("createDatabase {0} {1}", projectIDValue, dataspaceIDValue);
-		dataHolder.setOkButton(true);
-		Project tempProject = ((Project) Contexts.getSessionContext().get(
-				"currentProject"));
-		Dataspace tempDataspace = ((Dataspace) Contexts.getSessionContext()
-				.get("currentDataspace"));
-
-		log.info("createDatabase {0} {1}", tempProject.getProjectId(),
-				tempDataspace.getDataSpaceId());
-		/**/
-		DatabaseStructure tempDatabaseStructure = databaseStructureHome
-				.getInstance();
-		tempDatabaseStructure.setCreationDate(today);
-
-		new CreateDatabaseController().createDatabaseStructure(
-				tempProject.getProjectId(), tempDataspace.getDataspaceName(),
-				tempDatabaseStructure, "main", log);
-
-		String databaseStructurePersistString = databaseStructureHome.persist();
-		log.info("databaseStructurePersistString {0}",
-				databaseStructurePersistString);
-		Contexts.getSessionContext().set("currentDatabaseStructure",
-				tempDatabaseStructure);
-
-		WebApplication tempWebApplication = webApplicationHome.getInstance();
-		tempWebApplication.setStatus("NotDeployed");
-
-		String webApplicationPersistString = webApplicationHome.persist();
-		log.info("webApplicationPersistString {0}", webApplicationPersistString);
-
-		ProjectDatabase tempProjectDatabase = projectDatabaseHome.getInstance();
-		tempProjectDatabase.setCreationDate(today);
-		new CreateDatabaseController().createDatabase(tempDataspace,
-				tempDatabaseStructure, tempWebApplication, getLoginsMain(),
-				tempProject.getTitle(), tempProjectDatabase, "main", log);
-
+		System.out.println("createDatabaseFromSchema");
+		
+		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+		String currentRole = NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
+		
+		System.out
+				.println(String.format(
+						"Check if the user is authorised to create a database from schema when they have the role <%s>",
+						currentRole));
+//		boolean actionAuthorised = false;
 		try {
-			String projectDatabasePersistString = projectDatabaseHome.persist();
-
-			log.info("projectDatabasePersistString {0}",
-					projectDatabasePersistString);
-			Contexts.getSessionContext().set("currentProjectDatabase",
-					tempProjectDatabase);
-		} catch (InvalidStateException ise) {
-			InvalidValue[] iv = ise.getInvalidValues();
-			for (int i = 0; i < iv.length; i++) {
-				System.out.println("Property Name: " + iv[i].getPropertyName());
-				System.out.println("Property Name Message: "
-						+ iv[i].getMessage());
-			}
+			authorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+					|| SystemVars.treatAdminAsOwner(currentRole);
 		}
-
-		createDatabaseConfirmationMessage = "Database Created";
+		catch (MalformedURLException e) {
+			System.out.println("Malformed exception");
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			System.out.println("IO Exception");
+			e.printStackTrace();
+		}
+		
+		dataHolder.setOkButton(true);
+		
+		if (authorised) {
+			System.out.println("Yes, the user is authorised");
+			Dataspace currentDataspace = ((Dataspace) Contexts.getSessionContext()
+					.get("currentDataspace"));
+	
+			log.info("createDatabase {0} {1}", currentProject.getProjectId(),
+					currentDataspace.getDataSpaceId());
+			/**/
+			DatabaseStructure tempDatabaseStructure = databaseStructureHome
+					.getInstance();
+			tempDatabaseStructure.setCreationDate(today);
+	
+			new CreateDatabaseController().createDatabaseStructure(
+					currentProject.getProjectId(), currentDataspace.getDataspaceName(),
+					tempDatabaseStructure, "main", log);
+	
+			String databaseStructurePersistString = databaseStructureHome.persist();
+			log.info("databaseStructurePersistString {0}",
+					databaseStructurePersistString);
+			Contexts.getSessionContext().set("currentDatabaseStructure",
+					tempDatabaseStructure);
+	
+			WebApplication tempWebApplication = webApplicationHome.getInstance();
+			tempWebApplication.setStatus("NotDeployed");
+	
+			String webApplicationPersistString = webApplicationHome.persist();
+			log.info("webApplicationPersistString {0}", webApplicationPersistString);
+	
+			ProjectDatabase tempProjectDatabase = projectDatabaseHome.getInstance();
+			tempProjectDatabase.setCreationDate(today);
+			new CreateDatabaseController().createDatabase(currentDataspace,
+					tempDatabaseStructure, tempWebApplication, getLoginsMain(),
+					currentProject.getTitle(), tempProjectDatabase, "main", log);
+	
+			try {
+				String projectDatabasePersistString = projectDatabaseHome.persist();
+	
+				log.info("projectDatabasePersistString {0}",
+						projectDatabasePersistString);
+				Contexts.getSessionContext().set("currentProjectDatabase",
+						tempProjectDatabase);
+			} catch (InvalidStateException ise) {
+				InvalidValue[] iv = ise.getInvalidValues();
+				for (int i = 0; i < iv.length; i++) {
+					System.out.println("Property Name: " + iv[i].getPropertyName());
+					System.out.println("Property Name Message: "
+							+ iv[i].getMessage());
+				}
+			}
+	
+			createDatabaseConfirmationMessage = "Database Created";
+			createDatabaseConfirmationLinkText = "Parse Database";
+			
+		}
+		else {
+			System.out.println("No, the user is not authorised");
+			createDatabaseConfirmationMessage = "You are not authorised to create a database when your role is " + currentRole;
+			createDatabaseConfirmationLinkText = "Return";
+		}
 		/**/
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).createDatabaseConfirmation();
+//		String currentRole = ((String) Contexts.getSessionContext().get("currentRole"));
+//		System.out
+//				.println(String.format(
+//						"Check if the user is authorised to create a database from schema when they have the role <%s>",
+//						currentRole));
+//		boolean actionAuthorised = false;
+//		try {
+//			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+//					|| SystemVars.treatAdminAsOwner(currentRole);
+//		}
+//		catch (MalformedURLException e) {
+//			System.out.println("Malformed exception");
+//			e.printStackTrace();
+//		}
+//		catch (IOException e) {
+//			System.out.println("IO Exception");
+//			e.printStackTrace();
+//		}
+//
+//		
+//		// log.info("createDatabase {0} {1}", projectIDValue,
+//		// dataspaceIDValue);
+//		dataHolder.setOkButton(true);
+//			
+//		if (actionAuthorised) {
+//			System.out.println("The user is authorised to do this");
+//			Project tempProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+//			Dataspace tempDataspace = ((Dataspace) Contexts.getSessionContext().get("currentDataspace"));
+//
+//			log.info("createDatabase {0} {1}", tempProject.getProjectId(), tempDataspace.getDataSpaceId());
+//			/**/
+//			DatabaseStructure tempDatabaseStructure = databaseStructureHome.getInstance();
+//			tempDatabaseStructure.setCreationDate(today);
+//
+//			new CreateDatabaseController().createDatabaseStructure(tempProject.getProjectId(),
+//					tempDataspace.getDataspaceName(), tempDatabaseStructure, "main", log);
+//
+//			String databaseStructurePersistString = databaseStructureHome.persist();
+//			log.info("databaseStructurePersistString {0}", databaseStructurePersistString);
+//			Contexts.getSessionContext().set("currentDatabaseStructure", tempDatabaseStructure);
+//
+//			WebApplication tempWebApplication = webApplicationHome.getInstance();
+//			tempWebApplication.setStatus("NotDeployed");
+//
+//			String webApplicationPersistString = webApplicationHome.persist();
+//			log.info("webApplicationPersistString {0}", webApplicationPersistString);
+//
+//			ProjectDatabase tempProjectDatabase = projectDatabaseHome.getInstance();
+//			tempProjectDatabase.setCreationDate(today);
+//			new CreateDatabaseController().createDatabase(tempDataspace, tempDatabaseStructure, tempWebApplication,
+//					getLoginsMain(), tempProject.getTitle(), tempProjectDatabase, "main", log);
+//
+//			try {
+//				String projectDatabasePersistString = projectDatabaseHome.persist();
+//
+//				log.info("projectDatabasePersistString {0}", projectDatabasePersistString);
+//				Contexts.getSessionContext().set("currentProjectDatabase", tempProjectDatabase);
+//			}
+//			catch (InvalidStateException ise) {
+//				InvalidValue[] iv = ise.getInvalidValues();
+//				for (int i = 0; i < iv.length; i++) {
+//					System.out.println("Property Name: " + iv[i].getPropertyName());
+//					System.out.println("Property Name Message: " + iv[i].getMessage());
+//				}
+//			}
+//
+//			createDatabaseConfirmationMessage = "Database Created";
+//			((NavigationController) Contexts.getSessionContext().get("navigationController")).createDatabaseConfirmation();
+//		}
+//		else {
+//			System.out.println("The user is not authorised to do this");
+//			addProjectMemberConfirmationMessage = "You are not authorised to add a database to this project.";
+//		
+//			((NavigationController) Contexts.getSessionContext().get("navigationController")).addProjectMemberConfirmation();
+//			createDatabaseConfirmationMessage = "You are not authorised to do that.";
+//		}
+//		/**/
+//		
 	}
 
 	public void cloneDatabase(Integer currentDatabaseIDValue, String cloneType) {
@@ -601,57 +828,68 @@ public class CreateController {
 		/*		*/
 	}
 
+	private boolean authorised;
 	public void parseDatabase() {
-		databaseSchemaShortStatus = "\n Not Yet Started ...!";
-		dataHolder.currentStatus = "";
-		dataHolder.setOkButton(true);
-		((NavigationController) Contexts.getSessionContext().get(
-				"navigationController")).createDatabaseInitial();
-
-		DatabaseStructure tempDatabaseStructure = (DatabaseStructure) Contexts
-				.getSessionContext().get("currentDatabaseStructure");
-
-		ProjectDatabase tempProjectDatabase = (ProjectDatabase) Contexts
-				.getSessionContext().get("currentProjectDatabase");
-
-		databaseStructureHome.setId(tempDatabaseStructure.getStructureId());
-		tempDatabaseStructure = databaseStructureHome.getEntityManager()
-				.find(DatabaseStructure.class,
-						tempDatabaseStructure.getStructureId());
-
-		String rootDirectory = tempDatabaseStructure.getDatabaseDirectory();
-		String csvDataDirectory = tempDatabaseStructure.getCsvDirectory();
-		// String ddlDirecotry = tempDatabaseStructure.getSqlDirectory();
-		String sqlDataDirecotry = rootDirectory + "data/sql/";
-		String databaseMDBFile = rootDirectory
-				+ tempDatabaseStructure.getFile();
-
-		String fileName = tempDatabaseStructure.getFile();
-		int index = fileName.indexOf('.');
-
-		String databaseMDBFileWithoutExtension = fileName.substring(0, index);
-		String databaseSchemaFile = rootDirectory
-				+ databaseMDBFileWithoutExtension + ".sql";
-
-		databaseSchemaShortStatus = "Starting Parsing: " + databaseMDBFile;
-
-		ConnectionManager connectionManager = new ConnectionManager();
-		Connection connection = connectionManager.createConnection(
-				tempProjectDatabase.getDatabaseName().toLowerCase(),
-				getLoginsMain().getUserName().toLowerCase(), getLoginsMain()
-						.getPassword());
-		dataHolder.setCurrentStatus("\nSuccessfully Connected with Database "
-				+ dataHolder.getCurrentStatus());
-
-		try {
-			parseCreateLoaderThread = new ParseCreateLoaderThread(
-					databaseMDBFile, databaseSchemaFile, sqlDataDirecotry,
-					csvDataDirectory, dataHolder, connection);
-			Thread parserThread = new Thread(parseCreateLoaderThread);
-			parserThread.start();
-
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (authorised) {
+			System.out.println("The user is authorised to do this");
+			
+			databaseSchemaShortStatus = "\n Not Yet Started ...!";
+			dataHolder.currentStatus = "";
+			dataHolder.setOkButton(true);
+			((NavigationController) Contexts.getSessionContext().get(
+					"navigationController")).createDatabaseInitial();
+	
+			DatabaseStructure tempDatabaseStructure = (DatabaseStructure) Contexts
+					.getSessionContext().get("currentDatabaseStructure");
+	
+			ProjectDatabase tempProjectDatabase = (ProjectDatabase) Contexts
+					.getSessionContext().get("currentProjectDatabase");
+	
+			databaseStructureHome.setId(tempDatabaseStructure.getStructureId());
+			tempDatabaseStructure = databaseStructureHome.getEntityManager()
+					.find(DatabaseStructure.class,
+							tempDatabaseStructure.getStructureId());
+	
+			String rootDirectory = tempDatabaseStructure.getDatabaseDirectory();
+			String csvDataDirectory = tempDatabaseStructure.getCsvDirectory();
+			// String ddlDirecotry = tempDatabaseStructure.getSqlDirectory();
+			String sqlDataDirecotry = rootDirectory + "data/sql/";
+			String databaseMDBFile = rootDirectory
+					+ tempDatabaseStructure.getFile();
+	
+			String fileName = tempDatabaseStructure.getFile();
+			int index = fileName.indexOf('.');
+	
+			String databaseMDBFileWithoutExtension = fileName.substring(0, index);
+			String databaseSchemaFile = rootDirectory
+					+ databaseMDBFileWithoutExtension + ".sql";
+	
+			databaseSchemaShortStatus = "Starting Parsing: " + databaseMDBFile;
+	
+			ConnectionManager connectionManager = new ConnectionManager();
+			Connection connection = connectionManager.createConnection(
+					tempProjectDatabase.getDatabaseName().toLowerCase(),
+					getLoginsMain().getUserName().toLowerCase(), getLoginsMain()
+							.getPassword());
+			dataHolder.setCurrentStatus("\nSuccessfully Connected with Database "
+					+ dataHolder.getCurrentStatus());
+	
+			try {
+				parseCreateLoaderThread = new ParseCreateLoaderThread(
+						databaseMDBFile, databaseSchemaFile, sqlDataDirecotry,
+						csvDataDirectory, dataHolder, connection);
+				Thread parserThread = new Thread(parseCreateLoaderThread);
+				parserThread.start();
+	
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+			System.out.println("Not authorised!!");
+			((NavigationController) Contexts.getSessionContext().get(
+					"navigationController"))
+					.setHomePageMainBodyNavigation("/custom/singleDataspaceByProject.xhtml");
 		}
 	}
 
@@ -827,12 +1065,15 @@ public class CreateController {
 
 		UserProject userProjectNew = userProjectHome.find();
 
-		userProjectNew.setUserRole(userProject.getUserRole());
+		System.out.println(String.format("Setting user's role to be <%s>", requiredRole));
+		userProjectNew.setUserRole(requiredRole);
 
 		userProjectHome.persist();
 	}
 	
 	public void deleteProjectMember() {
+		System.out.println("createController:deleteProjectMember");
+		
 		UserProject userProject = ((UserProject) Contexts.getSessionContext()
 				.get("currentUserProject"));
 
@@ -843,61 +1084,120 @@ public class CreateController {
 	}
 
 	public void createProjectMember() {
+		System.out.println("createProjectMember");
+
 		addProjectMemberConfirmationMessage = "";
 		/*
 		 * ((NavigationController) Contexts.getSessionContext().get(
 		 * "navigationController")).homePageWelcome();
 		 */
 
-		Project tempProject = ((Project) Contexts.getSessionContext().get(
-				"currentProject"));
-		log.info("tempProject.getDescription(): "
-				+ tempProject.getDescription());
+		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+		log.info("currentProject description: " + currentProject.getDescription());
 
-		Users tempUser = usersHome.getInstance();
-		List<Users> userList = usersHome.findUserByEmail(tempUser.getEmail());
-		System.out.println("userList.size(): " + userList.size());
-		if (userList.size() == 0) {
-			// save the user from the form
-
-			// I should just return .. if user doesn't exist
-			// usersHome.persist();
-			addProjectMemberConfirmationMessage = tempUser.getLastName() + ", "
-					+ tempUser.getFirstName() + " is not registered member";
-			// return;
-		} else {
-			tempUser = userList.get(0);
-
-			UserProjectId userProjectID = new UserProjectId();
-			userProjectID.setUserId(tempUser.getUserId());
-			userProjectID.setProjectId(tempProject.getProjectId());
-
-			System.out.println(tempProject.getProjectId() + "  "
-					+ projectHome.getProjectProjectId() + "  "
-					+ getUserMain().getUserId());
-			UserProject userProject = userProjectHome.getInstance();
-			userProject.setId(userProjectID);
-			userProject.setProject(tempProject);
-			userProject.setUsers(tempUser);
-			// userProject.setUserRole("newMemberRole");
-
-			try {
-				userProjectHome.setInstance(userProject);
-				// userProject.
-				userProjectHome.persist();
-				addProjectMemberConfirmationMessage = tempUser.getLastName()
-						+ ", " + tempUser.getFirstName()
-						+ " is added as project member";
-			} catch (Exception e) {
-				// org.hibernate.exception.ConstraintViolationException
-				addProjectMemberConfirmationMessage = tempUser.getLastName()
-						+ ", " + tempUser.getFirstName()
-						+ " is already project member";
-			}
-
+		/*
+		 * First we need to determine if this user has authority to add another
+		 * user to the project!
+		 */
+		String currentRole = ((String) Contexts.getSessionContext().get("currentRole"));
+		System.out.println(String.format("Check if the user is authorised to create a project member when they have the role <%s>", currentRole));
+		boolean actionAuthorised = false;
+		try {
+			actionAuthorised = IAMRoleManager.getInstance().getProjectAuthentication().isAllowedToAddOthersForProject(currentRole)
+					|| SystemVars.treatAdminAsOwner(currentRole);
+			System.out.println("Call returned " + actionAuthorised);
 		}
-		((NavigationController) Contexts.getSessionContext().get(
-				"navigationController")).addProjectMemberConfirmation();
+		catch (MalformedURLException e) {
+			System.out.println("Malformed exception");
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			System.out.println("IO Exception");
+			e.printStackTrace();
+		}
+
+		if (actionAuthorised) {
+			// String currentRole = ((UserRoles)
+			// Contexts.getSessionContext().get(
+			// "userRoles")).getCurrentRole();
+			System.out.println("User is authorised to add member!");
+			Users userToAdd = usersHome.getInstance();
+			List<Users> userList = usersHome.findUserByEmail(userToAdd.getEmail());
+
+			if (log.isDebugEnabled()) {
+				log.debug("About to try to add user " + userToAdd.getEmail());
+			}
+			System.out.println("userList.size(): " + userList.size());
+
+			if (userList.size() == 0) {
+				// save the user from the form
+
+				// I should just return .. if user doesn't exist
+				// usersHome.persist();
+				addProjectMemberConfirmationMessage = userToAdd.getFirstName() + " " + userToAdd.getLastName()
+						+ " is not a registered member";
+				// return;
+			}
+			else {
+				if (userList.size() > 1) {
+					/*
+					 * FIXME This should not happen. For now, we should log the
+					 * problem and continue.
+					 */
+					log.error("There are too many users defined for email address " + userToAdd.getEmail());
+				}
+				userToAdd = userList.get(0);
+
+				if (log.isDebugEnabled()) {
+					log.debug("Confirmed that user is registered");
+					log.debug(String.format("Setting user id %d and project id %d", userToAdd.getUserId(),
+							currentProject.getProjectId()));
+				}
+
+				UserProjectId userProjectID = new UserProjectId();
+				userProjectID.setUserId(userToAdd.getUserId());
+				userProjectID.setProjectId(currentProject.getProjectId());
+
+				System.out.println("Temp project ID:" + currentProject.getProjectId() + "  Project ID:"
+						+ projectHome.getProjectProjectId() + "  User ID:" + getUserMain().getUserId());
+				UserProject userProject = userProjectHome.getInstance();
+				userProject.setId(userProjectID);
+				userProject.setProject(currentProject);
+				userProject.setUsers(userToAdd);
+				System.out.println(String.format("Setting user's role to be <%s>", requiredRole));
+				userProject.setUserRole(requiredRole);
+
+				try {
+					if (log.isDebugEnabled()) {
+						log.debug("Set instance ...");
+						log.debug("userid:" + userProject.getId().getUserId());
+						log.debug("projectid:" + userProject.getId().getProjectId());
+						log.debug("project name:" + userProject.getProject().getName());
+						log.debug("project id:" + userProject.getProject().getProjectId());
+						log.debug(userProject.getUserRole());
+					}
+					userProjectHome.setInstance(userProject);
+					userProjectHome.persist();
+					addProjectMemberConfirmationMessage = userToAdd.getFirstName() + " " + userToAdd.getLastName()
+							+ " has been added as a " + userProject.getUserRole() + " for this project.";
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					// org.hibernate.exception.ConstraintViolationException
+					addProjectMemberConfirmationMessage = userToAdd.getFirstName()
+							+ " "
+							+ userToAdd.getLastName()
+							+ " is already project member. If you believe this to be in error then please contact support.";
+				}
+			}
+		}
+		else {
+			// TODO Audit this
+			System.out.println("User is not authorised to add member!");
+			addProjectMemberConfirmationMessage = "You are not authorised to add a user to this project.";
+		}
+		((NavigationController) Contexts.getSessionContext().get("navigationController"))
+				.addProjectMemberConfirmation();
 	}
 
 	public void dropDatabase(String databaseName) {
@@ -1399,6 +1699,7 @@ public class CreateController {
 		if (tempProject.getDataspaces().size() > 2) {
 			return false;
 		}
+
 		return true;
 	}
 
@@ -1468,4 +1769,38 @@ public class CreateController {
 		}
 	}
 
+	
+	
+
+	public String getEditProjectConfirmationMessage() {
+		return editProjectConfirmationMessage;
+	}
+
+	public void setEditProjectConfirmationMessage(String editProjectConfirmationMessage) {
+		this.editProjectConfirmationMessage = editProjectConfirmationMessage;
+	}
+	
+	public String getRequiredRole() {
+		return requiredRole;
+	}
+
+	public void setRequiredRole(String requiredRole) {
+		this.requiredRole = requiredRole;
+	}
+
+	public boolean isAuthorised() {
+		return authorised;
+	}
+
+	public void setAuthorised(boolean authorised) {
+		this.authorised = authorised;
+	}
+
+	public String getCreateDatabaseConfirmationLinkText() {
+		return createDatabaseConfirmationLinkText;
+	}
+
+	public void setCreateDatabaseConfirmationLinkText(String createDatabaseConfirmationLinkText) {
+		this.createDatabaseConfirmationLinkText = createDatabaseConfirmationLinkText;
+	}
 }
