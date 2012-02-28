@@ -1,0 +1,50 @@
+/* This stylesheet contains style overrides for branding the site for a particular institution */
+
+
+/* general colours */
+
+
+/* header */
+#header-banner-wrap {
+background-color: #002147;
+height: 70px; 
+padding: 20px 20px 20px 10px;
+
+}
+
+
+#institution a{
+background: transparent url('institution.png') no-repeat 0 0px;
+display: block;
+float: right;
+height: 71px;
+text-indent: -9000px;
+width: 226px;
+}
+
+
+#project-logo {
+background: transparent url('servicename.png') no-repeat 0px 10px;
+display: block;
+float: left;
+height: 70px;
+text-indent: -9000px;
+width: 500px;
+}
+
+/*chrome-effect on toolbar - adjust bg colour and colour of bg image to suit main header bg colour  */
+.rich-toolbar {
+
+border-style: none;
+padding: 0;
+background-color: #657482;
+background-position: bottom left;
+background-repeat: repeat-x;
+background-image: url("../images/chromeStrip.png");
+border-bottom: 1px solid #606f82;
+}
+
+
+
+
+/* footer */

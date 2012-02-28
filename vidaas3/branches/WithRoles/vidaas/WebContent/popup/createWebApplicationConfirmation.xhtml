@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:panel>
+		<a4j:region>
+			<h:form>
+				<a4j:poll id="pollForm" interval="100"
+					reRender="pollForm, createWebApplicationStatus, okButtonCreateWebApplication"
+					enabled="#{createController.statusPanelOKButtonDisabled}" />
+			</h:form>
+		</a4j:region>
+
+		<a4j:form id="createWebApplicationConfirmationForm" ajaxSubmit="true">
+
+			<h:panelGrid id="createWebApplicationConfirmationPanel" width="100%">
+				<h:outputLabel id="createWebApplicationStatus"
+					value="#{createController.databaseSchemaFormStatus}" />
+				<a4j:commandButton id="okButtonCreateWebApplication"
+					disabled="#{createController.statusPanelOKButtonDisabled}"
+					value="OK" reRender="homeMainPanel, homePageMainBodyInclude, createWebApplicationPanel, createWebApplicationFormInclude"
+					action="#{createController.finishCreateWebApplication()}">
+					<rich:componentControl for="createWebApplicationPanel"
+						attachTo="okButtonCreateWebApplication" operation="hide"
+						event="onclick" />
+				</a4j:commandButton>
+			</h:panelGrid>
+		</a4j:form>
+	</rich:panel>
+
+</ui:composition>

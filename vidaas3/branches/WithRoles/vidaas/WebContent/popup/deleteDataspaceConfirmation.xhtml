@@ -1,0 +1,21 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	
+	<a4j:form id="deleteDataspaceConfirmationForm" ajaxSubmit="true">
+		<h:outputLabel id="deleteDataspaceStatus"
+					value="#{createController.deleteProjectDataspaceConfirmationMessage}" />
+					<br/>
+				<a4j:commandButton id="okButtonDeleteDataspace"
+					value="OK" reRender="homeMainPanel, homePageMainBodyInclude, deleteDataspacePanel, deleteDataspaceFormInclude"
+					action="#{createController.finishDeleteDataSpace()}">
+					<rich:componentControl for="deleteDataspacePanel"
+						attachTo="okButtonDeleteDataspace" operation="hide"
+						event="onclick" />
+				</a4j:commandButton>
+	</a4j:form>
+</ui:composition>

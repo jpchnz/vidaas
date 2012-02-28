@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	
+	<a4j:form id="removeWebApplicationForm" ajaxSubmit="true">
+	
+		<h:panelGrid id="removeWebApplicationFormPanel"
+			width="100%">
+			<h:panelGroup>
+				<h:outputLabel value="Do you want to remove Web Application " />
+				<h:outputLabel value=" for the database '#{navigationController.getCurrentProjectDatabase().databaseName}'" />
+			</h:panelGroup>
+		</h:panelGrid>
+		
+		<div class="actionButtons">
+		<!--  
+		<a4j:commandButton
+			id="createWebApplicationCancelButton" value="Cancel" style="float:left">
+			<rich:componentControl for="createWebApplicationPanel"
+				attachTo="createWebApplicationCancelButton" operation="hide" event="onclick" />
+		</a4j:commandButton> 		
+		-->
+		<a4j:commandButton
+			action="#{createController.removeWebApplication(currentProjectDatabase.databaseId)}"
+			id="removeWebApplicationButton" value="Remove Web Application" onclick="this.disabled=true" status="submitStatus"
+			reRender="removeWebApplicationFormInclude, removeWebApplicationPanel"
+			style="float:right" ></a4j:commandButton>
+		
+		<a4j:region>
+			<a4j:status id="submitStatus">
+				<f:facet name="start">
+					<h:graphicImage value="/img/wait.gif" height="28px" width="28px"
+						style="float:right" />
+				</f:facet>
+			</a4j:status>
+		</a4j:region></div>
+	</a4j:form>
+	
+</ui:composition>

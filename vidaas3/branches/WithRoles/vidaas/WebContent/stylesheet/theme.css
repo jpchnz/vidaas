@@ -1,0 +1,473 @@
+html {
+        overflow-y: scroll;
+}
+
+
+
+#middleHeader{
+
+}
+
+#header-banner-wrap {
+clear:both; 
+margin:0; 
+position:relative;
+margin:0 auto;
+      
+}
+
+
+#header-banner-wrap h2 {font-size:14px;color:#3366CC; margin:0; 
+        position:absolute; top:80px; width:325.2px;left:5px}
+
+#logo {position:absolute; left: 715px; top:-15px; width:28%}
+#vidaas-logo {width: 18%; position:absolute; left: 5px; top:-15px}
+
+
+body {
+        margin:0px; 
+        padding:0px; 
+        font-size: 12px;
+        width:1000px;
+        margin: 0px auto
+}
+
+a img {
+        border: none;
+}
+
+h1 {
+        font-size: 1.6em;
+        margin-top: 0;
+}
+
+input[type=submit], input[type=button] {
+        font-size: 11px;
+        margin: 5px 5px 5px 0;
+        cursor: pointer;
+}
+
+input[type=text], input[type=password], textarea {
+        font-size: 12px;
+        padding-left: 1px;
+}
+
+select {
+        font-size: 13px;
+}
+
+.tableControl, .actionButtons {
+        width: 100%;
+}
+
+.tableControl a {
+        padding-left: 10px;
+}
+
+.tableControl {
+        text-align: right;
+}
+
+.footer {
+        text-align: center;
+        font-size: 11px;
+        margin-bottom: 10px;
+}
+
+.descriptionWidth {width:300px}
+
+
+.body {
+        padding: 30px;
+}
+.message {
+        padding: 5px;
+        list-style: none;
+        border: 0;
+        background: none;
+        padding: 0;
+        color: #000000;
+        margin: 5px 0 8px 0;
+        font-size: 12px;
+}
+
+.message li {
+        background: no-repeat left center;
+        padding-top: 1px;
+        padding-left: 20px;
+        margin-left: 3px;
+}
+
+.message li.infomsg {
+        background-image: url(../img/msginfo.png);
+}
+
+.message li.errormsg {
+        background-image: url(../img/msgerror.png);
+}
+
+.message li.warnmsg {
+        background-image: url(../img/msgwarn.png);
+}
+
+.name {
+        vertical-align: top;
+        font-weight: bold;
+        width: 115px;
+        float: left;
+        padding: 5px;
+        margin-top: 3px;
+        clear: left;
+}
+
+.value {
+        float: left;
+        padding: 5px;
+}
+
+.errorMessage {
+        float: right;
+         font-size:14px; 
+         color:red
+}
+
+.error {
+        float: left;
+        padding: 5px;
+}
+
+.errors {
+        color: #FF0000;
+        vertical-align: middle;
+}
+
+img.errors {
+        padding-right: 5px;
+}
+
+.errors input, .errors textarea, .errors select {
+        border: 1px solid red !important;
+}
+
+.required {
+        color: #FF0000;
+        padding-left: 2px;
+}
+
+.rich-stglpanel-body {
+        overflow: auto;
+} 
+
+/* the specificity here is necessary to override the defaults */
+/**/
+.rich-panel .rich-panel-header,
+.rich-stglpanel .rich-stglpanel-header {
+        padding: 2px 3px;       
+}
+
+.rich-panel input[type=submit], .rich-panel input[type=button],
+.rich-tabpanel input[type=submit], .rich-tabpanel input[type=button] {
+        margin-bottom: 0;
+}
+
+.tableControl input[type=submit], .tableControl input[type=button], .tableControl select {
+        margin: 5px 0 5px 5px;
+}
+
+/* I don't know why this is necessary, but the select is off by a pixel on the top and is padding too much on the left */
+.tableControl select {
+        margin-left: 2px;
+        position: relative;
+        top: 1px;
+}
+
+.actionButtons {
+        padding-left: 1px;
+}
+
+.actionButtons select {
+        margin: 5px 5px 5px 0;
+        vertical-align: bottom;
+}
+
+.rich-toolbar-item a {
+        text-decoration: none;
+}
+
+.rich-toolbar-item a:hover, .rich-ddmenu-label-select {
+        text-decoration: underline;
+        color: red
+}
+
+.rich-toolbar-item a:active, .rich-ddmenu-label-select {
+        text-decoration: underline;
+        color: red
+}
+
+.rich-toolbar-item .rich-menu-item a:hover {
+        text-decoration: none;
+}
+
+.rich-datalist {
+        list-style: square;
+        margin: 6px 0 1px 0;
+        padding-left: 18px;
+}
+
+.rich-list-item {
+        padding-bottom: 4px;
+}
+
+.p {
+        font-size: 14px;
+}
+div.info {
+        font-size: 1.2em;
+}
+
+ul.bullets {
+        list-style: square;
+}
+
+ul.bullets li {
+        padding-bottom: 2px;
+}
+
+td.action {
+        text-align: center;
+        width: 8em;
+        white-space: nowrap;
+}
+
+td.action a {
+        padding-left: 1px;
+        padding-right: 1px;
+}
+
+table.radio {
+   border: 0;
+}
+
+table.radio td {
+   padding: 0 2px;
+}
+
+table.radio input[type=radio] {
+   vertical-align: bottom;
+}
+
+/**/
+.rich-mpnl-header {background-color: #f0f0f0; border-color: #f0f0f0; font-size:16px; 
+
+/*
+
+position:absolute;
+left:10px;
+top:-1px;
+ border-width: 0px;
+  text-decoration: underline; 
+*/
+
+
+}
+
+
+
+.rich-mpnl-header-cell {background-color: #f0f0f0; height:24px; 
+}
+
+.rich-modalpanel {background-color: #f0f0f0; border-color: #f0f0f0;  
+
+border-width: 0px}
+
+
+.rich-mpnl-resizer {background-color: #f0f0f0; border-color: #f0f0f0; border-width: 0px}
+
+
+.rich-mpnl-panel {background-color: #f0f0f0; border-color: #f0f0f0; 
+
+border-width: 0px}
+
+
+.rich-mpnl-shadow {background-color: #f0f0f0; border-color: #f0f0f0; 
+
+border-width: 0px}
+
+
+.rich-mp-content {background-color: #f0f0f0; border-color: #f0f0f0; 
+
+border-width: 0px}
+
+
+.rich-mpnl-body {background-color: white; border-color: #f0f0f0; font-size:14px; 
+
+border-width: 0px}
+
+.rich-table1 {
+        width: 100%;
+        margin: 10px 0px;
+        border-radius: 20px;
+        border-color: white;
+    border-width: 0px;
+        box-shadow: #f0f0f0 1px 1px 1px 1px;
+}
+
+/*
+.rich-table-thead {background-color: white; border-color: white; border-radius:20px; border-width: 0px}
+.rich-table-header {background-color: white; border-color: white; border-radius:20px; border-width: 0px}
+.rich-table-subheader {background-color: white; border-color: white; border-radius:20px; border-width: 0px}
+.rich-table-subheadercell {background-color: white; border-color: white; border-radius:20px; border-width: 0px}
+.rich-table-headercell {background-color: white; border-color: white; border-radius:20px; border-width: 0px}
+.rich-table-cell {border-color: black; border-radius:20px; border-width: 1px}
+.rich-table-tbody {border-color: black; border-width: 0px;
+}
+*/
+
+.rich-table {
+        width: 100%;
+}
+
+/*
+.myrich-toolbar {
+        background-image: none;
+        background-color:#061F46;
+        color:white
+}
+
+*/
+
+/*  overrides to RichFace by Joseph Talbot, OUCS */
+
+body
+{
+ font-family: Helvetica, Arial, sans-serif;
+}
+
+.body {
+
+padding: 0px;
+}
+
+
+.body h1{
+  background-color: #002147;
+  color: #fff;
+  margin-top: 10px;
+  padding: 10px;	
+  text-align: center;
+  text-shadow: 0px 2px 3px #333;
+  text-transform: uppercase;
+}
+
+
+/* apply drop-shadow to some (all?) of the main blocks */
+
+#header-banner-wrap,
+.body h1,
+.rich-panel,
+.rich-toolbar{
+
+box-shadow: #eee 0.5em 0.5em 0.7em !important; /* Opera 10.5, IE 9.0 */
+	-webkit-box-shadow: #eee 0.3em 0.3em 0.7em !important ; /* Chrome Safari */
+	-moz-box-shadow: #eee 0.3em 0.3em 0.7em!important ; /* Firefox F3.5+ */
+
+}
+
+
+.rich-panel {
+border: 1px solid #dedede;
+    -webkit-border-radius: 1px ;
+	-moz-border-radius: 1px;
+border-radius: 1px !important ;
+
+}
+
+
+.rich-toolbar-item   {
+font-size: 1.6em !important;
+font-weight: normal;
+font-style: normal !important;
+}
+
+.rich-toolbar-item  a {
+font-size: 0.8em !important;
+font-weight: normal;
+}
+
+
+.tooltip {
+	border-bottom: 1px dotted #000000;
+	color: #000000;
+	outline: none;
+	cursor: help;
+	text-decoration: none;
+	position: relative;
+}
+
+.tooltip span {
+	margin-left: -999em;
+	position: absolute;
+}
+
+.tooltip:hover span {
+	border-radius: 5px 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+	-webkit-box-shadow: 5px 5px rgba(0, 0, 0, 0.1);
+	-moz-box-shadow: 5px 5px rgba(0, 0, 0, 0.1);
+	font-family: Calibri, Tahoma, Geneva, sans-serif;
+	position: absolute;
+	left: 1em;
+	top: 2em;
+	z-index: 99;
+	margin-left: 0;
+	width: 500px;
+}
+
+.tooltip:hover img {
+	border: 0;
+	margin: -10px 0 0 -55px;
+	float: left;
+	position: absolute;
+}
+
+.tooltip:hover em {
+	font-family: Candara, Tahoma, Geneva, sans-serif;
+	font-size: 1.2em;
+	font-weight: bold;
+	display: block;
+	padding: 0.2em 0 0.6em 0;
+}
+
+.classic {
+	padding: 0.8em 1em;
+}
+
+.custom {
+	padding: 0.5em 0.8em 0.8em 2em;
+}
+
+* html a:hover {
+	background: transparent;
+}
+
+.classic {
+	background: #f7f7ea;
+	border: 1px solid #FFAD33;
+}
+
+.critical {
+	background: #f5d8c4;
+	border: 1px solid #d52f26;
+}
+
+.help {
+	background: #ebf4fd;
+	border: 1px solid #63777d;
+}
+
+.warning {
+	background: #fbeedb;
+	border: 1px solid #f6c47a;
+}

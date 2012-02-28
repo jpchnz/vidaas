@@ -1,0 +1,46 @@
+<f:subview xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<rich:modalPanel id="loginUsingShibPanel" width="350" autosized="true"  >
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="Login via SSO"   ></h:outputText>
+			</h:panelGroup>
+		</f:facet>
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="/images/close.png" width="20px"
+					styleClass="hidelink" id="hideShibLoginLink" />
+				<rich:componentControl for="loginUsingShibPanel" attachTo="hideShibLoginLink"
+					operation="hide" event="onclick" />
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="shibLoginForm">
+			<h:outputText value="You are about to be logged in using #{authenticator.ssoAuthenticator.allDetails}"></h:outputText>			
+			<div class="actionButtons">
+			<a4j:commandButton id="submit"
+				value="Login" action="#{identity.login}"
+				reRender="shibLoginForm, topToolBarForm, rightTopToolBarGroup"
+				onclick="this.disabled=true" status="submitStatus" style="float:right"
+				onbeforedomupdate="window.location.reload()"
+				oncomplete="Richfaces.hideModalPanel('loginUsingShibPanel')">
+				 <a4j:actionparam name="useSso" assignTo="#{authenticator.useSso}" 
+            value="true"/>
+				</a4j:commandButton>
+
+			<a4j:region>
+				<a4j:status id="submitStatus">
+					<f:facet name="start">
+						<h:graphicImage value="/img/wait.gif" height="28px" width="28px" style="float:right"/>
+					</f:facet>
+				</a4j:status>
+			</a4j:region></div>
+		</a4j:form>
+
+	</rich:modalPanel>
+
+</f:subview>

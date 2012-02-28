@@ -1,0 +1,116 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	
+	<a4j:form id="editDataspaceForm">
+		<s:validateAll>
+	        <h:panelGrid columns="3" columnClasses="name, value, errorMessage">
+	        
+	        	<h:outputLabel for="dataspaceName">
+					<a class="tooltip" href="#">Database name<span
+						class="custom help"> <img src="images/Help.png" alt="Help"
+							height="48" width="48" /><em>#{helpController.getHelpTitle('DatabaseCreationPopup_DatabaseName')}</em>#{helpController.setupHelpText('DatabaseCreationPopup_DatabaseName')}
+					</span></a>
+				</h:outputLabel>
+	            <h:inputText id="dataspaceName"  required="true" value="#{currentDataspace.dataspaceUserFriendlyName}" 
+	            	style="width:295px;"/>
+	        	<rich:message for="dataspaceName" style="width : 184px;" />
+	        	
+	        	<h:outputLabel for="databaseDescription"><a class="tooltip" href="#">Database description<span
+						class="custom help"> <img src="images/Help.png" alt="Help"
+							height="48" width="48" /><em>#{helpController.getHelpTitle('DatabaseCreationPopup_DatabaseDescription')}</em>#{helpController.setupHelpText('DatabaseCreationPopup_DatabaseDescription')}
+					</span></a></h:outputLabel>	            
+	            <h:inputText id="databaseDescription"  required="true" value="#{currentDataspace.databaseDescription}" 
+	            	style="width:295px;"/>
+	        	<rich:message for="databaseDescription" style="width : 184px;" />
+	        	
+	        	<h:outputLabel for="dataspaceCreationDate">Creation Date</h:outputLabel>	            
+	           <rich:calendar id="dataspaceCreationDate"
+                       required="true"
+                          value="#{currentDataspace.creationDate}" datePattern="dd/MM/yyyy"/>
+	        	<rich:message for="dataspaceCreationDate" style="width : 184px;" />
+	        	
+	        	<h:outputLabel for="databaseSize"><a class="tooltip" href="#">Estimated database size<span
+						class="custom help"> <img src="images/Help.png" alt="Help"
+							height="48" width="48" /><em>#{helpController.getHelpTitle('DatabaseCreationPopup_EstimatedSize')}</em>#{helpController.setupHelpText('DatabaseCreationPopup_EstimatedSize')}
+					</span></a></h:outputLabel>
+				<h:selectOneMenu value="#{currentDataspace.databaseSize}"
+				required="true" id="databaseSize" style="width:302px;">
+				<f:selectItem id="databaseSize_item1" itemLabel="1 Gigabyte"
+					itemValue="1" />
+				<f:selectItem id="databaseSize_item2" itemLabel="10 Gigabyte"
+					itemValue="10" />
+					<f:selectItem id="databaseSize_item3" itemLabel="50 Gigabyte"
+					itemValue="50" />
+					<f:selectItem id="databaseSize_item4" itemLabel="100 Gigabyte"
+					itemValue="100" />				
+				</h:selectOneMenu>
+				<rich:message for="databaseSize" style="width : 184px;" />
+	        
+	            <h:outputLabel for="databaseBackupPolicy">Backup Policy</h:outputLabel>
+				<h:selectOneMenu value="#{currentDataspace.databaseBackupPolicy}"
+				required="true" id="databaseBackupPolicy" style="width:302px;">
+					<f:selectItem id="databaseBackupPolicy_item1" itemLabel="Daily"
+						itemValue="daily" />
+					<f:selectItem id="databaseBackupPolicy_item2" itemLabel="Weekly"
+					itemValue="weekly" />
+					<f:selectItem id="databaseBackupPolicy_item3" itemLabel="fortnightly"
+					itemValue="fortnightly" />
+					<f:selectItem id="databaseBackupPolicy_item4" itemLabel="monthly"
+					itemValue="monthly" />				
+				</h:selectOneMenu>
+				<rich:message for="databaseBackupPolicy" style="width : 184px;" />
+				
+				<h:outputLabel for="databaseExpandable">Database Expandable</h:outputLabel>
+				<h:selectOneMenu value="#{currentDataspace.databaseExpandablePolicy}"
+					required="true" id="databaseExpandable" style="width:302px;">
+					<f:selectItem id="databaseExpandable_item1" itemLabel="yes"
+						itemValue="yes" />
+					<f:selectItem id="databaseExpandable_item2" itemLabel="no"
+					itemValue="no" />		
+				</h:selectOneMenu>
+				<rich:message for="databaseExpandable" style="width : 184px;" />
+				
+				<h:outputLabel for="webApplicationName"><a class="tooltip" href="#">Database interface name<span
+						class="custom help"> <img src="images/Help.png" alt="Help"
+							height="48" width="48" /><em>#{helpController.getHelpTitle('DatabaseCreationPopup_WebAppName')}</em>#{helpController.setupHelpText('DatabaseCreationPopup_WebAppName')}
+					</span></a></h:outputLabel>
+	            <h:inputText id="webApplicationName"  required="true" value="#{currentDataspace.webApplicationName}" 
+	            	style="width:295px;"/>
+	        	<rich:message for="webApplicationName" style="width : 184px;" />
+
+			</h:panelGrid>
+			<h:outputText value="#{createController.validationError}" styleClass="errorMessage"></h:outputText>
+	        <div style="clear:both"/>
+
+	    	<div class="actionButtons">
+	    		<a4j:commandButton id="editDataspaceCancelButton" value="Cancel" style="float:left" 
+	    			> 
+	    			<!---->  
+			    	 <rich:componentControl for="editDataspacePanel" attachTo="editDataspaceCancelButton" operation="hide" event="onclick"/>
+			    	 
+			    </a4j:commandButton>
+			    
+			    <a4j:commandButton id="editDataSpaceButton" value="Save Database" action="#{createController.updateDataSpace}" 
+				    onclick="this.disabled=true" status="submitStatus"
+					reRender="editDataspaceFormInclude, homeMainPanel, homePageMainBodyInclude" style="float:right">
+					<rich:componentControl for="editDataspacePanel" attachTo="editDataSpaceButton" operation="hide" event="onclick"/>
+			    </a4j:commandButton>
+			    	   
+			    <a4j:region>
+					<a4j:status id="submitStatus">
+						<f:facet name="start">
+							<h:graphicImage value="/img/wait.gif" height="28px" width="28px"
+								style="float:right" />
+						</f:facet>
+					</a4j:status>
+				</a4j:region>
+		    </div>
+		</s:validateAll>
+    </a4j:form>
+    
+</ui:composition>

@@ -1,0 +1,27 @@
+<f:subview xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:rich="http://richfaces.org/rich">
+	<rich:modalPanel id="registrationPanel-1" width="350" autosized="true" 
+			style="border-radius: 30px" onhide="window.location.reload()"
+			showWhenRendered="#{registration.level1Registration}" >
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="Register" style="background-color: #f0f0f0"></h:outputText>
+			</h:panelGroup>
+		</f:facet>
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="/images/close.png" width="20px"
+					styleClass="hidelink" id="hidelink" />
+				<rich:componentControl for="registrationPanel-1" attachTo="hidelink"
+					operation="hide" event="onclick" />
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:include id="registrationFormInclude" viewId="#{registration.registrationFormInclude}"/>
+	</rich:modalPanel>
+</f:subview>

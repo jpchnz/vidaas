@@ -1,0 +1,63 @@
+<f:subview xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<rich:modalPanel id="loginPanel" width="350" autosized="true"
+		showWhenRendered="#{authenticator.loginAttemptedAndFailed}"
+		onhide="window.location.reload()" style="border-radius: 30px">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="Login" style="background-color: #f0f0f0"></h:outputText>
+			</h:panelGroup>
+		</f:facet>
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="/images/close.png" width="20px"
+					styleClass="hidelink" id="hidelink" />
+				<rich:componentControl for="loginPanel" attachTo="hidelink"
+					operation="hide" event="onclick" />
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="loginForm">
+			<div class="dialog"><h:panelGrid columns="2" rowClasses="prop"
+				columnClasses="name,value">
+				<h:outputLabel for="username">Username</h:outputLabel>
+				<h:inputText id="username" value="#{credentials.username}" />
+				<h:outputLabel for="password">Password</h:outputLabel>
+				<h:inputSecret id="password" value="#{credentials.password}" />
+				<h:outputLabel for="rememberMe"><a class="tooltip" href="#">Remember me<span
+						class="custom help"> <img src="images/Help.png" alt="Help"
+							height="48" width="48" /><em>#{helpController.getHelpTitle('LoginPopup_RememberMe')}</em>#{helpController.setupHelpText('LoginPopup_RememberMe')}
+					</span></a></h:outputLabel>
+				<h:selectBooleanCheckbox id="rememberMe"
+					value="#{rememberMe.enabled}" />
+			</h:panelGrid></div>
+			<h:outputText value="#{authenticator.loginFailed}" styleClass="errorMessage"></h:outputText>
+			<div class="actionButtons"><a4j:commandButton id="submit"
+				value="Login" action="#{identity.login}"
+				reRender="loginForm, topToolBarForm, rightTopToolBarGroup"
+				onclick="this.disabled=true" status="submitStatus"
+				oncomplete="#{not authenticator.loginAttemptedAndFailed ? 'Richfaces.hideModalPanel(\'loginPanel\');' : 'Richfaces.showModalPanel(\'loginPanel\');'}" >
+				<a4j:actionparam name="noUseSso" assignTo="#{authenticator.useSso}" 
+            value="false"/>
+            </a4j:commandButton>
+
+			<a4j:region>
+				<a4j:status id="submitStatus">
+					<f:facet name="start">
+						<h:graphicImage value="/img/wait.gif" height="28px" width="28px" style="float:right"/>
+					</f:facet>
+				</a4j:status>
+			</a4j:region></div>
+		</a4j:form>
+		
+		<rich:hotKey key="return"
+    		handler="#{rich:element('submit')}.click()"
+    			selector="#password"/>
+
+	</rich:modalPanel>
+
+</f:subview>
