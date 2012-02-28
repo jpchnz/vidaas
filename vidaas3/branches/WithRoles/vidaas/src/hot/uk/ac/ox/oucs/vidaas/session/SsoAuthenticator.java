@@ -112,7 +112,6 @@ public class SsoAuthenticator {
 	}
 
 	public String getEmail() {
-		System.out.println("Returning " + email);
 		return email;
 	}
 }
