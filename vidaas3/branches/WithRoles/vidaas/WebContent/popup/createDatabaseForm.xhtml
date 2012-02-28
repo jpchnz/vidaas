@@ -47,7 +47,7 @@
 			    	 <rich:componentControl for="createDatabasePanel" attachTo="createDatabaseCancelButton" operation="hide" event="onclick"/>
 			    </a4j:commandButton>
 			    
-			    <h:commandButton id="addSchemaButton" value="Upload Schema" action="#{createController.createDatabaseFromSchema}" 
+			    <h:commandButton id="addSchemaButton" value="Upload Schema" action="#{createController.createDatabaseFromSchema()}" 
 				    style="float:right">
 			    </h:commandButton>	
     </a4j:form>
