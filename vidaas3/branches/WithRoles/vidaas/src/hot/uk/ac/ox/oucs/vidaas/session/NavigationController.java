@@ -793,14 +793,15 @@ public class NavigationController {
 		projectHome.setId(projectIDValue);
 		currentProject = projectHome.getInstance();
 		Contexts.getSessionContext().set("currentProject", currentProject);
+		System.out.println("current project set to be " + currentProject.getName());
 
-		System.out.println("current project set");
 		dataspaceHome.setId(dataspaceIDValue);
 		currentDataspace = dataspaceHome.getInstance();
 		Contexts.getSessionContext().set("currentDataspace", currentDataspace);
 
-		System.out.println("current dataspace set");
+		System.out.println("current dataspace set to be " + currentDataspace.getDataspaceName());
 		homePageMainBodyNavigation = "/custom/singleDataspaceByProject.xhtml";
+		System.out.println("Return from singleDataspaceDisplayPage");
 	}
 
 	public void setCurrentDataspace(Integer currentDataspaceIDValue) {

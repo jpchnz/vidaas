@@ -887,9 +887,9 @@ public class CreateController {
 		}
 		else {
 			System.out.println("Not authorised!!");
-			((NavigationController) Contexts.getSessionContext().get(
-					"navigationController"))
-					.setHomePageMainBodyNavigation("/custom/singleDataspaceByProject.xhtml");
+//			((NavigationController) Contexts.getSessionContext().get(
+//					"navigationController"))
+//					.setHomePageMainBodyNavigation("/custom/singleDataspaceByProject.xhtml");
 		}
 	}
 
