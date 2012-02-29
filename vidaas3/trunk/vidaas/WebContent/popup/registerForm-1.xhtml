@@ -8,7 +8,7 @@
 
 	<h:outputLabel value="#{registration.registrationMessage1}" />
 	<a4j:form ajaxSubmit="true" id="registrationLevel1">
-		<h:outputText value="#{registration.emailText}" rendered="#{authenticator.useSso}"/>
+		
 		<s:validateAll>
 			<div><h:panelGrid columns="3"
 				columnClasses="name,value,errorMessage">
@@ -21,26 +21,28 @@
 				<h:inputText id="lastName" value="#{registration.lastName}"
 					required="true" />
 				<rich:message for="lastName" />
+				
+				<h:outputLabel for="email">Email</h:outputLabel>
+				<h:inputText id="email" value="#{registration.email}"
+					required="true">
+				</h:inputText>
+				<rich:message for="email" />
+				
+				<h:outputLabel for="group">Affiliation</h:outputLabel>
+				<h:inputText id="group" value="#{registration.grp}" required="true" />
+				<rich:message for="group" />
 
 				<h:outputLabel for="department">Department</h:outputLabel>
 				<h:inputText id="department" value="#{registration.department}"
-					required="true" />
+					required="false" />
 				<rich:message for="department" />
 
-				<h:outputLabel for="group">Group</h:outputLabel>
-				<h:inputText id="group" value="#{registration.grp}" />
-				<rich:message for="group" />
-
-				<h:outputLabel for="position">Position</h:outputLabel>
+				<h:outputLabel for="position">College</h:outputLabel>
 				<h:inputText id="position" value="#{registration.postion}"
-					required="true" />
+					required="false" />
 				<rich:message for="position" />
 
-				<h:outputLabel for="email">Email</h:outputLabel>
-				<h:inputText id="email" value="#{registration.email}"
-					required="true" disabled="#{authenticator.useSso}">
-				</h:inputText>
-				<rich:message for="email" />
+				
 
 			</h:panelGrid>
 				<h:outputText value="#{registration.emailUniqueViolation}" styleClass="errorMessage"></h:outputText>		
