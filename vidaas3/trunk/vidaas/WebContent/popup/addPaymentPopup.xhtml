@@ -1,0 +1,90 @@
+<f:subview xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:modalPanel id="addPaymentPanel" width="480" autosized="true"
+		style="border-radius: 30px">
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:outputText value="Add Payment" style="background-color: #f0f0f0"></h:outputText>
+			</h:panelGroup>
+		</f:facet>
+		<f:facet name="controls">
+			<h:panelGroup>
+				<h:graphicImage value="/images/close.png" width="20px"
+					styleClass="hidelink" id="hideAddPaymentLink" />
+				<rich:componentControl for="addPaymentPanel"
+					attachTo="hideAddPaymentLink" operation="hide" event="onclick" />
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:form id="addPaymentForm" ajaxSubmit="true">
+			<s:validateAll>
+				<div><h:panelGrid columns="3"
+					columnClasses="name,value,errorMessage">
+
+					<h:outputLabel for="paymentMethod">Payment Method</h:outputLabel>
+					<h:selectOneMenu required="true" id="paymentMethod">
+						<f:selectItem id="item1A0" itemLabel="journal transfer "
+							itemValue="journalTransfer" />
+						<f:selectItem id="item2A1" itemLabel="invoice" itemValue="invoice" />
+						<f:selectItem id="item2A2" itemLabel="other" itemValue="other" />
+					</h:selectOneMenu>
+					<rich:message for="paymentMethod" style="width : 184px;" />
+
+					<h:outputLabel for="grantNumber">Grant Number</h:outputLabel>
+					<h:inputText id="grantNumber"
+						
+						style="width:289px;" />
+					<rich:message for="grantNumber" style="width : 184px;" />
+
+					<h:outputLabel for="journalCode">Journal Code</h:outputLabel>
+					<h:inputText id="journalCode" style="width:289px;" />
+					<rich:message for="journalCode" style="width : 184px;" />
+
+					<h:outputLabel for="orderNumber">Purchase Order Number</h:outputLabel>
+					<h:inputText id="orderNumber" style="width:289px;" />
+					<rich:message for="orderNumber" style="width : 184px;" />
+
+					<h:outputLabel for="contactName">Contact Name</h:outputLabel>
+					<h:inputText id="contactName" style="width:289px;" />
+					<rich:message for="contactName" style="width : 184px;" />
+
+					<h:outputLabel for="contactAddress">Contact Address</h:outputLabel>
+					<h:inputText id="contactAddress" style="width:289px;"/>
+					<rich:message for="contactAddress" style="width : 184px;" />
+
+					<h:outputLabel for="paymentSchedule">Payment Schedule</h:outputLabel>
+					<h:selectOneMenu required="true" id="paymentSchedule">
+						<f:selectItem id="item5A" itemLabel="front"
+							itemValue="public" />
+						<f:selectItem id="item6A"
+							itemLabel="annual" itemValue="private" />
+					</h:selectOneMenu>
+					<rich:message for="paymentSchedule" style="width : 184px;" />
+
+					<a4j:commandButton id="addPaymentButton" value="Add Payment">
+						<rich:componentControl for="addPaymentPanel"
+							attachTo="addPaymentButton" operation="hide" event="onclick" />
+					</a4j:commandButton>
+
+					<a4j:region>
+						<a4j:status id="submitStatus">
+							<f:facet name="start">
+								<h:graphicImage value="/img/wait.gif" height="28px" width="28px"
+									style="float:right" />
+							</f:facet>
+						</a4j:status>
+					</a4j:region>
+
+				</h:panelGrid></div>
+			</s:validateAll>
+		</a4j:form>
+
+	</rich:modalPanel>
+
+</f:subview>
