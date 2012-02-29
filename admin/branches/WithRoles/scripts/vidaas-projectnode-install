@@ -147,6 +147,15 @@ if ! [ -e /etc/vidaas/cred_mysqlroot ] ; then
   service mysql restart
 fi
 
+echo "Building IAM interface"
+if su -c "cd ~ && svn --quiet checkout https://vidaas.googlecode.com/svn/iamInterface" vidaas ; then
+  if ! su -c "cd ~/iamInterface/ && mvn install" vidaas 2>&1 > /var/log/iaminterface-build.log ; then
+    echo "Build failed see /var/log/iaminterface-build.log" ; exit 1
+  fi
+else
+  echo "code checkout failed" ; exit 1
+fi
+
 echo "Building vidaas sources..."
 if su -c "cd ~ && svn --quiet checkout https://vidaas.googlecode.com/svn/vidaas3/$vidaas_branch" vidaas ; then
   #patch dreaded sudamih.properties
