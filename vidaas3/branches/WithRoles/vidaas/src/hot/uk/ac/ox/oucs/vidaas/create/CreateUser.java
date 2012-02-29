@@ -164,7 +164,7 @@ public class CreateUser {
             // on Windows it is not case sensitive ....
             // to avoid complications making everything lower case
             String queryUserStatement = "SELECT count(*) FROM pg_shadow WHERE pg_shadow.usename like '" + userNameVal.toLowerCase() +"'";
-           
+           System.out.println("Query statement is:" + queryUserStatement);
             ResultSet rs = statementTemp.executeQuery(queryUserStatement);
             if (rs.next()) {
                 /*
