@@ -48,10 +48,10 @@ public class Dataspace implements java.io.Serializable {
 	private Integer dataSpaceId;
 	private Project project;
 	private Date creationDate;
-	private String databaseBackupPolicy;
+	private String databaseBackupPolicy = "daily";
 	private String databaseDescription;
-	private String databaseExpandablePolicy;
-	private int databaseSize;
+	private String databaseExpandablePolicy = "no";
+	private int databaseSize = 10;
 	private String databaseType;
 	private String dataspaceName;
 	private String dataspaceUserFriendlyName;
