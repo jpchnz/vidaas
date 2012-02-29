@@ -619,7 +619,7 @@ public class CreateController {
 				.println(String.format(
 						"Check if the user is authorised to create a database from schema when they have the role <%s>",
 						currentRole));
-//		boolean actionAuthorised = false;
+
 		try {
 			authorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
 					|| SystemVars.treatAdminAsOwner(currentRole);
@@ -636,6 +636,8 @@ public class CreateController {
 		
 		
 		if (authorised) {
+			((NavigationController) Contexts.getSessionContext().get(
+					"navigationController")).setParseDatabaseFormRender(false);
 			System.out.println("Yes, the user is authorised");
 			Dataspace currentDataspace = ((Dataspace) Contexts.getSessionContext()
 					.get("currentDataspace"));
@@ -695,86 +697,10 @@ public class CreateController {
 			createDatabaseConfirmationLinkText = "Return";
 		}
 		/**/
+//		((NavigationController) Contexts.getSessionContext().get(
+//				"navigationController")).setParseDatabaseFormRender(!authorised);
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).createDatabaseConfirmation();
-//		String currentRole = ((String) Contexts.getSessionContext().get("currentRole"));
-//		System.out
-//				.println(String.format(
-//						"Check if the user is authorised to create a database from schema when they have the role <%s>",
-//						currentRole));
-//		boolean actionAuthorised = false;
-//		try {
-//			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
-//					|| SystemVars.treatAdminAsOwner(currentRole);
-//		}
-//		catch (MalformedURLException e) {
-//			System.out.println("Malformed exception");
-//			e.printStackTrace();
-//		}
-//		catch (IOException e) {
-//			System.out.println("IO Exception");
-//			e.printStackTrace();
-//		}
-//
-//		
-//		// log.info("createDatabase {0} {1}", projectIDValue,
-//		// dataspaceIDValue);
-//		dataHolder.setOkButton(true);
-//			
-//		if (actionAuthorised) {
-//			System.out.println("The user is authorised to do this");
-//			Project tempProject = ((Project) Contexts.getSessionContext().get("currentProject"));
-//			Dataspace tempDataspace = ((Dataspace) Contexts.getSessionContext().get("currentDataspace"));
-//
-//			log.info("createDatabase {0} {1}", tempProject.getProjectId(), tempDataspace.getDataSpaceId());
-//			/**/
-//			DatabaseStructure tempDatabaseStructure = databaseStructureHome.getInstance();
-//			tempDatabaseStructure.setCreationDate(today);
-//
-//			new CreateDatabaseController().createDatabaseStructure(tempProject.getProjectId(),
-//					tempDataspace.getDataspaceName(), tempDatabaseStructure, "main", log);
-//
-//			String databaseStructurePersistString = databaseStructureHome.persist();
-//			log.info("databaseStructurePersistString {0}", databaseStructurePersistString);
-//			Contexts.getSessionContext().set("currentDatabaseStructure", tempDatabaseStructure);
-//
-//			WebApplication tempWebApplication = webApplicationHome.getInstance();
-//			tempWebApplication.setStatus("NotDeployed");
-//
-//			String webApplicationPersistString = webApplicationHome.persist();
-//			log.info("webApplicationPersistString {0}", webApplicationPersistString);
-//
-//			ProjectDatabase tempProjectDatabase = projectDatabaseHome.getInstance();
-//			tempProjectDatabase.setCreationDate(today);
-//			new CreateDatabaseController().createDatabase(tempDataspace, tempDatabaseStructure, tempWebApplication,
-//					getLoginsMain(), tempProject.getTitle(), tempProjectDatabase, "main", log);
-//
-//			try {
-//				String projectDatabasePersistString = projectDatabaseHome.persist();
-//
-//				log.info("projectDatabasePersistString {0}", projectDatabasePersistString);
-//				Contexts.getSessionContext().set("currentProjectDatabase", tempProjectDatabase);
-//			}
-//			catch (InvalidStateException ise) {
-//				InvalidValue[] iv = ise.getInvalidValues();
-//				for (int i = 0; i < iv.length; i++) {
-//					System.out.println("Property Name: " + iv[i].getPropertyName());
-//					System.out.println("Property Name Message: " + iv[i].getMessage());
-//				}
-//			}
-//
-//			createDatabaseConfirmationMessage = "Database Created";
-//			((NavigationController) Contexts.getSessionContext().get("navigationController")).createDatabaseConfirmation();
-//		}
-//		else {
-//			System.out.println("The user is not authorised to do this");
-//			addProjectMemberConfirmationMessage = "You are not authorised to add a database to this project.";
-//		
-//			((NavigationController) Contexts.getSessionContext().get("navigationController")).addProjectMemberConfirmation();
-//			createDatabaseConfirmationMessage = "You are not authorised to do that.";
-//		}
-//		/**/
-//		
 	}
 
 	public void cloneDatabase(Integer currentDatabaseIDValue, String cloneType) {
@@ -851,7 +777,7 @@ public class CreateController {
 	private boolean authorised;
 	public void parseDatabase() {
 		System.out.println("parseDatabase");
-//		if (authorised) {
+		if (authorised) {
 			System.out.println("The user is authorised to do this");
 			
 			databaseSchemaShortStatus = "\n Not Yet Started ...!";
@@ -870,6 +796,12 @@ public class CreateController {
 			tempDatabaseStructure = databaseStructureHome.getEntityManager()
 					.find(DatabaseStructure.class,
 							tempDatabaseStructure.getStructureId());
+			if (tempDatabaseStructure == null) {
+				System.out.println("Problem: working database structre is null");
+			}
+			else {
+				System.out.println("Working database structure obtained");
+			}
 	
 			String rootDirectory = tempDatabaseStructure.getDatabaseDirectory();
 			String csvDataDirectory = tempDatabaseStructure.getCsvDirectory();
@@ -905,46 +837,57 @@ public class CreateController {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-//		}
-//		else {
-//			System.out.println("Not authorised!!");
-////			((NavigationController) Contexts.getSessionContext().get(
-////					"navigationController"))
-////					.setHomePageMainBodyNavigation("/custom/singleDataspaceByProject.xhtml");
-//		}
+		}
+		else {
+			System.out.println("Not authorised!!");
+			((NavigationController) Contexts.getSessionContext().get(
+					"navigationController"))
+					.setHomePageMainBodyNavigation("/custom/singleDataspaceByProject.xhtml");
+		}
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController")).setParseDatabaseFormRender(true);
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController")).createDatabaseInitial();
 	}
 
 	public void finishParseDatabase() {
-		DatabaseStructure tempDatabaseStructure = (DatabaseStructure) Contexts
-				.getSessionContext().get("currentDatabaseStructure");
-		ProjectDatabase tempProjectDatabase = (ProjectDatabase) Contexts
-				.getSessionContext().get("currentProjectDatabase");
-
-		if (parseCreateLoaderThread.isParsingStatus() == true) {
-			databaseStructureHome.setId(tempDatabaseStructure.getStructureId());
-			tempDatabaseStructure = databaseStructureHome.find();
-
-			tempDatabaseStructure.setStatus(new String("Database_Populated"));
-			tempDatabaseStructure.setData(new String("Database_Populated")
-					.getBytes());
-
-			// This should be Update
-			databaseStructureHome.setInstance(tempDatabaseStructure);
-			// databaseStructureHome.update();
-
-			databaseStructureHome.persist();
-		} else {
-			dropDatabase(tempProjectDatabase.getDatabaseName());
+		System.out.println("finishParseDatabase");
+		
+		if (authorised) {
+			DatabaseStructure tempDatabaseStructure = (DatabaseStructure) Contexts
+					.getSessionContext().get("currentDatabaseStructure");
+			ProjectDatabase tempProjectDatabase = (ProjectDatabase) Contexts
+					.getSessionContext().get("currentProjectDatabase");
+	
+			if (parseCreateLoaderThread.isParsingStatus() == true) {
+				databaseStructureHome.setId(tempDatabaseStructure.getStructureId());
+				tempDatabaseStructure = databaseStructureHome.find();
+	
+				tempDatabaseStructure.setStatus(new String("Database_Populated"));
+				tempDatabaseStructure.setData(new String("Database_Populated")
+						.getBytes());
+	
+				// This should be Update
+				databaseStructureHome.setInstance(tempDatabaseStructure);
+				// databaseStructureHome.update();
+	
+				databaseStructureHome.persist();
+			} else {
+				dropDatabase(tempProjectDatabase.getDatabaseName());
+			}
+			((NavigationController) Contexts.getSessionContext().get(
+					"navigationController"))
+					.setCurrentDataspace(tempProjectDatabase.getDataspace()
+							.getDataSpaceId());
 		}
 
-		((NavigationController) Contexts.getSessionContext().get(
-				"navigationController"))
-				.setCurrentDataspace(tempProjectDatabase.getDataspace()
-						.getDataSpaceId());
+		
 
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController"))
 				.setHomePageMainBodyNavigation("/custom/singleDataspaceByProject.xhtml");
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController")).setParseDatabaseFormRender(false);
 	}
 
 	public void createWebApplication(Integer projectDatabaseIDValue) {
