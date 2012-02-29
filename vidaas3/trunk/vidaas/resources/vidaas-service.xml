@@ -5,6 +5,11 @@
     serverURL=http://localhost:8080/
     VIDaaSDataLocation=/opt/VIDaaSData
     jdbcDriverJar=/opt/DatabaseDrivers/postgresql.jar
+    uk.ac.ox.oucs.sudamih.adminUserName = sudamihAdmin
+    uk.ac.ox.oucs.sudamih.adminUserNamePW = sudamihAdminPW
+    uk.ac.ox.oucs.sudamih.databaseName = sudamihtestdb
+    uk.ac.ox.oucs.sudamih.driverName = org.postgresql.Driver
+    uk.ac.ox.oucs.sudamih.databaseURL = jdbc:postgresql:
  </attribute>
 </mbean>
 
