@@ -1,19 +1,22 @@
 #!/bin/bash
 
-#defaults
-#vidaas_home=/opt/VIDaaSData/
+# defaults
 vidaas_home=/var/lib/VIDaaSData/
 target_dir=/opt/
-jboss_install_dir=$target_dir #obsolete
-seam_install_dir=$target_dir #obsolete
+vidaas_jboss51_url=http://downloads.sourceforge.net/project/jboss/JBoss/JBoss-5.1.0.GA/jboss-5.1.0.GA-jdk6.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fjboss%2Ffiles%2FJBoss%2FJBoss-5.1.0.GA%2F
+vidaas_seam222_url=http://downloads.sourceforge.net/project/jboss/JBoss%20Seam/2.2.2.Final/jboss-seam-2.2.2.Final.tar.gz
 
-#load settings
+# load settings
+. /etc/vidaas/bootstrap-settings
 . /etc/vidaas/system-settings
+
+# load environment
 . /etc/vidaas/env
 
+# packages to install for project node
 projectnode_packages="maven2 less vim unzip postgresql libmysql-java libpg-java openjdk-6-jdk ant apache2 libapache2-mod-jk daemontools patch pwgen"
 
-#save env
+# save env
 if [ -z "$JAVA_HOME" ] ; then
   export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/
   echo "export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/" >> /etc/vidaas/env
@@ -205,7 +208,7 @@ else
 fi
 
 #deploy war file
-if ! su -c "cp -r ~/$vidaas_branch/vidaas/target/vidaas-0.3 $JBOSS_HOME/server/default/deploy/" vidaas ; then
+if ! su -c "cp -r ~/$vidaas_branch/vidaas/target/vidaas $JBOSS_HOME/server/default/deploy/vidaas.war" vidaas ; then
   echo "Deployment to appserver failed" ; exit 1
 fi
 
@@ -224,7 +227,7 @@ JkWorkerProperty worker.vidaas.port=8009
     ServerAdmin webmaster@localhost
     #redirect docroot
     RewriteEngine on
-    RewriteRule ^/$ /vidaas-0.3/ [R]
+    RewriteRule ^/$ /vidaas/ [R]
     #mount vidaas
     JkMount /* vidaas
     #logging
