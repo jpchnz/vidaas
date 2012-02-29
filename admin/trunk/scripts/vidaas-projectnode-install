@@ -207,7 +207,7 @@ else
 fi
 
 #deploy war file
-if ! su -c "cp -r ~/$vidaas_branch/vidaas/target/vidaas-0.3 $JBOSS_HOME/server/default/deploy/" vidaas ; then
+if ! su -c "cp -r ~/$vidaas_branch/vidaas/target/vidaas $JBOSS_HOME/server/default/deploy/" vidaas ; then
   echo "Deployment to appserver failed" ; exit 1
 fi
 
@@ -226,7 +226,7 @@ JkWorkerProperty worker.vidaas.port=8009
     ServerAdmin webmaster@localhost
     #redirect docroot
     RewriteEngine on
-    RewriteRule ^/$ /vidaas-0.3/ [R]
+    RewriteRule ^/$ /vidaas/ [R]
     #mount vidaas
     JkMount /* vidaas
     #logging
