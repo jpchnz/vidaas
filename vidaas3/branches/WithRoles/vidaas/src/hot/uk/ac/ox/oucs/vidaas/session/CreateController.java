@@ -142,6 +142,7 @@ public class CreateController {
 	private String editProjectConfirmationMessage = "";
 	private String createProjectDataspaceConfirmationMessage = "";
 	private String deleteProjectDataspaceConfirmationMessage = "";
+	private String editProjectDataspaceConfirmationMessage = "";
 	private String createDatabaseConfirmationMessage = "";
 	private String createDatabaseConfirmationLinkText = "";
 	private String addProjectMemberConfirmationMessage = "";
@@ -481,13 +482,16 @@ public class CreateController {
 		 */
 	}
 
+	
 	public void updateDataSpace() {
+		System.out.println("updateDataSpace");
 		Dataspace tempDataspace = ((Dataspace) Contexts.getSessionContext()
 				.get("currentDataspace"));
 		
-
-		String currentRole = ((String) Contexts.getSessionContext().get("currentRole"));
+		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+		String currentRole = NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
 		boolean actionAuthorised = false;
+		System.out.println("Check authorisation for role " + currentRole);
 		try {
 			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
 					|| SystemVars.treatAdminAsOwner(currentRole);
@@ -502,6 +506,7 @@ public class CreateController {
 		}
 
 		if (actionAuthorised) {
+			System.out.println("Authorised");
 			dataspaceHome.setId(tempDataspace.getDataSpaceId());
 	
 			Dataspace tempDataspaceNew = dataspaceHome.find();
@@ -518,11 +523,19 @@ public class CreateController {
 			tempDataspaceNew.setDatabaseSize(tempDataspace.getDatabaseSize());
 	
 			dataspaceHome.persist();
+			editProjectDataspaceConfirmationMessage = "Your changes have been made.";
 		}
+		else {
+			System.out.println("Not authorised");
+			editProjectDataspaceConfirmationMessage = "You are not authorised to edit this database. Your changes will not be kept.";
+		}
+		
 
+//		((NavigationController) Contexts.getSessionContext().get(
+//				"navigationController"))
+//				.setHomePageMainBodyNavigation("/custom/singleDataspaceByProject.xhtml");
 		((NavigationController) Contexts.getSessionContext().get(
-				"navigationController"))
-				.setHomePageMainBodyNavigation("/custom/singleDataspaceByProject.xhtml");
+				"navigationController")).editDataspaceConfirmation();
 	}
 	
 	
@@ -535,8 +548,8 @@ public class CreateController {
 		dataspaceHome.setId(workingDataspace.getDataSpaceId());
 		
 		Dataspace tempDataspaceNew = dataspaceHome.find();
-
-		String currentRole = ((String) Contexts.getSessionContext().get("currentRole"));
+		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+		String currentRole = NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
 		boolean actionAuthorised = true;
 		try {
 			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
@@ -579,6 +592,13 @@ public class CreateController {
 
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).deleteDataspaceConfirmation();
+	}
+	
+	public void finishEditDataSpace() {
+		log.info("finishEditDataSpace");
+		((NavigationController) Contexts.getSessionContext().get(
+				"navigationController")).editDataspaceInitial();
+
 	}
 
 	public void finishDeleteDataSpace() {
@@ -1802,5 +1822,13 @@ public class CreateController {
 
 	public void setCreateDatabaseConfirmationLinkText(String createDatabaseConfirmationLinkText) {
 		this.createDatabaseConfirmationLinkText = createDatabaseConfirmationLinkText;
+	}
+
+	public String getEditProjectDataspaceConfirmationMessage() {
+		return editProjectDataspaceConfirmationMessage;
+	}
+
+	public void setEditProjectDataspaceConfirmationMessage(String editProjectDataspaceConfirmationMessage) {
+		this.editProjectDataspaceConfirmationMessage = editProjectDataspaceConfirmationMessage;
 	}
 }
