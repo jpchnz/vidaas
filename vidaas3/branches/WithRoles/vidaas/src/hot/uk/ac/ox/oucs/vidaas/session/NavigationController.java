@@ -279,7 +279,6 @@ public class NavigationController {
 	}
 
 	public void setParseDatabaseFormRender(boolean parseDatabaseFormRender) {
-		System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXX set to :" + parseDatabaseFormRender);
 		this.parseDatabaseFormRender = parseDatabaseFormRender;
 	}
 
