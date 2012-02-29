@@ -28,17 +28,17 @@ public class ConnectionManager {
     }
 
     private void readPropertiesFile() {
-        Properties props = new Properties();
+        //Properties props = new Properties();
         try {
-            InputStream in = this.getClass().getResourceAsStream("sudamih.properties");
-            props.load(in);
-            in.close();
-            this.adminUserName = props.getProperty("uk.ac.ox.oucs.sudamih.adminUserName");
-            this.adminUserNamePW = props.getProperty("uk.ac.ox.oucs.sudamih.adminUserNamePW");
-            this.databaseName = props.getProperty("uk.ac.ox.oucs.sudamih.databaseName");
-            this.driverName = props.getProperty("uk.ac.ox.oucs.sudamih.driverName");
-            this.databaseURL = props.getProperty("uk.ac.ox.oucs.sudamih.databaseURL");
-        } catch (IOException ex) {
+            //InputStream in = this.getClass().getResourceAsStream("sudamih.properties");
+            //props.load(in);
+            //in.close();
+            this.adminUserName = System.getProperty("uk.ac.ox.oucs.sudamih.adminUserName");
+            this.adminUserNamePW = System.getProperty("uk.ac.ox.oucs.sudamih.adminUserNamePW");
+            this.databaseName = System.getProperty("uk.ac.ox.oucs.sudamih.databaseName");
+            this.driverName = System.getProperty("uk.ac.ox.oucs.sudamih.driverName");
+            this.databaseURL = System.getProperty("uk.ac.ox.oucs.sudamih.databaseURL");
+        } catch (Exception ex) {
             Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
         }
 
