@@ -1,0 +1,36 @@
+#!/bin/bash
+
+echo "Checking status of vmware-tools..."
+if [ -e /etc/init.d/vmware-tools ] ; then
+  if ! /etc/init.d/vmware-tools status ; then
+    install_tools=yes
+  fi
+else
+  install_tools=yes
+fi
+
+# install tools
+if [ -n "$install_tools" ] ; then
+  echo "Installing vmware-tools..."
+  apt-get -qqy install linux-headers-2.6-amd64 make
+  cd /tmp
+  wget -O /tmp/VMwareTools.tgz --no-check-certificate https://vidaas.googlecode.com/svn/admin/bin/VMwareTools-8.6.0-425873.tar.gz
+  echo "Extracting VMwareTools.tgz..."
+  if ! tar -xzf /tmp/VMwareTools.tgz ; then
+    echo "unable to extract VMwareTools"
+    exit 1
+  fi
+  perl ./vmware-tools-distrib/vmware-install.pl -d
+  rm -r /tmp/vmware-tools-distrib
+  rm /tmp/VMwareTools.tgz
+else
+  echo "VMware tools already installed and running"
+fi
+
+echo "Removing unwanted packages..."
+apt-get -qqy remove mpt-status
+
+echo "Setting up local mail..."
+DEBIAN_FRONTEND=noninteractive apt-get -qqy install nullmailer
+echo vidaas-hosts@rt.oucs.ox.ac.uk > /etc/nullmailer/adminaddr
+echo smtp.ox.ac.uk > /etc/nullmailer/remotes

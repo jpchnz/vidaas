@@ -1,0 +1,51 @@
+#!/bin/sh
+
+if [ "x$1" = "xprecustomization" ]; then
+  exit 0
+fi
+
+exec 2>&1 >> /var/log/customization.log
+echo "Customization started `date`"
+
+#put your customization settings here
+vidaas_admin_repo_path=/root/svn/
+vidaas_admin_repo_url=https://vidaas.googlecode.com/svn/admin
+
+if [ ! -d /etc/vidaas ] ; then
+  mkdir /etc/vidaas
+fi
+echo "Writing settings file..."
+(
+cat <<EndOfFile
+vidaas_admin_repo_path=$vidaas_admin_repo_path
+vidaas_admin_repo_url=$vidaas_admin_repo_url
+EndOfFile
+) > /etc/vidaas/bootstrap-settings
+
+echo "Checking out admin repository into $vidaas_admin_repo_path"
+if [ ! -f /usr/bin/svn ] ; then
+  if ! apt-get -qqy install subversion ; then
+    echo "Unable to install subversion package"
+    exit 1
+  fi
+fi
+mkdir -p $vidaas_admin_repo_path 2> /dev/null
+if ! cd $vidaas_admin_repo_path ; then
+  echo "repository path $vidaas_admin_repo_path invalid"
+  exit 1
+fi
+if ! svn checkout $vidaas_admin_repo_url ; then
+  echo "svn checkout failed"
+  exit 1
+fi
+
+if [ -f $vidaas_admin_repo_path/admin/systems/`cat /etc/hostname` ] ; then
+  ln -s $vidaas_admin_repo_path/admin/systems/`cat /etc/hostname` /etc/vidaas/system-settings
+  . /etc/vidaas/system-settings
+else
+  echo "no config in $vidaas_admin_repo_path/admin/systems/`cat /etc/hostname`"
+fi
+echo "boostrap completed"
+
+# run vidaas install
+$vidaas_admin_repo_path/admin/$vidaas_branch/scripts/vidaas-install
