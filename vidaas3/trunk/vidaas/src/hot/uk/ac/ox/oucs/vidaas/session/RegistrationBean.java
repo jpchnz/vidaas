@@ -44,9 +44,9 @@ public class RegistrationBean {
 	private int userId;
 	private String firstName;
 	private String lastName;
-	private String postion;
-	private String department;
-	private String grp;
+	private String postion = " ";
+	private String department = " ";
+	private String grp = " ";
 	private String emailText;
 
 	
