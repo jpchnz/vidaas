@@ -782,6 +782,16 @@ public class NavigationController {
 		deleteDataspaceFormRender = true;
 		deleteDataspaceInclude = "/popup/deleteDataspaceConfirmation.xhtml";
 	}
+	
+	public void editDataspaceInitial() {
+		editDataspaceFormRender = false;
+		editDataspaceInclude = "/popup/editDataspaceForm.xhtml";
+	}
+
+	public void editDataspaceConfirmation() {
+		editDataspaceFormRender = true;
+		editDataspaceInclude = "/popup/editDataspaceConfirmation.xhtml";
+	}
 
 	public void singleDataspaceDisplayPage() {
 		System.out.println("singleDataspaceDisplayPage");

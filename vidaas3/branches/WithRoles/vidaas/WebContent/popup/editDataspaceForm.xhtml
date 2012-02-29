@@ -94,14 +94,15 @@
 			    	 <rich:componentControl for="editDataspacePanel" attachTo="editDataspaceCancelButton" operation="hide" event="onclick"/>
 			    	 
 			    </a4j:commandButton>
-			    
-			    <a4j:commandButton id="editDataSpaceButton" value="Save Database" action="#{createController.updateDataSpace}" 
-				    onclick="this.disabled=true" status="submitStatus"
-					reRender="editDataspaceFormInclude, homeMainPanel, homePageMainBodyInclude" style="float:right">
-					<rich:componentControl for="editDataspacePanel" attachTo="editDataSpaceButton" operation="hide" event="onclick"/>
-			    </a4j:commandButton>
-			    	   
-			    <a4j:region>
+
+				<a4j:commandButton action="#{createController.updateDataSpace}"
+					id="editDataSpaceButton" value="Save Changes"
+					onclick="this.disabled=true" status="submitStatus"
+					reRender="editDataspaceFormInclude" style="float:right">
+					<!-- <rich:componentControl for="editDataspacePanel" attachTo="editDataSpaceButton" operation="hide" event="onclick"/>-->
+				</a4j:commandButton>
+
+				<a4j:region>
 					<a4j:status id="submitStatus">
 						<f:facet name="start">
 							<h:graphicImage value="/img/wait.gif" height="28px" width="28px"
