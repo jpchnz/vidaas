@@ -150,15 +150,15 @@ fi
 echo "Building vidaas sources..."
 if su -c "cd ~ && svn --quiet checkout https://vidaas.googlecode.com/svn/vidaas3/$vidaas_branch" vidaas ; then
   #patch dreaded sudamih.properties
-(
-cat <<EndOfFile
-uk.ac.ox.oucs.sudamih.adminUserName = sudamihAdmin
-uk.ac.ox.oucs.sudamih.adminUserNamePW = `cat /etc/vidaas/cred_sudamihAdmin`
-uk.ac.ox.oucs.sudamih.databaseName = sudamihtestdb
-uk.ac.ox.oucs.sudamih.driverName = org.postgresql.Driver
-uk.ac.ox.oucs.sudamih.databaseURL = jdbc:postgresql:
-EndOfFile
-) > $vidaas_home/$vidaas_branch/vidaas/src/hot/uk/ac/ox/oucs/vidaas/manager/sudamih.properties
+#(
+#cat <<EndOfFile
+#uk.ac.ox.oucs.sudamih.adminUserName = sudamihAdmin
+#uk.ac.ox.oucs.sudamih.adminUserNamePW = `cat /etc/vidaas/cred_sudamihAdmin`
+#uk.ac.ox.oucs.sudamih.databaseName = sudamihtestdb
+#uk.ac.ox.oucs.sudamih.driverName = org.postgresql.Driver
+#uk.ac.ox.oucs.sudamih.databaseURL = jdbc:postgresql:
+#EndOfFile
+#) > $vidaas_home/$vidaas_branch/vidaas/src/hot/uk/ac/ox/oucs/vidaas/manager/sudamih.properties
   if ! su -c "cd ~/$vidaas_branch/vidaas/ && mvn package" vidaas 2>&1 > /var/log/vidaas-build.log ; then
     echo "Build failed see /var/log/vidaas-build.log" ; exit 1
   fi
@@ -199,6 +199,11 @@ cat <<EndOfFile
     serverURL=http://`/sbin/ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`/
     VIDaaSDataLocation=$vidaas_home
     jdbcDriverJar=/usr/share/java/postgresql.jar
+    uk.ac.ox.oucs.sudamih.adminUserName = sudamihAdmin
+    uk.ac.ox.oucs.sudamih.adminUserNamePW = `cat /etc/vidaas/cred_sudamihAdmin`
+    uk.ac.ox.oucs.sudamih.databaseName = sudamihtestdb
+    uk.ac.ox.oucs.sudamih.driverName = org.postgresql.Driver
+    uk.ac.ox.oucs.sudamih.databaseURL = jdbc:postgresql:
  </attribute>
 </mbean>
 EndOfFile
