@@ -20,7 +20,7 @@
                 <rich:componentControl for="parseDatabasePanel" attachTo="parseDatabaseHidelink" operation="hide" event="onclick"/>
             </h:panelGroup>
         </f:facet>
-        <a4j:include id="parseDatabaseFormInclude" viewId="#{navigationController.parseDatabaseInclude}"/>
+        <a4j:include id="parseDatabaseFormInclude" viewId="#{navigationController.parseDatabaseInclude}" /> <!-- rendered="#{navigationController.parseDatabaseFormRender}"/>-->
 	</rich:modalPanel>
 	
 </ui:composition>
