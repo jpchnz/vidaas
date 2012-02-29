@@ -1,0 +1,25 @@
+#!/bin/bash
+
+. /etc/vidaas/bootstrap-settings
+. /etc/vidaas/system-settings
+
+default_packages="vim apticron ssh"
+
+echo "Unattended update/upgrade of minimal image..."
+if apt-get -qqy update ; then
+  if ! apt-get -qqy upgrade ; then
+    echo "upgrade failed"
+    exit 1
+  fi
+else
+  echo "update failed"
+  exit 1
+fi
+
+echo "Installing default packages: $default_packages"
+if ! apt-get -qqy install $default_packages ; then
+  echo "install of default packages failed"
+  exit 1
+fi
+
+. $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/vidaas-${vidaas_node_type}node-install
