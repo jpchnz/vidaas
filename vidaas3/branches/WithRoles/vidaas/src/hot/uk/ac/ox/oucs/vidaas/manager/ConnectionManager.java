@@ -24,7 +24,7 @@ public class ConnectionManager {
     private Statement st = null;
 
     public ConnectionManager(){
-        Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, "Default Constructor called");
+        //Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, "Default Constructor called");
     }
 
     private void readPropertiesFile() {
