@@ -207,7 +207,7 @@ else
 fi
 
 #deploy war file
-if ! su -c "cp -r ~/$vidaas_branch/vidaas/target/vidaas $JBOSS_HOME/server/default/deploy/" vidaas ; then
+if ! su -c "cp -r ~/$vidaas_branch/vidaas/target/vidaas $JBOSS_HOME/server/default/deploy/vidaas.war" vidaas ; then
   echo "Deployment to appserver failed" ; exit 1
 fi
 
