@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# type of node to build
+vidaas_node_type=project
+
+# svn branch for code and configuration files
+vidaas_branch=trunk
+
+# install shibboleth (true/false)
+vidaas_shib=false 
