@@ -7,34 +7,13 @@
 	xmlns:rich="http://richfaces.org/rich">
 
 	<a4j:form ajaxSubmit="true">
-		<h:outputText
-			value="#{createController.createDatabaseConfirmationMessage}" />
-		<br />
-		<a4j:commandLink
-			value="#{createController.createDatabaseConfirmationLinkText}"
-			reRender="createDatabaseFormInclude"
-			action="#{createController.parseDatabase()}"
-			id="createDatabaseConfirmationOKLink">
-			<rich:componentControl for="createDatabasePanel"
-				attachTo="createDatabaseConfirmationOKLink" operation="hide"
-				event="onclick" />
-			<rich:componentControl for="parseDatabasePanel"
-				attachTo="createDatabaseConfirmationOKLink" operation="show"
-				event="onclick" />
-		</a4j:commandLink>
-		<!--
-		<a4j:commandButton id="createDBCancelButton" value="Cancel"
-			style="float:left">
-			<rich:componentControl for="createDatabasePanel"
-				attachTo="createDBCancelButton" operation="hide" event="onclick" />
-		</a4j:commandButton>
-		 
-		<a4j:commandLink value="Bye bye it Database" reRender="createDatabaseFormInclude" 
-			action="#{createController.parseDatabase()}" rendered="#{not createController.authorised}"
+		<h:outputText value="#{createController.createDatabaseConfirmationMessage}" />
+		<br/>
+		<a4j:commandLink value="Parse Database" reRender="createDatabaseFormInclude" 
+			action="#{createController.parseDatabase()}" 
 			id="createDatabaseConfirmationOKLink">
 			 <rich:componentControl for="createDatabasePanel" attachTo="createDatabaseConfirmationOKLink" operation="hide" event="onclick"/>
 			 <rich:componentControl for="parseDatabasePanel" attachTo="createDatabaseConfirmationOKLink" operation="show" event="onclick"/>
 		</a4j:commandLink>
-		 -->
 	</a4j:form>
 </ui:composition>

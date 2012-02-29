@@ -611,7 +611,7 @@ public class CreateController {
 	public void createDatabaseFromSchema() {
 		// log.info("createDatabase {0} {1}", projectIDValue, dataspaceIDValue);
 		System.out.println("createDatabaseFromSchema");
-		
+		dataHolder.setOkButton(true);
 		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
 		String currentRole = NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
 		
@@ -633,7 +633,7 @@ public class CreateController {
 			e.printStackTrace();
 		}
 		
-		dataHolder.setOkButton(true);
+		
 		
 		if (authorised) {
 			System.out.println("Yes, the user is authorised");
@@ -850,7 +850,8 @@ public class CreateController {
 
 	private boolean authorised;
 	public void parseDatabase() {
-		if (authorised) {
+		System.out.println("parseDatabase");
+//		if (authorised) {
 			System.out.println("The user is authorised to do this");
 			
 			databaseSchemaShortStatus = "\n Not Yet Started ...!";
@@ -904,13 +905,13 @@ public class CreateController {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-		else {
-			System.out.println("Not authorised!!");
-//			((NavigationController) Contexts.getSessionContext().get(
-//					"navigationController"))
-//					.setHomePageMainBodyNavigation("/custom/singleDataspaceByProject.xhtml");
-		}
+//		}
+//		else {
+//			System.out.println("Not authorised!!");
+////			((NavigationController) Contexts.getSessionContext().get(
+////					"navigationController"))
+////					.setHomePageMainBodyNavigation("/custom/singleDataspaceByProject.xhtml");
+//		}
 	}
 
 	public void finishParseDatabase() {
