@@ -5,61 +5,96 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:rich="http://richfaces.org/rich">
-	
+
 	<a4j:form ajaxSubmit="true" id="createProjectForm">
-		
+
 		<s:validateAll>
 			<div><h:panelGrid columns="3"
 				columnClasses="name,value,errorMessage">
-				
-				<h:outputLabel for="title">Name</h:outputLabel>
-	            <h:inputText id="title" value="#{projectHome.instance.name}" style="width:289px;" required="true"/>
-	        	<rich:message for="title" style="width : 184px;" />
+
+				<h:outputLabel for="ownerName">Name</h:outputLabel>
+				<h:inputText id="ownerName"
+					value="#{navigationController.userMain.firstName}"
+					style="width:289px;" disabled="true" />
+				<rich:message for="ownerName" style="width : 184px;" />
+
+				<h:outputLabel for="ownerEmail">Email</h:outputLabel>
+				<h:inputText id="ownerEmail"
+					value="#{navigationController.userMain.email}" style="width:289px;"
+					disabled="true" />
+				<rich:message for="ownerEmail" style="width : 184px;" />
+
+				<h:outputLabel for="title">Project Name</h:outputLabel>
+				<h:inputText id="title" value="#{projectHome.instance.name}"
+					style="width:289px;" required="true" />
+				<rich:message for="title" style="width : 184px;" />
 
 				<h:outputLabel for="startDate">
-						<a class="tooltip" href="#">Start date<span
-							class="custom help"> <img src="images/Help.png" alt="Help"
-								height="48" width="48" /><em>#{helpController.getHelpTitle('ProjectCreationPopup_StartDate')}</em>#{helpController.setupHelpText('ProjectCreationPopup_StartDate')}
-						</span></a>
-					</h:outputLabel>
-	            <rich:calendar id="startDate"
-                       required="true"
-                          value="#{createController.today}" datePattern="dd/MM/yyyy"/>
-	        	<rich:message for="startDate" style="width : 184px;" />
-	
-	        
-	            <h:outputLabel for="startDate">
-						<a class="tooltip" href="#">End date<span
-							class="custom help"> <img src="images/Help.png" alt="Help"
-								height="48" width="48" /><em>#{helpController.getHelpTitle('ProjectCreationPopup_EndDate')}</em>#{helpController.setupHelpText('ProjectCreationPopup_EndDate')}
-						</span></a>
-					</h:outputLabel>
-	            <rich:calendar id="endDate"
-                       required="false"
-                          value="#{projectHome.instance.endDate}" datePattern="dd/MM/yyyy"/>
-	        	<rich:message for="endDate" style="width : 184px;" />
-	
-	        
-	            <h:outputLabel for="description"><a class="tooltip" href="#">Description<span
-							class="custom help"> <img src="images/Help.png" alt="Help"
-								height="48" width="48" /><em>#{helpController.getHelpTitle('ProjectCreationPopup_Description')}</em>#{helpController.setupHelpText('ProjectCreationPopup_Description')}
-						</span></a></h:outputLabel>
-	            <h:inputText id="description" value="#{projectHome.instance.description}" style="width:289px;" required="true"/>
-	        	<rich:message for="description" style="width : 184px;" />
-	
-			</h:panelGrid>
-			</div>			
+					<a class="tooltip" href="#">Start date<span class="custom help">
+					<img src="images/Help.png" alt="Help" height="48" width="48" /><em>#{helpController.getHelpTitle('ProjectCreationPopup_StartDate')}</em>#{helpController.setupHelpText('ProjectCreationPopup_StartDate')}
+					</span></a>
+				</h:outputLabel>
+				<rich:calendar id="startDate" required="true"
+					value="#{createController.today}" datePattern="dd/MM/yyyy" />
+				<rich:message for="startDate" style="width : 184px;" />
 
-			<div class="actionButtons">
-				<a4j:commandButton id="createProjectCancelButton" value="Cancel" style="float:left">
-			    	 <rich:componentControl for="createProjectPanel" attachTo="createProjectCancelButton" operation="hide" event="onclick"/>
-			    </a4j:commandButton>
-			    
-				<a4j:commandButton id="createProjectButton" value="Create Project" 
-					onclick="this.disabled=true" status="submitStatus" reRender="createFormInclude, homeMainPanel"
-					action="#{createController.createProject}" style="float:right"> 
-				</a4j:commandButton>
-				<a4j:region>
+				<h:outputLabel for="endDate">
+					<a class="tooltip" href="#">End date<span class="custom help">
+					<img src="images/Help.png" alt="Help" height="48" width="48" /><em>#{helpController.getHelpTitle('ProjectCreationPopup_EndDate')}</em>#{helpController.setupHelpText('ProjectCreationPopup_EndDate')}
+					</span></a>
+				</h:outputLabel>
+				<rich:calendar id="endDate" required="false"
+					value="#{projectHome.instance.endDate}" datePattern="dd/MM/yyyy" />
+				<rich:message for="endDate" style="width : 184px;" />
+
+				<h:outputLabel for="databaseSpace">Database Space</h:outputLabel>
+				<h:selectOneMenu required="true" id="databaseSpace">
+					<f:selectItem id="item1" itemLabel="Regular 25GB"
+						itemValue="regular" />
+					<f:selectItem id="item2" itemLabel="Large 100GB" itemValue="large" />
+				</h:selectOneMenu>
+				<rich:message for="databaseSpace" style="width : 184px;" />
+
+				<h:outputLabel for="storageType">Storage Type</h:outputLabel>
+				<h:selectOneMenu required="true" id="storageType">
+					<f:selectItem id="item1A" itemLabel="public cloud"
+						itemValue="public" />
+					<f:selectItem id="item2A" itemLabel="private cloud (within Oxford)"
+						itemValue="private" />
+				</h:selectOneMenu>
+				<rich:message for="storageType" style="width : 184px;" />
+
+				<h:outputLabel for="description">
+					<a class="tooltip" href="#">Description<span
+						class="custom help"> <img src="images/Help.png" alt="Help"
+						height="48" width="48" /><em>#{helpController.getHelpTitle('ProjectCreationPopup_Description')}</em>#{helpController.setupHelpText('ProjectCreationPopup_Description')}
+					</span></a>
+				</h:outputLabel>
+				<h:inputTextarea id="description"
+					value="#{projectHome.instance.description}" style="width:289px;"
+					required="true" rows="3" />
+				<rich:message for="description" style="width : 184px;" />
+
+				<h:outputLabel for="addPaymnet">Add Payment</h:outputLabel>
+				<a4j:commandLink id="addPaymentLink1" value="Add Payment"
+					style="float:right">
+					<rich:componentControl for="addPaymentPanel"
+						attachTo="addPaymentLink1" operation="show" event="onclick" />
+				</a4j:commandLink>
+				<rich:message for="addPaymnet" style="width : 184px;" />
+
+			</h:panelGrid></div>
+
+			<div class="actionButtons"><a4j:commandButton
+				id="createProjectCancelButton" value="Cancel" style="float:left">
+				<rich:componentControl for="createProjectPanel"
+					attachTo="createProjectCancelButton" operation="hide"
+					event="onclick" />
+			</a4j:commandButton> <a4j:commandButton id="createProjectButton" value="Create Project"
+				onclick="this.disabled=true" status="submitStatus"
+				reRender="createFormInclude, homeMainPanel"
+				action="#{createController.createProject}" style="float:right">
+			</a4j:commandButton> <a4j:region>
 				<a4j:status id="submitStatus">
 					<f:facet name="start">
 						<h:graphicImage value="/img/wait.gif" height="28px" width="28px"
