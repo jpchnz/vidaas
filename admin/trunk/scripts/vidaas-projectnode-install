@@ -158,23 +158,9 @@ else
 fi
 
 echo "Deploying webapp"
-#TODO move to template
+# set permissions to 600 because it contains credentials
 if touch $JBOSS_HOME/server/default/deploy/vidaas3-ds.xml && chown vidaas:vidaas $JBOSS_HOME/server/default/deploy/vidaas3-ds.xml && chmod 600 $JBOSS_HOME/server/default/deploy/vidaas3-ds.xml ; then
-(
-cat <<EndOfFile
-<?xml version="1.0" encoding="UTF-8"?>
-<datasources>
-   <local-tx-datasource>
-      <jndi-name>vidaasDatasource</jndi-name>
-      <use-java-context>true</use-java-context>
-      <connection-url>jdbc:mysql://localhost:3306/vidaas_v3</connection-url>
-      <driver-class>com.mysql.jdbc.Driver</driver-class>
-      <user-name>root</user-name>
-      <password>`cat /etc/vidaas/cred_mysqlroot`</password>
-   </local-tx-datasource>
-</datasources>
-EndOfFile
-) > $JBOSS_HOME/server/default/deploy/vidaas3-ds.xml
+  source $vidaas_admin_repo_path/admin/$vidaas_branch/deploy/vidaas3-ds.xml.sh > $JBOSS_HOME/server/default/deploy/vidaas3-ds.xml
 else
   echo "could not create vidaas3-ds.xml" ; exit 1
 fi
