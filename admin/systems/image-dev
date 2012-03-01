@@ -11,3 +11,6 @@ vidaas_source_revision=HEAD
 
 # install shibboleth (true/false)
 vidaas_shib=false 
+
+# install SQL designer
+vidaas_designer=true
