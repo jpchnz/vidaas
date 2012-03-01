@@ -10,4 +10,7 @@ vidaas_branch=trunk
 vidaas_source_revision=603
 
 # install shibboleth (true/false)
-vidaas_shib=false 
+vidaas_shib=false
+
+# install SQL designer
+vidaas_sqldesigner=true
