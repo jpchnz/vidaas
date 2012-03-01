@@ -165,26 +165,9 @@ else
   echo "could not create vidaas3-ds.xml" ; exit 1
 fi
 
-#TODO move to template
+# set permissions to 600 because it contains credentials
 if touch $JBOSS_HOME/server/default/deploy/vidaas-service.xml && chown vidaas:vidaas $JBOSS_HOME/server/default/deploy/vidaas-service.xml && chmod 600 $JBOSS_HOME/server/default/deploy/vidaas-service.xml ; then
-(
-cat <<EndOfFile
-<mbean code="org.jboss.varia.property.SystemPropertiesService" name="jboss.util:type=Service,name=VIDaaSProperties">
-  <attribute name="Properties">
-    seamLocaion=$target_dir/seam/
-    serverLocation=$JBOSS_HOME
-    serverURL=http://`/sbin/ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`/
-    VIDaaSDataLocation=$vidaas_home
-    jdbcDriverJar=/usr/share/java/postgresql.jar
-    uk.ac.ox.oucs.sudamih.adminUserName = sudamihAdmin
-    uk.ac.ox.oucs.sudamih.adminUserNamePW = `cat /etc/vidaas/cred_sudamihAdmin`
-    uk.ac.ox.oucs.sudamih.databaseName = sudamihtestdb
-    uk.ac.ox.oucs.sudamih.driverName = org.postgresql.Driver
-    uk.ac.ox.oucs.sudamih.databaseURL = jdbc:postgresql:
- </attribute>
-</mbean>
-EndOfFile
-) > $JBOSS_HOME/server/default/deploy/vidaas-service.xml
+  source $vidaas_admin_repo_path/admin/$vidaas_branch/deploy/vidaas-service.xml.sh > $JBOSS_HOME/server/default/deploy/vidaas-service.xml
 else
   echo "Could not create vidaas-service.xml" ; exit 1
 fi
@@ -197,28 +180,14 @@ fi
 service jboss51 start
 
 #apache config
-#TODO move to template
 if ! [ -h /etc/apache2/mods-enabled/rewrite.load ] ; then
   ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
 fi
-(
-cat <<EndOfFile
-JkWorkerProperty worker.list=vidaas
-JkWorkerProperty worker.vidaas.port=8009
-<VirtualHost *:80>
-    ServerAdmin webmaster@localhost
-    #redirect docroot
-    RewriteEngine on
-    RewriteRule ^/$ /vidaas/ [R]
-    #mount vidaas
-    JkMount /* vidaas
-    #logging
-    ErrorLog \${APACHE_LOG_DIR}/error.log
-    LogLevel warn
-    CustomLog \${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>
-EndOfFile
-) > /etc/apache2/sites-enabled/000-default
+source $vidaas_admin_repo_path/admin/$vidaas_branch/root/etc/apache2/sites-available/vidaas.sh > /etc/apache2/sites-available/vidaas
+if ! [ -h /etc/apache2/sites-enabled/vidaas ] ; then
+  ln -s /etc/apache2/sites-available/vidaas /etc/apache2/sites-enabled/000-vidaas
+fi
+rm /etc/apache2/sites-enabled/000-default > /dev/null
 service apache2 restart
 
 echo "project node install completed"
