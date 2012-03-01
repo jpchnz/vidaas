@@ -177,6 +177,19 @@ if ! su -c "cp -r ~/$vidaas_branch/vidaas/target/vidaas $JBOSS_HOME/server/defau
   echo "Deployment to appserver failed" ; exit 1
 fi
 
+if [ "$vidaas_designer" == "true" ] ; then
+  if su -c "mkdir $vidaas_home/designer ; cd $vidaas_home/designer && svn --quiet checkout https://vidaas.googlecode.com/svn/SQLDesigner/trunk" vidaas ; then
+    if ! su -c "cp -r $vidaas_home/designer/trunk/resources/jQuerySQLDesigner-ds.xml $JBOSS_HOME/server/default/deploy/jQuerySQLDesigner-ds.xml" vidaas ; then
+      echo "Deployment to appserver failed" ; exit 1
+    fi
+    if ! su -c "cp -r $vidaas_home/designer/trunk/jQuerySQLDesigner.war $JBOSS_HOME/server/default/deploy/jQuerySQLDesigner.war" vidaas ; then
+      echo "Deployment to appserver failed" ; exit 1
+    fi
+  else
+    echo "code checkout failed" ; exit 1
+  fi
+fi
+
 service jboss51 start
 
 #apache config
