@@ -570,8 +570,7 @@ public class NavigationController {
 	public List<UserProject> userProjectsList() {
 		List<UserProject> userProjectsList = null;
 		if (getUserMain() != null) {
-			userProjectsList = userProjectHome.findByUserID(getUserMain()
-					.getUserId());
+			userProjectsList = userProjectHome.findByUserID(getUserMain().getUserId());
 		}
 		if (userProjectsList == null) {
 			userProjectsList = new ArrayList<UserProject>();
@@ -1255,5 +1254,9 @@ public class NavigationController {
 
 	public void setAuthorisedToPerformOperation(boolean authorisedToPerformOperation) {
 		this.authorisedToPerformOperation = authorisedToPerformOperation;
+	}
+
+	public static void setUserMain(Users userMain) {
+		NavigationController.userMain = userMain;
 	}
 }
