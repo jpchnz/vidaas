@@ -7,7 +7,7 @@ vidaas_node_type=project
 vidaas_branch=branches/WithRoles
 
 # revision of vidaas code (default HEAD)
-vidaas_source_revision=570
+vidaas_source_revision=594
 
 # install shibboleth (true/false)
 vidaas_shib=false 
