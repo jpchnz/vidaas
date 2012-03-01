@@ -649,50 +649,55 @@ public class CreateController {
 			/**/
 			DatabaseStructure tempDatabaseStructure = databaseStructureHome
 					.getInstance();
-			System.out.println("XXXXXXXX " + tempDatabaseStructure.getFile());
-			tempDatabaseStructure.setCreationDate(today);
-	
-			new CreateDatabaseController().createDatabaseStructure(
-					currentProject.getProjectId(), currentDataspace.getDataspaceName(),
-					tempDatabaseStructure, "main", log);
-	
-			String databaseStructurePersistString = databaseStructureHome.persist();
-			log.info("databaseStructurePersistString {0}",
-					databaseStructurePersistString);
-			Contexts.getSessionContext().set("currentDatabaseStructure",
-					tempDatabaseStructure);
-	
-			WebApplication tempWebApplication = webApplicationHome.getInstance();
-			tempWebApplication.setStatus("NotDeployed");
-	
-			String webApplicationPersistString = webApplicationHome.persist();
-			log.info("webApplicationPersistString {0}", webApplicationPersistString);
-	
-			ProjectDatabase tempProjectDatabase = projectDatabaseHome.getInstance();
-			tempProjectDatabase.setCreationDate(today);
-			new CreateDatabaseController().createDatabase(currentDataspace,
-					tempDatabaseStructure, tempWebApplication, getLoginsMain(),
-					currentProject.getTitle(), tempProjectDatabase, "main", log);
-	
-			try {
-				String projectDatabasePersistString = projectDatabaseHome.persist();
-	
-				log.info("projectDatabasePersistString {0}",
-						projectDatabasePersistString);
-				Contexts.getSessionContext().set("currentProjectDatabase",
-						tempProjectDatabase);
-			} catch (InvalidStateException ise) {
-				InvalidValue[] iv = ise.getInvalidValues();
-				for (int i = 0; i < iv.length; i++) {
-					System.out.println("Property Name: " + iv[i].getPropertyName());
-					System.out.println("Property Name Message: "
-							+ iv[i].getMessage());
-				}
+			if ((tempDatabaseStructure.getFile() == null) || (tempDatabaseStructure.getFile().equals(""))) {
+				System.out.println("Cannot get blank file");
+				createDatabaseConfirmationMessage = "You have not specified a file to upload";
+				createDatabaseConfirmationLinkText = "Return";
 			}
-	
-			createDatabaseConfirmationMessage = "Database Created";
-			createDatabaseConfirmationLinkText = "Parse Database";
-			
+			else {
+				tempDatabaseStructure.setCreationDate(today);
+		
+				new CreateDatabaseController().createDatabaseStructure(
+						currentProject.getProjectId(), currentDataspace.getDataspaceName(),
+						tempDatabaseStructure, "main", log);
+		
+				String databaseStructurePersistString = databaseStructureHome.persist();
+				log.info("databaseStructurePersistString {0}",
+						databaseStructurePersistString);
+				Contexts.getSessionContext().set("currentDatabaseStructure",
+						tempDatabaseStructure);
+		
+				WebApplication tempWebApplication = webApplicationHome.getInstance();
+				tempWebApplication.setStatus("NotDeployed");
+		
+				String webApplicationPersistString = webApplicationHome.persist();
+				log.info("webApplicationPersistString {0}", webApplicationPersistString);
+		
+				ProjectDatabase tempProjectDatabase = projectDatabaseHome.getInstance();
+				tempProjectDatabase.setCreationDate(today);
+				new CreateDatabaseController().createDatabase(currentDataspace,
+						tempDatabaseStructure, tempWebApplication, getLoginsMain(),
+						currentProject.getTitle(), tempProjectDatabase, "main", log);
+		
+				try {
+					String projectDatabasePersistString = projectDatabaseHome.persist();
+		
+					log.info("projectDatabasePersistString {0}",
+							projectDatabasePersistString);
+					Contexts.getSessionContext().set("currentProjectDatabase",
+							tempProjectDatabase);
+				} catch (InvalidStateException ise) {
+					InvalidValue[] iv = ise.getInvalidValues();
+					for (int i = 0; i < iv.length; i++) {
+						System.out.println("Property Name: " + iv[i].getPropertyName());
+						System.out.println("Property Name Message: "
+								+ iv[i].getMessage());
+					}
+				}
+		
+				createDatabaseConfirmationMessage = "Database Created";
+				createDatabaseConfirmationLinkText = "Parse Database";
+			}
 		}
 		else {
 			System.out.println("No, the user is not authorised");
@@ -814,14 +819,15 @@ public class CreateController {
 					+ tempDatabaseStructure.getFile();
 	
 			String fileName = tempDatabaseStructure.getFile();
-			File workingFile = new File(fileName);
-			if (workingFile.isDirectory()) {
-				System.out.println(String.format("File %s is a directory - we can't do anything with this", workingFile.getAbsolutePath()));
-			}
-			else if (!workingFile.exists()) {
-				System.out.println(String.format("File %s doesn't exist - we can't do anything with this", workingFile.getAbsolutePath()));
-			}
-			else {
+//			File workingFile = new File(fileName);
+//			if (workingFile.isDirectory()) {
+//				System.out.println(String.format("File %s is a directory - we can't do anything with this", workingFile.getAbsolutePath()));
+//			}
+//			else if (!workingFile.exists()) {
+//				System.out.println(String.format("File %s doesn't exist - we can't do anything with this", workingFile.getAbsolutePath()));
+//			}
+//			else 
+			{
 				int index = fileName.indexOf('.');
 		
 				String databaseMDBFileWithoutExtension = fileName.substring(0, index);
