@@ -5,6 +5,7 @@ vidaas_home=/var/lib/VIDaaSData/
 target_dir=/opt/
 vidaas_jboss51_url=http://downloads.sourceforge.net/project/jboss/JBoss/JBoss-5.1.0.GA/jboss-5.1.0.GA-jdk6.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fjboss%2Ffiles%2FJBoss%2FJBoss-5.1.0.GA%2F
 vidaas_seam222_url=http://downloads.sourceforge.net/project/jboss/JBoss%20Seam/2.2.2.Final/jboss-seam-2.2.2.Final.tar.gz
+vidaas_source_revision=HEAD
 
 # load settings
 . /etc/vidaas/bootstrap-settings
@@ -148,17 +149,7 @@ if ! [ -e /etc/vidaas/cred_mysqlroot ] ; then
 fi
 
 echo "Building vidaas sources..."
-if su -c "cd ~ && svn --quiet checkout https://vidaas.googlecode.com/svn/vidaas3/$vidaas_branch" vidaas ; then
-  #patch dreaded sudamih.properties
-#(
-#cat <<EndOfFile
-#uk.ac.ox.oucs.sudamih.adminUserName = sudamihAdmin
-#uk.ac.ox.oucs.sudamih.adminUserNamePW = `cat /etc/vidaas/cred_sudamihAdmin`
-#uk.ac.ox.oucs.sudamih.databaseName = sudamihtestdb
-#uk.ac.ox.oucs.sudamih.driverName = org.postgresql.Driver
-#uk.ac.ox.oucs.sudamih.databaseURL = jdbc:postgresql:
-#EndOfFile
-#) > $vidaas_home/$vidaas_branch/vidaas/src/hot/uk/ac/ox/oucs/vidaas/manager/sudamih.properties
+if su -c "cd ~ && svn --quiet --revision $vidaas_source_revision checkout https://vidaas.googlecode.com/svn/vidaas3/$vidaas_branch" vidaas ; then
   if ! su -c "cd ~/$vidaas_branch/vidaas/ && mvn package" vidaas 2>&1 > /var/log/vidaas-build.log ; then
     echo "Build failed see /var/log/vidaas-build.log" ; exit 1
   fi
