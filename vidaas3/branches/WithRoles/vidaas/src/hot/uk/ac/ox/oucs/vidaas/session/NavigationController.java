@@ -63,7 +63,7 @@ public class NavigationController {
 	@Out(required = true)
 	XMLFilesHome xmlFilesHome;
 
-	private static Users userMain;
+	private Users userMain;
 	private Logins loginMain;
 
 	private Project currentProject;
@@ -1195,11 +1195,11 @@ public class NavigationController {
 	/**
 	 * Roles
 	 */
-	public static String setAndGetUserRoleByEmail(Set<UserProject> userProjects, Integer projectIDValue) {
+	public String setAndGetUserRoleByEmail(Set<UserProject> userProjects, Integer projectIDValue) {
 		List<UserProject> list = new ArrayList<UserProject>(userProjects);
 		return setAndGetUserRoleByEmail(list, projectIDValue);
 	}
-	public static String setAndGetUserRoleByEmail(List<UserProject> UserProjects, Integer projectIDValue) {
+	public String setAndGetUserRoleByEmail(List<UserProject> UserProjects, Integer projectIDValue) {
 		System.out.println("setAndGetUserRole");
 		if (projectIDValue == null) {
 			return null;
@@ -1254,9 +1254,5 @@ public class NavigationController {
 
 	public void setAuthorisedToPerformOperation(boolean authorisedToPerformOperation) {
 		this.authorisedToPerformOperation = authorisedToPerformOperation;
-	}
-
-	public static void setUserMain(Users userMain) {
-		NavigationController.userMain = userMain;
 	}
 }

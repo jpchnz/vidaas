@@ -489,7 +489,7 @@ public class CreateController {
 				.get("currentDataspace"));
 		
 		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
-		String currentRole = NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
+		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));//NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
 		boolean actionAuthorised = false;
 		System.out.println("Check authorisation for role " + currentRole);
 		try {
@@ -549,7 +549,8 @@ public class CreateController {
 		
 		Dataspace tempDataspaceNew = dataspaceHome.find();
 		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
-		String currentRole = NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
+//		String currentRole = NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
+		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
 		boolean actionAuthorised = true;
 		try {
 			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
@@ -613,7 +614,8 @@ public class CreateController {
 		System.out.println("createDatabaseFromSchema");
 		dataHolder.setOkButton(true);
 		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
-		String currentRole = NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
+		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
+//		String currentRole = NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
 		
 		System.out
 				.println(String.format(
@@ -647,6 +649,7 @@ public class CreateController {
 			/**/
 			DatabaseStructure tempDatabaseStructure = databaseStructureHome
 					.getInstance();
+			System.out.println("XXXXXXXX " + tempDatabaseStructure.getFile());
 			tempDatabaseStructure.setCreationDate(today);
 	
 			new CreateDatabaseController().createDatabaseStructure(
@@ -811,31 +814,40 @@ public class CreateController {
 					+ tempDatabaseStructure.getFile();
 	
 			String fileName = tempDatabaseStructure.getFile();
-			int index = fileName.indexOf('.');
-	
-			String databaseMDBFileWithoutExtension = fileName.substring(0, index);
-			String databaseSchemaFile = rootDirectory
-					+ databaseMDBFileWithoutExtension + ".sql";
-	
-			databaseSchemaShortStatus = "Starting Parsing: " + databaseMDBFile;
-	
-			ConnectionManager connectionManager = new ConnectionManager();
-			Connection connection = connectionManager.createConnection(
-					tempProjectDatabase.getDatabaseName().toLowerCase(),
-					getLoginsMain().getUserName().toLowerCase(), getLoginsMain()
-							.getPassword());
-			dataHolder.setCurrentStatus("\nSuccessfully Connected with Database "
-					+ dataHolder.getCurrentStatus());
-	
-			try {
-				parseCreateLoaderThread = new ParseCreateLoaderThread(
-						databaseMDBFile, databaseSchemaFile, sqlDataDirecotry,
-						csvDataDirectory, dataHolder, connection);
-				Thread parserThread = new Thread(parseCreateLoaderThread);
-				parserThread.start();
-	
-			} catch (Exception e) {
-				e.printStackTrace();
+			File workingFile = new File(fileName);
+			if (workingFile.isDirectory()) {
+				System.out.println(String.format("File %s is a directory - we can't do anything with this", workingFile.getAbsolutePath()));
+			}
+			else if (!workingFile.exists()) {
+				System.out.println(String.format("File %s doesn't exist - we can't do anything with this", workingFile.getAbsolutePath()));
+			}
+			else {
+				int index = fileName.indexOf('.');
+		
+				String databaseMDBFileWithoutExtension = fileName.substring(0, index);
+				String databaseSchemaFile = rootDirectory
+						+ databaseMDBFileWithoutExtension + ".sql";
+		
+				databaseSchemaShortStatus = "Starting Parsing: " + databaseMDBFile;
+		
+				ConnectionManager connectionManager = new ConnectionManager();
+				Connection connection = connectionManager.createConnection(
+						tempProjectDatabase.getDatabaseName().toLowerCase(),
+						getLoginsMain().getUserName().toLowerCase(), getLoginsMain()
+								.getPassword());
+				dataHolder.setCurrentStatus("\nSuccessfully Connected with Database "
+						+ dataHolder.getCurrentStatus());
+		
+				try {
+					parseCreateLoaderThread = new ParseCreateLoaderThread(
+							databaseMDBFile, databaseSchemaFile, sqlDataDirecotry,
+							csvDataDirectory, dataHolder, connection);
+					Thread parserThread = new Thread(parseCreateLoaderThread);
+					parserThread.start();
+		
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		else {

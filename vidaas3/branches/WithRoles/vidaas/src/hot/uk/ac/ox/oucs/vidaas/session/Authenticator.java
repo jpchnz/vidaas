@@ -298,7 +298,6 @@ public class Authenticator {
 	public void logout() {
 		log.info("Authenticator Logout called", "");
 		((NavigationController) Contexts.getSessionContext().get("navigationController")).defaultHomePage();
-		NavigationController.setUserMain(null);
 		Session session = Session.instance();
 		session.invalidate();
 		identity.logout();
