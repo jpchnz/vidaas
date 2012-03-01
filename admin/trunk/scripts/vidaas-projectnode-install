@@ -6,6 +6,7 @@ target_dir=/opt/
 vidaas_jboss51_url=http://downloads.sourceforge.net/project/jboss/JBoss/JBoss-5.1.0.GA/jboss-5.1.0.GA-jdk6.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fjboss%2Ffiles%2FJBoss%2FJBoss-5.1.0.GA%2F
 vidaas_seam222_url=http://downloads.sourceforge.net/project/jboss/JBoss%20Seam/2.2.2.Final/jboss-seam-2.2.2.Final.tar.gz
 vidaas_source_revision=HEAD
+vidaas_designer=false
 
 # load settings
 . /etc/vidaas/bootstrap-settings
