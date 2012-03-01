@@ -13,7 +13,4 @@ vidaas_source_revision=603
 vidaas_shib=false
 
 # install SQL designer
-vidaas_sqldesigner=true
-
-# install SQL designer
 vidaas_designer=true
