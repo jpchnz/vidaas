@@ -22,7 +22,7 @@ Is a tool to graphically design databases using JavaScript.
 
 Documentation can be found here: http://daas-7.ords.ox.ac.uk/jQuerySQLDesigner/home.seam
 
-= VMware integration =
+== VMware integration ==
 
 We have developed a tool to automatically create and deploy VMs based on VMware's VCloud API. This works fine but is currently not integrated with the VIDaaS webapp so this functionality is currently not directly available to the end user.
 
