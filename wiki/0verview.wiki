@@ -41,6 +41,8 @@ Images are created automatically by scripts, but there is a (no longer updated) 
  * Old instructions: ViDaasSetup 
  * Automated scripts: https://code.google.com/p/vidaas/source/browse/#svn%2Fadmin%2Ftrunk%2Fscripts
 
+https://vidaas.googlecode.com/svn/wiki/images.png
+
 == PostgreSQL ==
 
 Currently 3 databases can be created for every project. This allows to use a different version of the database for production and development work.
@@ -49,7 +51,11 @@ https://vidaas.googlecode.com/svn/wiki/versions.png
 
 Currently the database server is installed on the same VM as the VIDaaS web interface but there is not required.
 
-== Future Work ==
+= Software used =
+
+For a list of other software used in the project and their licenses see here: Licensing 
+
+= Future Work =
 
 (in order of prioritisation)
 
@@ -64,3 +70,7 @@ Need to be updated (add support for initalisation script) and integrated with Vi
 === NAT/PAT ===
 
 Allow deployment of multiple nodes on the same IP address.
+
+=== OpenStack integration ===
+
+Add support for OpenStack.
