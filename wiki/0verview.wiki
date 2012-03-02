@@ -1,0 +1,15 @@
+#summary Overview of the technical architecture of VIDaas
+
+= VIDaaS =
+
+This component implements the web front-end end database management functionality
+
+
+You can browse the code here: https://code.google.com/p/vidaas/source/browse/#svn%2Fvidaas3
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
