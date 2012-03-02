@@ -1,15 +1,20 @@
 #summary Overview of the technical architecture of VIDaas
 
+= Overview =
+
 = VIDaaS =
 
-This component implements the web front-end end database management functionality
+This component implements the web front-end end database management functionality. It is a Java webapp using the JBoss Seam framework (http://seamframework.org/). It was original developed as part of the sudamih project (http://sudamih.oucs.ox.ac.uk/).
+
+It manages the individual projects and stores it's configuration, metadata, etc in a locally installed MySQL database.
+
+When a user requests to create a DataInterface (a web-frontent to access a project database) uses seam-gen to dynamically generate a new webapp and deploys it to the application server.
 
 
 You can browse the code here: https://code.google.com/p/vidaas/source/browse/#svn%2Fvidaas3
 
-= Details =
+= jQuerySQLDesigner =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+= Creating Images =
+
+= Future Work =
