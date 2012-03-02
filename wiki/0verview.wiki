@@ -3,7 +3,7 @@
 
 = Overview =
 
-= VIDaaS =
+== VIDaaS ==
 
 This component implements the web front-end end database management functionality. It is a Java webapp using the JBoss Seam framework (http://seamframework.org/). It was original developed as part of the sudamih project (http://sudamih.oucs.ox.ac.uk/).
 
@@ -16,7 +16,7 @@ When a user requests to create a DataInterface (a web-frontent to access a proje
 
 You can browse the code here: https://code.google.com/p/vidaas/source/browse/#svn%2Fvidaas3
 
-= jQuerySQLDesigner =
+== jQuerySQLDesigner ==
 
 Is a tool to graphically design databases using JavaScript. 
 
@@ -34,13 +34,33 @@ This functionality is also exposed through google RPC and JSON and will be calle
 
 Source code: https://code.google.com/p/vidaas/source/browse/#svn%2Fovfcatalog%2Ftrunk
 
-= Creating Images =
+== Creating Images ==
 
 Images are created automatically by scripts, but there is a (no longer updated) wiki page explaining how to create an image manually. It is still useful to get an overview how to create an image.
 
  * Old instructions: ViDaasSetup 
  * Automated scripts: https://code.google.com/p/vidaas/source/browse/#svn%2Fadmin%2Ftrunk%2Fscripts
 
+== PostgreSQL ==
 
+Currently 3 databases can be created for every project. This allows to use a different version of the database for production and development work.
 
-= Future Work =
+https://vidaas.googlecode.com/svn/wiki/versions.png
+
+Currently the database server is installed on the same VM as the VIDaaS web interface but there is not required.
+
+== Future Work ==
+
+(in order of prioritisation)
+
+=== Update to JBoss 7 ===
+
+JBoss 5.1 is no longer maintained and cannot be built from source. A lot of the VIDaaS code has to be rewritten to work with the newest version of Seam and JBoss. At the same time we will introduce architectural changes to the application, mainly splitting the VIDaaS webapp into independent components.
+
+=== VMware integration ===
+
+Need to be updated (add support for initalisation script) and integrated with ViDaas.
+
+=== NAT/PAT ===
+
+Allow deployment of multiple nodes on the same IP address.
