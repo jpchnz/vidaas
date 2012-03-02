@@ -5,7 +5,7 @@
 
 == VIDaaS ==
 
-This component implements the web front-end end database management functionality. It is a Java webapp using the JBoss Seam framework (http://seamframework.org/). It was original developed as part of the sudamih project (http://sudamih.oucs.ox.ac.uk/).
+This component implements the web front-end end and database management functionality. It is a Java webapp using the JBoss Seam framework (http://seamframework.org/). It was original developed as part of the sudamih project (http://sudamih.oucs.ox.ac.uk/).
 
 https://vidaas.googlecode.com/svn/wiki/vidaas.png
 
