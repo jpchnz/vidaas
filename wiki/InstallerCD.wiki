@@ -1,4 +1,5 @@
 #summary Build Installer CD using Debian Live
+#labels Deprecated
 
 = Introduction =
 
