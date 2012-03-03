@@ -39,12 +39,14 @@ if ! DEBIAN_FRONTEND=noninteractive apt-get -qqy install $projectnode_packages ;
 fi
 
 cd
-if ! [ -f /tmp/jboss-5.1.0.GA-jdk6.zip ] ; then
-  echo "Downloading jboss..."
-  if ! wget --no-verbose -O /tmp/jboss-5.1.0.GA-jdk6.zip $vidaas_jboss51_url ; then
-    rm /tmp/jboss-5.1.0.GA-jdk6.zip
-    echo "Unable to download jboss 5.1"
-    exit 1
+if [ ! -f $target_dir/jboss/bin/run.sh ] ; then
+  if ! [ -f /tmp/jboss-5.1.0.GA-jdk6.zip ] ; then
+    echo "Downloading jboss..."
+    if ! wget --no-verbose -O /tmp/jboss-5.1.0.GA-jdk6.zip $vidaas_jboss51_url ; then
+      rm /tmp/jboss-5.1.0.GA-jdk6.zip
+      echo "Unable to download jboss 5.1"
+      exit 1
+    fi
   fi
 fi
 if ! [ -f /tmp/jboss-seam-2.2.2.Final.tar.gz ] ; then 
@@ -58,42 +60,45 @@ fi
 
 echo "Stopping jboss..."
 service jboss51 stop
-echo "Deleting old jboss installation..."
-rm -rf $target_dir/jboss-5.1.0.GA
+#echo "Deleting old jboss installation..."
+#rm -rf $target_dir/jboss-5.1.0.GA
 
-echo "Extracting jboss..."
-if cd $target_dir && unzip -q /tmp/jboss-5.1.0.GA-jdk6.zip ; then
-  #convenience symlink
-  ln -s $target_dir/jboss-5.1.0.GA $target_dir/jboss
-  #chown to vidaas system user
-  chown -R vidaas:vidaas $target_dir/jboss-5.1.0.GA
-  #sanity check
-  if [ ! -f $target_dir/jboss/bin/run.sh ] ; then
-    echo "Can't find $target_dir/jboss/bin/run.sh - install failed" ; exit 1
+if [ ! -f $target_dir/jboss/bin/run.sh ] ; then
+  echo "Extracting jboss..."
+  if cd $target_dir && unzip -q /tmp/jboss-5.1.0.GA-jdk6.zip ; then
+    #convenience symlink
+    ln -s $target_dir/jboss-5.1.0.GA $target_dir/jboss
+    #sanity check
+    if [ ! -f $target_dir/jboss/bin/run.sh ] ; then
+      echo "Can't find $target_dir/jboss/bin/run.sh - install failed" ; exit 1
+    fi
+  else
+    echo "failed to unzip jboss" ; exit 1
   fi
-  #save env
-  export JBOSS_HOME=$target_dir/jboss/
-  echo "export JBOSS_HOME=$JBOSS_HOME" >> /etc/vidaas/env
-  #remove vulnerable/unwanted files
-  rm -rf $target_dir/jboss/server/default/deploy/admin-console.war
-  rm -rf $target_dir/jboss/server/default/deploy/jmx-console.war
-  rm -rf $target_dir/jboss/server/default/deploy/management
-  #install startup script
-  cp $vidaas_admin_repo_path/admin/$vidaas_branch/root/etc/init.d/jboss51 /etc/init.d/jboss51
-  chmod +x /etc/init.d/jboss51
-  if ! update-rc.d jboss51 defaults ; then
-    echo "failed to install jboss init script" ; exit 1
-  fi
-  #symlink database drivers
-  ln -s /usr/share/java/mysql.jar $JBOSS_HOME/server/default/lib/mysql.jar
-  ln -s /usr/share/java/postgresql.jar $JBOSS_HOME/server/default/lib/postgresql.jar
-  #not sure this is still required. TODO check with asif
-  mkdir -p $target_dir/DatabaseDrivers/
-  if ! [ -h $target_dir/DatabaseDrivers/postgresql.jar ] ; then
-    ln -s /usr/share/java/postgresql.jar $target_dir/DatabaseDrivers/postgresql.jar
-  fi
-else
-  echo "failed to unzip jboss" ; exit 1
+fi
+
+#chown to vidaas system user
+chown -R vidaas:vidaas $target_dir/jboss-5.1.0.GA
+#save env
+export JBOSS_HOME=$target_dir/jboss/
+echo "export JBOSS_HOME=$JBOSS_HOME" >> /etc/vidaas/env
+#remove vulnerable/unwanted files
+rm -rf $target_dir/jboss/server/default/deploy/admin-console.war
+rm -rf $target_dir/jboss/server/default/deploy/jmx-console.war
+rm -rf $target_dir/jboss/server/default/deploy/management
+#install startup script
+cp $vidaas_admin_repo_path/admin/$vidaas_branch/root/etc/init.d/jboss51 /etc/init.d/jboss51
+chmod +x /etc/init.d/jboss51
+if ! update-rc.d jboss51 defaults ; then
+  echo "failed to install jboss init script" ; exit 1
+fi
+#symlink database drivers
+ln -s /usr/share/java/mysql.jar $JBOSS_HOME/server/default/lib/mysql.jar
+ln -s /usr/share/java/postgresql.jar $JBOSS_HOME/server/default/lib/postgresql.jar
+#not sure this is still required. TODO check with asif
+mkdir -p $target_dir/DatabaseDrivers/
+if ! [ -h $target_dir/DatabaseDrivers/postgresql.jar ] ; then
+  ln -s /usr/share/java/postgresql.jar $target_dir/DatabaseDrivers/postgresql.jar
 fi
 
 echo "Deleting old seam installation..."
@@ -173,7 +178,8 @@ else
   echo "Could not create vidaas-service.xml" ; exit 1
 fi
 
-#deploy war file
+# (re-)deploy war file
+rm -rf $JBOSS_HOME/server/default/deploy/vidaas.war
 if ! su -c "cp -r ~/$vidaas_branch/vidaas/target/vidaas $JBOSS_HOME/server/default/deploy/vidaas.war" vidaas ; then
   echo "Deployment to appserver failed" ; exit 1
 fi
@@ -183,6 +189,8 @@ if [ "$vidaas_designer" == "true" ] ; then
     if ! su -c "cp -r $vidaas_home/designer/trunk/resources/jQuerySQLDesigner-ds.xml $JBOSS_HOME/server/default/deploy/jQuerySQLDesigner-ds.xml" vidaas ; then
       echo "Deployment to appserver failed" ; exit 1
     fi
+    # (re-)deploy war file
+    rm -rf $JBOSS_HOME/server/default/deploy/jQuerySQLDesigner.war
     if ! su -c "cp -r $vidaas_home/designer/trunk/jQuerySQLDesigner.war $JBOSS_HOME/server/default/deploy/jQuerySQLDesigner.war" vidaas ; then
       echo "Deployment to appserver failed" ; exit 1
     fi
