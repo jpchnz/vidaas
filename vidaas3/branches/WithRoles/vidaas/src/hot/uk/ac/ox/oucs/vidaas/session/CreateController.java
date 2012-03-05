@@ -487,23 +487,25 @@ public class CreateController {
 		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));//NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
 		boolean actionAuthorised = false;
 		System.out.println("Check authorisation for role " + currentRole);
-		try {
-			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
-					|| SystemVars.treatAdminAsOwner(currentRole);
-		}
-		catch (MalformedURLException e) {
-			e.printStackTrace();
-			actionAuthorised = false;
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			actionAuthorised = false;
-		}
 		
-		if (authorised) {
-			return "editDataspacePanel";
-		}
-		return "notAuthorisedPanel";
+		return AuthorisationController.authorisedToUpdateDataspace(currentRole);
+//		try {
+//			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+//					|| SystemVars.treatAdminAsOwner(currentRole);
+//		}
+//		catch (MalformedURLException e) {
+//			e.printStackTrace();
+//			actionAuthorised = false;
+//		}
+//		catch (IOException e) {
+//			e.printStackTrace();
+//			actionAuthorised = false;
+//		}
+//		
+//		if (actionAuthorised) {
+//			return "editDataspacePanel";
+//		}
+//		return "notAuthorisedPanel";
 	}
 	
 	public void updateDataSpace() {
@@ -562,27 +564,78 @@ public class CreateController {
 	}
 	
 	
+	public String authorisedToCreateTestDatabase() {
+		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
+		return AuthorisationController.authorisedToCreateTestDatabase(currentRole);
+	}
+	
+	public String authorisedToCreateBackupDatabase() {
+		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
+		return AuthorisationController.authorisedToCreateBackupDatabase(currentRole);
+	}
+	
+	public String authorisedToRemoveWebApp() {
+		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
+		return AuthorisationController.authorisedToRemoveWebApp(currentRole);
+	}
+	
+	public String authorisedToCreateWebApp() {
+		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
+		return AuthorisationController.authorisedToCreateWebApp(currentRole);
+	}
+	
 	public String authorisedToDeleteDataspace() {
 		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
 		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
-		boolean actionAuthorised = true;
-		try {
-			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
-					|| SystemVars.treatAdminAsOwner(currentRole);
-		}
-		catch (MalformedURLException e) {
-			e.printStackTrace();
-			actionAuthorised = false;
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			actionAuthorised = false;
-		}
+		return AuthorisationController.authorisedToDeleteDataspace(currentRole);
+//		boolean actionAuthorised = true;
+//		try {
+//			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+//					|| SystemVars.treatAdminAsOwner(currentRole);
+//		}
+//		catch (MalformedURLException e) {
+//			e.printStackTrace();
+//			actionAuthorised = false;
+//		}
+//		catch (IOException e) {
+//			e.printStackTrace();
+//			actionAuthorised = false;
+//		}
+//		
+//		if (actionAuthorised) {
+//			return "deleteDataspacePanel";
+//		}
+//		return "notAuthorisedPanel";
+	}
+	
+	
+	public String authorisedToDropDatabase() {
+		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
 		
-		if (authorised) {
-			return "deleteDataspacePanel";
-		}
-		return "notAuthorisedPanel";
+		return AuthorisationController.authorisedToDropDatabase(currentRole);
+//		boolean actionAuthorised = true;
+//		try {
+//			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+//					|| SystemVars.treatAdminAsOwner(currentRole);
+//		}
+//		catch (MalformedURLException e) {
+//			e.printStackTrace();
+//			actionAuthorised = false;
+//		}
+//		catch (IOException e) {
+//			e.printStackTrace();
+//			actionAuthorised = false;
+//		}
+//		
+//		if (actionAuthorised) {
+//			return "dropDatabasePanel";
+//		}
+//		return "notAuthorisedPanel";
 	}
 	
 
@@ -665,23 +718,25 @@ public class CreateController {
 				.println(String.format(
 						"Check if the user is authorised to create a database from schema when they have the role <%s>",
 						currentRole));
-		authorised = false;
-		try {
-			authorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
-					|| SystemVars.treatAdminAsOwner(currentRole);
-		}
-		catch (MalformedURLException e) {
-			System.out.println("Malformed exception");
-			e.printStackTrace();
-		}
-		catch (IOException e) {
-			System.out.println("IO Exception");
-			e.printStackTrace();
-		}
-		if (authorised) {
-			return "createDatabasePanel";
-		}
-		return "notAuthorisedPanel";
+		
+		return AuthorisationController.authorisedToCreateDatabase(currentRole);
+//		authorised = false;
+//		try {
+//			authorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+//					|| SystemVars.treatAdminAsOwner(currentRole);
+//		}
+//		catch (MalformedURLException e) {
+//			System.out.println("Malformed exception");
+//			e.printStackTrace();
+//		}
+//		catch (IOException e) {
+//			System.out.println("IO Exception");
+//			e.printStackTrace();
+//		}
+//		if (authorised) {
+//			return "createDatabasePanel";
+//		}
+//		return "notAuthorisedPanel";
 	}
 
 	public void createDatabaseFromSchema() {
