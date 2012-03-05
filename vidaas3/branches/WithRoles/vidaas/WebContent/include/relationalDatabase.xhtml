@@ -80,7 +80,7 @@
 					reRender="createWebApplicationFormInclude"
 					id="createWebApplicationButton" value="Create Web Application"
 					style="float:left">
-					<rich:componentControl for="createWebApplicationPanel"
+					<rich:componentControl for="#{createController.authorisedToCreateWebApp()}"
 						attachTo="createWebApplicationButton" operation="show"
 						event="onclick" />
 				</a4j:commandButton> <a4j:commandButton
@@ -89,7 +89,7 @@
 					reRender="removeWebApplicationFormInclude"
 					id="removeWebApplicationButton" value="Remove Web Application"
 					style="float:right">
-					<rich:componentControl for="removeWebApplicationPanel"
+					<rich:componentControl for="#{createController.authorisedToRemoveWebApp()}"
 						attachTo="removeWebApplicationButton" operation="show"
 						event="onclick" />
 				</a4j:commandButton></div>
@@ -111,7 +111,7 @@
 					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
 					id="dropDatabaseButton" value="Delete Database" style="float:left"
 					reRender="dropDatabaseFormInclude"
-					oncomplete="javascript:Richfaces.showModalPanel('dropDatabasePanel');">
+					oncomplete="javascript:Richfaces.showModalPanel('#{createController.authorisedToDropDatabase()}');">
 					<!--  
 							<rich:componentControl for="dropDatabasePanel"
 								attachTo="dropDatabaseButton" operation="show" event="onclick" />
@@ -121,7 +121,7 @@
 					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
 					reRender="testDatabaseFormInclude" id="testDatabaseButton"
 					value="Create Test Database"
-					oncomplete="Richfaces.showModalPanel('testDatabasePanel');">
+					oncomplete="Richfaces.showModalPanel('#{createController.authorisedToCreateTestDatabase()}');">
 					<!--  
 								<rich:componentControl for="testDatabasePanel"
 									attachTo="testDatabaseButton" operation="show" event="onclick" />		
@@ -131,7 +131,7 @@
 					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
 					reRender="backupDatabaseFormInclude" id="backupDatabaseButton"
 					value="Create milestone database"
-					oncomplete="Richfaces.showModalPanel('backupDatabasePanel');">
+					oncomplete="Richfaces.showModalPanel('#{createController.authorisedToCreateBackupDatabase()}');">
 					<!--  
 							<rich:componentControl for="backupDatabasePanel"
 									attachTo="backupDatabaseButton" operation="show" event="onclick" />			
