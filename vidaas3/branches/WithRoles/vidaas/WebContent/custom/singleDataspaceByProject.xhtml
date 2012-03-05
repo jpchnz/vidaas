@@ -69,7 +69,7 @@
 				reRender="editDataspaceFormInclude" style="float:left">
 				<f:param name="dataspaceIDValue"
 					value="#{currentDataspace.dataSpaceId}" />
-				<rich:componentControl for="editDataspacePanel"
+				<rich:componentControl for="#{createController.authorisedToUpdateDataspace()}"
 					attachTo="editDataspaceLink" operation="show" event="onclick" />
 			</a4j:commandLink>
 
@@ -78,7 +78,7 @@
 				reRender="deleteDataspaceFormInclude" style="float:right">
 				<f:param name="dataspaceIDValue"
 					value="#{currentDataspace.dataSpaceId}" />
-				<rich:componentControl for="deleteDataspacePanel"
+				<rich:componentControl for="#{createController.authorisedToDeleteDataspace()}"
 					attachTo="deleteDataspaceLink" operation="show" event="onclick" />
 			</a4j:commandLink>
 		</a4j:form>
@@ -97,7 +97,7 @@
 
 				<a4j:commandLink id="createDatabaseFromSchemaButton"
 					value="Upload existing Database" style="float:left">
-					<rich:componentControl for="createDatabasePanel"
+					<rich:componentControl for="#{createController.authorisedToCreateDatabase()}"
 						attachTo="createDatabaseFromSchemaButton" operation="show"
 						event="onclick" />
 				</a4j:commandLink>

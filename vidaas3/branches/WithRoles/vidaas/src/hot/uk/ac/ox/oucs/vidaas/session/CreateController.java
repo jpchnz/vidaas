@@ -482,6 +482,29 @@ public class CreateController {
 		 */
 	}
 
+	public String authorisedToUpdateDataspace() {
+		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));//NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
+		boolean actionAuthorised = false;
+		System.out.println("Check authorisation for role " + currentRole);
+		try {
+			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+					|| SystemVars.treatAdminAsOwner(currentRole);
+		}
+		catch (MalformedURLException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
+		
+		if (authorised) {
+			return "editDataspacePanel";
+		}
+		return "notAuthorisedPanel";
+	}
 	
 	public void updateDataSpace() {
 		System.out.println("updateDataSpace");
@@ -539,6 +562,29 @@ public class CreateController {
 	}
 	
 	
+	public String authorisedToDeleteDataspace() {
+		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
+		boolean actionAuthorised = true;
+		try {
+			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+					|| SystemVars.treatAdminAsOwner(currentRole);
+		}
+		catch (MalformedURLException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
+		
+		if (authorised) {
+			return "deleteDataspacePanel";
+		}
+		return "notAuthorisedPanel";
+	}
+	
 
 	public void deleteDataSpace(Integer DataSpaceIdValue) {
 		System.out.println("deleteDataSpace:" + DataSpaceIdValue);
@@ -549,7 +595,6 @@ public class CreateController {
 		
 		Dataspace tempDataspaceNew = dataspaceHome.find();
 		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
-//		String currentRole = NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
 		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
 		boolean actionAuthorised = true;
 		try {
@@ -608,20 +653,19 @@ public class CreateController {
 				"navigationController")).deleteDataspaceInitial();
 
 	}
+	
+	
 
-	public void createDatabaseFromSchema() {
-		// log.info("createDatabase {0} {1}", projectIDValue, dataspaceIDValue);
-		System.out.println("createDatabaseFromSchema");
-		dataHolder.setOkButton(true);
+	public String authorisedToCreateDatabase() {
+		System.out.println("authorisedToCreateDatabase");
 		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
 		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
-//		String currentRole = NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
-		
+
 		System.out
 				.println(String.format(
 						"Check if the user is authorised to create a database from schema when they have the role <%s>",
 						currentRole));
-
+		authorised = false;
 		try {
 			authorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
 					|| SystemVars.treatAdminAsOwner(currentRole);
@@ -634,12 +678,22 @@ public class CreateController {
 			System.out.println("IO Exception");
 			e.printStackTrace();
 		}
-		
-		
+		if (authorised) {
+			return "createDatabasePanel";
+		}
+		return "notAuthorisedPanel";
+	}
+
+	public void createDatabaseFromSchema() {
+		// log.info("createDatabase {0} {1}", projectIDValue, dataspaceIDValue);
+		System.out.println("createDatabaseFromSchema");
+		dataHolder.setOkButton(true);		
+		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
+
+		authorisedToCreateDatabase();		
 		
 		if (authorised) {
-			((NavigationController) Contexts.getSessionContext().get(
-					"navigationController")).setParseDatabaseFormRender(false);
 			System.out.println("Yes, the user is authorised");
 			Dataspace currentDataspace = ((Dataspace) Contexts.getSessionContext()
 					.get("currentDataspace"));
@@ -655,6 +709,9 @@ public class CreateController {
 				createDatabaseConfirmationLinkText = "Return";
 			}
 			else {
+				((NavigationController) Contexts.getSessionContext().get(
+						"navigationController")).setParseDatabaseFormRender(false);
+				
 				tempDatabaseStructure.setCreationDate(today);
 		
 				new CreateDatabaseController().createDatabaseStructure(
@@ -913,56 +970,82 @@ public class CreateController {
 		dataHolder.currentStatus = "";
 		log.info("createWebApplication() called " + "" + projectDatabaseIDValue);
 		this.currentDatabaseID = projectDatabaseIDValue;
-
-		String serverURLTemp = System.getProperty("serverURL");
-
-		((NavigationController) Contexts.getSessionContext().get(
-				"navigationController")).createWebApplicationConfirmation();
-
-		projectDatabaseHome.setId(projectDatabaseIDValue);
-		ProjectDatabase tempProjectDatabase = projectDatabaseHome.find();
-
-		projectDatabaseHome.setInstance(tempProjectDatabase);
-
-		String webApplicationName = tempProjectDatabase.getDataspace()
-				.getWebApplicationName();
-
-		if (tempProjectDatabase.getDatabaseType().equalsIgnoreCase("old")) {
-			webApplicationName = webApplicationName + "_old";
-		} else if (tempProjectDatabase.getDatabaseType().equalsIgnoreCase(
-				"test")) {
-			webApplicationName = webApplicationName + "_test";
-		}
-
-		String webApplicationLocation = tempProjectDatabase
-				.getDatabaseStructure().getDatabaseDirectory();
-		String databaseName = tempProjectDatabase.getDatabaseName();
-
-		String userName = getLoginsMain().getUserName();
-		String password = getLoginsMain().getPassword();
+		
+		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
+		
+		System.out
+				.println(String.format(
+						"Check if the user is authorised to create a database from schema when they have the role <%s>",
+						currentRole));
 
 		try {
-			webApplicationHome.setId(tempProjectDatabase.getWebApplication()
-					.getWebId());
-			WebApplication tempWebApplication = webApplicationHome.find();
-
-			webApplicationHome.setInstance(tempWebApplication);
-
-			tempWebApplication.setWebApplicationName(webApplicationName);
-
-			tempWebApplication.setUrl(serverURLTemp + webApplicationName);
-
-			createWebApplicationThread = new CreateWebApplicationThread(
-					webApplicationName, webApplicationLocation, databaseName,
-					userName.toLowerCase(), password, dataHolder);
-
-			Thread webApplicationCreaterThread = new Thread(
-					createWebApplicationThread);
-			webApplicationCreaterThread.start();
-		} catch (Exception e) {
+			authorised = IAMRoleManager.getInstance().getWebAppAuthentication().isAllowedToCreateWebAppByRole(currentRole)
+					|| SystemVars.treatAdminAsOwner(currentRole);
+		}
+		catch (MalformedURLException e) {
+			System.out.println("Malformed exception");
 			e.printStackTrace();
-			dataHolder.currentStatus = "Failed to initiate Data Interface creation process";
-			dataHolder.setOkButton(false);
+		}
+		catch (IOException e) {
+			System.out.println("IO Exception");
+			e.printStackTrace();
+		}
+
+		if (authorised) {
+			String serverURLTemp = System.getProperty("serverURL");
+	
+			((NavigationController) Contexts.getSessionContext().get(
+					"navigationController")).createWebApplicationConfirmation();
+	
+			projectDatabaseHome.setId(projectDatabaseIDValue);
+			ProjectDatabase tempProjectDatabase = projectDatabaseHome.find();
+	
+			projectDatabaseHome.setInstance(tempProjectDatabase);
+	
+			String webApplicationName = tempProjectDatabase.getDataspace()
+					.getWebApplicationName();
+	
+			if (tempProjectDatabase.getDatabaseType().equalsIgnoreCase("old")) {
+				webApplicationName = webApplicationName + "_old";
+			} else if (tempProjectDatabase.getDatabaseType().equalsIgnoreCase(
+					"test")) {
+				webApplicationName = webApplicationName + "_test";
+			}
+	
+			String webApplicationLocation = tempProjectDatabase
+					.getDatabaseStructure().getDatabaseDirectory();
+			String databaseName = tempProjectDatabase.getDatabaseName();
+	
+			String userName = getLoginsMain().getUserName();
+			String password = getLoginsMain().getPassword();
+	
+			try {
+				webApplicationHome.setId(tempProjectDatabase.getWebApplication()
+						.getWebId());
+				WebApplication tempWebApplication = webApplicationHome.find();
+	
+				webApplicationHome.setInstance(tempWebApplication);
+	
+				tempWebApplication.setWebApplicationName(webApplicationName);
+	
+				tempWebApplication.setUrl(serverURLTemp + webApplicationName);
+	
+				createWebApplicationThread = new CreateWebApplicationThread(
+						webApplicationName, webApplicationLocation, databaseName,
+						userName.toLowerCase(), password, dataHolder);
+	
+				Thread webApplicationCreaterThread = new Thread(
+						createWebApplicationThread);
+				webApplicationCreaterThread.start();
+			} catch (Exception e) {
+				e.printStackTrace();
+				dataHolder.currentStatus = "Failed to initiate Data Interface creation process";
+				dataHolder.setOkButton(false);
+			}
+		}
+		else {
+			System.out.println("The user is not authorised to do this");
 		}
 		// dataHolder.setOkButton(false);
 	}
