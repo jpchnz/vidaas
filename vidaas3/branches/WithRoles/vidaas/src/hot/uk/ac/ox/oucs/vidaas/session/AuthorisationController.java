@@ -174,6 +174,30 @@ public class AuthorisationController {
 		return "notAuthorisedPanel";
 	}
 	
+	public static String authorisedToEditProject(String currentRole) {
+		System.out.println("authorisedToEditProject:" + currentRole);
+		boolean actionAuthorised = true;
+		try {
+			actionAuthorised = IAMRoleManager.getInstance().getProjectAuthentication().isAllowedToEditProject(currentRole)
+					|| SystemVars.treatAdminAsOwner(currentRole);
+		}
+		catch (MalformedURLException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
+		
+		if (actionAuthorised) {
+			System.out.println("Returning true");
+			return "editProjectPanel";
+		}
+		System.out.println("Not authorised");
+		return "notAuthorisedPanel";
+	}
+	
 	public static String authorisedToCreateTestDatabase(String currentRole) {
 		System.out.println("authorisedToCreateTestDatabase:" + currentRole);
 		boolean actionAuthorised = true;
