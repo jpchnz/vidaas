@@ -2,8 +2,9 @@ package uk.ac.ox.oucs.iam.utilities;
 
 public class UserAuth {
 	/*
-	 * The following two variables must be in sync
+	 * The following two variables must be in sync, and the first entry needs to be the owner
 	 */
+	private final int ownerRoleNumber = 0; // Special
 	protected static String[] rolesAvailable = { "Owner", "Project Administrator", "Contributor", "Viewer" };
 	protected static String[] rolesAvailableExcludeOwner = { "Project Administrator", "Contributor", "Viewer" };
 
@@ -24,6 +25,10 @@ public class UserAuth {
 	
 	public String[] getRolesAvailableExcludeOwner() {
 		return rolesAvailableExcludeOwner;
+	}
+	
+	public String getOwnerRole() {
+		return rolesAvailable[ownerRoleNumber];
 	}
 
 	public boolean isAuthorised(String roleIn, FunctonsAvailableEnum function) {

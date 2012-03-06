@@ -176,6 +176,11 @@ public class UserRoles {
 	}
 	
 	
+	public String getOwnerRole() {
+		return userAuth.getOwnerRole();
+	}
+	
+	
 	/**
 	 * Check if the user with the defined role is allowed to create public views of project data
 	 * @param usersRole The role of the user
