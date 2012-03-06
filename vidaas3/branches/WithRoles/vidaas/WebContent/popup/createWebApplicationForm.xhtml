@@ -6,27 +6,60 @@
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:rich="http://richfaces.org/rich">
 
-
-	
-
 	<a4j:form id="createWebApplicationForm" ajaxSubmit="true">
 	
 		<h:panelGrid id="createWebApplicationFormPanel"
 			width="100%">
 			<h:panelGroup>
-				<h:outputLabel value="Do you want to create Web Application for the database: " />
+				<h:outputLabel value="Publish dataset for the database: " />
+				<b>
 				<h:outputLabel value="#{navigationController.getCurrentProjectDatabase().databaseName}" />
+				</b>
 			</h:panelGroup>
+			
+			<s:validateAll>
+			<!-- 
+	        <h:panelGrid columns="3" columnClasses="name, value, errorMessage">
+	        
+	        	<h:outputLabel for="datasetTitle">Dataset Title</h:outputLabel>
+	            <h:inputText id="datasetTitle" style="width:289px;" required="true"/>
+	        	<rich:message for="datasetTitle" style="width : 184px;" />
+	        	
+	        	<h:outputLabel for="datasetDescription">Dataset description</h:outputLabel>	            
+	            <h:inputTextarea id="datasetDescription"  required="true"  
+	            	style="width:295px;" rows="3"/>
+	        	<rich:message for="datasetDescription" style="width : 184px;" />
+	        	
+	        	<h:outputLabel for="databaseSources">Database Sources</h:outputLabel>	            
+	            <h:inputTextarea id="databaseSources"  required="true" 
+	            	style="width:295px;" rows="3"/>
+	        	<rich:message for="databaseSources" style="width : 184px;" />
+	        	
+	        	<h:outputLabel for="publicAccessible">Storage Type</h:outputLabel>
+				<h:selectOneMenu 
+					required="true" id="publicAccessible">
+					<f:selectItem id="item3B" itemLabel="yes"
+						itemValue="yes" />
+						<f:selectItem id="item3C" itemLabel="no"
+						itemValue="no" />
+				</h:selectOneMenu>
+				<rich:message for="publicAccessible"
+					style="width : 184px;" />
+					
+				<h:outputLabel for="releaseDate">Release Date</h:outputLabel>	            
+	           <rich:calendar id="releaseDate"
+                       required="true"
+                          value="#{createController.today}" datePattern="dd/MM/yyyy"/>
+	        	<rich:message for="releaseDate" style="width : 184px;" />
+	        	
+	        	<h:outputLabel for="datasetURL">Dataset URL</h:outputLabel>
+	            <h:inputText id="datasetURL" style="width:289px;" required="true" value="#{navigationController.getCurrentProjectDatabase().dataspace.webApplicationName}"/>
+	        	<rich:message for="datasetURL" style="width : 184px;" />
+	        	       	
 		</h:panelGrid>
-		
-		<div class="actionButtons">
-		<!--  
-		<a4j:commandButton
-			id="createWebApplicationCancelButton" value="Cancel" style="float:left">
-			<rich:componentControl for="createWebApplicationPanel"
-				attachTo="createWebApplicationCancelButton" operation="hide" event="onclick" />
-		</a4j:commandButton> 		
 		-->
+		<div class="actionButtons">
+
 		<a4j:commandButton
 			action="#{createController.createWebApplication(currentProjectDatabase.databaseId)}"
 			id="createWebApplicationButton" value="Create Web Application" onclick="this.disabled=true" status="submitStatus"
@@ -41,6 +74,9 @@
 				</f:facet>
 			</a4j:status>
 		</a4j:region></div>
+		
+		</s:validateAll>
+    </h:panelGrid>
 	</a4j:form>
 
 </ui:composition>
