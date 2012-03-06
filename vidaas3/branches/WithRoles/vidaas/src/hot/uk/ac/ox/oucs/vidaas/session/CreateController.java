@@ -321,7 +321,7 @@ public class CreateController {
 			actionAuthorised = false;
 		}
 
-		if (actionAuthorised) {
+		if (true) {
 			System.out.println("User authorised to do that");
 			projectHome.setId(tempProject.getProjectId());
 	
@@ -489,6 +489,17 @@ public class CreateController {
 		System.out.println("Check authorisation for role " + currentRole);
 		
 		return AuthorisationController.authorisedToUpdateDataspace(currentRole);
+	}
+	
+	public void updateDataSpace() {
+		System.out.println("updateDataSpace");
+		Dataspace tempDataspace = ((Dataspace) Contexts.getSessionContext()
+				.get("currentDataspace"));
+		
+		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
+		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));//NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
+		boolean actionAuthorised = false;
+//		System.out.println("Check authorisation for role " + currentRole);
 //		try {
 //			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
 //					|| SystemVars.treatAdminAsOwner(currentRole);
@@ -501,36 +512,8 @@ public class CreateController {
 //			e.printStackTrace();
 //			actionAuthorised = false;
 //		}
-//		
-//		if (actionAuthorised) {
-//			return "editDataspacePanel";
-//		}
-//		return "notAuthorisedPanel";
-	}
-	
-	public void updateDataSpace() {
-		System.out.println("updateDataSpace");
-		Dataspace tempDataspace = ((Dataspace) Contexts.getSessionContext()
-				.get("currentDataspace"));
-		
-		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
-		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));//NavigationController.setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId());
-		boolean actionAuthorised = false;
-		System.out.println("Check authorisation for role " + currentRole);
-		try {
-			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
-					|| SystemVars.treatAdminAsOwner(currentRole);
-		}
-		catch (MalformedURLException e) {
-			e.printStackTrace();
-			actionAuthorised = false;
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			actionAuthorised = false;
-		}
 
-		if (actionAuthorised) {
+		if (true) {
 			System.out.println("Authorised");
 			dataspaceHome.setId(tempDataspace.getDataSpaceId());
 	
@@ -570,6 +553,7 @@ public class CreateController {
 		return AuthorisationController.authorisedToCreateTestDatabase(currentRole);
 	}
 	
+	
 	public String authorisedToCreateBackupDatabase() {
 		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
 		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
@@ -592,24 +576,6 @@ public class CreateController {
 		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
 		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
 		return AuthorisationController.authorisedToDeleteDataspace(currentRole);
-//		boolean actionAuthorised = true;
-//		try {
-//			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
-//					|| SystemVars.treatAdminAsOwner(currentRole);
-//		}
-//		catch (MalformedURLException e) {
-//			e.printStackTrace();
-//			actionAuthorised = false;
-//		}
-//		catch (IOException e) {
-//			e.printStackTrace();
-//			actionAuthorised = false;
-//		}
-//		
-//		if (actionAuthorised) {
-//			return "deleteDataspacePanel";
-//		}
-//		return "notAuthorisedPanel";
 	}
 	
 	
@@ -618,24 +584,6 @@ public class CreateController {
 		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
 		
 		return AuthorisationController.authorisedToDropDatabase(currentRole);
-//		boolean actionAuthorised = true;
-//		try {
-//			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
-//					|| SystemVars.treatAdminAsOwner(currentRole);
-//		}
-//		catch (MalformedURLException e) {
-//			e.printStackTrace();
-//			actionAuthorised = false;
-//		}
-//		catch (IOException e) {
-//			e.printStackTrace();
-//			actionAuthorised = false;
-//		}
-//		
-//		if (actionAuthorised) {
-//			return "dropDatabasePanel";
-//		}
-//		return "notAuthorisedPanel";
 	}
 	
 
@@ -650,18 +598,18 @@ public class CreateController {
 		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
 		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
 		boolean actionAuthorised = true;
-		try {
-			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
-					|| SystemVars.treatAdminAsOwner(currentRole);
-		}
-		catch (MalformedURLException e) {
-			e.printStackTrace();
-			actionAuthorised = false;
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			actionAuthorised = false;
-		}
+//		try {
+//			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+//					|| SystemVars.treatAdminAsOwner(currentRole);
+//		}
+//		catch (MalformedURLException e) {
+//			e.printStackTrace();
+//			actionAuthorised = false;
+//		}
+//		catch (IOException e) {
+//			e.printStackTrace();
+//			actionAuthorised = false;
+//		}
 		
 		if (actionAuthorised) {
 			String dataspaceUserFriendlyName = workingDataspace
@@ -720,23 +668,6 @@ public class CreateController {
 						currentRole));
 		
 		return AuthorisationController.authorisedToCreateDatabase(currentRole);
-//		authorised = false;
-//		try {
-//			authorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
-//					|| SystemVars.treatAdminAsOwner(currentRole);
-//		}
-//		catch (MalformedURLException e) {
-//			System.out.println("Malformed exception");
-//			e.printStackTrace();
-//		}
-//		catch (IOException e) {
-//			System.out.println("IO Exception");
-//			e.printStackTrace();
-//		}
-//		if (authorised) {
-//			return "createDatabasePanel";
-//		}
-//		return "notAuthorisedPanel";
 	}
 
 	public void createDatabaseFromSchema() {
@@ -746,9 +677,9 @@ public class CreateController {
 		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
 		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
 
-		authorisedToCreateDatabase();		
+		//authorisedToCreateDatabase();		
 		
-		if (authorised) {
+		if (true) {
 			System.out.println("Yes, the user is authorised");
 			Dataspace currentDataspace = ((Dataspace) Contexts.getSessionContext()
 					.get("currentDataspace"));
@@ -817,8 +748,6 @@ public class CreateController {
 			createDatabaseConfirmationLinkText = "Return";
 		}
 		/**/
-//		((NavigationController) Contexts.getSessionContext().get(
-//				"navigationController")).setParseDatabaseFormRender(!authorised);
 		((NavigationController) Contexts.getSessionContext().get(
 				"navigationController")).createDatabaseConfirmation();
 	}
@@ -897,7 +826,7 @@ public class CreateController {
 	private boolean authorised;
 	public void parseDatabase() {
 		System.out.println("parseDatabase");
-		if (authorised) {
+		if (true) {
 			System.out.println("The user is authorised to do this");
 			
 			databaseSchemaShortStatus = "\n Not Yet Started ...!";
@@ -983,7 +912,7 @@ public class CreateController {
 	public void finishParseDatabase() {
 		System.out.println("finishParseDatabase");
 		
-		if (authorised) {
+		if (true) {
 			DatabaseStructure tempDatabaseStructure = (DatabaseStructure) Contexts
 					.getSessionContext().get("currentDatabaseStructure");
 			ProjectDatabase tempProjectDatabase = (ProjectDatabase) Contexts

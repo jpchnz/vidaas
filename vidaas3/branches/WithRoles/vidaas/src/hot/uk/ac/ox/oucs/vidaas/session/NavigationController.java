@@ -823,6 +823,14 @@ public class NavigationController {
 	}
 	
 	
+	public String authorisedToEditProject() {//editProjectInclude = "/popup/editProjectForm.xhtml"
+		System.out.println("authorisedToEditProject with Project ID = " + projectIDValue);
+		setAndGetUserRole(userProjectsList(), projectIDValue);
+		System.out.println("Current role is now set to " + currentRole);
+		return AuthorisationController.authorisedToEditProject(currentRole);
+	}
+	
+	
 	public String getPanelForDBDelete() {
 		System.out.println("getPanelForDBDelete");
 		setAndGetUserRole(userProjectsList(), projectIDValue);
@@ -1200,7 +1208,7 @@ public class NavigationController {
 		return setAndGetUserRoleByEmail(list, projectIDValue);
 	}
 	public String setAndGetUserRoleByEmail(List<UserProject> UserProjects, Integer projectIDValue) {
-		System.out.println("setAndGetUserRole");
+		System.out.println("setAndGetUserRoleByEmail");
 		if (projectIDValue == null) {
 			return null;
 		}
@@ -1228,20 +1236,19 @@ public class NavigationController {
 		System.out.println(String.format("We have %d user project objects", UserProjects.size()));
 		
 		for (UserProject up : UserProjects) {
-			System.out.println("Check project " + up.getProject().getName());
-			System.out.println("Project id is " + up.getProject().getProjectId());
-			System.out.println("Check email " + up.getUsers().getEmail());
-			System.out.println("Role: " + up.getUserRole());
+//			System.out.println("Check project " + up.getProject().getName());
+//			System.out.println("Project id is " + up.getProject().getProjectId());
+//			System.out.println("Check email " + up.getUsers().getEmail());
+//			System.out.println("Role: " + up.getUserRole());
 			if (up.getProject().getProjectId().equals(projectIDValue)) {
-//				System.out.println("This is the one to try");
-				System.out.println("Project name " + up.getProject().getName());
-				System.out.println("Project id is " + up.getProject().getProjectId());
-				System.out.println("Email is " + up.getUsers().getEmail());
+//				System.out.println("Project name " + up.getProject().getName());
+//				System.out.println("Project id is " + up.getProject().getProjectId());
+//				System.out.println("Email is " + up.getUsers().getEmail());
 				currentRole = up.getUserRole().replaceAll("\n", "");
 				break;
 			}
 		}
-		System.out.println(String.format("Current role is now <%s>", currentRole));
+		System.out.println(String.format("Setting current role to <%s>", currentRole));
 		Contexts.getSessionContext().set("currentRole", currentRole);
 		
 		return;
