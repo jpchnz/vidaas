@@ -146,6 +146,7 @@ public class CreateWebApplication {
 		command.add("-r");
 		command.add(seamLocation);
 		command.add(webApplicationLocation + webApplicationName);
+		System.out.println(String.format("About to recursively copy <%s> to <%s>", seamLocation, webApplicationLocation + webApplicationName));
 
 		SystemCommandExecutor commandExecutor = new SystemCommandExecutor(
 				command);
