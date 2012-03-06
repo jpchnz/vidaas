@@ -36,8 +36,8 @@
 						class="custom help"> <img src="images/Help.png" alt="Help"
 							height="48" width="48" /><em>#{helpController.getHelpTitle('DatabaseCreationPopup_DatabaseDescription')}</em>#{helpController.setupHelpText('DatabaseCreationPopup_DatabaseDescription')}
 					</span></a></h:outputLabel>	            
-	            <h:inputText id="databaseDescription"  required="true" value="#{dataspaceHome.instance.databaseDescription}" 
-	            	style="width:295px;"/>
+	            <h:inputTextarea id="databaseDescription"  required="true" value="#{dataspaceHome.instance.databaseDescription}" 
+	            	style="width:295px;" rows="3"/>
 	        	<rich:message for="databaseDescription" style="width : 184px;" />
 	        	
 	        	<h:outputLabel for="dataspaceCreationDate">Creation Date</h:outputLabel>	            
@@ -46,47 +46,16 @@
                           value="#{createController.today}" datePattern="dd/MM/yyyy"/>
 	        	<rich:message for="dataspaceCreationDate" style="width : 184px;" />
 	        	
-	        	<h:outputLabel for="databaseSize"><a class="tooltip" href="#">Estimated database size<span
-						class="custom help"> <img src="images/Help.png" alt="Help"
-							height="48" width="48" /><em>#{helpController.getHelpTitle('DatabaseCreationPopup_EstimatedSize')}</em>#{helpController.setupHelpText('DatabaseCreationPopup_EstimatedSize')}
-					</span></a></h:outputLabel>
-				<h:selectOneMenu value="#{dataspaceHome.instance.databaseSize}"
-				required="true" id="databaseSize" style="width:302px;">
-				<f:selectItem id="databaseSize_item1" itemLabel="1 Gigabyte"
-					itemValue="1" />
-				<f:selectItem id="databaseSize_item2" itemLabel="10 Gigabyte"
-					itemValue="10" />
-					<f:selectItem id="databaseSize_item3" itemLabel="50 Gigabyte"
-					itemValue="50" />
-					<f:selectItem id="databaseSize_item4" itemLabel="100 Gigabyte"
-					itemValue="100" />				
-				</h:selectOneMenu>
-				<rich:message for="databaseSize" style="width : 184px;" />
-	        
-	            <h:outputLabel for="databaseBackupPolicy">Backup Policy</h:outputLabel>
-				<h:selectOneMenu value="#{dataspaceHome.instance.databaseBackupPolicy}"
-				required="true" id="databaseBackupPolicy" style="width:302px;">
-					<f:selectItem id="databaseBackupPolicy_item1" itemLabel="Daily"
-						itemValue="daily" />
-					<f:selectItem id="databaseBackupPolicy_item2" itemLabel="Weekly"
-					itemValue="weekly" />
-					<f:selectItem id="databaseBackupPolicy_item3" itemLabel="fortnightly"
-					itemValue="fortnightly" />
-					<f:selectItem id="databaseBackupPolicy_item4" itemLabel="monthly"
-					itemValue="monthly" />				
-				</h:selectOneMenu>
-				<rich:message for="databaseBackupPolicy" style="width : 184px;" />
-				
-				<h:outputLabel for="databaseExpandable">Database Expandable</h:outputLabel>
-				<h:selectOneMenu value="#{dataspaceHome.instance.databaseExpandablePolicy}"
-					required="true" id="databaseExpandable" style="width:302px;">
-					<f:selectItem id="databaseExpandable_item1" itemLabel="yes"
-						itemValue="yes" />
-					<f:selectItem id="databaseExpandable_item2" itemLabel="no"
-					itemValue="no" />		
-				</h:selectOneMenu>
-				<rich:message for="databaseExpandable" style="width : 184px;" />
-				
+	        	<h:outputLabel for="databaseSources">Data Sources</h:outputLabel>	            
+	            <h:inputTextarea id="databaseSources"  required="true" 
+	            	style="width:295px;" rows="3"/>
+	        	<rich:message for="databaseSources" style="width : 184px;" />
+	        	
+	        	<h:outputLabel for="dataGathering">Data Gathering</h:outputLabel>	            
+	            <h:inputTextarea id="dataGathering"  required="true"
+	            	style="width:295px;" rows="3"/>
+	        	<rich:message for="dataGathering" style="width : 184px;" />
+	        	
 				<h:outputLabel for="webApplicationName"><a class="tooltip" href="#">Database interface name<span
 						class="custom help"> <img src="images/Help.png" alt="Help"
 							height="48" width="48" /><em>#{helpController.getHelpTitle('DatabaseCreationPopup_WebAppName')}</em>#{helpController.setupHelpText('DatabaseCreationPopup_WebAppName')}
@@ -107,7 +76,7 @@
 			    	 -->
 			    </a4j:commandButton>
 			    
-			    <a4j:commandButton id="createDataSpaceButton" value="Create DataSpace" action="#{createController.createDataSpace}" 
+			    <a4j:commandButton id="createDataSpaceButton" value="Create Database" action="#{createController.createDataSpace}" 
 				    onclick="this.disabled=true" status="submitStatus"
 					reRender="createDataSpaceFormInclude, homeMainPanel" style="float:right">
 			    </a4j:commandButton>
