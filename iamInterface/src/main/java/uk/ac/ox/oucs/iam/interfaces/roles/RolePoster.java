@@ -36,17 +36,17 @@ public class RolePoster {
 	 * Post the data set in variable:postData to the web service defined in the constructor
 	 * @throws IOException
 	 */
-	private void sendPost() throws IOException {
-		connection = url.openConnection();
-		connection.setDoOutput(true);
+	private void sendPost() {
 		try {
+			connection = url.openConnection();
+			connection.setDoOutput(true);
 			out = new OutputStreamWriter(connection.getOutputStream());
 			out.write(postData);
 			out.flush();
 			out.close();
 			remoteServerUp = true;
 		}
-		catch (NoRouteToHostException e) {
+		catch (Exception e) {
 			remoteServerUp = false;
 			System.out.println("Cannot find the remote server to post commands to.");
 		}
