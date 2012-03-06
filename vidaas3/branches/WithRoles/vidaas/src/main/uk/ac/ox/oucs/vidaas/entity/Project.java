@@ -144,7 +144,7 @@ public class Project implements java.io.Serializable {
 		this.dataspaces = dataspaces;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "project") // may need to be eager
 	public Set<UserProject> getUserProjects() {
 		return this.userProjects;
 	}

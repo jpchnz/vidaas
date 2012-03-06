@@ -61,7 +61,7 @@ public class UserProject implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)//May need to be eager
 	@JoinColumn(name = "User_ID", nullable = false, insertable = false, updatable = false)
 	@NotNull
 	public Users getUsers() {
