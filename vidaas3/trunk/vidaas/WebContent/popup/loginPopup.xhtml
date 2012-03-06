@@ -40,7 +40,10 @@
 				value="Login" action="#{identity.login}"
 				reRender="loginForm, topToolBarForm, rightTopToolBarGroup"
 				onclick="this.disabled=true" status="submitStatus"
-				oncomplete="#{not authenticator.loginAttemptedAndFailed ? 'Richfaces.hideModalPanel(\'loginPanel\');' : 'Richfaces.showModalPanel(\'loginPanel\');'}" />
+				oncomplete="#{not authenticator.loginAttemptedAndFailed ? 'Richfaces.hideModalPanel(\'loginPanel\');' : 'Richfaces.showModalPanel(\'loginPanel\');'}" >
+				<a4j:actionparam name="noUseSso" assignTo="#{authenticator.useSso}" 
+            value="false"/>
+            </a4j:commandButton>
 
 			<a4j:region>
 				<a4j:status id="submitStatus">
