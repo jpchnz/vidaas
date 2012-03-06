@@ -115,6 +115,11 @@ public class ProjectRoleServlet extends HttpServlet {
 			out.println(userRoles.isAllowedToEditProjectByRole(command));
 		}
 
+		command = request.getParameter("getOwnerRole");
+		if (command != null) {
+			out.println(userRoles.getOwnerRole());
+		}
+		
 		
 		command = request.getParameter("getRoles");
 		if (command != null) {
