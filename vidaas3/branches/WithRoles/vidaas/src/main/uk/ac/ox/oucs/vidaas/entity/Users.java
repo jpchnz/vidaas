@@ -46,7 +46,7 @@ public class Users implements java.io.Serializable {
 	private String department;
 	private String email;
 	private String firstName;
-	private String grp;
+	private String grp = "Oxford University";
 	private String lastName;
 	private String position;
 	private Set<UserDatabase> userDatabases = new HashSet<UserDatabase>(0);
