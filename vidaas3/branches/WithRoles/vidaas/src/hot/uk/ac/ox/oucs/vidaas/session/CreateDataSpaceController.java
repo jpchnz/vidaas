@@ -21,6 +21,9 @@ public class CreateDataSpaceController {
 		tempDataSpace.setCreationDate(creationDate);
 		tempDataSpace.setUsers(userMain);
 		tempDataSpace.setProject(parentProject);
+		tempDataSpace.setDatabaseBackupPolicy("daily");
+		tempDataSpace.setDatabaseSize(10);
+		tempDataSpace.setDatabaseExpandablePolicy("no");
 		String dataspacePersistString = dataspaceHome.persist();
 		log.info("dataspacePersistString {0}", dataspacePersistString);
 	}
