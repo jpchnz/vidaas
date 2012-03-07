@@ -24,7 +24,7 @@
 				
 				<h:outputLabel for="email">Email</h:outputLabel>
 				<h:inputText id="email" value="#{registration.email}"
-					required="true">
+					required="true" disabled="#{authenticator.useSso}">
 				</h:inputText>
 				<rich:message for="email" />
 				
@@ -41,12 +41,6 @@
 				<h:inputText id="position" value="#{registration.postion}"
 					required="false" />
 				<rich:message for="position" />
-
-				<h:outputLabel for="email">Email</h:outputLabel>
-				<h:inputText id="email" value="#{registration.email}"
-					required="true" disabled="#{authenticator.useSso}">
-				</h:inputText>
-				<rich:message for="email" />
 
 			</h:panelGrid>
 				<h:outputText value="#{registration.emailUniqueViolation}" styleClass="errorMessage"></h:outputText>		
