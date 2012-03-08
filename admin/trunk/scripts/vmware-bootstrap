@@ -4,6 +4,7 @@ if [ "x$1" = "xprecustomization" ]; then
   exit 0
 fi
 
+
 echo "Customization started `date`"
 
 #put your customization settings here
