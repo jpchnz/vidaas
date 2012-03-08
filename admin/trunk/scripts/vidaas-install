@@ -22,4 +22,14 @@ if ! apt-get -qqy install $default_packages ; then
   exit 1
 fi
 
+if [ -n "$debug_user" ] ; then
+  if ! id $debug_user 2>&1 > /dev/null ; then
+    echo "creating debug user..."
+    if ! adduser $debug_user --disabled-login --gecos "" ; then
+      echo "failed to create debug user $debug_user"
+      exit 1
+    fi
+  fi
+fi
+
 . $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/vidaas-${vidaas_node_type}node-install
