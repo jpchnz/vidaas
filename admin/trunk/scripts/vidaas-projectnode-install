@@ -60,8 +60,6 @@ fi
 
 echo "Stopping jboss..."
 service jboss51 stop
-#echo "Deleting old jboss installation..."
-#rm -rf $target_dir/jboss-5.1.0.GA
 
 if [ ! -f $target_dir/jboss/bin/run.sh ] ; then
   echo "Extracting jboss..."
