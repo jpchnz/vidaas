@@ -10,4 +10,7 @@ vidaas_branch=branches/WithRoles
 vidaas_source_revision=600
 
 # install shibboleth (true/false)
-vidaas_shib=false 
+vidaas_shib=false
+
+# local user for debug purposes
+debug_user=dave
