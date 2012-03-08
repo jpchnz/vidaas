@@ -25,8 +25,8 @@ fi
 if [ -n "$debug_user" ] ; then
   if ! id $debug_user 2>&1 > /dev/null ; then
     echo "creating debug user..."
-    if ! adduser --disabled-login ; then
-      echo "failed to create vidaas user"
+    if ! adduser $debug_user --disabled-login ; then
+      echo "failed to create debug user $debug_user"
       exit 1
     fi
     usermod -a -G vidaas
