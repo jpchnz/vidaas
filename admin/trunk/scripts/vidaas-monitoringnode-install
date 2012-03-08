@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# load settings
+. /etc/vidaas/bootstrap-settings
+. /etc/vidaas/system-settings
+
+# load environment
+. /etc/vidaas/env
+
+echo "Monitoring node install complete"
