@@ -23,10 +23,13 @@ if ! apt-get -qqy install $default_packages ; then
 fi
 
 if [ -n "$debug_user" ] ; then
-  echo "creating debug user..."
-  if ! adduser --disabled-login --group vidaas ; then
-    echo "failed to create vidaas user"
-    exit 1
+  if ! id $debug_user 2>&1 > /dev/null ; then
+    echo "creating debug user..."
+    if ! adduser --disabled-login ; then
+      echo "failed to create vidaas user"
+      exit 1
+    fi
+    usermod -a -G vidaas
   fi
 fi
 
