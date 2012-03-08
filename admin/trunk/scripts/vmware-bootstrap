@@ -4,7 +4,6 @@ if [ "x$1" = "xprecustomization" ]; then
   exit 0
 fi
 
-exec 2>&1 >> /var/log/customization.log
 echo "Customization started `date`"
 
 #put your customization settings here
