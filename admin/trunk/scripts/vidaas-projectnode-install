@@ -27,8 +27,14 @@ fi
 if ! id vidaas 2>&1 > /dev/null ; then
   echo "Creating vidaas system user"
   if ! adduser --system --home "$vidaas_home" --disabled-login --group vidaas --shell /bin/bash ; then
-    echo "failed to create vidaas user"
-    exit 1
+    echo "failed to create vidaas user" ; exit 1
+  fi
+fi
+
+# Add debug user to vidaas group
+if [ -n "$debug_user" ] ; then
+  if ! adduser $debug_user vidaas ; then
+    echo "Failed to add $debug_user to vidaas group" ; exit 1
   fi
 fi
 
