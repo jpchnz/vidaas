@@ -1,5 +1,9 @@
 # generate /etc/sudoers file
 
+if [ ! -e /usr/bin/sudo ] ; then
+  DEBIAN_FRONTEND=noninteractive apt-get -qqy install sudo
+fi
+
 # allow debug user to restart jboss
 if [ "$debug_user" == "true" ] ; then
 	cat > /etc/sudoers <<-EndOfFile
@@ -9,10 +13,7 @@ if [ "$debug_user" == "true" ] ; then
 	EndOfFile
 fi
 
-chmod 220 /etc/sudoers
-if [ ! -e /usr/bin/sudo ] ; then
-  DEBIAN_FRONTEND=noninteractive apt-get -qqy install sudo
-fi
+chmod 0440 /etc/sudoers
 
 #check syntax
 if ! visudo -c ; then
