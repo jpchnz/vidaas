@@ -24,7 +24,7 @@ if ! [ -e /etc/vidaas/cred_$role_name ] ; then
   fi
   credtmp=`pwgen -s 12 1 | tr -d '\n'`
   if [ ${#credtmp} -ne 12 ] ; then
-    echo "pwgen failed"
+    echo "pwgen failed" ; exit 1
   fi
   if ! echo -n $credtmp >> /etc/vidaas/cred_$role_name ; then
     echo "Failed to create cred file /etc/vidaas/cred_$role_name" ; exit 1
