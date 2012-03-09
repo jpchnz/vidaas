@@ -125,7 +125,7 @@ else
 fi
 
 # Create postgres database for vidaas app
-source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole sudamihAdmin sudamihtestdb
+source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole.sh sudamihAdmin sudamihtestdb
 
 if ! DEBIAN_FRONTEND=noninteractive apt-get -qqy install mysql-server ; then
   echo "mysql-server installation failed"
