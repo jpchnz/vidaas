@@ -19,14 +19,14 @@ if [ -n "$2" ] ; then
 fi
 
 if ! [ -e /etc/vidaas/cred_$role_name ] ; then
-  if ! touch /etc/vidaas/cred_$role_name && chmod 600 /etc/vidaas/cred_$role_name ; then
-    echo "Failed to create cred file /etc/vidaas/cred_$role_name" ; exit 1
-  fi
   credtmp=`pwgen -s 12 1 | tr -d '\n'`
   if [ ${#credtmp} -ne 12 ] ; then
     echo "pwgen failed" ; exit 1
   fi
-  if ! echo -n $credtmp >> /etc/vidaas/cred_$role_name ; then
+  if ! touch /etc/vidaas/cred_$role_name && chmod 600 /etc/vidaas/cred_$role_name ; then
+    echo "Failed to create cred file /etc/vidaas/cred_$role_name" ; exit 1
+  fi
+  if ! echo -n $credtmp > /etc/vidaas/cred_$role_name ; then
     echo "Failed to create cred file /etc/vidaas/cred_$role_name" ; exit 1
   fi
   if ! su -p -c "psql -c \"CREATE ROLE \\\"$role_name\\\" ENCRYPTED PASSWORD '$credtmp' SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;\"" postgres ; then
