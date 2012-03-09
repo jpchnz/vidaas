@@ -200,7 +200,7 @@ rm -rf $JBOSS_HOME/server/default/deploy/vidaas.war
 if ! su -c "cp -r ~/`basename $vidaas_branch`/vidaas/target/vidaas $JBOSS_HOME/server/default/deploy/vidaas.war" vidaas ; then
   echo "Deployment to appserver failed" ; exit 1
 fi
-if [ -n "$debug_user ] ; then
+if [ -n "$debug_user" ] ; then
   chown -R $debug_user $JBOSS_HOME/server/default/deploy/vidaas.war
 fi
 
