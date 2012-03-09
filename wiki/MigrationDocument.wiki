@@ -13,4 +13,6 @@ Following are different frameworks and technologies used for VIDaaS
   * RichFaces 3.3.3.Final (release date: 06-04-2010)
   * Java Server Faces 1.2 (release date: 01-03-2011)
 
-Oracle released major update of their Java Enterprise Editions 6 specifications in December 2009. These were specifications and open source community and other vendors were supposed to implement these specifications. Major implementations of JEE 6 specifications by various open source communities and vendors were only available from mid 2011. JBoss 7.0 is compliant to JEE 6 specifications and was released on 17-08-2011
+Oracle released major update of their Java Enterprise Editions 6 specifications in December 2009. These were specifications and open source community and other vendors were supposed to implement these specifications. Major implementations of JEE 6 specifications by various open source communities and vendors were only available from mid 2011. JBoss 7.0 is compliant to JEE 6 specifications and was released on 17-08-2011.
+
+Due to major changes in JEE 6, frameworks and technologies used in VIDaaS applications are not compatible with the latest specifications. The migration of VIDaaS from JBoss 5.1 to JBoss 7.x requires update of underlying frameworks and technologies which itself results in major re-engineering of the whole application. 
