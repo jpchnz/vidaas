@@ -2,13 +2,12 @@
 
 = Migration from VIDaaS to ORDS =
 
-The purpose of this document is to give rough estimate to migrate existing VIDaaS application running on JBoss 5.2 to ORDS running on JBoss 7.1.
+The purpose of this document is to give rough estimate to migrate existing VIDaaS application running on JBoss 5.1 to ORDS running on JBoss 7.1. The migration to the latest server is not straight forward exercise due to recent changes in various underlying technologies. 
 
 
+= Details of Existing Technologies Used =
 
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+Following are the technologies used for VIDaaS
+  * JBoss 5.1 (release date: 23-05-2009)
+  * JBoss Seam 2.2 (release date: 27.04.2011)
+  * RichFaces 3.3.3.Final (release date: 06-04-2010)
