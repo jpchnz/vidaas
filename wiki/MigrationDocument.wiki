@@ -7,7 +7,10 @@ The purpose of this document is to give rough estimate to migrate existing VIDaa
 
 = Details of Existing Technologies Used =
 
-Following are the technologies used for VIDaaS
+Following are different frameworks and technologies used for VIDaaS
   * JBoss 5.1 (release date: 23-05-2009)
   * JBoss Seam 2.2 (release date: 27.04.2011)
   * RichFaces 3.3.3.Final (release date: 06-04-2010)
+  * Java Server Faces 1.2 (release date: 01-03-2011)
+
+Oracle released major update of their Java Enterprise Editions 6 specifications in December 2009. These were specifications and open source community and other vendors were supposed to implement these specifications. Major implementations of JEE 6 specifications by various open source communities and vendors were only available from mid 2011. JBoss 7.0 is compliant to JEE 6 specifications and was released on 17-08-2011
