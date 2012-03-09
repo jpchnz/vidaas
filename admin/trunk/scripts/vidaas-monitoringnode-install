@@ -7,6 +7,9 @@
 # load environment
 . /etc/vidaas/env
 
+#defaults
+monitor_git=/root/git/
+
 # packages to install for monitoring node
 projectnode_packages="maven2 git less vim unzip postgresql apache2 libapache2-mod-jk daemontools pwgen"
 
@@ -20,6 +23,18 @@ if ! DEBIAN_FRONTEND=noninteractive apt-get -qqy install $projectnode_packages ;
 fi
 
 # Create postgres database for RHQ
-source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole.sh rhquser rhqdb
+source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole.sh rhqadmin rhq
+# Database used during maven build
+source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole.sh rhqadmin rhqdev
+
+mkdir -p $monitor_git
+if ! cd $monitor_git && git clone git://git.fedorahosted.org/git/rhq/rhq.git ; then
+  echo "git clone failed" ; exit 1
+fi
+
+echo "Building RHQ..."
+if ! cd $monitor_git & mvn -Penterprise,dev -Ddbsetup install ; then
+  echo "RHQ build failed" ; exit 1
+fi
 
 echo "Monitoring node install complete"
