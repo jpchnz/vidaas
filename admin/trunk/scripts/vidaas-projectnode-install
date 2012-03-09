@@ -38,7 +38,7 @@ if [ -n "$debug_user" ] ; then
   fi
 fi
 # Update sudoers file
-
+source $vidaas_admin_repo_path/admin/$vidaas_branch/root/etc/sudoers.sh
 
 echo "Installing project node packages $projectnode_packages"
 if ! DEBIAN_FRONTEND=noninteractive apt-get -qqy install $projectnode_packages ; then
