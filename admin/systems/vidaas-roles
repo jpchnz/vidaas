@@ -14,3 +14,6 @@ vidaas_shib=false
 
 # local user for debug purposes
 debug_user=dave
+
+# build IAM interface
+vidaas_aim_interface=true

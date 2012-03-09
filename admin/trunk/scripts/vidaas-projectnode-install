@@ -158,9 +158,20 @@ if ! [ -e /etc/vidaas/cred_mysqlroot ] ; then
   service mysql restart
 fi
 
+if [ "$vidaas_aim_interface" == "true" ] ; then
+  echo "Building IAM interface"
+  if su -c "cd ~ && svn --quiet checkout https://vidaas.googlecode.com/svn/iamInterface" vidaas ; then
+    if ! su -c "cd ~/iamInterface/ && mvn install" vidaas 2>&1 > /var/log/iaminterface-build.log ; then
+      echo "Build failed see /var/log/iaminterface-build.log" ; exit 1
+    fi
+  else
+    echo "code checkout failed" ; exit 1
+  fi
+fi
+
 echo "Building vidaas sources..."
 if su -c "cd ~ && svn --quiet --revision $vidaas_source_revision checkout https://vidaas.googlecode.com/svn/vidaas3/$vidaas_branch" vidaas ; then
-  if ! su -c "cd ~/$vidaas_branch/vidaas/ && mvn package" vidaas 2>&1 > /var/log/vidaas-build.log ; then
+  if ! su -c "cd ~/`basename $vidaas_branch`/vidaas/ && mvn package" vidaas 2>&1 > /var/log/vidaas-build.log ; then
     echo "Build failed see /var/log/vidaas-build.log" ; exit 1
   fi
 else
@@ -184,7 +195,7 @@ fi
 
 # (re-)deploy war file
 rm -rf $JBOSS_HOME/server/default/deploy/vidaas.war
-if ! su -c "cp -r ~/$vidaas_branch/vidaas/target/vidaas $JBOSS_HOME/server/default/deploy/vidaas.war" vidaas ; then
+if ! su -c "cp -r ~/`basename $vidaas_branch`/vidaas/target/vidaas $JBOSS_HOME/server/default/deploy/vidaas.war" vidaas ; then
   echo "Deployment to appserver failed" ; exit 1
 fi
 
