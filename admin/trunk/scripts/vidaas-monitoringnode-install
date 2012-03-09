@@ -19,4 +19,7 @@ if ! DEBIAN_FRONTEND=noninteractive apt-get -qqy install $projectnode_packages ;
   exit 1
 fi
 
+# Create postgres database for RHQ
+source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole.sh rhquser rhqdb
+
 echo "Monitoring node install complete"
