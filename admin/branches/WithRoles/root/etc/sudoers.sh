@@ -5,7 +5,7 @@ if [ ! -e /usr/bin/sudo ] ; then
 fi
 
 # allow debug user to restart jboss
-if [ "$debug_user" == "true" ] ; then
+if [ -n "$debug_user" ] ; then
 	cat > /etc/sudoers <<-EndOfFile
 	User_Alias      VIDAAS_DEV = $debug_user
 	Cmnd_Alias      JBOSS51 = /etc/init.d/jboss51
