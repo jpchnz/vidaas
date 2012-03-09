@@ -124,22 +124,8 @@ else
   echo "Seam extraction failed." ; exit 1
 fi
 
-if ! [ -e /etc/vidaas/cred_sudamihAdmin ] ; then
-  if ! touch /etc/vidaas/cred_sudamihAdmin && chmod 600 /etc/vidaas/cred_sudamihAdmin ; then
-    echo "Failed to create cred file /etc/vidaas/cred_sudamihAdmin" ; exit 1
-  fi
-  if ! pwgen -s 12 1 | tr -d '\n' >> /etc/vidaas/cred_sudamihAdmin ; then
-    echo "Failed to create cred file /etc/vidaas/cred_sudamihAdmin" ; exit 1
-  fi
-  if ! su -p -c "psql -c \"CREATE ROLE \\\"sudamihAdmin\\\" ENCRYPTED PASSWORD '`cat /etc/vidaas/cred_sudamihAdmin`' SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;\"" postgres ; then
-    echo "failed to create sudamihAdmin postgres role" ; exit 1
-  fi
-  echo "creating database..."
-  if ! su -p -c "createdb -T template0 -O sudamihAdmin -E UTF8 sudamihtestdb" postgres ; then
-    echo "failed to create postgres database"
-    exit 1
-  fi
-fi
+# Create postgres database for vidaas app
+source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole sudamihAdmin sudamihtestdb
 
 if ! DEBIAN_FRONTEND=noninteractive apt-get -qqy install mysql-server ; then
   echo "mysql-server installation failed"
