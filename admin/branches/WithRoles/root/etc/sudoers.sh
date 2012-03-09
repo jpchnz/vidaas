@@ -11,5 +11,10 @@ fi
 
 chmod 220 /etc/sudoers
 if [ ! -e /usr/bin/sudo ] ; then
-  apt-get install sudo
+  DEBIAN_FRONTEND=noninteractive apt-get -qqy install sudo
+fi
+
+#check syntax
+if ! visudo -c ; then
+  echo "sudoers syntax check failed" ; exit 1
 fi
