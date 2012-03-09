@@ -32,7 +32,7 @@ if ! [ -e /etc/vidaas/cred_$role_name ] ; then
   if ! su -p -c "psql -c \"CREATE ROLE \\\"$role_name\\\" ENCRYPTED PASSWORD '$credtmp' SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;\"" postgres ; then
     echo "failed to create $role_name postgres role" ; exit 1
   fi
-  credtmp = "12345678901234567890"
+  credtmp="12345678901234567890"
   if [ -n "$database_name" ] ; then
     echo "creating database..."
     if ! su -p -c "createdb -T template0 -O $role_name -E UTF8 $database_name" postgres ; then
