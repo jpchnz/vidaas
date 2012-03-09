@@ -28,12 +28,18 @@ source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-crea
 source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole.sh rhqadmin rhqdev
 
 mkdir -p $monitor_git
-if ! cd $monitor_git && git clone git://git.fedorahosted.org/git/rhq/rhq.git ; then
+if cd $monitor_git && git clone git://git.fedorahosted.org/git/rhq/rhq.git ; then
+  if cd $monitor_git/rhq/ && mvn -Penterprise,dev -Ddbsetup install ; then
+    echo "build complete"
+  else
+    echo "RHQ build failed" ; exit 1
+  fi
+else
   echo "git clone failed" ; exit 1
 fi
 
 echo "Building RHQ..."
-if ! cd $monitor_git & mvn -Penterprise,dev -Ddbsetup install ; then
+
   echo "RHQ build failed" ; exit 1
 fi
 
