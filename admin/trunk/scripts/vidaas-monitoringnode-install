@@ -7,4 +7,16 @@
 # load environment
 . /etc/vidaas/env
 
+# packages to install for monitoring node
+projectnode_packages="maven2 less vim unzip postgresql apache2 libapache2-mod-jk daemontools"
+
+# install openjdk
+source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/openjdk.sh
+
+echo "Installing project node packages $projectnode_packages"
+if ! DEBIAN_FRONTEND=noninteractive apt-get -qqy install $projectnode_packages ; then
+  echo "failed to install required packages"
+  exit 1
+fi
+
 echo "Monitoring node install complete"
