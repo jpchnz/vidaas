@@ -2,6 +2,7 @@
 
 = Migration from VIDaaS to ORDS =
 
+The purpose of this document is to give rough estimate to migrate existing VIDaaS application running on JBoss 5.2 to ORDS running on JBoss 7.1.
 
 
 
