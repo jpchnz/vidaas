@@ -13,7 +13,7 @@ if [ "$debug_user" == "true" ] ; then
 	EndOfFile
 fi
 
-chmod 220 /etc/sudoers
+chmod 0440 /etc/sudoers
 
 #check syntax
 if ! visudo -c ; then
