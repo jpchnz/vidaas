@@ -11,7 +11,7 @@
 monitor_git=/root/git/
 
 # as recommended http://rhq-project.org/display/RHQ/Building+RHQ
-MAVEN_OPTS=-Xms256M -Xmx768M -XX:PermSize=128M -XX:MaxPermSize=256M
+export MAVEN_OPTS=-Xms256M -Xmx768M -XX:PermSize=128M -XX:MaxPermSize=256M
 
 # packages to install for monitoring node
 projectnode_packages="maven2 git less vim unzip postgresql apache2 libapache2-mod-jk daemontools pwgen"
