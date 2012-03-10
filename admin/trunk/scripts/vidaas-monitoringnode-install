@@ -25,10 +25,12 @@ fi
 # Create postgres database for RHQ
 source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole.sh rhqadmin rhq
 # Database used during maven build
-source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole.sh rhqadmin rhqdev
+source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole.sh rhqadmindev rhqdev
+source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole.sh rhqadmintest rhqtest
 
 mkdir -p $monitor_git
 if cd $monitor_git && git clone git://git.fedorahosted.org/git/rhq/rhq.git ; then
+  source $vidaas_admin_repo_path/admin/$vidaas_branch/services/rhq/settings.xml.sh > $monitor_git/rhq/etc/m2/settings.xml
   if cd $monitor_git/rhq/ && mvn -Penterprise,dev -Ddbsetup install ; then
     echo "build complete"
   else
