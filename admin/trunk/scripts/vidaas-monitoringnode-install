@@ -38,7 +38,7 @@ if ! [ -d $monitor_git ] ; then
 fi
 if cd $monitor_git/rhq && git pull ; then
   source $vidaas_admin_repo_path/admin/$vidaas_branch/services/rhq/settings.xml.sh > ~/settings.xml
-  if cd $monitor_git/rhq/ && mvn -Penterprise,dev -Ddbsetup -s ~/settings.xml install ; then
+  if cd $monitor_git/rhq/ && mvn -Penterprise,dist,prod -Ddbsetup -Dmaven.test.skip=true -s ~/settings.xml install ; then
     echo "build complete"
   else
     echo "RHQ build failed" ; exit 1
