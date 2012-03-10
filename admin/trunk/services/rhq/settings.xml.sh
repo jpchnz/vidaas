@@ -1,3 +1,7 @@
+#!/bin/bash
+#
+
+cat <<EndOfFile
 <?xml version="1.0"?>
 
 <!--===== a sample Maven 2 user settings file for the RHQ build =====-->
@@ -9,11 +13,6 @@
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
                               http://maven.apache.org/xsd/settings-1.0.0.xsd">
 
-   <!-- The below line can be uncommented if you want your local repo to be in
-        a more convenient location under Windows. -->
-   <!--<localRepository>C:\.m2-repo</localRepository>-->
-
-
    <!--**************************** PROFILES ****************************-->
 
    <!-- See: http://maven.apache.org/guides/introduction/introduction-to-profiles.html
@@ -24,19 +23,18 @@
       <activeProfile>overrides</activeProfile>
 
       <!-- The 'dev' profile enables automatic copying of artifacts to a dev RHQ container. -->
-      <activeProfile>dev</activeProfile>
+      <!--<activeProfile>dev</activeProfile>-->
 
       <!-- The 'check-java-api' profile can be used to build RHQ using JDK6, while still enforcing that
            only Java 5 APIs are used - see the 'check-java-api' profile block below. -->
       <!--<activeProfile>check-java-api</activeProfile>-->
 
       <!-- The 'dist' profile is for release builds and enables things such as JSP precompilation. -->
-      <!--<activeProfile>dist</activeProfile>-->
+      <activeProfile>dist</activeProfile>
 
       <!-- Profiles to configure database connection settings. Use separate profiles for
            Postgres and Oracle to allow easily switching back and forth between them. -->
       <activeProfile>postgres</activeProfile>
-      <!--<activeProfile>oracle</activeProfile>-->
    </activeProfiles>
 
    <profiles>
@@ -105,140 +103,33 @@
       <profile>
          <id>postgres</id>
          <properties>
-            <rhq.test.ds.connection-url>jdbc:postgresql://127.0.0.1:5432/rhq</rhq.test.ds.connection-url>
-            <rhq.test.ds.user-name>rhqadmin</rhq.test.ds.user-name>
-            <rhq.test.ds.password>rhqadmin</rhq.test.ds.password>
+            <rhq.test.ds.connection-url>jdbc:postgresql://127.0.0.1:5432/rhqtest</rhq.test.ds.connection-url>
+            <rhq.test.ds.user-name>rhqadmintest</rhq.test.ds.user-name>
+            <rhq.test.ds.password>`cat /etc/vidaas/cred_rhqadmintest`</rhq.test.ds.password>
             <rhq.test.ds.type-mapping>PostgreSQL</rhq.test.ds.type-mapping>
             <rhq.test.ds.driver-class>org.postgresql.Driver</rhq.test.ds.driver-class>
             <rhq.test.ds.xa-datasource-class>org.postgresql.xa.PGXADataSource</rhq.test.ds.xa-datasource-class>
             <rhq.test.ds.server-name>127.0.0.1</rhq.test.ds.server-name>
             <rhq.test.ds.port>5432</rhq.test.ds.port>
-            <rhq.test.ds.db-name>rhq</rhq.test.ds.db-name>
+            <rhq.test.ds.db-name>rhqtest</rhq.test.ds.db-name>
             <rhq.test.ds.hibernate-dialect>org.hibernate.dialect.PostgreSQLDialect</rhq.test.ds.hibernate-dialect>
             <!-- quartz properties -->
             <rhq.test.quartz.driverDelegateClass>org.quartz.impl.jdbcjobstore.PostgreSQLDelegate</rhq.test.quartz.driverDelegateClass>
             <rhq.test.quartz.selectWithLockSQL>SELECT * FROM {0}LOCKS ROWLOCK WHERE LOCK_NAME = ? FOR UPDATE</rhq.test.quartz.selectWithLockSQL>
             <rhq.test.quartz.lockHandlerClass>org.quartz.impl.jdbcjobstore.StdRowLockSemaphore</rhq.test.quartz.lockHandlerClass>
             
-            <rhq.dev.ds.connection-url>jdbc:postgresql://127.0.0.1:5432/rhq</rhq.dev.ds.connection-url>
-            <rhq.dev.ds.user-name>rhqadmin</rhq.dev.ds.user-name>
-            <rhq.dev.ds.password>rhqadmin</rhq.dev.ds.password>
+            <rhq.dev.ds.connection-url>jdbc:postgresql://127.0.0.1:5432/rhqdev</rhq.dev.ds.connection-url>
+            <rhq.dev.ds.user-name>rhqadmindev</rhq.dev.ds.user-name>
+            <rhq.dev.ds.password>`cat /etc/vidaas/cred_rhqadmindev`</rhq.dev.ds.password>
             <rhq.dev.ds.type-mapping>PostgreSQL</rhq.dev.ds.type-mapping>
             <rhq.dev.ds.driver-class>org.postgresql.Driver</rhq.dev.ds.driver-class>
             <rhq.dev.ds.xa-datasource-class>org.postgresql.xa.PGXADataSource</rhq.dev.ds.xa-datasource-class>
             <rhq.dev.ds.server-name>127.0.0.1</rhq.dev.ds.server-name>
             <rhq.dev.ds.port>5432</rhq.dev.ds.port>
-            <rhq.dev.ds.db-name>rhq</rhq.dev.ds.db-name>
+            <rhq.dev.ds.db-name>rhqdev</rhq.dev.ds.db-name>
             <rhq.dev.ds.hibernate-dialect>org.hibernate.dialect.PostgreSQLDialect</rhq.dev.ds.hibernate-dialect>
             <!-- quartz properties -->
             <rhq.dev.quartz.driverDelegateClass>org.quartz.impl.jdbcjobstore.PostgreSQLDelegate</rhq.dev.quartz.driverDelegateClass>
-            <rhq.dev.quartz.selectWithLockSQL>SELECT * FROM {0}LOCKS ROWLOCK WHERE LOCK_NAME = ? FOR UPDATE</rhq.dev.quartz.selectWithLockSQL>
-            <rhq.dev.quartz.lockHandlerClass>org.quartz.impl.jdbcjobstore.StdRowLockSemaphore</rhq.dev.quartz.lockHandlerClass>
-         </properties>
-      </profile>
-
-      <profile>
-         <id>h2</id>
-         <properties>
-            <rhq.test.ds.driver-class>org.h2.Driver</rhq.test.ds.driver-class>
-            <rhq.test.ds.connection-url>jdbc:h2:~/rhq;MVCC=TRUE;DB_CLOSE_ON_EXIT=FALSE;LOG=2</rhq.test.ds.connection-url>
-            <rhq.test.ds.user-name>rhqadmin</rhq.test.ds.user-name>
-            <rhq.test.ds.password>rhqadmin</rhq.test.ds.password>
-            <rhq.test.ds.type-mapping>h2</rhq.test.ds.type-mapping>
-            <rhq.test.ds.xa-datasource-class>org.h2.jdbcx.JdbcDataSource</rhq.test.ds.xa-datasource-class>
-            <rhq.test.ds.server-name>127.0.0.1</rhq.test.ds.server-name>
-            <rhq.test.ds.port>9092</rhq.test.ds.port>
-            <rhq.test.ds.db-name>rhq</rhq.test.ds.db-name>
-            <!-- This custom dialect is required for proper operation using H2, see class JavaDoc for more info -->
-            <rhq.test.ds.hibernate-dialect>org.rhq.core.server.H2CustomDialect</rhq.test.ds.hibernate-dialect>
-            <!-- quartz properties -->
-            <rhq.test.quartz.driverDelegateClass>org.quartz.impl.jdbcjobstore.StdJDBCDelegate</rhq.test.quartz.driverDelegateClass>
-            <rhq.test.quartz.selectWithLockSQL>SELECT * FROM {0}LOCKS ROWLOCK WHERE LOCK_NAME = ? FOR UPDATE</rhq.test.quartz.selectWithLockSQL>
-            <rhq.test.quartz.lockHandlerClass>org.quartz.impl.jdbcjobstore.StdRowLockSemaphore</rhq.test.quartz.lockHandlerClass>
-            
-            <rhq.dev.ds.driver-class>org.h2.Driver</rhq.dev.ds.driver-class>
-            <rhq.dev.ds.connection-url>jdbc:h2:~/rhq;MVCC=TRUE;DB_CLOSE_ON_EXIT=FALSE;LOG=2</rhq.dev.ds.connection-url>
-            <rhq.dev.ds.user-name>rhqadmin</rhq.dev.ds.user-name>
-            <rhq.dev.ds.password>rhqadmin</rhq.dev.ds.password>
-            <rhq.dev.ds.type-mapping>h2</rhq.dev.ds.type-mapping>
-            <rhq.dev.ds.xa-datasource-class>org.h2.jdbcx.JdbcDataSource</rhq.dev.ds.xa-datasource-class>
-            <rhq.dev.ds.server-name>127.0.0.1</rhq.dev.ds.server-name>
-            <rhq.dev.ds.port>9092</rhq.dev.ds.port>
-            <rhq.dev.ds.db-name>rhq</rhq.dev.ds.db-name>
-            <!-- This custom dialect is required for proper operation using H2, see class JavaDoc for more info -->
-            <rhq.dev.ds.hibernate-dialect>org.rhq.core.server.H2CustomDialect</rhq.dev.ds.hibernate-dialect>
-            <!-- quartz properties -->
-            <rhq.dev.quartz.driverDelegateClass>org.quartz.impl.jdbcjobstore.StdJDBCDelegate</rhq.dev.quartz.driverDelegateClass>
-            <rhq.dev.quartz.selectWithLockSQL>SELECT * FROM {0}LOCKS ROWLOCK WHERE LOCK_NAME = ? FOR UPDATE</rhq.dev.quartz.selectWithLockSQL>
-            <rhq.dev.quartz.lockHandlerClass>org.quartz.impl.jdbcjobstore.StdRowLockSemaphore</rhq.dev.quartz.lockHandlerClass>
-         </properties>
-      </profile>
-
-      <profile>
-         <id>sqlserver</id>
-         <properties>
-            <rhq.test.ds.driver-class>net.sourceforge.jtds.jdbc.Driver</rhq.test.ds.driver-class>
-            <rhq.test.ds.connection-url>jdbc:jtds:sqlserver://localhost:1433;databaseName=rhq</rhq.test.ds.connection-url>
-            <rhq.test.ds.user-name>rhqadmin</rhq.test.ds.user-name>
-            <rhq.test.ds.password>rhqadmin</rhq.test.ds.password>
-            <rhq.test.ds.type-mapping>sqlserver</rhq.test.ds.type-mapping>
-            <rhq.test.ds.xa-datasource-class>net.sourceforge.jtds.jdbcx.JtdsDataSource</rhq.test.ds.xa-datasource-class>
-            <rhq.test.ds.server-name>localhost</rhq.test.ds.server-name>
-            <rhq.test.ds.port>1433</rhq.test.ds.port>
-            <rhq.test.ds.db-name>rhq</rhq.test.ds.db-name>
-            <rhq.test.ds.hibernate-dialect>org.hibernate.dialect.SQLServerDialect</rhq.test.ds.hibernate-dialect>
-            <!-- quartz properties -->
-            <rhq.test.quartz.driverDelegateClass>org.quartz.impl.jdbcjobstore.MSSQLDelegate</rhq.test.quartz.driverDelegateClass>
-            <rhq.test.quartz.selectWithLockSQL>UPDATE {0}LOCKS SET LOCK_NAME = LOCK_NAME WHERE LOCK_NAME = ?</rhq.test.quartz.selectWithLockSQL>
-            <rhq.test.quartz.lockHandlerClass>org.quartz.impl.jdbcjobstore.UpdateLockRowSemaphore</rhq.test.quartz.lockHandlerClass>
-            
-            <rhq.dev.ds.driver-class>net.sourceforge.jtds.jdbc.Driver</rhq.dev.ds.driver-class>
-            <rhq.dev.ds.connection-url>jdbc:jtds:sqlserver://localhost:1433;databaseName=rhq</rhq.dev.ds.connection-url>
-            <rhq.dev.ds.user-name>rhqadmin</rhq.dev.ds.user-name>
-            <rhq.dev.ds.password>rhqadmin</rhq.dev.ds.password>
-            <rhq.dev.ds.type-mapping>sqlserver</rhq.dev.ds.type-mapping>
-            <rhq.dev.ds.xa-datasource-class>net.sourceforge.jtds.jdbcx.JtdsDataSource</rhq.dev.ds.xa-datasource-class>
-            <rhq.dev.ds.server-name>localhost</rhq.dev.ds.server-name>
-            <rhq.dev.ds.port>1433</rhq.dev.ds.port>
-            <rhq.dev.ds.db-name>rhq</rhq.dev.ds.db-name>
-            <rhq.dev.ds.hibernate-dialect>org.hibernate.dialect.SQLServerDialect</rhq.dev.ds.hibernate-dialect>
-            <!-- quartz properties -->
-            <rhq.dev.quartz.driverDelegateClass>org.quartz.impl.jdbcjobstore.MSSQLDelegate</rhq.dev.quartz.driverDelegateClass>
-            <rhq.dev.quartz.selectWithLockSQL>UPDATE {0}LOCKS SET LOCK_NAME = LOCK_NAME WHERE LOCK_NAME = ?</rhq.dev.quartz.selectWithLockSQL>
-            <rhq.dev.quartz.lockHandlerClass>org.quartz.impl.jdbcjobstore.UpdateLockRowSemaphore</rhq.dev.quartz.lockHandlerClass>
-         </properties>
-      </profile>
-
-      <profile>
-         <id>oracle</id>
-         <properties>
-            <rhq.test.ds.connection-url>jdbc:oracle:thin:@127.0.0.1:1521:xe</rhq.test.ds.connection-url>
-            <rhq.test.ds.user-name>rhqadmin</rhq.test.ds.user-name>
-            <rhq.test.ds.password>rhqadmin</rhq.test.ds.password>
-            <rhq.test.ds.type-mapping>Oracle10g</rhq.test.ds.type-mapping>
-            <rhq.test.ds.driver-class>oracle.jdbc.driver.OracleDriver</rhq.test.ds.driver-class>
-            <rhq.test.ds.xa-datasource-class>oracle.jdbc.xa.client.OracleXADataSource</rhq.test.ds.xa-datasource-class>
-            <rhq.test.ds.server-name></rhq.test.ds.server-name> <!-- can be left blank, oracle does not use this -->
-            <rhq.test.ds.port></rhq.test.ds.port> <!-- can be left blank, oracle does not use this -->
-            <rhq.test.ds.db-name></rhq.test.ds.db-name> <!-- can be left blank, oracle does not use this -->
-            <rhq.test.ds.hibernate-dialect>org.hibernate.dialect.Oracle10gDialect</rhq.test.ds.hibernate-dialect>
-            <!-- quartz properties -->
-            <rhq.test.quartz.driverDelegateClass>org.quartz.impl.jdbcjobstore.oracle.OracleDelegate</rhq.test.quartz.driverDelegateClass>
-            <rhq.test.quartz.selectWithLockSQL>SELECT * FROM {0}LOCKS ROWLOCK WHERE LOCK_NAME = ? FOR UPDATE</rhq.test.quartz.selectWithLockSQL>
-            <rhq.test.quartz.lockHandlerClass>org.quartz.impl.jdbcjobstore.StdRowLockSemaphore</rhq.test.quartz.lockHandlerClass>
-            
-            <rhq.dev.ds.connection-url>jdbc:oracle:thin:@127.0.0.1:1521:xe</rhq.dev.ds.connection-url>
-            <rhq.dev.ds.user-name>rhqadmin</rhq.dev.ds.user-name>
-            <rhq.dev.ds.password>rhqadmin</rhq.dev.ds.password>
-            <rhq.dev.ds.type-mapping>Oracle10g</rhq.dev.ds.type-mapping>
-            <rhq.dev.ds.driver-class>oracle.jdbc.driver.OracleDriver</rhq.dev.ds.driver-class>
-            <rhq.dev.ds.xa-datasource-class>oracle.jdbc.xa.client.OracleXADataSource</rhq.dev.ds.xa-datasource-class>
-            <rhq.dev.ds.server-name></rhq.dev.ds.server-name> <!-- can be left blank, oracle does not use this -->
-            <rhq.dev.ds.port></rhq.dev.ds.port> <!-- can be left blank, oracle does not use this -->
-            <rhq.dev.ds.db-name></rhq.dev.ds.db-name> <!-- can be left blank, oracle does not use this -->
-            <rhq.dev.ds.hibernate-dialect>org.hibernate.dialect.Oracle10gDialect</rhq.dev.ds.hibernate-dialect>
-            <!-- quartz properties -->
-            <rhq.dev.quartz.driverDelegateClass>org.quartz.impl.jdbcjobstore.oracle.OracleDelegate</rhq.dev.quartz.driverDelegateClass>
             <rhq.dev.quartz.selectWithLockSQL>SELECT * FROM {0}LOCKS ROWLOCK WHERE LOCK_NAME = ? FOR UPDATE</rhq.dev.quartz.selectWithLockSQL>
             <rhq.dev.quartz.lockHandlerClass>org.quartz.impl.jdbcjobstore.StdRowLockSemaphore</rhq.dev.quartz.lockHandlerClass>
          </properties>
@@ -358,4 +249,4 @@
 -->
 
 </settings>
-
+EndOfFile
