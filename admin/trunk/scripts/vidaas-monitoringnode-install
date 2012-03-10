@@ -36,7 +36,7 @@ if ! [ -d $monitor_git ] ; then
     echo "git clone failed" ; exit 1
   fi
 fi
-if cd $monitor_git && git pull ; then
+if cd $monitor_git/rhq && git pull ; then
   source $vidaas_admin_repo_path/admin/$vidaas_branch/services/rhq/settings.xml.sh > $monitor_git/rhq/etc/m2/settings.xml
   if cd $monitor_git/rhq/ && mvn -Penterprise,dev -Ddbsetup install ; then
     echo "build complete"
