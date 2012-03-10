@@ -80,7 +80,7 @@ cat <<EndOfFile
             <repository>
                <id>ojdbc-repo</id>
                <name>M2 Repo containing OJDBC driver jar</name>
-               <url>${rhq.m2.repo.url.oracle}</url>
+               <url>\${rhq.m2.repo.url.oracle}</url>
             </repository>
 
          </repositories>
@@ -93,7 +93,7 @@ cat <<EndOfFile
             <pluginRepository>
                <id>ojdbc-repo</id>
                <name>M2 Repo containing OJDBC driver jar</name>
-               <url>${rhq.m2.repo.url.oracle}</url>
+               <url>\${rhq.m2.repo.url.oracle}</url>
             </pluginRepository>
 
          </pluginRepositories>
@@ -149,7 +149,7 @@ cat <<EndOfFile
          <id>dev</id>
          <properties>
             <!-- Set the below prop to the absolute path of your RHQ trunk dir (e.g. /home/bob/projects/rhq).
-                (${rhq.rootDir}/dev-container will be used as the dev container dir) -->
+                (\${rhq.rootDir}/dev-container will be used as the dev container dir) -->
             <rhq.rootDir>SET_ME</rhq.rootDir>
 
             <!-- Alternatively, if you don't want to use the default location of {rhq.rootDir}/dev-container/
