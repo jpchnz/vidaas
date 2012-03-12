@@ -1,0 +1,12 @@
+#summary ViDaaS MySQL database information
+
+= Introduction =
+
+Add your content here.
+
+
+= Get owners of data interfaces =
+
+{{{
+SELECT * from BAD_GUYS;
+}}}
