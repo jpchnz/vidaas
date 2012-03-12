@@ -10,3 +10,8 @@ Add your content here.
 {{{
 SELECT * from BAD_GUYS;
 }}}
+
+
+{{{
+select user.First_Name, user.Last_Name, dsp.Project_ID, dsp.WebApplicationName from users user, user_project up, project project, dataspace dsp, project_database pdb, web_application wap where wap.Web_ID = pdb.Web_ID and dsp.DataSpace_ID = pdb.DataSpace_ID and dsp.Project_ID = project.Project_ID and project.Project_ID = up.Project_ID and up.User_ID = user.User_ID;
+}}}
