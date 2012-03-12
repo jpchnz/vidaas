@@ -9,7 +9,7 @@ The purpose of this document is to give rough estimate to migrate existing VIDaa
 || Web tier || Java Server Faces 1.2, RichFaces 3.3.3.Final  || Java Server Faces 2.0, RichFaces 4.x || 3-4 weeks ||
 || Business tier || JBoss 5.1, JBoss Seam 2.2  || JBoss 7.1, JBoss Weld || 8 weeks ||
 || Backend tier ||  JBoss Seam 2.2, PostgreSQL (8/9), MySQL  || JBoss Seam 2.2, PostgreSQL (8/9), MySQL || 2 weeks ||
-|| Miscellaneous stuff ||  JavaScript  || JavaScript || 12 - 14 weeks ||
+|| Miscellaneous stuff (SQL Designer, Query Builder)||  JavaScript  || JavaScript || 12 - 14 weeks ||
 
 
 
