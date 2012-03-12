@@ -1,14 +1,15 @@
 #!/bin/bash
 
+# defaults
+monitor_git=/root/git/
+rhq_branch=release-4.3.0.GA
+
 # load settings
 . /etc/vidaas/bootstrap-settings
 . /etc/vidaas/system-settings
 
 # load environment
 . /etc/vidaas/env
-
-#defaults
-monitor_git=/root/git/
 
 # as recommended http://rhq-project.org/display/RHQ/Building+RHQ
 export MAVEN_OPTS="-Xms256M -Xmx1024M -XX:PermSize=128M -XX:MaxPermSize=256M"
@@ -39,7 +40,7 @@ if ! [ -d $monitor_git ] ; then
     echo "git clone failed" ; exit 1
   fi
 fi
-if cd $monitor_git/rhq && git pull ; then
+if cd $monitor_git/rhq && git checkout $rhq_branch ; then
   source $vidaas_admin_repo_path/admin/$vidaas_branch/services/rhq/settings.xml.sh > ~/settings.xml
   if cd $monitor_git/rhq/ && mvn -Penterprise,dist,prod -Ddbsetup -Dmaven.test.skip=true -s ~/settings.xml install ; then
     echo "build complete"
