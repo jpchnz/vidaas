@@ -10,7 +10,7 @@ The purpose of this document is to give rough estimate to migrate existing VIDaa
 || Business tier || JBoss 5.1, JBoss Seam 2.2  || JBoss 7.1, JBoss Weld || 8 weeks ||
 || Backend tier ||  JBoss Seam 2.2, PostgreSQL (8/9), MySQL  || JBoss Seam 2.2, PostgreSQL (8/9), MySQL || 2 weeks ||
 || Miscellaneous stuff (SQL Designer, Query Builder)||  JavaScript  || JavaScript || 12 - 14 weeks ||
-
+|| Repository (search metadata) ||  NA || ?? || ?? weeks ||
 
 
 = Details of Existing Technologies Used =
