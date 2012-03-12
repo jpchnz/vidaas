@@ -51,9 +51,35 @@ else
   echo "git clone failed" ; exit 1
 fi
 
-echo "Building RHQ..."
-
-  echo "RHQ build failed" ; exit 1
+# Create rhq user
+if ! id rhq 2>&1 > /dev/null ; then
+  echo "Creating rhq system user..."
+  if ! adduser --system --disabled-login --group rhq --shell /bin/bash ; then
+    echo "failed to create rhq user" ; exit 1
+  fi
 fi
+
+# Install build
+echo "Deleting old RHQ installation..."
+rm -rf /opt/rhq
+echo "Installing new RHQ build..."
+if ! cp -a $monitor_git/rhq/modules/enterprise/server/container/target/rhq-server-?\.?\.?/ /opt/rhq ] ; then
+  echo "Failed to install RHQ" ; exit 1
+fi
+# clean up intermediaries
+rm -r $monitor_git
+if [ ! chown -R rhq:rhq /opt/rhq ] ; then
+  echo "Failed to change owner of RHQ installation to rhq:rhq" ; exit 1
+fi
+
+#install startup script
+cp $vidaas_admin_repo_path/admin/$vidaas_branch/root/etc/init.d/rhq /etc/init.d/rhq
+chmod +x /etc/init.d/rhq
+if ! update-rc.d rhq defaults ; then
+  echo "failed to install rhq init script" ; exit 1
+fi
+
+echo "starting rhq..."
+service rhq start
 
 echo "Monitoring node install complete"
