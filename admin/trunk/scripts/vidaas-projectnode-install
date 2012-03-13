@@ -187,6 +187,7 @@ if ! su -c "cp -r ~/`basename $vidaas_branch`/vidaas/target/vidaas $JBOSS_HOME/s
 fi
 if [ -n "$debug_user" ] ; then
   chown -R $debug_user $JBOSS_HOME/server/default/deploy/vidaas.war
+  chmod 755 $JBOSS_HOME/server/default/deploy/
 fi
 
 if [ "$vidaas_designer" == "true" ] ; then
