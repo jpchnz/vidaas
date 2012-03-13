@@ -1,10 +1,85 @@
 #!/bin/bash
 
+# defaults
+monitor_git=/root/git/
+rhq_branch=release-4.3.0.GA
+
 # load settings
 . /etc/vidaas/bootstrap-settings
 . /etc/vidaas/system-settings
 
 # load environment
 . /etc/vidaas/env
+
+# as recommended http://rhq-project.org/display/RHQ/Building+RHQ
+export MAVEN_OPTS="-Xms256M -Xmx1024M -XX:PermSize=128M -XX:MaxPermSize=256M"
+
+# packages to install for monitoring node
+projectnode_packages="maven2 git less vim unzip postgresql apache2 libapache2-mod-jk daemontools pwgen"
+
+# install openjdk
+source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/openjdk.sh
+
+echo "Installing project node packages $projectnode_packages"
+if ! DEBIAN_FRONTEND=noninteractive apt-get -qqy install $projectnode_packages ; then
+  echo "failed to install required packages"
+  exit 1
+fi
+
+# Create postgres database for RHQ
+source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole.sh rhqadmin rhq
+# Database used during maven build
+source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole.sh rhqadmindev rhqdev
+source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole.sh rhqadmintest rhqtest
+
+if ! [ -d $monitor_git ] ; then
+  mkdir -p $monitor_git
+  if cd $monitor_git && git clone git://git.fedorahosted.org/git/rhq/rhq.git ; then
+    echo "git clone complete"
+  else
+    echo "git clone failed" ; exit 1
+  fi
+fi
+if cd $monitor_git/rhq && git checkout $rhq_branch ; then
+  source $vidaas_admin_repo_path/admin/$vidaas_branch/services/rhq/settings.xml.sh > ~/settings.xml
+  if cd $monitor_git/rhq/ && mvn -Penterprise,dist,prod -Dmaven.test.skip=true -s ~/settings.xml install ; then
+    echo "build complete"
+  else
+    echo "RHQ build failed" ; exit 1
+  fi
+else
+  echo "git clone failed" ; exit 1
+fi
+
+# Create rhq user
+if ! id rhq 2>&1 > /dev/null ; then
+  echo "Creating rhq system user..."
+  if ! adduser --system --disabled-login --group rhq --shell /bin/bash ; then
+    echo "failed to create rhq user" ; exit 1
+  fi
+fi
+
+# Install build
+echo "Deleting old RHQ installation..."
+rm -rf /opt/rhq
+echo "Installing new RHQ build..."
+if ! cp -a $monitor_git/rhq/modules/enterprise/server/container/target/rhq-server-?\.?\.?/ /opt/rhq ] ; then
+  echo "Failed to install RHQ" ; exit 1
+fi
+# clean up intermediaries
+rm -r $monitor_git
+if [ ! chown -R rhq:rhq /opt/rhq ] ; then
+  echo "Failed to change owner of RHQ installation to rhq:rhq" ; exit 1
+fi
+
+#install startup script
+cp $vidaas_admin_repo_path/admin/$vidaas_branch/root/etc/init.d/rhq /etc/init.d/rhq
+chmod +x /etc/init.d/rhq
+if ! update-rc.d rhq defaults ; then
+  echo "failed to install rhq init script" ; exit 1
+fi
+
+echo "starting rhq..."
+service rhq start
 
 echo "Monitoring node install complete"

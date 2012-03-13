@@ -16,14 +16,12 @@ vidaas_designer=false
 . /etc/vidaas/env
 
 # packages to install for project node
-projectnode_packages="maven2 less vim unzip postgresql libmysql-java libpg-java openjdk-6-jdk ant apache2 libapache2-mod-jk daemontools patch pwgen"
+projectnode_packages="maven2 less vim unzip postgresql libmysql-java libpg-java ant apache2 libapache2-mod-jk daemontools patch pwgen"
 
-# save env
-if [ -z "$JAVA_HOME" ] ; then
-  export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/
-  echo "export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/" >> /etc/vidaas/env
-fi
+# install openjdk
+source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/openjdk.sh
 
+# Create vidaas user
 if ! id vidaas 2>&1 > /dev/null ; then
   echo "Creating vidaas system user"
   if ! adduser --system --home "$vidaas_home" --disabled-login --group vidaas --shell /bin/bash ; then
@@ -37,6 +35,7 @@ if [ -n "$debug_user" ] ; then
     echo "Failed to add $debug_user to vidaas group" ; exit 1
   fi
 fi
+
 # Update sudoers file
 source $vidaas_admin_repo_path/admin/$vidaas_branch/root/etc/sudoers.sh
 
@@ -125,22 +124,8 @@ else
   echo "Seam extraction failed." ; exit 1
 fi
 
-if ! [ -e /etc/vidaas/cred_sudamihAdmin ] ; then
-  if ! touch /etc/vidaas/cred_sudamihAdmin && chmod 600 /etc/vidaas/cred_sudamihAdmin ; then
-    echo "Failed to create cred file /etc/vidaas/cred_sudamihAdmin" ; exit 1
-  fi
-  if ! pwgen -s 12 1 | tr -d '\n' >> /etc/vidaas/cred_sudamihAdmin ; then
-    echo "Failed to create cred file /etc/vidaas/cred_sudamihAdmin" ; exit 1
-  fi
-  if ! su -p -c "psql -c \"CREATE ROLE \\\"sudamihAdmin\\\" ENCRYPTED PASSWORD '`cat /etc/vidaas/cred_sudamihAdmin`' SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;\"" postgres ; then
-    echo "failed to create sudamihAdmin postgres role" ; exit 1
-  fi
-  echo "creating database..."
-  if ! su -p -c "createdb -T template0 -O sudamihAdmin -E UTF8 sudamihtestdb" postgres ; then
-    echo "failed to create postgres database"
-    exit 1
-  fi
-fi
+# Create postgres database for vidaas app
+source $vidaas_admin_repo_path/admin/$vidaas_branch/scripts/shared/postgres-createrole.sh sudamihAdmin sudamihtestdb
 
 if ! DEBIAN_FRONTEND=noninteractive apt-get -qqy install mysql-server ; then
   echo "mysql-server installation failed"
@@ -202,6 +187,7 @@ if ! su -c "cp -r ~/`basename $vidaas_branch`/vidaas/target/vidaas $JBOSS_HOME/s
 fi
 if [ -n "$debug_user" ] ; then
   chown -R $debug_user $JBOSS_HOME/server/default/deploy/vidaas.war
+  chmod 755 $JBOSS_HOME/server/default/deploy/
 fi
 
 if [ "$vidaas_designer" == "true" ] ; then
