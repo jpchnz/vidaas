@@ -1,13 +1,14 @@
 package uk.ac.ox.oucs.iam.interfaces.roles;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class ProjectAuthentication  {
 	private RolePoster rolePoster;
 
-	public ProjectAuthentication(URL url) {
-		rolePoster = new RolePoster(url);
+	public ProjectAuthentication() throws MalformedURLException {
+		rolePoster = RolePoster.getInstance();
 	}
 
 

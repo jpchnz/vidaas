@@ -32,20 +32,15 @@ public class IAMRoleManager {
 	 * @throws MalformedURLException 
 	 */
 	private IAMRoleManager() throws MalformedURLException {
-		init(new URL(SystemVars.ADDRESS_OF_IAM_WEBAPP));
+		init();
 	}
-	private IAMRoleManager(String urlString) throws MalformedURLException {
-		init(new URL(urlString));
-	}
-	private IAMRoleManager(URL url) throws Exception {
-		init(url);
-	}
+
 	
-	private void init(URL url) {
-		rolePoster = new RolePoster(url);
-		databaseAuthentication = new DatabaseAuthentication(url);
-		webAppAuthentication = new WebAppAuthentication(url);
-		projectAuthentication = new ProjectAuthentication(url);
+	private void init() throws MalformedURLException {
+		rolePoster = RolePoster.getInstance();
+		databaseAuthentication = new DatabaseAuthentication();
+		webAppAuthentication = new WebAppAuthentication();
+		projectAuthentication = new ProjectAuthentication();
 	}
 	
 	
