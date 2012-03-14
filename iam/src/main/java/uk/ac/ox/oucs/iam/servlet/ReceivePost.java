@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import uk.ac.ox.oucs.iam.audit.IamAudit;
+import uk.ac.ox.oucs.iam.interfaces.security.ReceivePostedData;
 import uk.ac.ox.oucs.iam.interfaces.security.SignatureGenerator;
 import uk.ac.ox.oucs.iam.interfaces.security.SignatureVerifier;
 import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
@@ -25,8 +26,6 @@ public class ReceivePost extends HttpServlet {
 	public String keyDir;
 	private SecurePostData securePostData;
 	private List<SecurePostData> securePostDataList = new ArrayList<SecurePostData>();
-	public static final String REQUEST_DATA_CODE = "requestCurrent=data";
-	public static final String REQUEST_DATA_CODE_DONT_CLEAR_STACK = "requestCurrent=dataNoClear";
 	private boolean clearStack;
 	private IamAudit auditer = new IamAudit();
 	private boolean dontAcceptGet = false; // Set this to true if HTTP GET
@@ -198,13 +197,13 @@ public class ReceivePost extends HttpServlet {
 					 * reset
 					 */
 					String dataRequestor = data + "=" + request.getParameter(data);
-					if (dataRequestor.compareTo(REQUEST_DATA_CODE) == 0) {
+					if (dataRequestor.compareTo(ReceivePostedData.REQUEST_DATA_CODE) == 0) {
 						auditer.auditAlways("Request to gather all data");
 						clearStack = true;
 						manipulateSecurePostDataList(null);
 						return;
 					}
-					if (dataRequestor.compareTo(REQUEST_DATA_CODE_DONT_CLEAR_STACK) == 0) {
+					if (dataRequestor.compareTo(ReceivePostedData.REQUEST_DATA_CODE_DONT_CLEAR_STACK) == 0) {
 						auditer.auditAlways("Request to gather all data");
 						clearStack = false;
 						manipulateSecurePostDataList(null);

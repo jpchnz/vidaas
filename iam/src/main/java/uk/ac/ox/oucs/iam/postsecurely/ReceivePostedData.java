@@ -8,7 +8,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-import uk.ac.ox.oucs.iam.servlet.ReceivePost;
 import uk.ac.ox.oucs.iam.servlet.SecurePostData;
 
 
@@ -19,7 +18,7 @@ public class ReceivePostedData {
 		connection.setDoOutput(true);
 		OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
 		
-		out.write(ReceivePost.REQUEST_DATA_CODE);
+		out.write(uk.ac.ox.oucs.iam.interfaces.security.ReceivePostedData.REQUEST_DATA_CODE);
 
 		out.flush();
 		out.close();
