@@ -2,11 +2,39 @@
 
 = Introduction =
 
-Setup
+Secure Post provides a level of authentication and authorisation to post data. This should make it a lot harder to intercept a command, alter it and then send on to the recipient, a method that could, in theory, compromise the integrity of VIDaaS.
 
-= Details =
+Among other things, posted data includes a machine generated time stamp so that old messages are no longer allowed. 
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+= Setup =
+
+The iam project should be build and then hosted on a server. During build, there can be an issue with junit tests, since they need the test server running before they will work. Thus build using
+mvn package -Dmaven.test.skip=true
+
+= Testing the installation =
+
+One deployed you can see a sample page using an URL like:
+
+http://129.67.241.38/iam/
+
+This just gives a warm feeling that something has happened (assuming you don't get a 404).
+
+= Using VIDaaS Secure Post =
+
+To prepare to use Secure Post is straightforward. Simply create a Maven dependency on iamInterface (and an Eclipse dependency too, if you like)
+
+How to use Secure Post depends on whether you are sending or receiving data.
+
+== Sending Data ==
+
+Simply instantiate the object via:
+
+SendViaPost post = new SendViaPost();
+
+and then send the command to be posted thus:
+
+post.sendSecurePost(recipient url, formatted data);
+
+== Receiving Data ==
+
+A data recipient can simply periodically poll for data and either take and then clear the stack of message items or take and preserve them.
