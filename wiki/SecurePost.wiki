@@ -40,8 +40,13 @@ post.sendSecurePost(recipient url, formatted data);
 A data recipient can simply periodically poll for data and either take and then clear the stack of message items or take and preserve them. The format of the receive command is:
 
 {{{
-List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageData();
+List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageDataAndClear();
 }}}
+or
+{{{
+List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageDataAndKeep();
+}}}
+depending on whether the messages should be kept or removed from the server once returned.
 
 This will provide a list of SecurePostData objects that may be parsed to collect the data. The interesting part of the SecurePostData object is the following:
 
