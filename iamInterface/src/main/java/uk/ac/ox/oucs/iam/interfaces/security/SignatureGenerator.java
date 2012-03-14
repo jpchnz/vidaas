@@ -32,9 +32,10 @@ public class SignatureGenerator {
 	static boolean sanityCheck = true;
 	static final String encodingInstance = "SHA1withDSA";
 	private String keyFilePath;
-	public final static String TIMESTAMP_POST_ATTRIBUTE = "ts";
-	public final static String KEYFILE_POST_ATTRIBUTE = "key";
-	public final static String SIGNATURE_POST_ATTRIBUTE = "sig";
+	public final static String TIMESTAMP_POST_ATTRIBUTE = "__ts__";
+	public final static String KEYFILE_POST_ATTRIBUTE = "__key__";
+	public final static String SIGNATURE_POST_ATTRIBUTE = "__sig__";
+	public final static String DEST_IP = "__destIp__";
 
 	/**
 	 * Create a signature generator, using the private key in the given file

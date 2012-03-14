@@ -24,7 +24,8 @@ import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.NewKeyException;
 
 public class SendViaPost {
 	Logger log = Logger.getLogger(SendViaPost.class);
-	private URL url;
+	private URL urlOfReceiveService;
+	private String destinationIP;
 	private URLConnection connection = null;
 	private OutputStreamWriter out;
 	private boolean encrypt = true;
@@ -42,7 +43,7 @@ public class SendViaPost {
 	 * The receiver should be able to validate the data using the public key of
 	 * the sender.
 	 * 
-	 * @param url
+	 * @param destinationIP
 	 *            the address where the POST data is to be sent
 	 * @param postData
 	 *            HTTP POST data
@@ -60,23 +61,24 @@ public class SendViaPost {
 	 *             More than one private key found in the local key store. Only
 	 *             one private key may be present.
 	 */
-	public String sendSecurePost(String url, String postData) throws IOException, NewKeyException, KeyNotFoundException,
+	public String sendSecurePost(String destinationIP, String postData) throws IOException, NewKeyException, KeyNotFoundException,
 			DuplicateKeyException {
-		this.url = new URL(url);
+		this.destinationIP = destinationIP;
 		keyFile = GeneralUtils.provideBaseKeyPairName();
 		return sendSecurePost(postData);
 	}
 
 	// Testing only
-	public String sendSecurePost(String url, String postData, boolean encrypt) throws IOException, NewKeyException,
+	public String sendSecurePost(String destinationIP, String postData, boolean encrypt) throws IOException, NewKeyException,
 			KeyNotFoundException, DuplicateKeyException {
-		this.url = new URL(url);
+		this.destinationIP = destinationIP;
 		this.encrypt = encrypt;
 		keyFile = GeneralUtils.provideBaseKeyPairName();
 		return sendSecurePost(postData);
 	}
 
 	private String sendSecurePost(String postData) throws IOException, NewKeyException, KeyNotFoundException {
+		urlOfReceiveService = new URL(SystemVars.ADDRESS_OF_IAM_WEBAPP_RECEIVER);
 		messagePosted = false;
 		VidaasSignature vSig = null;
 
@@ -134,7 +136,7 @@ public class SendViaPost {
 			}
 		}
 
-		connection = url.openConnection();
+		connection = urlOfReceiveService.openConnection();
 		connection.setDoOutput(true);
 		out = new OutputStreamWriter(connection.getOutputStream());
 
@@ -150,22 +152,22 @@ public class SendViaPost {
 		String dataToPost;
 		if (encrypt) {
 			if (vSig.isTimeStampInUse()) {
-				dataToPost = String.format("%s&%s=%s&%s=%s&%s=%s", postData, SignatureGenerator.KEYFILE_POST_ATTRIBUTE,
+				dataToPost = String.format("%s&%s=%s&%s=%s&%s=%s&%s=%s", postData, SignatureGenerator.KEYFILE_POST_ATTRIBUTE,
 						keyBaseName, SignatureGenerator.TIMESTAMP_POST_ATTRIBUTE, vSig.getTimestamp(),
-						SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature());
+						SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature(), SignatureGenerator.DEST_IP, destinationIP);
 			}
 			else {
-				dataToPost = String.format("%s&%s=%s&%s=%s", postData, SignatureGenerator.KEYFILE_POST_ATTRIBUTE,
-						keyBaseName, SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature());
+				dataToPost = String.format("%s&%s=%s&%s=%s&%s=%s", postData, SignatureGenerator.KEYFILE_POST_ATTRIBUTE,
+						keyBaseName, SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature(), SignatureGenerator.DEST_IP, destinationIP);
 			}
 		}
 		else {
 			dataToPost = postData;
 		}
-		System.out.println(url + "?" + dataToPost);
+//		System.out.println(urlOfReceiveService + "?" + dataToPost);
 		out.write(dataToPost);
 		if (encrypt) {
-			auditer.auditSometimes(String.format("Sent post <%s> to host %s with timestamp %s", postData, url.toString(),
+			auditer.auditSometimes(String.format("Sent post <%s> to host %s with timestamp %s", postData, destinationIP,
 					vSig.isTimeStampInUse()));
 		}
 		out.flush();
@@ -203,7 +205,8 @@ public class SendViaPost {
 			SendViaPost post = new SendViaPost();
 			for (int i = 0; i < 1; i++) {
 				String r = post.sendSecurePost(
-						"http://129.67.241.38/iam/ReceivePost",//"http://localhost:8081/iam/ReceivePost",
+						//"http://129.67.241.38/iam/ReceivePost",
+						"http://localhost:8081/iam/ReceivePost",
 						String.format("name=freddy%d&password=bibble%d&anotherField=oh no larry%d",
 								new Random().nextInt(99999), new Random().nextInt(99999), new Random().nextInt(99999)));
 				System.out.println("Result:"+r);
