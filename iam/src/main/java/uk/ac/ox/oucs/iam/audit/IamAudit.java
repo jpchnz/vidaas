@@ -1,13 +1,17 @@
 package uk.ac.ox.oucs.iam.audit;
 
+import java.net.URL;
+
 import org.apache.log4j.Logger;
+import org.apache.log4j.helpers.Loader;
 import org.apache.log4j.xml.DOMConfigurator;
 
 public class IamAudit {
 	Logger log = Logger.getLogger(IamAudit.class);
 	
 	public IamAudit() {
-		DOMConfigurator.configure("log4j.xml");
+		URL url = Loader.getResource("log4j.xml");
+		DOMConfigurator.configure(url);
 	}
 	
 	/**

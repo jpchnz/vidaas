@@ -13,12 +13,12 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.xml.DOMConfigurator;
 
+import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.DuplicateKeyException;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.KeyNotFoundException;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.NewKeyException;
 import uk.ac.ox.oucs.iam.postsecurely.SendViaPost;
-import uk.ac.ox.oucs.iam.security.keys.KeyServices;
 import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.DuplicateKeyException;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.NewKeyException;
 
 public class ApplicationServletContextListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent event) {

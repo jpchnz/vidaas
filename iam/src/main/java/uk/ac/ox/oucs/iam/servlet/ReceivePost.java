@@ -12,13 +12,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import uk.ac.ox.oucs.iam.audit.IamAudit;
-import uk.ac.ox.oucs.iam.security.keys.KeyServices;
+import uk.ac.ox.oucs.iam.interfaces.security.SignatureGenerator;
+import uk.ac.ox.oucs.iam.interfaces.security.SignatureVerifier;
+import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
 import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
-import uk.ac.ox.oucs.iam.security.utilities.SignatureGenerator;
-import uk.ac.ox.oucs.iam.security.utilities.SignatureVerifier;
 
 @SuppressWarnings("serial")
 public class ReceivePost extends HttpServlet {
@@ -31,10 +29,9 @@ public class ReceivePost extends HttpServlet {
 	public static final String REQUEST_DATA_CODE_DONT_CLEAR_STACK = "requestCurrent=dataNoClear";
 	private boolean clearStack;
 	private IamAudit auditer = new IamAudit();
-	private boolean dontAcceptGet = true; // Set this to true if HTTP GET
+	private boolean dontAcceptGet = false; // Set this to true if HTTP GET
 											// requests are not allowed on this
 											// server
-	private Logger log = Logger.getLogger(ReceivePost.class);
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (dontAcceptGet) {
@@ -128,9 +125,11 @@ public class ReceivePost extends HttpServlet {
 								 * generate the sig, we can guarantee that the
 								 * message did indeed come from the sender.
 								 */
-								for (int index = counter - 1; index > -1; index--) {
+//								for (int index = counter - 1; index > -1; index--) {
+								for (int index = 0; index < counter; index++) {
 									messageToVerify += messages[index];
-									if (index != 0) {
+//									if (index != 0) {
+									if (index != (counter-1)) {
 										messageToVerify += "&";
 									}
 								}
@@ -139,23 +138,30 @@ public class ReceivePost extends HttpServlet {
 								String signature = request.getParameter(data);
 
 								SignatureVerifier sigVerifier = new SignatureVerifier(keyDir + File.separator + keyFile);
+								out.println(keyDir + File.separator + keyFile);
 								byte[] decodedBytes = sigVerifier.decodeAsByteArray(signature);
+								//out.println(decodedBytes[0] +" "+ decodedBytes[10]+" "+ decodedBytes[20]);
+								out.println("Verify:" + messageToVerify);
 								if (timestamp == "") {
+									out.println("Verify with no timestamp");
 									securePostData.setMessageHasBeenVerified(sigVerifier.verifyDigitalSignature(
 											decodedBytes, messageToVerify));
 								}
 								else {
+									out.println("Verify with timestamp");
 									securePostData.setMessageHasBeenVerified(sigVerifier.verifyDigitalSignature(
 											decodedBytes, messageToVerify + "_" + timestamp));
 									securePostData.setMessageTimedOut(!sigVerifier.verifyTimestamp(timestamp));
 								}
 								if (securePostData.isMessageHasBeenVerified() && !securePostData.isMessageTimedOut()) {
 									securePostData.setMessageHasBeenVerified(true);
-									auditer.auditSometimes(String.format(
-											"Post request from %s validated with the following parameters:", hostId));
+									String validatedMessage = String.format(
+											"Post request from %s validated with the following parameters:\n", hostId);
 									for (String s : securePostData.getPostParms()) {
-										auditer.auditSometimes("\t" + s);
+										validatedMessage += "\t" + s + "\n";
 									}
+									auditer.auditSometimes(validatedMessage);
+									out.println(validatedMessage);
 								}
 								else {
 									auditer.auditAlways("Message has not been verified");

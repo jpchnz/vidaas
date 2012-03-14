@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import uk.ac.ox.oucs.iam.security.utilities.SignatureVerifier;
-import uk.ac.ox.oucs.iam.security.utilities.VidaasSignature;
+import uk.ac.ox.oucs.iam.interfaces.security.SignatureVerifier;
+import uk.ac.ox.oucs.iam.interfaces.security.utilities.VidaasSignature;
 
 public class AccessServlet extends HttpServlet {
 	/**
