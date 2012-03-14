@@ -5,9 +5,11 @@
 
 The purpose of this document is to give rough estimate to migrate existing VIDaaS application running on JBoss 5.1 to ORDS running on JBoss 7.1. The migration to the latest server is not straight forward exercise due to recent changes in various underlying technologies. 
 
+The following features of ORDS application are user facing Web front end and each of them will require *JSF 2, RichFaces 4.x, Weld*.
+mentioned as view.
 
 || *Functionality* 			|| *Status* 	||   *Current Dependency* 						||  *Potential Technologies* 						|| *Migration Time* ||
-|| User Registration 			|| Implemented 	||  JSF 1.2, RichFaces 3.3, Seam 2.2, MySQL 5, Hibernate, JBoss 5.1	|| JSF 2, RichFaces 4.x, Weld, MySQL 5, Hibernate, JBoss 7.1		|| 1 1/2 weeks	||
+|| User Registration 			|| Implemented 	||  JSF 1.2, RichFaces 3.3, Seam 2.2, MySQL 5, Hibernate, JBoss 5.1	||JSF 2, RichFaces 4.x, Weld, MySQL 5, Hibernate, JBoss 7.1		|| 1 1/2 weeks	||
 || Create  and Manage Project		|| Implemented  ||  JSF 1.2, RichFaces 3.3, Seam 2.2, MySQL 5, Hibernate, JBoss 5.1 	||JSF 2, RichFaces 4.x, Weld, MySQL 5, Hibernate, JBoss 7.1		|| 2 weeks 	||
 || Create  and Manage Database 		|| Implemented  ||  JSF 1.2, RichFaces 3.3, Seam 2.2, MySQL 5, PostgreSQL 8, JBoss 5.1	||JSF 2, RichFaces 4.x, Weld, MySQL 5, PostgreSQL 8, JBoss 7.1		|| 2 weeks 	||
 || Create and Manage Database  Versions || Implemented  ||  JSF 1.2, RichFaces 3.3, Seam 2.2, MySQL 5, PostgreSQL 8, JBoss 5.1 	||JSF 2, RichFaces 4.x, Weld, MySQL 5, PostgreSQL 8, JBoss 7.1		|| 2 weeks 	||
