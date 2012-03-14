@@ -28,13 +28,34 @@ How to use Secure Post depends on whether you are sending or receiving data.
 == Sending Data ==
 
 Simply instantiate the object via:
-
+{{{
 SendViaPost post = new SendViaPost();
-
+}}}
 and then send the command to be posted thus:
-
+{{{
 post.sendSecurePost(recipient url, formatted data);
-
+}}}
 == Receiving Data ==
 
-A data recipient can simply periodically poll for data and either take and then clear the stack of message items or take and preserve them.
+A data recipient can simply periodically poll for data and either take and then clear the stack of message items or take and preserve them. The format of the receive command is:
+
+{{{
+List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageData();
+}}}
+
+This will provide a list of SecurePostData objects that may be parsed to collect the data. The interesting part of the SecurePostData object is the following:
+
+{{{
+boolean messageHasBeenVerified = false;
+boolean messageTimedOut = false;
+boolean badSig = false;
+boolean noPrivateKey = false;
+String originatorHost = null;
+List<String> postParms = new ArrayList<String>();
+}}}
+
+The postParms list always contains the information that was intended for the service. However, it has been verified as being authentic if and only if
+{{{
+messageHasBeenVerified == true
+}}}
+if any of the other booleans are true, then messageHasBeenVerified will be false and the message will not have been deemed authentic. The reasons are obvious. originatorHost will contain the IP of the host sending the original command. this may be used for audit purposes.
