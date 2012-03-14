@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import uk.ac.ox.oucs.iam.audit.IamAudit;
 import uk.ac.ox.oucs.iam.interfaces.security.ReceivePostedData;
+import uk.ac.ox.oucs.iam.interfaces.security.SecurePostData;
 import uk.ac.ox.oucs.iam.interfaces.security.SignatureGenerator;
 import uk.ac.ox.oucs.iam.interfaces.security.SignatureVerifier;
 import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
@@ -92,7 +93,7 @@ public class ReceivePost extends HttpServlet {
 			if (data != null) {
 				out.println(data + "=" + request.getParameter(data));
 
-				if (data.compareTo("sig") == 0) {
+				if (data.compareTo(SignatureGenerator.SIGNATURE_POST_ATTRIBUTE) == 0) {
 					/*
 					 * A digital signature has been sent, which is expected.
 					 * Verify this.
@@ -221,6 +222,11 @@ public class ReceivePost extends HttpServlet {
 					else if (data.compareTo(SignatureGenerator.KEYFILE_POST_ATTRIBUTE) == 0) {
 						keyFile = request.getParameter(data);
 						auditer.auditSometimes(String.format("Using key %s for host %s", keyFile, hostId));
+					}
+					else if (data.compareTo(SignatureGenerator.DEST_IP) == 0) {
+						String destIp = request.getParameter(data);
+						securePostData.setIntendedDestination(destIp);
+						auditer.auditSometimes(String.format("Destination IP is %s", destIp));
 					}
 					else {
 						messages[counter] = data + "=" + request.getParameter(data);
