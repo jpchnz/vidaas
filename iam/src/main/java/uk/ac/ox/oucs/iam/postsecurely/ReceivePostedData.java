@@ -8,7 +8,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-import uk.ac.ox.oucs.iam.servlet.SecurePostData;
+import uk.ac.ox.oucs.iam.interfaces.security.SecurePostData;
 
 
 public class ReceivePostedData {
