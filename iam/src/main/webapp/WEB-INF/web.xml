@@ -10,10 +10,6 @@
 		</listener-class>
 	</listener>
 	<servlet>
-		<servlet-name>TestServ</servlet-name>
-		<servlet-class>uk.ac.ox.oucs.iam.TestServ</servlet-class>
-	</servlet>
-	<servlet>
 		<servlet-name>KeyUtilitiesServlet</servlet-name>
 		<servlet-class>uk.ac.ox.oucs.iam.servlet.KeyUtilitiesServlet</servlet-class>
 	</servlet>
@@ -36,10 +32,6 @@
 	<servlet-mapping>
 		<servlet-name>KeyUtilitiesServlet</servlet-name>
 		<url-pattern>/KeyUtilitiesServlet</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>TestServ</servlet-name>
-		<url-pattern>/TestServ</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>ProjectRoleServlet</servlet-name>

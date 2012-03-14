@@ -1,19 +1,8 @@
 package uk.ac.ox.oucs.iam.security.keys;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-
-import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
-
-import com.sun.jna.Platform;
 
 /**
  * Inputs: remote_MacKey - Mac key generated on a remote machine

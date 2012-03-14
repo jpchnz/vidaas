@@ -11,9 +11,12 @@ import java.security.NoSuchAlgorithmException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.ox.oucs.iam.security.keys.KeyServices;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.NoEncodingException;
+import uk.ac.ox.oucs.iam.interfaces.security.SignatureGenerator;
+import uk.ac.ox.oucs.iam.interfaces.security.SignatureVerifier;
+import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
+import uk.ac.ox.oucs.iam.interfaces.security.utilities.VidaasSignature;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.KeyNotFoundException;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.NoEncodingException;
 
 public class SignatureGeneratorTest {
 	private static String keyFile = "/tmp/key";
