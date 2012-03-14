@@ -15,13 +15,40 @@ public class ReceivePostedData {
 	public static final String REQUEST_DATA_CODE = "requestCurrent=data";
 	public static final String REQUEST_DATA_CODE_DONT_CLEAR_STACK = "requestCurrent=dataNoClear";
 	
-	public static List<SecurePostData> getPendingMessageData() throws IOException {
+	
+	
+	/**
+	 * Receive pending messages from the IAM secure message receiver, clearing the stack once processed.
+	 * 
+	 * @return a list of SecurePostData objects defining the messages destined for the service
+	 * @throws IOException
+	 */
+	public static List<SecurePostData> getPendingMessageDataAndClear() throws IOException {
+		return getPendingMessageData(true);
+	}
+	
+	/**
+	 * Receive pending messages from the IAM secure message receiver but do not clear the stack once processed.
+	 * 
+	 * @return a list of SecurePostData objects defining the messages destined for the service
+	 * @throws IOException
+	 */
+	public static List<SecurePostData> getPendingMessageDataAndKeep() throws IOException {
+		return getPendingMessageData(false);
+	}
+	
+	public static List<SecurePostData> getPendingMessageData(boolean clear) throws IOException {
 		URL url = new URL(SystemVars.ADDRESS_OF_IAM_WEBAPP_RECEIVER);
 		URLConnection connection = url.openConnection();
 		connection.setDoOutput(true);
 		OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
 		
-		out.write(REQUEST_DATA_CODE);
+		if (clear) {
+			out.write(REQUEST_DATA_CODE);
+		}
+		else {
+			out.write(REQUEST_DATA_CODE_DONT_CLEAR_STACK);
+		}
 
 		out.flush();
 		out.close();
@@ -53,7 +80,7 @@ public class ReceivePostedData {
 	
 	public static void main(String[] args) {
 		try {
-			List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageData();
+			List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageDataAndClear();
 			if ( (securePostDataList == null) || (securePostDataList.size() == 0) ) {
 				System.out.println("No data returned");
 			}
