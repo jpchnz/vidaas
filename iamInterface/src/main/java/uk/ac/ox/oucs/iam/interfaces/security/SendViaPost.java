@@ -120,8 +120,6 @@ public class SendViaPost {
 					// Try to decode ...
 					SignatureVerifier sigVerifier = new SignatureVerifier(keyFile);
 					byte[] decodedBytes = sigVerifier.decodeAsByteArrayWithoutPosting(vSig.getSignature());
-					System.out.println(decodedBytes[0] +" "+ decodedBytes[10]+" "+ decodedBytes[20]);
-					System.out.println("Verify:" + vSig.getOriginalMessage());
 					if (sigVerifier.verifyDigitalSignature(decodedBytes, vSig.getOriginalMessage())) {
 						log.debug("All good so far");
 					}
@@ -204,10 +202,11 @@ public class SendViaPost {
 			System.out.println("Send via post");
 			SendViaPost post = new SendViaPost();
 			for (int i = 0; i < 1; i++) {
-				post.sendSecurePost(
+				String r = post.sendSecurePost(
 						"http://129.67.241.38/iam/ReceivePost",//"http://localhost:8081/iam/ReceivePost",
 						String.format("name=freddy%d&password=bibble%d&anotherField=oh no larry%d",
 								new Random().nextInt(99999), new Random().nextInt(99999), new Random().nextInt(99999)));
+				System.out.println("Result:"+r);
 			}
 		}
 		catch (Exception e) {
