@@ -1,5 +1,6 @@
 package uk.ac.ox.oucs.iam.interfaces.security;
 
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ public class SecurePostData {
 	private boolean messageTimedOut = false;
 	private boolean badSig = false;
 	private boolean noPrivateKey = false;
+	private String intendedDestination = "";
 	private String originatorHost = null;
 	private List<String> postParms = new ArrayList<String>();
 	private static String token_title_message = "Printing data for SecurePostData";
@@ -25,15 +27,17 @@ public class SecurePostData {
 	private static String token_bad_sig = "Bad sig:";
 	private static String token_no_key = "No key:";
 	private static String token_originator_host = "Originator Host:";
+	private static String token_destination_host = "Intended Destination Host:";
 	
 		
-	protected void printData(PrintWriter out) {
+	public void printData(PrintWriter out) {
 		out.println(token_title_message);
 		out.println(token_verified + messageHasBeenVerified);
 		out.println(token_timeout + messageTimedOut);
 		out.println(token_bad_sig + badSig);
 		out.println(token_no_key + noPrivateKey);
 		out.println(token_originator_host + originatorHost);
+		out.println(token_destination_host + intendedDestination);
 		for (String s : postParms) {
 			out.println(s);
 		}
@@ -76,6 +80,9 @@ public class SecurePostData {
 			}
 			else if (s.startsWith(token_originator_host)) {
 				spd.setOriginatorHost(s.substring(token_originator_host.length()));
+			}
+			else if (s.startsWith(token_destination_host)) {
+				spd.setIntendedDestination(s.substring(token_destination_host.length()));
 			}
 			else {
 				if (spd != null) {
@@ -143,5 +150,17 @@ public class SecurePostData {
 
 	public void setOriginatorHost(String originatorHost) {
 		this.originatorHost = originatorHost;
+	}
+
+
+
+	public String getIntendedDestination() {
+		return intendedDestination;
+	}
+
+
+
+	public void setIntendedDestination(String intendedDestination) {
+		this.intendedDestination = intendedDestination;
 	}
 }
