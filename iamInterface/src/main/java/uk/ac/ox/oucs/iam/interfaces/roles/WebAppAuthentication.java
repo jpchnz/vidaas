@@ -1,13 +1,14 @@
 package uk.ac.ox.oucs.iam.interfaces.roles;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class WebAppAuthentication  {
 	private RolePoster rolePoster;
 
-	public WebAppAuthentication(URL url) {
-		rolePoster = new RolePoster(url);
+	public WebAppAuthentication() throws MalformedURLException {
+		rolePoster = RolePoster.getInstance();
 	}
 
 	/**
