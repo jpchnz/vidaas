@@ -16,12 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import uk.ac.ox.oucs.iam.audit.IamAudit;
+import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.DuplicateKeyException;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.KeyNotFoundException;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.NewKeyException;
 import uk.ac.ox.oucs.iam.postsecurely.SendViaPost;
-import uk.ac.ox.oucs.iam.security.keys.KeyServices;
 import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.DuplicateKeyException;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.NewKeyException;
 
 /**
  * This is a servlet that provides key store type services for VIDaaS. The idea

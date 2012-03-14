@@ -12,14 +12,14 @@ import java.security.GeneralSecurityException;
 import java.util.Random;
 
 import uk.ac.ox.oucs.iam.audit.IamAudit;
-import uk.ac.ox.oucs.iam.security.keys.KeyServices;
+import uk.ac.ox.oucs.iam.interfaces.security.SignatureGenerator;
+import uk.ac.ox.oucs.iam.interfaces.security.SignatureVerifier;
+import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
+import uk.ac.ox.oucs.iam.interfaces.security.utilities.VidaasSignature;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.DuplicateKeyException;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.KeyNotFoundException;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.NewKeyException;
 import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
-import uk.ac.ox.oucs.iam.security.utilities.SignatureGenerator;
-import uk.ac.ox.oucs.iam.security.utilities.SignatureVerifier;
-import uk.ac.ox.oucs.iam.security.utilities.VidaasSignature;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.DuplicateKeyException;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.NewKeyException;
 
 public class SendViaPost {
 	private URL url;

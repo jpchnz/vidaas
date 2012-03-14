@@ -8,9 +8,10 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Mac;
 
+import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.KeyNotFoundException;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.NoEncodingException;
 import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.NoEncodingException;
 
 /**
  * Encrypt an HMAC. If not specified, a default "HmacSHA512" algorithm is used.

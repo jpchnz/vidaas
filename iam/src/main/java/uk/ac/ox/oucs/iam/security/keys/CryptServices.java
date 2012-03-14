@@ -13,8 +13,9 @@ import javax.crypto.NoSuchPaddingException;
 
 import org.apache.commons.codec.binary.Base64;
 
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.KeyNotFoundException;
-import uk.ac.ox.oucs.iam.security.utilities.exceptions.NoEncodingException;
+import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.KeyNotFoundException;
+import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.NoEncodingException;
 
 /**
  * NOTE:
