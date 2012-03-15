@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -151,7 +152,21 @@ public class ReceivePost extends HttpServlet {
 									out.println("Verify with timestamp");
 									securePostData.setMessageHasBeenVerified(sigVerifier.verifyDigitalSignature(
 											decodedBytes, messageToVerify + "_" + timestamp));
-									securePostData.setMessageTimedOut(!sigVerifier.verifyTimestamp(timestamp));
+									boolean verified = !sigVerifier.verifyTimestamp(timestamp);
+									out.println("Time stamp too old = " + verified);
+									securePostData.setMessageTimedOut(verified);
+									out.println("Let's check this:");
+									Date now = new Date();
+									out.println("Calc: " + (now.getTime() - Long.parseLong(timestamp)) + " div by 1000 = " + (now.getTime() - Long.parseLong(timestamp))/1000);
+									out.println("greater than 60?");
+									if (((now.getTime() - Long.parseLong(timestamp))/1000 > 60)
+											&& (Long.parseLong(timestamp) != 0)) {
+										// Message is too old
+										out.println("old:" + (((now.getTime() - Long.parseLong(timestamp))/1000)));
+									} else {
+										// Message has not yet expired
+										out.println("not old:" + ((now.getTime() - Long.parseLong(timestamp)/1000)));
+									}
 								}
 								if (securePostData.isMessageHasBeenVerified() && !securePostData.isMessageTimedOut()) {
 									securePostData.setMessageHasBeenVerified(true);
@@ -169,10 +184,12 @@ public class ReceivePost extends HttpServlet {
 										auditer.auditAlways("The message is considered too old:"
 												+ getAllCallerDetails(request));
 										securePostData.setMessageTimedOut(true);
+										out.println("Message too old");
 									}
 									if (!securePostData.isMessageHasBeenVerified()) {
 										auditer.auditAlways("Bad verification:" + getAllCallerDetails(request));
 										securePostData.setBadSig(true);
+										out.println("Bad verification");
 									}
 								}
 							}
