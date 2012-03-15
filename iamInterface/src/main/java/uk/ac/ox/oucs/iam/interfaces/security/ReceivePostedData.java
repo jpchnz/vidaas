@@ -37,7 +37,7 @@ public class ReceivePostedData {
 		return getPendingMessageData(false);
 	}
 	
-	public static List<SecurePostData> getPendingMessageData(boolean clear) throws IOException {
+	private static List<SecurePostData> getPendingMessageData(boolean clear) throws IOException {
 		URL url = new URL(SystemVars.ADDRESS_OF_IAM_WEBAPP_RECEIVER);
 		URLConnection connection = url.openConnection();
 		connection.setDoOutput(true);

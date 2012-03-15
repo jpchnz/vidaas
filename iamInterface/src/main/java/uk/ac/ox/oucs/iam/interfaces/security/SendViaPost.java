@@ -9,6 +9,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.GeneralSecurityException;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
@@ -201,7 +203,20 @@ public class SendViaPost {
 
 	public static void main(String[] args) {
 		try {
-			System.out.println("Send via post");
+//			System.out.println("Send via post");
+//			Date orig_stamp = new Date();
+////			System.out.println(orig_stamp.getTime());
+//			Thread.sleep(500);
+//			Date now = new Date();
+//			
+//			System.out.println((now.getTime() - orig_stamp.getTime()));
+//			if ( (now.getTime() - orig_stamp.getTime()) > (60 * 1000) ) {
+//				System.out.println("old");
+//			}
+//			else {
+//				System.out.println("Fine");
+//			}
+//			if (true) return;
 			SendViaPost post = new SendViaPost();
 			for (int i = 0; i < 1; i++) {
 				String r = post.sendSecurePost(
@@ -210,6 +225,18 @@ public class SendViaPost {
 						String.format("name=freddy%d&password=bibble%d&anotherField=oh no larry%d",
 								new Random().nextInt(99999), new Random().nextInt(99999), new Random().nextInt(99999)));
 				System.out.println("Result:"+r);
+			}
+			List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageDataAndClear();
+			int counter = 0;
+			for (SecurePostData spd : securePostDataList) {
+				System.out.println("Item " + (counter+1));
+				System.out.println("Originator for data " + (counter+1) + " = " + spd.getOriginatorHost());
+				System.out.println("Timeout = " + spd.isMessageTimedOut());
+				System.out.println("Verified = " + spd.isMessageHasBeenVerified());
+				for (String s : spd.getPostParms()) {
+					System.out.println(s);
+				}
+				counter++;
 			}
 		}
 		catch (Exception e) {
