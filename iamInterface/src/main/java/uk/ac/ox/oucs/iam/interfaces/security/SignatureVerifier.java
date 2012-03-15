@@ -135,7 +135,7 @@ public class SignatureVerifier {
 	
 	public boolean verifyTimestamp(long lTimestamp) {
 		Date now = new Date();
-		if (((now.getTime() - lTimestamp) > (maxMessageAgeSeconds * 1000))
+		if (((now.getTime() - lTimestamp) > maxMessageAgeSeconds)
 				&& (lTimestamp != 0)) {
 			// Message is too old
 			messageTooOld = true;
