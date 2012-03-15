@@ -27,7 +27,10 @@ The following features of ORDS application are user facing Web front end and eac
 || Security & Roles			|| TBD		||  (Integration *ONLY* if such functionality exists)			||JSF 2, RichFaces 4.x, Weld, RestEasy, Hibernate, JBoss 7.1		|| 2 weeks 	||
 || Payment				|| TBD		||  (Integration *ONLY* if such functionality exists)			||JSF 2, RichFaces 4.x, Weld, RestEasy, MySQL 5, Hibernate, JBoss 7.1	|| 3-4 weeks 	||
 || Miscellaneous stuff			|| 		||  									||JSF 2, RichFaces 4.x, Weld, RestEasy,MySQL 5, Hibernate, JBoss 7.1	|| 2 weeks 	||
-|| *Total*				|| 		||   									||						                	||39-45 weeks ||
+|| *Total*				|| 		||   									||						                	|| 39-45 weeks  ||
+
+|| Metadata Repository			|| TBD		||  (Deployment, Integration an Testing with open source repository)    ||JSF 2, RichFaces 4.x, Weld, RestEasy, SWORD, jQuery, JBoss 7.1	||       	||
+||                                      ||              ||  (EPrints or Fedora Commons or DSpace etc)                           ||                                                                      ||              ||
 
 = Details of Existing Technologies Used =
 
