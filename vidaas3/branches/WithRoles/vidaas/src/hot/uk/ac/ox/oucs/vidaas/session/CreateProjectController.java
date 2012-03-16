@@ -1,5 +1,6 @@
 package uk.ac.ox.oucs.vidaas.session;
 
+import java.net.MalformedURLException;
 import java.util.Date;
 
 import org.jboss.seam.log.Log;
@@ -14,6 +15,10 @@ import uk.ac.ox.oucs.vidaas.entity.Users;
 import uk.ac.ox.oucs.vidaas.utility.StringUtility;
 
 public class CreateProjectController {
+	private BillingController billingController;
+	public CreateProjectController(BillingController billingController) {
+		this.billingController = billingController;
+	}
 	
 	public void createProject(Users userMain, ProjectHome projectHome, UserProjectHome userProjectHome, Log log) {
 		
@@ -56,6 +61,11 @@ public class CreateProjectController {
 				+ userMain.getUserId());
 		log.info(userProjectHome.findByUserID(userMain.getUserId())
 				.size());
+		
+		/*
+		 * Now post this information to the billing sub system!
+		 */
+		billingController.addNewProjectForBilling(userProjectID.getUserId(), 25, projectHome.getInstance().getName(), userMain.getEmail());
 	}
 
 }

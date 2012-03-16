@@ -71,7 +71,7 @@ public class CreateController {
 	public String testString = "Test String";
 	
 	private final String rootStorageDirectory = System.getProperty("VIDaaSDataLocation");
-
+	private BillingController billingController;
 	public String getTestString() {
 		return testString;
 	}
@@ -152,6 +152,10 @@ public class CreateController {
 	private String deleteWebApplicationConfirmationMessage = "";
 
 	private Date today;
+	
+	public CreateController() throws MalformedURLException {
+		billingController = BillingController.getInstance();
+	}
 
 	public Date getToday() {
 		return new Date();
@@ -290,7 +294,7 @@ public class CreateController {
 	}
 
 	public void createProject() {
-		new CreateProjectController().createProject(getUserMain(), projectHome,
+		new CreateProjectController(billingController).createProject(getUserMain(), projectHome,
 				userProjectHome, log);
 		createProjectConfirmationMessage = "Project '"
 				+ projectHome.getInstance().getName()
