@@ -233,7 +233,7 @@ public class SendViaPost {
 				System.out.println("Originator for data " + (counter+1) + " = " + spd.getOriginatorHost());
 				System.out.println("Timeout = " + spd.isMessageTimedOut());
 				System.out.println("Verified = " + spd.isMessageHasBeenVerified());
-				for (String s : spd.getPostParms()) {
+				for (String s : spd.getPostParms().values()) {
 					System.out.println(s);
 				}
 				counter++;

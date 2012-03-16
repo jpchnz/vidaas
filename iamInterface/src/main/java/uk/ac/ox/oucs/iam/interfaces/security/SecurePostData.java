@@ -4,6 +4,8 @@ package uk.ac.ox.oucs.iam.interfaces.security;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -20,7 +22,8 @@ public class SecurePostData {
 	private boolean noPrivateKey = false;
 	private String intendedDestination = "";
 	private String originatorHost = null;
-	private List<String> postParms = new ArrayList<String>();
+//	private List<String> postParms = new ArrayList<String>();
+	private Map<String, String> postParms = new ConcurrentHashMap<String, String>();
 	private static String token_title_message = "Printing data for SecurePostData";
 	private static String token_verified = "Verified:";
 	private static String token_timeout = "Timeout:";
@@ -38,7 +41,7 @@ public class SecurePostData {
 		out.println(token_no_key + noPrivateKey);
 		out.println(token_originator_host + originatorHost);
 		out.println(token_destination_host + intendedDestination);
-		for (String s : postParms) {
+		for (String s : postParms.values()) {
 			out.println(s);
 		}
 	}
@@ -86,7 +89,8 @@ public class SecurePostData {
 			}
 			else {
 				if (spd != null) {
-					spd.addPostParm(s);
+					String[] components = s.split("=");
+					spd.addPostParm(components[0], components[1]);
 				}
 			}
 		}
@@ -102,8 +106,8 @@ public class SecurePostData {
 	public void setMessageHasBeenVerified(boolean messageHasBeenVerified) {
 		this.messageHasBeenVerified = messageHasBeenVerified;
 	}
-	public void addPostParm(String postParm) {
-		postParms.add(postParm);
+	public void addPostParm(String parm1, String parm2) {
+		postParms.put(parm1, parm2);
 	}
 	public void setMessageTimedOut(boolean messageTimedOut) {
 		this.messageTimedOut = messageTimedOut;
@@ -136,11 +140,11 @@ public class SecurePostData {
 	}
 
 
-	public void setPostParms(List<String> postParms) {
+	public void setPostParms(Map<String, String> postParms) {
 		this.postParms = postParms;
 	}
 	
-	public List<String> getPostParms() {
+	public Map<String, String> getPostParms() {
 		return postParms;
 	}
 
