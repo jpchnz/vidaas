@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.ox.oucs.iam.interfaces.utilities.SystemVars;
@@ -70,7 +71,7 @@ public class ReceivePostedData {
 		}
 		in.close();
 		
-		List<SecurePostData> securePostDataList = null;
+		List<SecurePostData> securePostDataList = new ArrayList<SecurePostData>();
 		if (result.length() != 0) {
 			securePostDataList = SecurePostData.getObjectFromString(result);
 		}
@@ -90,7 +91,7 @@ public class ReceivePostedData {
 				for (SecurePostData spd : securePostDataList) {
 					System.out.println("Item " + (counter+1));
 					System.out.println("Originator for data " + (counter+1) + " = " + spd.getOriginatorHost());
-					for (String s : spd.getPostParms()) {
+					for (String s : spd.getPostParms().values()) {
 						System.out.println(s);
 					}
 					counter++;
