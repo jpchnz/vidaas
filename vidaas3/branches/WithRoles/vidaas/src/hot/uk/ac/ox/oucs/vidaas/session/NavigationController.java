@@ -72,7 +72,6 @@ public class NavigationController {
 	private UserProject currentUserProject;
 	private static String currentRole;
 	private UserRolesWorker userRolesWorker = UserRolesWorker.getInstance();
-	private Map<String, Object> rolesListMap;
 	public Map<String, Object> getRolesListMap() {
 		return userRolesWorker.getRolesListMap();
 	}
