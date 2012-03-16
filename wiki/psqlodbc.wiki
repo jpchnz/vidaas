@@ -14,6 +14,12 @@ Update listen_addresses in postgresql.conf
 listen_addresses = '0.0.0.0'
 }}}
 
+Add an entry for this database in pg_hba.conf. For example
+
+{{{
+host  projectname_databasename   username  12.34.56.67/32   md5
+}}}
+
 = Client Settings =
 
 == Driver Installation ==
