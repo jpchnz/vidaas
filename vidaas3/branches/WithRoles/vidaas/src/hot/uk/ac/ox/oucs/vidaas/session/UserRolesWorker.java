@@ -33,13 +33,22 @@ public class UserRolesWorker {
 	protected UserRolesWorker() {
 		rolesListMap = new LinkedHashMap<String, Object>();
 		try {
-//			roleManager = new IAMRoleManager(SystemVars.ADDRESS_OF_IAM_WEBAPP);
 			roleManager = IAMRoleManager.getInstance();
 			String roles = roleManager.getRolesWithoutOwner();
+			System.out.println("Received the following roles:" + roles);
 			String[] rolesArray = roles.split("\n");
 			for (String s : rolesArray) {
-				rolesListMap.put(s, s);
+				if (rolesArray == null) {
+					System.out.println("Null input");
+				}
+				else if ( (rolesArray.equals("\n")) || (rolesArray.equals("")) ) {
+					System.out.println("Blank input");
+				}
+				else {
+					rolesListMap.put(s, s);
+				}
 			}
+			System.out.println("We have " + rolesListMap.size() + " roles defined");
 		}
 		catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
