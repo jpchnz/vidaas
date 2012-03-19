@@ -64,7 +64,7 @@
 		</h:panelGrid>
 		<br />
 		<a4j:form ajaxSubmit="true">
-			<a4j:commandLink id="editDataspaceLink" value="Edit Database"
+			<a4j:commandLink id="editDataspaceLink" value="Edit database details"
 				action="#{navigationController.setCurrentDataspace(currentDataspace.dataSpaceId)}"
 				reRender="editDataspaceFormInclude" style="float:left">
 				<f:param name="dataspaceIDValue"
@@ -73,7 +73,7 @@
 					attachTo="editDataspaceLink" operation="show" event="onclick" />
 			</a4j:commandLink>
 
-			<a4j:commandLink id="deleteDataspaceLink" value="Delete Database"
+			<a4j:commandLink id="deleteDataspaceLink" value="Delete database"
 				action="#{navigationController.setCurrentDataspace(currentDataspace.dataSpaceId)}"
 				reRender="deleteDataspaceFormInclude" style="float:right">
 				<f:param name="dataspaceIDValue"
@@ -96,13 +96,13 @@
 				<div class="actionButtons"></div>
 
 				<a4j:commandLink id="createDatabaseFromSchemaButton"
-					value="Upload existing Database" style="float:left">
+					value="Upload existing database" style="float:left">
 					<rich:componentControl for="createDatabasePanel"
 						attachTo="createDatabaseFromSchemaButton" operation="show"
 						event="onclick" />
 				</a4j:commandLink>
 				<a4j:commandButton id="createDatabaseByDesignButton"
-					value="Design Database" status="submitStatus" style="float:right"
+					value="Design database" status="submitStatus" style="float:right"
 					disabled="true">
 				</a4j:commandButton>
 				<a4j:region>
@@ -126,7 +126,7 @@
 						attachTo="createDatabaseFromXMLButton" operation="show"
 						event="onclick" />
 				</a4j:commandLink> <a4j:commandButton id="createXMLDatabaseByDesignButton"
-					value="Design XML Database" status="submitStatusXML"
+					value="Design XML database" status="submitStatusXML"
 					style="float:right" disabled="true">
 				</a4j:commandButton> <a4j:region>
 					<a4j:status id="submitStatusXML">
