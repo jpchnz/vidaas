@@ -589,12 +589,21 @@ public class CreateController {
 				+ newProjectDatabase.getConnectionString() + "'";
 
 		if (cloneType.equalsIgnoreCase("old")) {
+			backupDatabaseConfirmationMessage = "The live database: '"
+				+ tempOldDatabase.getDatabaseName() + "' is successfully copied as a milestone database.";
+			
 			((NavigationController) Contexts.getSessionContext().get(
 					"navigationController")).backupDatabaseConfirmation();
 		} else if (cloneType.equalsIgnoreCase("test")) {
+			backupDatabaseConfirmationMessage = "The live database: '"
+				+ tempOldDatabase.getDatabaseName() + "' is successfully copied as a test database.";
+			
 			((NavigationController) Contexts.getSessionContext().get(
 					"navigationController")).testDatabaseConfirmation();
 		} else {
+			restoreDatabaseConfirmationMessage = "The live database: '"
+				+ newProjectDatabase.getDatabaseName() + "' is successfully restored.";
+			
 			((NavigationController) Contexts.getSessionContext().get(
 					"navigationController")).restoreDatabaseConfirmation();
 		}
