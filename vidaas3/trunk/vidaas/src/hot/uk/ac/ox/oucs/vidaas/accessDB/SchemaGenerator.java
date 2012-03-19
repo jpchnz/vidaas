@@ -98,7 +98,12 @@ public class SchemaGenerator {
 				if (!(column.getName().startsWith("s_") || column.getName()
 						.startsWith("Gen_"))) {
 					try {
-						//DataType.
+						
+						if(column.getAutoNumberGenerator() != null){
+                            stringBuffer.append("\t" + column.getName() + " SERIAL, \n");
+                            continue;
+                        }
+						
 						if ((column.getType() == DataType.SHORT_DATE_TIME)) {
 							stringBuffer.append("\t "
 									+ referenceKeyWordValidation(
