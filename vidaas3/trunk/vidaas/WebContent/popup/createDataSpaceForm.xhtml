@@ -10,7 +10,7 @@
 		<s:validateAll>
 	        <h:panelGrid columns="3" columnClasses="name, value, errorMessage">
 	        
-	        	<h:outputLabel for="databaseType">Database Type</h:outputLabel>
+	        	<h:outputLabel for="databaseType">Database type</h:outputLabel>
 	            <h:selectOneMenu  id="databaseType"  required="true" value="#{dataspaceHome.instance.databaseType}" 
 	            	style="width:302px;">
 	            	<f:selectItem id="databaseType_item1" itemLabel="Relational Database" 
@@ -40,23 +40,23 @@
 	            	style="width:295px;" rows="3"/>
 	        	<rich:message for="databaseDescription" style="width : 184px;" />
 	        	
-	        	<h:outputLabel for="dataspaceCreationDate">Creation Date</h:outputLabel>	            
+	        	<h:outputLabel for="dataspaceCreationDate">Creation date</h:outputLabel>	            
 	           <rich:calendar id="dataspaceCreationDate"
                        required="true"
                           value="#{createController.today}" datePattern="dd/MM/yyyy"/>
 	        	<rich:message for="dataspaceCreationDate" style="width : 184px;" />
 	        	
-	        	<h:outputLabel for="databaseSources">Data Sources</h:outputLabel>	            
+	        	<h:outputLabel for="databaseSources">Data sources</h:outputLabel>	            
 	            <h:inputTextarea id="databaseSources"  required="true" 
 	            	style="width:295px;" rows="3"/>
 	        	<rich:message for="databaseSources" style="width : 184px;" />
 	        	
-	        	<h:outputLabel for="dataGathering">Data Gathering</h:outputLabel>	            
+	        	<h:outputLabel for="dataGathering">Data gathering process</h:outputLabel>	            
 	            <h:inputTextarea id="dataGathering"  required="true"
 	            	style="width:295px;" rows="3"/>
 	        	<rich:message for="dataGathering" style="width : 184px;" />
 	        	
-				<h:outputLabel for="webApplicationName"><a class="tooltip" href="#">Database interface name<span
+				<h:outputLabel for="webApplicationName"><a class="tooltip" href="#">Data interface name<span
 						class="custom help"> <img src="images/Help.png" alt="Help"
 							height="48" width="48" /><em>#{helpController.getHelpTitle('DatabaseCreationPopup_WebAppName')}</em>#{helpController.setupHelpText('DatabaseCreationPopup_WebAppName')}
 					</span></a></h:outputLabel>
