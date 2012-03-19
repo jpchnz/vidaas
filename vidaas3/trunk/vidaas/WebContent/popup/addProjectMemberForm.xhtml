@@ -39,14 +39,12 @@
 						</h:outputLabel>
 						<h:selectOneMenu  id="memberRole"  required="true" value="#{userProjectHome.instance.userRole}" 
 			            	style="width:184px;">
-			            	<f:selectItem id="memberRole_item1" itemLabel="Admin" 
+			            	<f:selectItem id="memberRole_item1" itemLabel="Project administrator" 
 							itemValue="admin"/>
-							<f:selectItem id="memberRole_item2" itemLabel="Researcher" 
+							<f:selectItem id="memberRole_item2" itemLabel="Contributor" 
 							itemValue="researcher"/>
-							<f:selectItem id="memberRole_item3" itemLabel="User" 
+							<f:selectItem id="memberRole_item3" itemLabel="Viewer" 
 							itemValue="user"/>
-							<f:selectItem id="memberRole_item4" itemLabel="Someone" 
-							itemValue="Someone" itemDisabled="true"/>
 			            </h:selectOneMenu>                   
 						<rich:message for="memberRole" style="width : 184px;" />
 	                    
