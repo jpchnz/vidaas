@@ -10,10 +10,10 @@
 
 
 	<a4j:form ajaxSubmit="true">
-		<h:outputText value="You are not involved in any Project."
+		<h:outputText value="You are not currently involved in any projects."
 			rendered="#{empty navigationController.userProjectsList()}" />
 
-		<h:outputText value="You are involved in the following Project(s)."
+		<h:outputText value="You are involved in the following project(s)."
 			rendered="#{not empty navigationController.userProjectsList()}" />
 		<rich:dataTable id="userProjectList" var="_userProject"
 			style="border-width: 1px; border-radius:20px"
