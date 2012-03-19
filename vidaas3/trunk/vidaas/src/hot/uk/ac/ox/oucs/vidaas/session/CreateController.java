@@ -390,9 +390,9 @@ public class CreateController {
 						log);
 			}
 
-			createProjectDataspaceConfirmationMessage = "Databace '"
+			createProjectDataspaceConfirmationMessage = "Database '"
 					+ dataspaceHome.getInstance().getDataspaceName()
-					+ "' for the Project: '"
+					+ "' for the project '"
 					+ projectsList.get(0).getProject().getTitle()
 					+ "' has been successfully created.";
 
@@ -400,7 +400,7 @@ public class CreateController {
 					"navigationController"))
 					.createProjectDataspaceConfirmation();
 		} else {
-			validationError = "Database interface name should not contain special characters or spaces";
+			validationError = "Data interface name should not contain special characters or spaces";
 		}
 		/*
 		 * } else { validationError =
@@ -457,7 +457,7 @@ public class CreateController {
 			deleteProjectDataspaceConfirmationMessage = "Database '"
 					+ dataspaceUserFriendlyName
 					+ "' "
-					+ "has active version/s. Please, delete each version before deleting database.";
+					+ "has active version(s). Please delete each version before deleting the database.";
 		}
 
 		((NavigationController) Contexts.getSessionContext().get(
@@ -741,7 +741,7 @@ public class CreateController {
 			webApplicationCreaterThread.start();
 		} catch (Exception e) {
 			e.printStackTrace();
-			dataHolder.currentStatus = "Failed to initiate Data Interface creation process";
+			dataHolder.currentStatus = "Failed to initiate data interface creation process";
 			dataHolder.setOkButton(false);
 		}
 		// dataHolder.setOkButton(false);
