@@ -156,5 +156,9 @@
 				rendered="#{currentDataspace.databaseType =='xml'}"></a4j:include>
 		</h:panelGrid>
 	</rich:dataGrid>
-
+	<rich:panel rendered="#{not empty navigationController.listDatabaseByDataspace()}">
+	<p>From this page, you can manage your ORDS database. You can have up to three copies of each database: the main or live version, a milestone version (to preserve a snapshot of the database as it was at a particular point), and a test version (which allows you to try out changes before making these in the live version).
+You can also create and access data interfaces, which allow you to view and edit the data in any of your database copies. 
+Other options include editing your database's details, and deleting your database or any of the copies of it. </p>
+</rich:panel>
 </ui:composition>
