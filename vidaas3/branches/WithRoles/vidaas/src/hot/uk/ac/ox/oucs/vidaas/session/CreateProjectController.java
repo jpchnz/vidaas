@@ -1,6 +1,5 @@
 package uk.ac.ox.oucs.vidaas.session;
 
-import java.net.MalformedURLException;
 import java.util.Date;
 
 import org.jboss.seam.log.Log;
