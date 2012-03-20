@@ -466,7 +466,7 @@ public class CreateController {
 
 				createProjectDataspaceConfirmationMessage = "Database '"
 						+ dataspaceHome.getInstance().getDataspaceName()
-						+ "' for the Project: '"
+						+ "' for the project '"
 						+ projectsList.get(0).getProject().getTitle()
 						+ "' has been successfully created.";
 			}
@@ -478,7 +478,7 @@ public class CreateController {
 					"navigationController"))
 					.createProjectDataspaceConfirmation();
 		} else {
-			validationError = "Database interface name should not contain special characters or spaces";
+			validationError = "Data interface name should not contain special characters or spaces";
 		}
 		/*
 		 * } else { validationError =
@@ -815,12 +815,21 @@ public class CreateController {
 				+ newProjectDatabase.getConnectionString() + "'";
 
 		if (cloneType.equalsIgnoreCase("old")) {
+backupDatabaseConfirmationMessage = "The live database: '"
+				+ tempOldDatabase.getDatabaseName() + "' is successfully copied as a milestone database.";
+			
 			((NavigationController) Contexts.getSessionContext().get(
 					"navigationController")).backupDatabaseConfirmation();
 		} else if (cloneType.equalsIgnoreCase("test")) {
+backupDatabaseConfirmationMessage = "The live database: '"
+				+ tempOldDatabase.getDatabaseName() + "' is successfully copied as a test database.";
+			
 			((NavigationController) Contexts.getSessionContext().get(
 					"navigationController")).testDatabaseConfirmation();
 		} else {
+restoreDatabaseConfirmationMessage = "The live database: '"
+				+ newProjectDatabase.getDatabaseName() + "' is successfully restored.";
+			
 			((NavigationController) Contexts.getSessionContext().get(
 					"navigationController")).restoreDatabaseConfirmation();
 		}
@@ -1028,7 +1037,7 @@ public class CreateController {
 				webApplicationCreaterThread.start();
 			} catch (Exception e) {
 				e.printStackTrace();
-				dataHolder.currentStatus = "Failed to initiate Data Interface creation process";
+				dataHolder.currentStatus = "Failed to initiate data interface creation process";
 				dataHolder.setOkButton(false);
 			}
 		}
