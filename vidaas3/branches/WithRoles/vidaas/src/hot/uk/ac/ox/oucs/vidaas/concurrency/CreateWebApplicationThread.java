@@ -44,7 +44,7 @@ public class CreateWebApplicationThread  implements Runnable {
 		
 		if (processOutcome == true){
 			dataHolder.setOkButton(false);
-			dataHolder.setCurrentStatus("Web Application will be available at: '" + serverURLTemp + webApplicationName + "' after few minutes");
+			dataHolder.setCurrentStatus("Your data interface is now available at: " + serverURLTemp + webApplicationName + "");
 			createStatus = true;
 			
 		}
