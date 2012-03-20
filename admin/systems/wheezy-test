@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# type of node to build
+vidaas_node_type=project
+
+# svn branch for code and configuration files
+vidaas_branch=trunk
+
+# revision of vidaas code (default HEAD)
+vidaas_source_revision=HEAD
+
+# install shibboleth (true/false)
+vidaas_shib=false
+
+# install SQL designer
+vidaas_designer=false
