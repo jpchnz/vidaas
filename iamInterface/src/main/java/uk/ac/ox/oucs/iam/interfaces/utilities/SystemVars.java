@@ -20,4 +20,15 @@ public class SystemVars {
 	public static final String POST_COMMAND_COMMAND_TOKEN = "c";
 	public static final String POST_COMMAND_PROJECTNAME_TOKEN = "projectName";
 	public static final String POST_COMMAND_PROJECTSPACE_TOKEN = "space";
+	public static final String POST_COMMAND_BILLINGFREQUENCY_TOKEN = "billingFrequency";
+	public static final String POST_COMMAND_PROJECTID_TOKEN = "projectId";
+	
+	public static final String POST_COMMAND_NEW_BILL = "bill";
+	public static final String POST_COMMAND_NEW_PROJECT = "newProject";
+	public static final String POST_COMMAND_UPDATE_PROJECT = "updateProject";
+	public static final String POST_COMMAND_GENERATE_INVOICES = "generateInvoices";
+	public static final String POST_COMMAND_NEW_DATA_AVAILABLE = "comeAndGetit";
+	
+	
+	public static final String locationOfKeyStore = "/home/oucs0153/keyStore/";
 }
