@@ -1,7 +1,10 @@
 package uk.ac.ox.oucs.vidaas.session;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import uk.ac.ox.oucs.vidaas.dao.*;
@@ -17,6 +20,22 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.log.Log;
+
+import uk.ac.ox.oucs.iam.interfaces.roles.IAMRoleManager;
+import uk.ac.ox.oucs.vidaas.dao.DataspaceHome;
+import uk.ac.ox.oucs.vidaas.dao.ProjectDatabaseHome;
+import uk.ac.ox.oucs.vidaas.dao.ProjectHome;
+import uk.ac.ox.oucs.vidaas.dao.UserProjectHome;
+import uk.ac.ox.oucs.vidaas.dao.XMLFilesHome;
+import uk.ac.ox.oucs.vidaas.entity.Dataspace;
+import uk.ac.ox.oucs.vidaas.entity.Logins;
+import uk.ac.ox.oucs.vidaas.entity.Project;
+import uk.ac.ox.oucs.vidaas.entity.ProjectDatabase;
+import uk.ac.ox.oucs.vidaas.entity.UserProject;
+import uk.ac.ox.oucs.vidaas.entity.UserProjectId;
+import uk.ac.ox.oucs.vidaas.entity.Users;
+import uk.ac.ox.oucs.vidaas.entity.XMLFiles;
+import uk.ac.ox.oucs.vidaas.utility.SystemVars;
 
 @Name("navigationController")
 @Scope(ScopeType.SESSION)
@@ -36,6 +55,9 @@ public class NavigationController {
 	@In(create = true)
 	@Out(required = true)
 	private ProjectDatabaseHome projectDatabaseHome;
+	
+
+	private String notAuthMsg = "";
 
 	@In(create = true)
 	@Out(required = true)
@@ -52,6 +74,12 @@ public class NavigationController {
 	private Dataspace currentDataspace;
 	private ProjectDatabase currentProjectDatabase;
 	private UserProject currentUserProject;
+
+	private static String currentRole;
+	private UserRolesWorker userRolesWorker = UserRolesWorker.getInstance();
+	public Map<String, Object> getRolesListMap() {
+		return userRolesWorker.getRolesListMap();
+	}
 
 	@RequestParameter("projectIDValue")
 	private Integer projectIDValue;
@@ -131,6 +159,11 @@ public class NavigationController {
 	private boolean deleteDataspaceFormRender = false;
 
 	private String editProjectMemberErrorMessage = "Failed to change the user role.";
+	private String addProjectMemberErrorMessage = "Failed to add new user.";
+	
+	private String createDatabaseFromSchemaErrorMessage = "You are not authorised to add a database here.";
+	private String createDatabaseFromSchemaInclude = "/popup/editProjectMemberError.xhtml";
+	private boolean createDatabaseFromSchemaFormRender = false;
 	
 	public String getHomePageMainBodyNavigation() {
 		return homePageMainBodyNavigation;
@@ -541,8 +574,7 @@ public class NavigationController {
 	public List<UserProject> userProjectsList() {
 		List<UserProject> userProjectsList = null;
 		if (getUserMain() != null) {
-			userProjectsList = userProjectHome.findByUserID(getUserMain()
-					.getUserId());
+			userProjectsList = userProjectHome.findByUserID(getUserMain().getUserId());
 		}
 		if (userProjectsList == null) {
 			userProjectsList = new ArrayList<UserProject>();
@@ -753,33 +785,202 @@ public class NavigationController {
 		deleteDataspaceFormRender = true;
 		deleteDataspaceInclude = "/popup/deleteDataspaceConfirmation.xhtml";
 	}
+	
+	public void editDataspaceInitial() {
+		editDataspaceFormRender = false;
+		editDataspaceInclude = "/popup/editDataspaceForm.xhtml";
+	}
+
+	public void editDataspaceConfirmation() {
+		editDataspaceFormRender = true;
+		editDataspaceInclude = "/popup/editDataspaceConfirmation.xhtml";
+	}
 
 	public void singleDataspaceDisplayPage() {
+		System.out.println("singleDataspaceDisplayPage");
 		log.info(
 				"singleDatabaseDisplayPage dataspaceIDValue: {0} projectIDValue: {1}",
 				dataspaceIDValue, projectIDValue);
+		System.out.println(String.format("db id: %d, proj id %d", dataspaceIDValue, projectIDValue));
 
 		projectHome.setId(projectIDValue);
 		currentProject = projectHome.getInstance();
 		Contexts.getSessionContext().set("currentProject", currentProject);
+		System.out.println("current project set to be " + currentProject.getName());
 
 		dataspaceHome.setId(dataspaceIDValue);
 		currentDataspace = dataspaceHome.getInstance();
 		Contexts.getSessionContext().set("currentDataspace", currentDataspace);
 
+
+		System.out.println("current dataspace set to be " + currentDataspace.getDataspaceName());
 		homePageMainBodyNavigation = "/custom/singleDataspaceByProject.xhtml";
+		System.out.println("Return from singleDataspaceDisplayPage");
 	}
 
 	public void setCurrentDataspace(Integer currentDataspaceIDValue) {
 		log.info("setCurrentDataspace currentDataspaceIDValue: "
 				+ currentDataspaceIDValue);
-		currentDataspace = null;
 		dataspaceHome.setId(currentDataspaceIDValue);
 		currentDataspace = dataspaceHome.getInstance();
 
 		Contexts.getSessionContext().set("currentDataspace", currentDataspace);
+		Contexts.getSessionContext().set("currentRole", currentRole);
 	}
 
+	
+	
+	public String authorisedToEditProject() {//editProjectInclude = "/popup/editProjectForm.xhtml"
+		System.out.println("authorisedToEditProject with Project ID = " + projectIDValue);
+		setAndGetUserRole(userProjectsList(), projectIDValue);
+		System.out.println("Current role is now set to " + currentRole);
+		return AuthorisationController.authorisedToEditProject(currentRole);
+	}
+	
+	
+	public String getPanelForDBDelete() {
+		System.out.println("getPanelForDBDelete");
+		setAndGetUserRole(userProjectsList(), projectIDValue);
+		boolean actionAuthorised = false;
+		try {
+			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+					|| SystemVars.treatAdminAsOwner(currentRole);
+		}
+		catch (MalformedURLException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			actionAuthorised = false;
+		}
+		
+		String rerenderPanelWhenDeletingDatabase;
+		if (actionAuthorised) {
+			System.out.println("Authorised");
+			rerenderPanelWhenDeletingDatabase = "deleteDataspacePanel";
+			notAuthMsg = "";
+		}
+		else {
+			System.out.println("Not authorised!");
+			rerenderPanelWhenDeletingDatabase = "notAuthorisedPanel";
+			notAuthMsg = "You are not authorised to do this.";
+		}
+		return rerenderPanelWhenDeletingDatabase;
+	}
+	
+	
+	public String getCreateDBPanel() {
+		System.out.println("getCreateDBPanel");
+		authorisedToPerformOperation = checkAuthorisedToUploadDb();
+		if (authorisedToPerformOperation) {
+			System.out.println("true");
+			notAuthMsg = "";
+			return "createDatabasePanel";
+		}
+		else {
+			System.out.println("false");
+			notAuthMsg = "You are not authorised to do this.";
+			return "createDatabasePanel";
+		}
+	}
+	private boolean authorisedToPerformOperation = false;
+	
+	
+	public boolean checkAuthorisedToUploadDb() {
+		System.out.println("checkAuthorisedToUploadDb:" + projectIDValue);
+		setAndGetUserRole(userProjectsList(), projectIDValue);
+		
+		if (currentRole == null) {
+			return false;
+		}
+		System.out
+				.println(String.format(
+						"Check if the user is authorised to create a database from schema when they have the role <%s>",
+						currentRole));
+		boolean actionAuthorised = false;
+		try {
+			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+					|| SystemVars.treatAdminAsOwner(currentRole);
+			System.out.println("Call returned " + actionAuthorised);
+		}
+		catch (MalformedURLException e) {
+			System.out.println("Malformed exception");
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			System.out.println("IO Exception");
+			e.printStackTrace();
+		}
+		return actionAuthorised;
+	}
+	
+//	public String getPanelForDBCreate() {
+//		System.out.println("getPanelForDBCreate");
+//		setAndGetUserRole(userProjectsList(), projectIDValue);
+//		boolean actionAuthorised = false;
+//		try {
+//			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+//					|| SystemVars.treatAdminAsOwner(currentRole);
+//		}
+//		catch (MalformedURLException e) {
+//			e.printStackTrace();
+//			actionAuthorised = false;
+//		}
+//		catch (IOException e) {
+//			e.printStackTrace();
+//			actionAuthorised = false;
+//		}
+//		
+//		String rerenderPanelWhenCreatingDatabase;
+//		if (actionAuthorised) {
+//			System.out.println("Authorised");
+//			rerenderPanelWhenCreatingDatabase = "createDataSpacePanel";
+//			createDataSpaceInclude = "/popup/createDataSpaceForm.xhtml";
+//			notAuthMsg = "";
+//		}
+//		else {
+//			System.out.println("Not authorised!");
+//			rerenderPanelWhenCreatingDatabase = "notAuthorisedPanel";
+//			createDataSpaceInclude = "/popup/editProjectMemberError.xhtml";
+//			notAuthMsg = "You are not authorised to do this.";
+//		}
+//		return rerenderPanelWhenCreatingDatabase;
+//	}
+		
+//	public String getPanelForDBEdit() {
+//		System.out.println("getPanelForDBEdit");
+//		setAndGetUserRole(userProjectsList(), projectIDValue);
+//		boolean actionAuthorised = false;
+//		try {
+//			actionAuthorised = IAMRoleManager.getInstance().getDatabaseAuthentication().isAllowedToAddEditOrRemoveDBData(currentRole)
+//					|| SystemVars.treatAdminAsOwner(currentRole);
+//		}
+//		catch (MalformedURLException e) {
+//			e.printStackTrace();
+//			actionAuthorised = false;
+//		}
+//		catch (IOException e) {
+//			e.printStackTrace();
+//			actionAuthorised = false;
+//		}
+//		
+//		String rerenderPanelWhenEditingDatabase;
+//		if (actionAuthorised) {
+//			System.out.println("Authorised");
+//			rerenderPanelWhenEditingDatabase = "editDataspacePanel";
+//			notAuthMsg = "";
+//		}
+//		else {
+//			System.out.println("Not authorised!");
+//			rerenderPanelWhenEditingDatabase = "notAuthorisedPanel";
+//			notAuthMsg = "You are not authorised to edit this database.";
+//		}
+//		return rerenderPanelWhenEditingDatabase;
+//	}
+	
+	
+	
 	public void createProjectMember() {
 		log.info("createProjectMember projectIDValue: " + projectIDValue);
 		if (projectIDValue != null) {
@@ -791,68 +992,130 @@ public class NavigationController {
 
 		projectHome.setId(projectIDValue);
 		currentProject = projectHome.getInstance();
+		
+		
+		
+		/*
+		 * We need to determine if this user has authority to add another user to the project!
+		 */
+		log.debug("Check if the user is authorised");
+		setAndGetUserRole(userProjectsList(), projectIDValue);
+		
 		Contexts.getSessionContext().set("currentProject", currentProject);
 		// homePageMainBodyNavigation = "/custom/createUserForm.xhtml";
+	}
+	
+	public void createDatabaseFromSchema() {
+		System.out.println("Nonononono");
+		createDatabaseFromSchemaErrorMessage = "You are not authorised to add a database here.";
+		createDatabaseFromSchemaInclude = "/popup/editProjectMemberError.xhtml";
 	}
 
 	public void modifyProjectMember() {
 		System.out.println("userIDValue: " + userIDValue);
+		
 		this.userProjectHome.setId(new UserProjectId(projectIDValue,
 				userIDValue));
 		currentUserProject = this.userProjectHome.getInstance();
 
 		List<UserProject> userProjectList = userProjectHome
 				.findByProjectID(currentUserProject.getId().getProjectId());
-		System.out.println(userProjectList.size());
-		if (userProjectList.size() == 1) {
-
-			if (userProjectList.get(0).getId().getUserId() == currentUserProject
-					.getId().getUserId()) {
-				if (userProjectList.get(0).getUserRole()
-						.equalsIgnoreCase("admin")
-						|| userProjectList.get(0).getUserRole()
-								.equalsIgnoreCase("owner")) {
-					// Don't update the role ...
-					// there should always be one admin/owner of the project
-					//System.out.println("Single User is owner");
-					editProjectMemberErrorMessage = " Selected member is  sole Owner/Admin of the project. Change in role not allowed";
+		System.out.println("Number of users in project:" + userProjectList.size());
+		
+		
+		boolean actionAuthorised = false;
+		boolean attemptToModifyOwner = false;
+		
+		if (userProjectList.size() > 0) {
+			setAndGetUserRole(userProjectsList(), projectIDValue);
+			
+			System.out.println(String.format("Check if %s is authorised to modify a project member", currentRole));
+			actionAuthorised = isAuthorisedToAlterUserRole();
+			
+			if (actionAuthorised) {
+				System.out.println("Yes, the user is authorised.");
+				
+				/**
+				 * Look through each user in the project
+				 */
+				System.out.println(String.format("There are %d users in this project", userProjectList.size()));
+				for (int i = 0; i < userProjectList.size(); i++) {
+					UserProject workingUserProject = userProjectList.get(i);
+					System.out.println(String.format("Check who we are dealing with. Does user id %d match the current id %d?",
+							workingUserProject.getId().getUserId(),currentUserProject.getId().getUserId()));
+					System.out.println(String.format("Project Name is %s", workingUserProject.getProject().getName()));
+					if (workingUserProject.getId().getUserId() != currentUserProject.getId().getUserId()) {
+						System.out.println("No, it doesn't!");
+					}
+					else {
+						System.out.println(String.format("Yes, this is it. So we want to alter the role of user %d who has role of <%s>",
+								workingUserProject.getId().getUserId(), workingUserProject.getUserRole()));
+						/*
+						 * We know the user doing the work is authorised to do it. Now
+						 * check if the user to be changed is owner.
+						 */
+						try {
+							attemptToModifyOwner = (IAMRoleManager.getInstance().getOwnerRole().equals(workingUserProject.getUserRole())
+									|| SystemVars.treatAdminAsOwner(workingUserProject.getUserRole()));
+						}
+						catch (MalformedURLException e) {
+							e.printStackTrace();
+						}
+						catch (IOException e) {
+							e.printStackTrace();
+						}
+						if (attemptToModifyOwner) {
+							System.out.println("Attempt to modify owner");
+							editProjectMemberErrorMessage = "You cannot modify the project owner! Change in role not allowed";
+							editProjectMemberInclude = "/popup/editProjectMemberError.xhtml";
+						}
+						else {
+							System.out.println(String.format("Role %s is modifyable - so let's modify!", workingUserProject.getUserRole()));
+						}
+					}
+					
+					break;
+				}
+				if (attemptToModifyOwner) {
+					editProjectMemberErrorMessage = "You cannot modify the project owner! Change in role not allowed";
 					editProjectMemberInclude = "/popup/editProjectMemberError.xhtml";
-				} else {
-					editProjectMemberErrorMessage = "Project should have at least one member. Change in role not allowed";
-					editProjectMemberInclude = "/popup/editProjectMemberError.xhtml";
+				}
+				else {
+					editProjectMemberInclude = "/popup/editProjectMemberForm.xhtml";
 				}
 			}
-		} else if (userProjectList.size() > 1) {
-			if (userProjectList.get(0).getUserRole().equalsIgnoreCase("admin")
-					|| userProjectList.get(0).getUserRole()
-							.equalsIgnoreCase("owner")) {
-				boolean anyOtherOwner = false;
-				for (int i = 0; i < userProjectList.size(); i++) {
-					UserProject tempUserProject = userProjectList.get(i);
-					if (tempUserProject.getId().getUserId() != currentUserProject
-							.getId().getUserId())
-						if (tempUserProject.getUserRole().equalsIgnoreCase(
-								"admin")
-								|| tempUserProject.getUserRole()
-										.equalsIgnoreCase("owner")) {
-							anyOtherOwner = true;
-							break;
-						}
-				}
-				if (anyOtherOwner) {
-					editProjectMemberInclude = "/popup/editProjectMemberForm.xhtml";
-				} else {
-					editProjectMemberErrorMessage = "At lease one member of the project should be Owner/Admin of the project. Change in role not allowed";
-					editProjectMemberInclude = "/popup/editProjectMemberError.xhtml";
-				}
-
+			else {
+				setupErrorFields();
 			}
 		}
-		Contexts.getSessionContext().set("currentUserProject",
-				currentUserProject);
+		else {
+			System.out.println("Error - no users in the project. This should never happen.");
+		}
+		Contexts.getSessionContext().set("currentUserProject", currentUserProject);
+	}
+	
+	private boolean isAuthorisedToAlterUserRole() {
+		boolean actionAuthorised = false;
+		try {
+			actionAuthorised = IAMRoleManager.getInstance().getProjectAuthentication().isAllowedToAlterOtherUsersRole(currentRole)
+					|| SystemVars.treatAdminAsOwner(currentRole);
+		}
+		catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return actionAuthorised;
+	}
+	
+	private void setupErrorFields() {
+		editProjectMemberErrorMessage = "You are not authorised to modify this project member.";
+		editProjectMemberInclude = "/popup/editProjectMemberError.xhtml";
 	}
 
 	public void setCurrentProject(Integer currentProjectIDValue) {
+		System.out.println("Current project:" + currentProjectIDValue);
 		log.info("setCurrentProject projectIDValue: " + projectIDValue + "  "
 				+ currentProjectIDValue);
 		if (projectIDValue != null) {
@@ -865,6 +1128,7 @@ public class NavigationController {
 		projectHome.setId(projectIDValue);
 		currentProject = projectHome.getInstance();
 		Contexts.getSessionContext().set("currentProject", currentProject);
+		setAndGetUserRole(userProjectsList(), projectIDValue);
 	}
 
 	public boolean setCurrentDatabase(Integer currentDatabaseIDValue) {
@@ -879,7 +1143,7 @@ public class NavigationController {
 
 		setCurrentDataspace(this.currentProjectDatabase.getDataspace()
 				.getDataSpaceId());
-
+		
 		Contexts.getSessionContext().set("currentProjectDatabase",
 				this.currentProjectDatabase);
 		return true;
@@ -914,4 +1178,96 @@ public class NavigationController {
 		log.info("onCompleteTest()");
 	}
 
+
+	public String getAddProjectMemberErrorMessage() {
+		return addProjectMemberErrorMessage;
+	}
+
+	public void setAddProjectMemberErrorMessage(String addProjectMemberErrorMessage) {
+		this.addProjectMemberErrorMessage = addProjectMemberErrorMessage;
+	}
+
+	public String getNotAuthMsg() {
+		return notAuthMsg;
+	}
+
+	public void setNotAuthMsg(String notAuthMsg) {
+		this.notAuthMsg = notAuthMsg;
+	}
+
+	public String getCurrentRole() {
+		return currentRole;
+	}
+
+	public void setCurrentRole(String currentRole) {
+		NavigationController.currentRole = currentRole;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Roles
+	 */
+	public String setAndGetUserRoleByEmail(Set<UserProject> userProjects, Integer projectIDValue) {
+		List<UserProject> list = new ArrayList<UserProject>(userProjects);
+		return setAndGetUserRoleByEmail(list, projectIDValue);
+	}
+	public String setAndGetUserRoleByEmail(List<UserProject> UserProjects, Integer projectIDValue) {
+		System.out.println("setAndGetUserRoleByEmail");
+		if (projectIDValue == null) {
+			return null;
+		}
+		System.out.println("About to get the user role for project id:" + projectIDValue);
+		System.out.println(String.format("We have %d user project objects", UserProjects.size()));
+		
+		for (UserProject up : UserProjects) {
+			if (up.getUsers().getEmail().equalsIgnoreCase(userMain.getEmail())) {
+				currentRole = up.getUserRole();
+				System.out.println("Got it!");
+				break;
+			}
+		}
+		System.out.println(String.format("Current role is now <%s>", currentRole));
+		Contexts.getSessionContext().set("currentRole", currentRole);
+		
+		return currentRole;
+	}
+	public void setAndGetUserRole(List<UserProject> UserProjects, Integer projectIDValue) {
+		System.out.println("setAndGetUserRole");
+		if (projectIDValue == null) {
+			return ;
+		}
+		System.out.println("About to get the user role for project id:" + projectIDValue);
+		System.out.println(String.format("We have %d user project objects", UserProjects.size()));
+		
+		for (UserProject up : UserProjects) {
+//			System.out.println("Check project " + up.getProject().getName());
+//			System.out.println("Project id is " + up.getProject().getProjectId());
+//			System.out.println("Check email " + up.getUsers().getEmail());
+//			System.out.println("Role: " + up.getUserRole());
+			if (up.getProject().getProjectId().equals(projectIDValue)) {
+//				System.out.println("Project name " + up.getProject().getName());
+//				System.out.println("Project id is " + up.getProject().getProjectId());
+//				System.out.println("Email is " + up.getUsers().getEmail());
+				currentRole = up.getUserRole().replaceAll("\n", "");
+				break;
+			}
+		}
+		System.out.println(String.format("Setting current role to <%s>", currentRole));
+		Contexts.getSessionContext().set("currentRole", currentRole);
+		
+		return;
+	}
+
+	public boolean isAuthorisedToPerformOperation() {
+		System.out.println("Returning " + authorisedToPerformOperation);
+		return authorisedToPerformOperation;
+	}
+
+	public void setAuthorisedToPerformOperation(boolean authorisedToPerformOperation) {
+		this.authorisedToPerformOperation = authorisedToPerformOperation;
+	}
 }
