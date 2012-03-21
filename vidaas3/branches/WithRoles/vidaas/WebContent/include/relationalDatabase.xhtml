@@ -65,7 +65,7 @@
 
 			<h:panelGroup
 				rendered="#{_database.webApplication.status=='Deployed'}">
-				<h:outputLabel value="Database Interface URL: " />
+				<h:outputLabel value="Data interface URL: " />
 				<s:link rendered="#{_database.webApplication.status=='Deployed'}"
 					onclick="window.open('#{_database.webApplication.url}','htmlwindow','scrollbars=yes, resizable=yes,toolbar=yes, width=980,height=800')"
 					disabled="false">
@@ -78,7 +78,7 @@
 					rendered="#{_database.webApplication.status=='NotDeployed'}"
 					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
 					reRender="createWebApplicationFormInclude"
-					id="createWebApplicationButton" value="Create Web Application"
+					id="createWebApplicationButton" value="Create data interface"
 					style="float:left">
 					<rich:componentControl for="#{createController.authorisedToCreateWebApp()}"
 						attachTo="createWebApplicationButton" operation="show"
@@ -87,7 +87,7 @@
 					rendered="#{_database.webApplication.status=='Deployed'}"
 					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
 					reRender="removeWebApplicationFormInclude"
-					id="removeWebApplicationButton" value="Remove Web Application"
+					id="removeWebApplicationButton" value="Remove data interface"
 					style="float:right">
 					<rich:componentControl for="#{createController.authorisedToRemoveWebApp()}"
 						attachTo="removeWebApplicationButton" operation="show"
@@ -109,7 +109,7 @@
 			<a4j:form id="databaseButtonForm">
 				<div class="actionButtons"><a4j:commandButton
 					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
-					id="dropDatabaseButton" value="Delete Database" style="float:left"
+					id="dropDatabaseButton" value="Delete database" style="float:left"
 					reRender="dropDatabaseFormInclude"
 					oncomplete="javascript:Richfaces.showModalPanel('#{createController.authorisedToDropDatabase()}');">
 					<!--  
@@ -120,7 +120,7 @@
 					rendered="#{_database.databaseType=='main' and createController.hasTestDatabase(_database.databaseId)}"
 					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
 					reRender="testDatabaseFormInclude" id="testDatabaseButton"
-					value="Create Test Database"
+					value="Create test database"
 					oncomplete="Richfaces.showModalPanel('#{createController.authorisedToCreateTestDatabase()}');">
 					<!--  
 								<rich:componentControl for="testDatabasePanel"
@@ -140,7 +140,7 @@
 					rendered="#{_database.databaseType!='main'  and createController.hasMainDatabase(_database.databaseId)}"
 					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
 					reRender="restoreDatabaseFormInclude" id="restoreDatabaseButton"
-					value="Restore Database"
+					value="Copy as new live database"
 					oncomplete=" Richfaces.showModalPanel('restoreDatabasePanel');">
 					<!--  
 							<rich:componentControl for="backupDatabasePanel"
@@ -149,7 +149,7 @@
 				</a4j:commandButton></div>
 			</a4j:form>
 		</h:panelGrid>
-
+	
 	</rich:panel>
-
+		
 </ui:composition>
