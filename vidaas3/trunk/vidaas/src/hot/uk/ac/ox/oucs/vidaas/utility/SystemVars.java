@@ -9,6 +9,20 @@ package uk.ac.ox.oucs.vidaas.utility;
  */
 public class SystemVars {
 	public static final boolean SHOW_PASSWORD_IN_LOGS_FOR_DEBUGGING_PURPOSES = false;
+		
+	
+	/**
+	 * This should be false for the final release. It is currently
+	 * required for backwards compatibility with the database, where
+	 * "admin" was considered the user's role regardless of who they were.
+	 */
+	public static final boolean TREAT_ADMIN_AS_OWNER = true;
+	public static boolean treatAdminAsOwner(String role) {
+		if (role == null) {
+			return false;
+		}
+		return role.equalsIgnoreCase("admin");
+	}
 	
 	/*
 	 * Use this flag to determine if SSO functions are used within VIDaaS
