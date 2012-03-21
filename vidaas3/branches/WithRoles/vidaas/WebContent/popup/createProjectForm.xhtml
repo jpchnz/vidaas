@@ -24,7 +24,7 @@
 					disabled="true" />
 				<rich:message for="ownerEmail" style="width : 184px;" />
 
-				<h:outputLabel for="title">Project Name</h:outputLabel>
+				<h:outputLabel for="title">Project name</h:outputLabel>
 				<h:inputText id="title" value="#{projectHome.instance.name}"
 					style="width:289px;" required="true" />
 				<rich:message for="title" style="width : 184px;" />
@@ -47,7 +47,7 @@
 					value="#{projectHome.instance.endDate}" datePattern="dd/MM/yyyy" />
 				<rich:message for="endDate" style="width : 184px;" />
 
-				<h:outputLabel for="databaseSpace">Database Space</h:outputLabel>
+				<h:outputLabel for="databaseSpace">Project space allocation</h:outputLabel>
 				<h:selectOneMenu required="true" id="databaseSpace">
 					<f:selectItem id="item1" itemLabel="Regular 25GB"
 						itemValue="regular" />
@@ -55,7 +55,7 @@
 				</h:selectOneMenu>
 				<rich:message for="databaseSpace" style="width : 184px;" />
 
-				<h:outputLabel for="storageType">Storage Type</h:outputLabel>
+				<h:outputLabel for="storageType">Storage type</h:outputLabel>
 				<h:selectOneMenu required="true" id="storageType">
 					<f:selectItem id="item1A" itemLabel="public cloud"
 						itemValue="public" />
@@ -75,8 +75,8 @@
 					required="true" rows="3" />
 				<rich:message for="description" style="width : 184px;" />
 
-				<h:outputLabel for="addPaymnet">Add Payment</h:outputLabel>
-				<a4j:commandLink id="addPaymentLink1" value="Add Payment"
+				<h:outputLabel for="addPaymnet">Add payment</h:outputLabel>
+				<a4j:commandLink id="addPaymentLink1" value="Add payment details"
 					style="float:right">
 					<rich:componentControl for="addPaymentPanel"
 						attachTo="addPaymentLink1" operation="show" event="onclick" />
