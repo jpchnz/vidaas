@@ -8,7 +8,7 @@
 
 	<h:outputLabel value="#{registration.registrationMessage1}" />
 	<a4j:form ajaxSubmit="true" id="registrationLevel1">
-		
+		<h:outputText value="#{registration.emailText}" rendered="#{authenticator.useSso}"/>
 		<s:validateAll>
 			<div><h:panelGrid columns="3"
 				columnClasses="name,value,errorMessage">
@@ -24,7 +24,7 @@
 				
 				<h:outputLabel for="email">Email</h:outputLabel>
 				<h:inputText id="email" value="#{registration.email}"
-					required="true">
+					required="true" disabled="#{authenticator.useSso}">
 				</h:inputText>
 				<rich:message for="email" />
 				
