@@ -70,7 +70,7 @@
 		
 		<a4j:commandButton
 			action="#{createController.cloneDatabase(currentProjectDatabase.databaseId, 'main')}"
-			id="restoreDatabaseButton" value="Restore Database" onclick="this.disabled=true" status="submitStatus"
+			id="restoreDatabaseButton" value="Copy live database" onclick="this.disabled=true" status="submitStatus"
 			reRender="restoreDatabasePanel, restoreDatabaseFormInclude, homePageMainBodyInclude, homeMainPanel" style="float:right" ></a4j:commandButton>
 		
 		<a4j:region>
