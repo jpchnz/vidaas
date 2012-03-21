@@ -155,12 +155,12 @@ public class SendViaPost {
 		if (encrypt) {
 			if (vSig.isTimeStampInUse()) {
 				dataToPost = String.format("%s&%s=%s&%s=%s&%s=%s&%s=%s", postData, SignatureGenerator.KEYFILE_POST_ATTRIBUTE,
-						keyBaseName, SignatureGenerator.TIMESTAMP_POST_ATTRIBUTE, vSig.getTimestamp(),
-						SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature(), SignatureGenerator.DEST_IP, destinationIP);
+						keyBaseName, SignatureGenerator.TIMESTAMP_POST_ATTRIBUTE, vSig.getTimestamp(), SignatureGenerator.DEST_IP, destinationIP,
+						SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature());
 			}
 			else {
 				dataToPost = String.format("%s&%s=%s&%s=%s&%s=%s", postData, SignatureGenerator.KEYFILE_POST_ATTRIBUTE,
-						keyBaseName, SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature(), SignatureGenerator.DEST_IP, destinationIP);
+						keyBaseName, SignatureGenerator.DEST_IP, destinationIP, SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature());
 			}
 		}
 		else {

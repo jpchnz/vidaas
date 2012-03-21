@@ -113,7 +113,7 @@ public class GeneralUtils {
 			}
 		}
 		catch (IOException e) {
-			keyPairDirectory = File.separator + "tmp" + File.separator + "keyStore";
+			keyPairDirectory = SystemVars.locationOfKeyStore;
 		}
 		if (!new File(keyPairDirectory).exists()) {
 			if (!new File(keyPairDirectory).mkdirs()) {
