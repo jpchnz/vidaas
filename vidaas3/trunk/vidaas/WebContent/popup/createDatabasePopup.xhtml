@@ -15,12 +15,10 @@
             </h:panelGroup>
         </f:facet>
         <f:facet name="controls">
-        <!--  
             <h:panelGroup>
                 <h:graphicImage value="/images/close.png" width="20px" styleClass="hidelink" id="createDatabaseHidelink"/>
                 <rich:componentControl for="createDatabasePanel" attachTo="createDatabaseHidelink" operation="hide" event="onclick"/>
             </h:panelGroup>
-            -->
         </f:facet>
         <a4j:include id="createDatabaseFormInclude" viewId="#{navigationController.createDatabaseInclude}"/>
 	</rich:modalPanel>
