@@ -46,12 +46,20 @@
                           value="#{createController.today}" datePattern="dd/MM/yyyy"/>
 	        	<rich:message for="dataspaceCreationDate" style="width : 184px;" />
 	        	
-	        	<h:outputLabel for="databaseSources">Data sources</h:outputLabel>	            
+	        	<h:outputLabel for="databaseSources"><a class="tooltip" href="#">Data sources<span
+						class="custom help"> <img src="images/Help.png" alt="Help"
+							height="48" width="48" /><em>#{helpController.getHelpTitle('DatabaseCreationPopup_DataSources')}</em>#{helpController.setupHelpText('DatabaseCreationPopup_DataSources')}
+					</span></a>
+	        	</h:outputLabel>	            
 	            <h:inputTextarea id="databaseSources"  required="true" 
 	            	style="width:295px;" rows="3"/>
 	        	<rich:message for="databaseSources" style="width : 184px;" />
 	        	
-	        	<h:outputLabel for="dataGathering">Data gathering process</h:outputLabel>	            
+	        	<h:outputLabel for="dataGathering"><a class="tooltip" href="#">Data gathering process<span
+						class="custom help"> <img src="images/Help.png" alt="Help"
+							height="48" width="48" /><em>#{helpController.getHelpTitle('DatabaseCreationPopup_DataGathering')}</em>#{helpController.setupHelpText('DatabaseCreationPopup_DataGathering')}
+					</span></a>
+	        	</h:outputLabel>	            
 	            <h:inputTextarea id="dataGathering"  required="true"
 	            	style="width:295px;" rows="3"/>
 	        	<rich:message for="dataGathering" style="width : 184px;" />
