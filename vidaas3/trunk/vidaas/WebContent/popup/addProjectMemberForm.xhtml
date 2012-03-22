@@ -8,12 +8,12 @@
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:rich="http://richfaces.org/rich">
 
-	<a4j:form ajaxSubmit="true" reRender="homePageMainBodyInclude" id="createProjectMemberForm">
+	<a4j:form ajaxSubmit="true" reRender="homePageMainBodyInclude"
+		id="createProjectMemberForm">
 		<s:validateAll>
 
 			<div>
-				<h:panelGrid columns="3" rowClasses="prop"
-					columnClasses="name,value,errorMessage">
+				<h:panelGrid columns="3" rowClasses="prop" columnClasses="name,value,errorMessage">
 					<h:outputLabel for="firstName">First Name</h:outputLabel>
 					<h:inputText id="firstName" value="#{usersHome.instance.firstName}"
 						required="true" />
@@ -35,45 +35,24 @@
 						required="true" />
 					<rich:message for="email" style="width : 184px;" />
 
+
 					<h:outputLabel for="memberRole">
 						<a class="tooltip" href="#">Role<span class="custom help">
-								<img src="images/Help.png" alt="Help" height="48" width="48" /><em>#{helpController.getHelpTitle('AddNewMembersPopup_Role')}</em>#{helpController.setupHelpText('AddNewMembersPopup_Role')}
+								<img src="images/Help.png" alt="Help" height="48" width="48" />
+								<em>#{helpController.getHelpTitle('AddNewMembersPopup_Role')}</em>
+								#{helpController.setupHelpText('AddNewMembersPopup_Role')}
 						</span></a>
 					</h:outputLabel>
-					<h:selectOneMenu id="memberRole" required="true"
-						value="#{userProjectHome.instance.userRole}" style="width:184px;">
-						<f:selectItem id="memberRole_item1"
-							itemLabel="Project administrator" itemValue="admin" />
-						<f:selectItem id="memberRole_item2" itemLabel="Contributor"
-							itemValue="researcher" />
-						<f:selectItem id="memberRole_item3" itemLabel="Viewer"
-							itemValue="user" />
+					<h:selectOneMenu value="#{createController.requiredRole}">
+						<f:selectItems value="#{navigationController.rolesListMap}" />
 					</h:selectOneMenu>
 					<rich:message for="memberRole" style="width : 184px;" />
 
+
+
+
 				</h:panelGrid>
 			</div>
-			</h:outputLabel>
-			<h:inputText id="email" value="#{usersHome.instance.email}"
-				required="true" />
-			<rich:message for="email" style="width : 184px;" />
-
-
-			<h:outputLabel for="memberRole">
-				<a class="tooltip" href="#">Role<span class="custom help">
-						<img src="images/Help.png" alt="Help" height="48" width="48" /> <em>#{helpController.getHelpTitle('AddNewMembersPopup_Role')}</em>
-						#{helpController.setupHelpText('AddNewMembersPopup_Role')}
-				</span></a>
-			</h:outputLabel>
-			<h:selectOneMenu value="#{createController.requiredRole}">
-				<f:selectItems value="#{navigationController.rolesListMap}" />
-			</h:selectOneMenu>
-			<rich:message for="memberRole" style="width : 184px;" />
-
-
-
-
-			</h:panelGrid>
 
 			<div class="actionButtons">
 
@@ -94,14 +73,14 @@
 
 				<div class="actionButtons">
 
-					<a4j:commandButton id="createProjectMemberCancelButton"
+					<a4j:commandButton id="createProjectMemberCancelButton2"
 						value="Cancel" style="float:left">
 						<rich:componentControl for="addProjectMemberPanel"
-							attachTo="createProjectMemberCancelButton" operation="hide"
+							attachTo="createProjectMemberCancelButton2" operation="hide"
 							event="onclick" />
 					</a4j:commandButton>
 
-					<a4j:commandButton id="createProjectMemberButton"
+					<a4j:commandButton id="createProjectMemberButton2"
 						value="Add New Member"
 						action="#{createController.createProjectMember}"
 						onclick="this.disabled=true" status="submitStatus"
