@@ -60,7 +60,7 @@ public class ReceivePostedData {
 				for (SecurePostData spd : securePostDataList) {
 					System.out.println("Item " + (counter+1));
 					System.out.println("Originator for data " + (counter+1) + " = " + spd.getOriginatorHost());
-					for (String s : spd.getPostParms()) {
+					for (String s : spd.getPostParms().values()) {
 						System.out.println(s);
 					}
 					counter++;

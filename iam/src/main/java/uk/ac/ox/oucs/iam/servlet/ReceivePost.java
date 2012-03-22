@@ -2,7 +2,10 @@ package uk.ac.ox.oucs.iam.servlet;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -13,16 +16,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.ox.oucs.iam.audit.IamAudit;
 import uk.ac.ox.oucs.iam.interfaces.security.ReceivePostedData;
 import uk.ac.ox.oucs.iam.interfaces.security.SecurePostData;
 import uk.ac.ox.oucs.iam.interfaces.security.SignatureGenerator;
 import uk.ac.ox.oucs.iam.interfaces.security.SignatureVerifier;
 import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
+import uk.ac.ox.oucs.iam.interfaces.utilities.SystemVars;
 import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
 
 @SuppressWarnings("serial")
 public class ReceivePost extends HttpServlet {
+	private static Logger log = Logger.getLogger(ReceivePost.class);
 	private PrintWriter out;
 	public String keyFile = "";
 	public String keyDir;
@@ -75,6 +82,8 @@ public class ReceivePost extends HttpServlet {
 	 * @param request
 	 */
 	private void checkRequest(HttpServletRequest request) {
+		log.debug("checkRequest");
+		
 		String messageToVerify = "";
 		String timestamp = "";
 		int counter = 0;
@@ -168,11 +177,12 @@ public class ReceivePost extends HttpServlet {
 										out.println("not old:" + ((now.getTime() - Long.parseLong(timestamp)/1000)));
 									}
 								}
+								
 								if (securePostData.isMessageHasBeenVerified() && !securePostData.isMessageTimedOut()) {
 									securePostData.setMessageHasBeenVerified(true);
 									String validatedMessage = String.format(
 											"Post request from %s validated with the following parameters:\n", hostId);
-									for (String s : securePostData.getPostParms()) {
+									for (String s : securePostData.getPostParms().values()) {
 										validatedMessage += "\t" + s + "\n";
 									}
 									auditer.auditSometimes(validatedMessage);
@@ -206,6 +216,34 @@ public class ReceivePost extends HttpServlet {
 						securePostData.setNoPrivateKey(true);
 					}
 					manipulateSecurePostDataList(securePostData);
+					out.println("Sig:"+securePostData.isBadSig());
+					out.println("Verified:"+securePostData.isMessageHasBeenVerified());
+					out.println("Timeout:"+securePostData.isMessageTimedOut());
+					out.println("Priv key:"+securePostData.isNoPrivateKey());
+					
+					/*
+					 * We can now send a little tickle to the intended recipient telling them that
+					 * there is data waiting for them 
+					 */
+					log.debug("About to send notification");
+					try {
+						URL url = new URL(securePostData.getIntendedDestination());
+						URLConnection connection = url.openConnection();
+						if (log.isDebugEnabled()) {
+							log.debug(String.format("About to post to %s", securePostData.getIntendedDestination()));
+							log.debug(String.format("Will use the following parms: %s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE));
+						}
+						connection.setDoOutput(true);
+						OutputStreamWriter outsw = new OutputStreamWriter(connection.getOutputStream());
+						outsw.write(String.format("%s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE));
+						outsw.flush();
+						outsw.close();
+						log.debug("Message posted");
+					}
+					catch (Exception ex) {
+						log.error("Exception trying to notify " + securePostData.getIntendedDestination());
+						log.error(ex);
+					}
 				}
 				else {
 					/*
@@ -247,13 +285,16 @@ public class ReceivePost extends HttpServlet {
 					}
 					else {
 						messages[counter] = data + "=" + request.getParameter(data);
-						securePostData.addPostParm(messages[counter]);
+						securePostData.addPostParm(data, messages[counter]);
+						out.println("Adding:" + messages[counter]);
 						counter++;
 					}
 				}
 			}
 		}
 	}
+	
+
 
 	private String getAllCallerDetails(HttpServletRequest request) {
 		return String.format("Remote host:%s, Referer:%s, remoteHost:%s, user agent:%s", request.getRemoteAddr(),
@@ -270,6 +311,7 @@ public class ReceivePost extends HttpServlet {
 	 */
 	private synchronized void manipulateSecurePostDataList(SecurePostData dataItem) {
 		if (dataItem == null) {
+			log.debug("manipulateSecurePostDataList");
 			/*
 			 * The user has requested all current data - let's give it to them
 			 * and then clear the list
@@ -282,6 +324,7 @@ public class ReceivePost extends HttpServlet {
 			}
 		}
 		else {
+			log.debug("manipulateSecurePostDataList - add item");
 			securePostDataList.add(dataItem);
 		}
 	}
