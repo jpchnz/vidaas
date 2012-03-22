@@ -10,6 +10,28 @@
 			<image>help</image>
 		</helpField>
 		<helpField>
+			<helpId>DatabaseCreationPopup_DataSources</helpId>
+			<title>Data sources</title>
+			<text>This field can be used to record where the data in the dataset
+				came from. This might include details of print material that has
+				been digitized, or of multiple sources that have been combined to
+				produce the current dataset. (If not applicable, enter N/A.)
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
+			<helpId>DatabaseCreationPopup_DataGathering</helpId>
+			<title>Data gathering process</title>
+			<text>This field can be used to record the processes used to collect
+				the data in the dataset – for example, through experiments,
+				interviews, or selection and digitization of print materials. It is
+				also good practice to indicate any equipment used to generate the
+				data, along with any relevant settings or parameters. (If not
+				applicable, enter N/A.)
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
 			<helpId>DatabaseCreationPopup_DatabaseDescription</helpId>
 			<title>Database description</title>
 			<text>This field should be used to describe the content and scope of
@@ -80,6 +102,50 @@
 			<image>help</image>
 		</helpField>
 		<helpField>
+			<helpId>ProjectCreationPopup_SpaceAllocation</helpId>
+			<title>Project space allocation</title>
+			<text>This defines the total space that will be available to your
+				project for hosting databases. Please be aware that if you intend to
+				create more than one version of any given database within your
+				project (i.e. a separate test copy or 'milestone' copy), this will
+				create a duplicate of that database, thus increasing your total
+				space usage. The 25 GB option should be ample for research databases
+				that do not contain more than 100,000 records and do not include
+				images, audio files, or other multimedia, even if you make two
+				duplicates. If you are intending to build a database larger than
+				this, or which contains multimedia, you may wish to consider the 100
+				GB option. If you exceed your allotted space you will be asked if
+				you would like to switch to a larger allowance, but this will entail
+				moving to a different pricing plan. The ORDS is not designed to cope
+				with very large databases although if you think you might require
+				more than 100 GB we may be able to create a customized virtual
+				machine that will suit your requirement. Please email us if that is
+				the case.
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
+			<helpId>ProjectCreationPopup_StorageType</helpId>
+			<title>Project storage type</title>
+			<text>Choosing the 'private cloud' option will ensure that your data
+				remains within Oxford University. For some projects this may be
+				necessary to meet the requirements of confidentiality or licensing
+				agreements. If these issues are not relevant to your project, then
+				allowing your data to be stored in the public cloud may be a less
+				expensive option.
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
+			<helpId>ProjectCreationPopup_AddPayment</helpId>
+			<title>Add payment</title>
+			<text>If you know how payment for your use of ORDS will be made you
+				can add a payment method, eg a journal transfer, invoice etc.
+				However, you do not need to add a payment method at this stage.
+			</text>
+			<image>help</image>
+		</helpField>
+		<helpField>
 			<helpId>ProjectCreationPopup_Description</helpId>
 			<title>Description</title>
 			<text>This description will appear on your ORDS project list page. It
@@ -96,7 +162,8 @@
 		<helpField>
 			<helpId>AddNewMembersPopup_Email</helpId>
 			<title>Email</title>
-			<text>This needs to be the email of the user you wish to join your project that they have used to register with ORDS.
+			<text>This needs to be the email of the user you wish to join your
+				project that they have used to register with ORDS.
 			</text>
 			<image>help</image>
 		</helpField>
