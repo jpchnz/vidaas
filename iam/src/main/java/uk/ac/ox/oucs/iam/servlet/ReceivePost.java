@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import uk.ac.ox.oucs.iam.audit.IamAudit;
 import uk.ac.ox.oucs.iam.interfaces.security.ReceivePostedData;
 import uk.ac.ox.oucs.iam.interfaces.security.SecurePostData;
+import uk.ac.ox.oucs.iam.interfaces.security.SendViaPost;
 import uk.ac.ox.oucs.iam.interfaces.security.SignatureGenerator;
 import uk.ac.ox.oucs.iam.interfaces.security.SignatureVerifier;
 import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
@@ -227,17 +228,25 @@ public class ReceivePost extends HttpServlet {
 					 */
 					log.debug("About to send notification");
 					try {
-						URL url = new URL(securePostData.getIntendedDestination());
-						URLConnection connection = url.openConnection();
+						SendViaPost svp = new SendViaPost();
+						String result = svp.sendSecurePost(securePostData.getIntendedDestination(),
+								String.format("%s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE),
+								false);
 						if (log.isDebugEnabled()) {
-							log.debug(String.format("About to post to %s", securePostData.getIntendedDestination()));
-							log.debug(String.format("Will use the following parms: %s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE));
+							log.debug(String.format("got result from post: %s", result));
 						}
-						connection.setDoOutput(true);
-						OutputStreamWriter outsw = new OutputStreamWriter(connection.getOutputStream());
-						outsw.write(String.format("%s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE));
-						outsw.flush();
-						outsw.close();
+						
+//						URL url = new URL(securePostData.getIntendedDestination());
+//						URLConnection connection = url.openConnection();
+//						if (log.isDebugEnabled()) {
+//							log.debug(String.format("About to post to %s", securePostData.getIntendedDestination()));
+//							log.debug(String.format("Will use the following parms: %s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE));
+//						}
+//						connection.setDoOutput(true);
+//						OutputStreamWriter outsw = new OutputStreamWriter(connection.getOutputStream());
+//						outsw.write(String.format("%s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE));
+//						outsw.flush();
+//						outsw.close();
 						log.debug("Message posted");
 					}
 					catch (Exception ex) {
