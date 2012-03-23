@@ -80,6 +80,10 @@ public class SendViaPost {
 	}
 
 	private String sendSecurePost(String postData) throws IOException, NewKeyException, KeyNotFoundException {
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("sendSecurePost(%s)", postData));
+			log.debug(String.format("Encrypt is %s and the dest ip is %s", encrypt, destinationIP));
+		}
 		urlOfReceiveService = new URL(SystemVars.ADDRESS_OF_IAM_WEBAPP_RECEIVER);
 		messagePosted = false;
 		VidaasSignature vSig = null;
@@ -140,8 +144,10 @@ public class SendViaPost {
 
 		connection = urlOfReceiveService.openConnection();
 		connection.setDoOutput(true);
+		log.debug("Connection opened");
 		out = new OutputStreamWriter(connection.getOutputStream());
-
+		log.debug("Stream writer prepared");
+		
 		/*
 		 * An example post with timestamp is
 		 * ?name=fred&ts=1323857454692&key=...&
@@ -166,7 +172,8 @@ public class SendViaPost {
 		else {
 			dataToPost = postData;
 		}
-//		System.out.println(urlOfReceiveService + "?" + dataToPost);
+
+		log.debug("writing data ...");
 		out.write(dataToPost);
 		if (encrypt) {
 			auditer.auditSometimes(String.format("Sent post <%s> to host %s with timestamp %s", postData, destinationIP,
@@ -175,6 +182,7 @@ public class SendViaPost {
 		out.flush();
 		out.close();
 		messagePosted = true;
+		log.debug("Message posted");
 		getResult();
 
 		return dataToPost;
