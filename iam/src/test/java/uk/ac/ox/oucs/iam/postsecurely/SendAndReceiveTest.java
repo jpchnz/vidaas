@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import uk.ac.ox.oucs.iam.GlobalTestVars;
 import uk.ac.ox.oucs.iam.interfaces.security.SecurePostData;
+import uk.ac.ox.oucs.iam.interfaces.security.SendViaPost;
 
 
 /**
@@ -42,7 +43,7 @@ public class SendAndReceiveTest {
 		/*
 		 * First we send some data to the web server ...
 		 */
-		String postedData = post.sendPost(webAppName, "name=freddy&password=bibble");
+		String postedData = post.sendSecurePost(webAppName, "name=freddy&password=bibble");
 		assertFalse(postedData == null);
 		System.out.println("\tData posted <" + postedData + ">");
 		
@@ -86,10 +87,10 @@ public class SendAndReceiveTest {
 		
 		System.out.println("\tcheck send data ...");
 		SendViaPost post = new SendViaPost();
-		String postedData = post.sendPost(webAppName, "name=Another name is here&password=My Secret Passwordzzz123");
+		String postedData = post.sendSecurePost(webAppName, "name=Another name is here&password=My Secret Passwordzzz123");
 		assertFalse(postedData == null);
 		System.out.println("\tData posted <" + postedData + ">");
-		postedData = post.sendPost(webAppName, "name=Another name&password=This Is My Password123");
+		postedData = post.sendSecurePost(webAppName, "name=Another name&password=This Is My Password123");
 		assertFalse(postedData == null);
 		System.out.println("\tData posted <" + postedData + ">");
 		List<SecurePostData> securePostDataList = null;

@@ -16,11 +16,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import uk.ac.ox.oucs.iam.audit.IamAudit;
+import uk.ac.ox.oucs.iam.interfaces.security.SendViaPost;
 import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.DuplicateKeyException;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.KeyNotFoundException;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.NewKeyException;
-import uk.ac.ox.oucs.iam.postsecurely.SendViaPost;
 import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
 
 /**
@@ -255,7 +255,7 @@ public class KeyUtilitiesServlet extends HttpServlet {
 									HELLO_WORLD_PUBLICKEY_ATTRIBUTE,
 									GeneralUtils.readPublicKeyFromFileAndEncode(publicKey));
 							SendViaPost post = new SendViaPost();// HAVE_A_PUBLIC_KEY_ATTRIBUTE
-							post.sendPost(destURL, postData, false);
+							post.sendSecurePost(destURL, postData, false);
 						}
 						catch (IOException e) {
 							e.printStackTrace();
