@@ -23,6 +23,7 @@ import uk.ac.ox.oucs.iam.interfaces.utilities.SystemVars;
 import uk.ac.ox.oucs.vidaasBilling.model.Invoice;
 import uk.ac.ox.oucs.vidaasBilling.model.Project;
 import uk.ac.ox.oucs.vidaasBilling.model.Project.BillingFrequency;
+import uk.ac.ox.oucs.vidaasBilling.utilities.Emailer;
 
 @SuppressWarnings("serial")
 public class BillingServlet extends HttpServlet {
@@ -34,7 +35,7 @@ public class BillingServlet extends HttpServlet {
 		billing = Billing.getInstance();
 	}
 
-	// ?u=a@a&c=newProject&projectName=fred
+
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		log.debug("doGet");
 		
@@ -50,7 +51,15 @@ public class BillingServlet extends HttpServlet {
 			out.println("All well, master");
 		}
 		else if (command.compareToIgnoreCase(SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE) == 0) {
+			/*
+			 * This will be sent from the secure post service. What happens is that when a new project is created, it 
+			 * tries to tell this servlet. But it cannot access this servlet directly, so it tells the iam webapp
+			 * (that houses a secure post module). That module will process the data and, if it determines the data has passed
+			 * security muster, will call this servlet and the execution will end up here.
+			 */
 			log.info("New data available to collect. Yey");
+			addBillingForNewproject();
+			generateAndSendInvoices();
 		}
 		else if (command.compareToIgnoreCase(SystemVars.POST_COMMAND_NEW_PROJECT) == 0) {
 			addBillingForNewproject();
@@ -350,6 +359,11 @@ public class BillingServlet extends HttpServlet {
 					invoice.setInvoicedAmount(invoicedAmount);
 					Billing.create(invoice);
 					log.debug("Billing entry created");
+					
+					/*
+					 * Finally, send the invoice
+					 */
+					
 				}
 			}
 		}
@@ -362,9 +376,15 @@ public class BillingServlet extends HttpServlet {
 
 	public static void main(String[] args) {
 		try {
+			// Send test email
+			Emailer emailer = new Emailer();
+			emailer.sendEmail("david.paine@oucs.oc.ac.uk", "thestoat@gmail.com", "Hi there", "Lovely body");
+			if (true) {
+				return;
+			}
 			System.out.println("Send via post");
 			SendViaPost post = new SendViaPost();
-			for (int i = 0; i < 1; i++) {
+			for (int i = 0; i < 0; i++) {
 				String email = "a@a";
 				String projectName = "fred";
 				int projectSize = 100;
