@@ -41,15 +41,6 @@ public class BillingServlet extends HttpServlet {
 		out = response.getWriter();
 		out.println("Billing subsystem is " + (billing.isBillingEnabled() ? "on" : "off"));
 
-		// User u = Billing.getUser(email);
-		// if (u == null) {
-		// u = new User();
-		// u.setEmail(email);
-		// Billing.createUser(u);
-		// }
-
-		// out.println("User:" + u.getEmail());
-		// out.println("Number of projects:" + u.getNumberOfProjects());
 		String command = request.getParameter(SystemVars.POST_COMMAND_COMMAND_TOKEN);
 		if (command == null) {
 			log.error("Badly formed post input - sorry it didn't work out");
@@ -62,111 +53,10 @@ public class BillingServlet extends HttpServlet {
 			log.info("New data available to collect. Yey");
 		}
 		else if (command.compareToIgnoreCase(SystemVars.POST_COMMAND_NEW_PROJECT) == 0) {
-			log.debug("New project requested");
-			out.println("New project requested");
-			/*
-			 * This will create a project in the database. Thus this method
-			 * needs to be called whenever a project is created, but only once,
-			 * since a second call will fail (there is a project id constraint
-			 * on the table).
-			 */
-			List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageDataAndClear();
-			int counter = 0;
-			if (securePostDataList.size() == 0) {
-				out.println("No data with which to create a new project");
-			}
-			else {
-				for (SecurePostData spd : securePostDataList) {
-					if (spd.isMessageHasBeenVerified()) {
-						// We can go ahead and add this to the database
-						log.debug("Project Verified");
-						out.println("Project Verified");
-
-						Project p = new Project();
-						p.setOwnerEmail(spd.getPostParms().get(SystemVars.POST_COMMAND_EMAIL_TOKEN));
-						p.setProjectName(spd.getPostParms().get(SystemVars.POST_COMMAND_PROJECTNAME_TOKEN));
-						p.setProjectId(Integer
-								.parseInt(spd.getPostParms().get(SystemVars.POST_COMMAND_PROJECTID_TOKEN)));
-						p.setProjectSpace(Integer.parseInt(spd.getPostParms().get(
-								SystemVars.POST_COMMAND_PROJECTSPACE_TOKEN)));
-						String billFreq = spd.getPostParms().get(SystemVars.POST_COMMAND_BILLINGFREQUENCY_TOKEN);
-						if (log.isDebugEnabled()) {
-							log.debug("Project name:" + p.getProjectName());
-							log.debug("Project id:" + p.getProjectId());
-							log.debug("Project billing frequency:" + p.getBillingFrequency());
-							log.debug("Project space:" + p.getProjectSpace());
-							log.debug("Project owner email:" + p.getOwnerEmail());
-							log.debug("Project day last billed:" + p.getProjectName());
-							log.debug("Project month last billed:" + p.getMonthLastTimeBilled());
-							log.debug("Project year last billed:" + p.getYearLastTimeBilled());
-						}
-						if (billFreq == null) {
-							p.setBillingFrequency(BillingFrequency.annually.toString());
-						}
-						else {
-							if (billFreq.compareToIgnoreCase(BillingFrequency.fiveYearly.toString()) == 0) {
-								p.setBillingFrequency(BillingFrequency.fiveYearly.toString());
-							}
-							else if (billFreq.compareToIgnoreCase(BillingFrequency.annually.toString()) == 0) {
-								p.setBillingFrequency(BillingFrequency.annually.toString());
-							}
-							else {
-								p.setBillingFrequency(BillingFrequency.monthly.toString());
-							}
-						}
-
-						if (log.isDebugEnabled()) {
-							log.debug(String
-									.format("About to create a new project %s in the database with space %d and owner email %s, Billing frequency is %s",
-											p.getProjectName(), p.getProjectSpace(), p.getOwnerEmail(),
-											p.getBillingFrequency()));
-						}
-
-						Billing.create(p);
-					}
-					out.println("Item " + (counter + 1));
-					out.println("Originator for data " + (counter + 1) + " = " + spd.getOriginatorHost());
-					out.println("Timeout = " + spd.isMessageTimedOut());
-					out.println("Verified = " + spd.isMessageHasBeenVerified());
-					out.println("Bad sig = " + spd.isBadSig());
-					for (String s : spd.getPostParms().values()) {
-						out.println("\t" + spd.getPostParms().get(s) + "=" + s);
-					}
-					counter++;
-				}
-				
-				generateAndSendInvoices();
-				log.debug("Invoices sent");
-			}
+			addBillingForNewproject();
 		}
 		else if (command.compareToIgnoreCase(SystemVars.POST_COMMAND_UPDATE_PROJECT) == 0) {
-			/*
-			 * This needs to be executed when a project is updated (e.g. the
-			 * size changes). Since it is currently not possible to update
-			 * project details currently, I won't worry too much about it, but
-			 * ultimately the project details will need to be updated in the
-			 * database and then billing adjusted accordingly.
-			 */
-			log.debug("Update project requested");
-			// ?u=a@a&c=updateProject&projectName=fred&space=100
-			/*
-			 * This is a command to update an existing project for billing
-			 * purposes
-			 */
-			String email = request.getParameter("u");
-			Project project = Billing.getProject(email);
-			String projectName = request.getParameter("projectName");
-
-			int projectSpace = Integer.parseInt(request.getParameter("space"));
-			project.setProjectSpace(projectSpace);
-			project.setProjectName(projectName);
-			// project.setOwnerEmail(email);
-
-			Billing.update(project);
-			log.debug("Project updated");
-
-			generateAndSendInvoices();
-			log.debug("Invoices sent");
+			changeBillingForUpdatedProject(request);
 		}
 		else if (command.compareToIgnoreCase(SystemVars.POST_COMMAND_GENERATE_INVOICES) == 0) {
 			/*
@@ -190,7 +80,121 @@ public class BillingServlet extends HttpServlet {
 		
 		doGet(request, response);
 	}
+	
+	
+	private void changeBillingForUpdatedProject(HttpServletRequest request) throws FileNotFoundException {
+		/*
+		 * This needs to be executed when a project is updated (e.g. the
+		 * size changes). Since it is currently not possible to update
+		 * project details currently, I won't worry too much about it, but
+		 * ultimately the project details will need to be updated in the
+		 * database and then billing adjusted accordingly.
+		 */
+		log.debug("Update project requested");
+		// ?u=a@a&c=updateProject&projectName=fred&space=100
+		/*
+		 * This is a command to update an existing project for billing
+		 * purposes
+		 */
+		String email = request.getParameter("u");
+		Project project = Billing.getProject(email);
+		String projectName = request.getParameter("projectName");
 
+		int projectSpace = Integer.parseInt(request.getParameter("space"));
+		project.setProjectSpace(projectSpace);
+		project.setProjectName(projectName);
+		// project.setOwnerEmail(email);
+
+		Billing.update(project);
+		log.debug("Project updated");
+
+		generateAndSendInvoices();
+		log.debug("Invoices sent");
+	}
+	
+	private void addBillingForNewproject() throws IOException {
+		log.debug("New project requested");
+		out.println("New project requested");
+		/*
+		 * This will create a project in the database. Thus this method
+		 * needs to be called whenever a project is created, but only once,
+		 * since a second call will fail (there is a project id constraint
+		 * on the table).
+		 */
+		List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageDataAndClear();
+		int counter = 0;
+		if (securePostDataList.size() == 0) {
+			out.println("No data with which to create a new project");
+		}
+		else {
+			for (SecurePostData spd : securePostDataList) {
+				if (spd.isMessageHasBeenVerified()) {
+					// We can go ahead and add this to the database
+					log.debug("Project Verified");
+					out.println("Project Verified");
+
+					Project p = new Project();
+					p.setOwnerEmail(spd.getPostParms().get(SystemVars.POST_COMMAND_EMAIL_TOKEN));
+					p.setProjectName(spd.getPostParms().get(SystemVars.POST_COMMAND_PROJECTNAME_TOKEN));
+					p.setProjectId(Integer
+							.parseInt(spd.getPostParms().get(SystemVars.POST_COMMAND_PROJECTID_TOKEN)));
+					p.setProjectSpace(Integer.parseInt(spd.getPostParms().get(
+							SystemVars.POST_COMMAND_PROJECTSPACE_TOKEN)));
+					String billFreq = spd.getPostParms().get(SystemVars.POST_COMMAND_BILLINGFREQUENCY_TOKEN);
+					if (log.isDebugEnabled()) {
+						log.debug("Project name:" + p.getProjectName());
+						log.debug("Project id:" + p.getProjectId());
+						log.debug("Project billing frequency:" + p.getBillingFrequency());
+						log.debug("Project space:" + p.getProjectSpace());
+						log.debug("Project owner email:" + p.getOwnerEmail());
+						log.debug("Project day last billed:" + p.getProjectName());
+						log.debug("Project month last billed:" + p.getMonthLastTimeBilled());
+						log.debug("Project year last billed:" + p.getYearLastTimeBilled());
+					}
+					if (billFreq == null) {
+						p.setBillingFrequency(BillingFrequency.annually.toString());
+					}
+					else {
+						if (billFreq.compareToIgnoreCase(BillingFrequency.fiveYearly.toString()) == 0) {
+							p.setBillingFrequency(BillingFrequency.fiveYearly.toString());
+						}
+						else if (billFreq.compareToIgnoreCase(BillingFrequency.annually.toString()) == 0) {
+							p.setBillingFrequency(BillingFrequency.annually.toString());
+						}
+						else {
+							p.setBillingFrequency(BillingFrequency.monthly.toString());
+						}
+					}
+
+					if (log.isDebugEnabled()) {
+						log.debug(String
+								.format("About to create a new project %s in the database with space %d and owner email %s, Billing frequency is %s",
+										p.getProjectName(), p.getProjectSpace(), p.getOwnerEmail(),
+										p.getBillingFrequency()));
+					}
+
+					Billing.create(p);
+				}
+				out.println("Item " + (counter + 1));
+				out.println("Originator for data " + (counter + 1) + " = " + spd.getOriginatorHost());
+				out.println("Timeout = " + spd.isMessageTimedOut());
+				out.println("Verified = " + spd.isMessageHasBeenVerified());
+				out.println("Bad sig = " + spd.isBadSig());
+				for (String s : spd.getPostParms().values()) {
+					out.println("\t" + spd.getPostParms().get(s) + "=" + s);
+				}
+				counter++;
+			}
+			
+			generateAndSendInvoices();
+			log.debug("Invoices sent");
+		}
+	}
+
+	
+	/**
+	 * Look through all projects defined in the database and generate invoices for each of those that are due 
+	 */
 	private void generateAndSendInvoices() throws FileNotFoundException {
 		log.debug("generateAndSendInvoices");
 
@@ -198,7 +202,9 @@ public class BillingServlet extends HttpServlet {
 		 * This is a command to generate all invoices
 		 */
 		List<Project> projects = Billing.getProjects();
-		out.println("Currently have " + projects.size() + " projects.");
+		if (log.isDebugEnabled()) {
+			log.debug("Currently have " + projects.size() + " projects.");
+		}
 
 		/*
 		 * For now, let's generate a different invoice per project. This is
@@ -226,9 +232,16 @@ public class BillingServlet extends HttpServlet {
 				int year = cal.get(Calendar.YEAR);
 
 				if (p.getDayLastTimeBilled() == 0) {
+					/*
+					 * The project has never had an invoice generated. Let's send one now.
+					 */
 					billNeeded = true;
 				}
 				else {
+					/*
+					 * An invoice has been generated for this project. We need to find out
+					 * if another one is due or not.
+					 */
 					if (log.isDebugEnabled()) {
 						log.debug(String.format("Date is %d:%d:%d", day, month, year));
 					}
@@ -241,6 +254,9 @@ public class BillingServlet extends HttpServlet {
 						else if (year > p.getYearLastTimeBilled()) {
 							if (month >= p.getMonthLastTimeBilled()) {
 								if (day >= p.getDayLastTimeBilled()) {
+									/*
+									 * If we get here, the last bill was generated more than a year ago.
+									 */
 									billNeeded = true;
 								}
 							}
@@ -249,11 +265,17 @@ public class BillingServlet extends HttpServlet {
 					else if (p.getBillingFrequency().compareTo(BillingFrequency.fiveYearly.toString()) == 0) {
 						// Five yearly billing
 						if (year > (p.getYearLastTimeBilled() + 6)) {
+							/*
+							 * If we get here, the last bill was generated more than 5 years ago.
+							 */
 							billNeeded = true;
 						}
 						else if (year > (p.getYearLastTimeBilled() + 5)) {
 							if (month >= p.getMonthLastTimeBilled()) {
 								if (day >= p.getDayLastTimeBilled()) {
+									/*
+									 * If we get here, the last bill was generated more than 5 years ago.
+									 */
 									billNeeded = true;
 								}
 							}
@@ -265,7 +287,9 @@ public class BillingServlet extends HttpServlet {
 							// Next month - just need to check the day is ok
 							// too
 							if (p.getDayLastTimeBilled() <= day) {
-								// Bill this!
+								/*
+								 * If we get here, the last bill was generated more than a month ago.
+								 */
 								billNeeded = true;
 							}
 						}
@@ -275,9 +299,15 @@ public class BillingServlet extends HttpServlet {
 						) {
 							if ((month == 1) // January
 									&& (day >= p.getDayLastTimeBilled())) {
+								/*
+								 * If we get here, the last bill was generated more than a month ago.
+								 */
 								billNeeded = true;
 							}
 							else if (month > 1) {
+								/*
+								 * If we get here, the last bill was generated more than a month ago.
+								 */
 								billNeeded = true;
 							}
 						}
@@ -286,6 +316,9 @@ public class BillingServlet extends HttpServlet {
 
 				if (billNeeded
 						|| uk.ac.ox.oucs.vidaasBilling.utilities.SystemVars.GENERATE_INVOICES_REGARDLESS_OF_TIME_ELAPSED) {
+					/*
+					 * Either a new invoice is genuinely needed or we are testing! 
+					 */
 					if (log.isDebugEnabled()) {
 						log.debug("We need to send a bill for this");
 						log.debug("Because "
@@ -340,7 +373,8 @@ public class BillingServlet extends HttpServlet {
 				String r = post.sendSecurePost(
 				// "http://129.67.241.38/iam/ReceivePost",
 						//"http://82.71.34.134:8081/vidaasBilling/BillingServlet", 
-						"http://129.67.103.124:8081/vidaasBilling/BillingServlet",
+//						"http://129.67.103.124:8081/vidaasBilling/BillingServlet",
+						"http://localhost/vidaasBilling/BillingServlet",
 						String.format(
 								"%s=%s&%s=%s&%s=%s&%s=%d&%s=%s&%s=%d", SystemVars.POST_COMMAND_EMAIL_TOKEN, email,
 								SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_PROJECT,
