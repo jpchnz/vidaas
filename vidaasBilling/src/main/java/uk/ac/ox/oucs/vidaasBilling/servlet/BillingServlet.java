@@ -57,7 +57,7 @@ public class BillingServlet extends HttpServlet {
 			 * (that houses a secure post module). That module will process the data and, if it determines the data has passed
 			 * security muster, will call this servlet and the execution will end up here.
 			 */
-			log.info("New data available to collect. Yey");
+			log.info("New data available to collect. Yay");
 			addBillingForNewproject();
 			generateAndSendInvoices();
 		}
@@ -337,8 +337,9 @@ public class BillingServlet extends HttpServlet {
 								+ " is true");
 					}
 					int invoicedAmount = p.emailBill();
-					if (log.isDebugEnabled()) {
-						log.debug("Invoiced amount:" + invoicedAmount);
+					if (log.isInfoEnabled()) {
+						log.info("Will send an invoice to " + p.getOwnerEmail() + " for project " + p.getProjectName());
+						log.info("Invoiced amount:" + invoicedAmount);
 					}
 					p.setYearLastTimeBilled(year);
 					p.setMonthLastTimeBilled(month);
@@ -376,15 +377,15 @@ public class BillingServlet extends HttpServlet {
 
 	public static void main(String[] args) {
 		try {
-			// Send test email
-			Emailer emailer = new Emailer();
-			emailer.sendEmail("david.paine@oucs.oc.ac.uk", "thestoat@gmail.com", "Hi there", "Lovely body");
-			if (true) {
-				return;
-			}
+//			// Send test email
+//			Emailer emailer = new Emailer();
+//			emailer.sendEmail("david.paine@oucs.oc.ac.uk", "thestoat@gmail.com", "Hi there", "Lovely body");
+//			if (true) {
+//				return;
+//			}
 			System.out.println("Send via post");
 			SendViaPost post = new SendViaPost();
-			for (int i = 0; i < 0; i++) {
+			for (int i = 0; i < 1; i++) {
 				String email = "a@a";
 				String projectName = "fred";
 				int projectSize = 100;
