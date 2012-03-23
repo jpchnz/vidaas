@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<billingPolicy currency="pounds">
+	<vidaasUser type="standardMonthly">
+		<projectCost>
+			<standardProjectCost>40</standardProjectCost> <!-- Cost to create and own a project -->
+			<projectDatabaseCost> <!-- Costs associated with a project database -->
+				<perProjectDatabaseCost> <!-- Cost for disk space to house data for each database -->
+					<costing sizeInGig="1" cost="10"/>
+					<costing sizeInGig="10" cost="20"/>
+					<costing sizeInGig="50" cost="30"/>
+					<costing sizeInGig="100" cost="40"/>
+				</perProjectDatabaseCost>
+				<backupPolicy>
+					<daily>100</daily>
+					<weekly>60</weekly>
+					<fortnightly>40</fortnightly>
+					<monthly>20</monthly>
+				</backupPolicy>
+			</projectDatabaseCost>
+		</projectCost>
+	</vidaasUser>
+</billingPolicy>

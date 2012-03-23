@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="uk.ac.ox.oucs.vidaasBilling.model.Project" 
+        table="project" catalog="VidaasBilling">
+ 
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="ownerEmail" type="string">
+            <column name="ownerEmail" length="50" not-null="true" />
+        </property>
+        <property name="billingFrequency" type="string">
+            <column name="billingFrequency" length="50" not-null="true" />
+        </property>
+        <property name="projectName" type="string">
+            <column name="projectName" length="50" not-null="true" />
+        </property>
+        <property name="projectSpace" type="int">
+            <column name="projectSpace" not-null="true" />
+        </property>
+        <property name="dayLastTimeBilled" type="int">
+            <column name="dayLastTimeBilled" />
+        </property>
+        <property name="monthLastTimeBilled" type="int">
+            <column name="monthLastTimeBilled" />
+        </property>
+        <property name="yearLastTimeBilled" type="int">
+            <column name="yearLastTimeBilled" />
+        </property>
+        <property name="projectId" type="int">
+            <column name="projectId" not-null="true" unique="true" />
+        </property>
+    </class>
+</hibernate-mapping>
