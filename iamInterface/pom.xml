@@ -77,6 +77,6 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		<finalName>vidaasBilling</finalName>
+		<finalName>iamInterface</finalName>
 	</build>
 </project>
