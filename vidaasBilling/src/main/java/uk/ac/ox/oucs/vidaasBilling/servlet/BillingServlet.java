@@ -136,11 +136,13 @@ public class BillingServlet extends HttpServlet {
 			out.println("No data with which to create a new project");
 		}
 		else {
+			if (log.isInfoEnabled()) {
+				log.info(String.format("We have %d items to sift through", securePostDataList.size()));
+			}
 			for (SecurePostData spd : securePostDataList) {
 				if (spd.isMessageHasBeenVerified()) {
 					// We can go ahead and add this to the database
 					log.debug("Project Verified");
-					out.println("Project Verified");
 
 					Project p = new Project();
 					p.setOwnerEmail(spd.getPostParms().get(SystemVars.POST_COMMAND_EMAIL_TOKEN));
@@ -175,14 +177,17 @@ public class BillingServlet extends HttpServlet {
 						}
 					}
 
-					if (log.isDebugEnabled()) {
-						log.debug(String
+					if (log.isInfoEnabled()) {
+						log.info(String
 								.format("About to create a new project %s in the database with space %d and owner email %s, Billing frequency is %s",
 										p.getProjectName(), p.getProjectSpace(), p.getOwnerEmail(),
 										p.getBillingFrequency()));
 					}
 
 					Billing.create(p);
+				}
+				else {
+					log.info("Project not verified");
 				}
 				out.println("Item " + (counter + 1));
 				out.println("Originator for data " + (counter + 1) + " = " + spd.getOriginatorHost());
@@ -391,6 +396,8 @@ public class BillingServlet extends HttpServlet {
 				int projectSize = 100;
 				Random generator = new Random();
 				int projectId = generator.nextInt(50000);
+				
+				// The following post will create a new project
 				String r = post.sendSecurePost(
 				// "http://129.67.241.38/iam/ReceivePost",
 						//"http://82.71.34.134:8081/vidaasBilling/BillingServlet", 
@@ -399,7 +406,7 @@ public class BillingServlet extends HttpServlet {
 						String.format(
 								"%s=%s&%s=%s&%s=%s&%s=%d&%s=%s&%s=%d", SystemVars.POST_COMMAND_EMAIL_TOKEN, email,
 								SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_PROJECT,
-								SystemVars.POST_COMMAND_PROJECTNAME_TOKEN, projectName,
+								SystemVars.POST_COMMAND_PROJECTNAME_TOKEN, projectName+":"+projectId,
 								SystemVars.POST_COMMAND_PROJECTSPACE_TOKEN, projectSize,
 								SystemVars.POST_COMMAND_BILLINGFREQUENCY_TOKEN, BillingFrequency.monthly.toString(),
 								SystemVars.POST_COMMAND_PROJECTID_TOKEN, projectId));
