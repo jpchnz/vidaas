@@ -340,7 +340,7 @@ public class CreateController {
 		}
 		else {
 			System.out.println("User not authorised");
-			editProjectConfirmationMessage = "You are not authorised to edit this project.";
+			editProjectConfirmationMessage = "You are not authorized to edit this project.";
 			((NavigationController) Contexts.getSessionContext().get(
 					"navigationController")).editProjectConfirmation();
 		}
@@ -402,7 +402,7 @@ public class CreateController {
 			}
 		}
 		else {
-			deleteProjectConfirmationMessage = "You are not authorised to delete this project.";
+			deleteProjectConfirmationMessage = "You are not authorized to delete this project.";
 		}
 
 		((NavigationController) Contexts.getSessionContext().get(
@@ -472,7 +472,7 @@ public class CreateController {
 			}
 			else {
 				System.out.println("Not authorised to perform action");
-				createProjectDataspaceConfirmationMessage = "You are not authorised to create a project database for this project";	
+				createProjectDataspaceConfirmationMessage = "You are not authorized to create a project database for this project";	
 			}
 			((NavigationController) Contexts.getSessionContext().get(
 					"navigationController"))
@@ -539,7 +539,7 @@ public class CreateController {
 		}
 		else {
 			System.out.println("Not authorised");
-			editProjectDataspaceConfirmationMessage = "You are not authorised to edit this database. Your changes will not be kept.";
+			editProjectDataspaceConfirmationMessage = "You are not authorized to edit this database. Your changes will not be kept.";
 		}
 		
 
@@ -638,7 +638,7 @@ public class CreateController {
 			}
 		}
 		else {
-			deleteProjectDataspaceConfirmationMessage = "You are not authorised to delete a project database for this project";
+			deleteProjectDataspaceConfirmationMessage = "You are not authorized to delete a project database for this project";
 		}
 
 		((NavigationController) Contexts.getSessionContext().get(
@@ -748,7 +748,7 @@ public class CreateController {
 		}
 		else {
 			System.out.println("No, the user is not authorised");
-			createDatabaseConfirmationMessage = "You are not authorised to create a database when your role is " + currentRole;
+			createDatabaseConfirmationMessage = "You are not authorized to create a database when your role is " + currentRole;
 			createDatabaseConfirmationLinkText = "Return";
 		}
 		/**/
@@ -1256,7 +1256,7 @@ restoreDatabaseConfirmationMessage = "The live database: '"
 		else {
 			// TODO Audit this
 			System.out.println("User is not authorised to add member!");
-			addProjectMemberConfirmationMessage = "You are not authorised to add a user to this project.";
+			addProjectMemberConfirmationMessage = "You are not authorized to add a user to this project.";
 		}
 		((NavigationController) Contexts.getSessionContext().get("navigationController"))
 				.addProjectMemberConfirmation();
