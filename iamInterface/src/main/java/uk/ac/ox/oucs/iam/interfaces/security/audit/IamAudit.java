@@ -1,14 +1,13 @@
 package uk.ac.ox.oucs.iam.interfaces.security.audit;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 
 public class IamAudit {
 	Logger log = Logger.getLogger(IamAudit.class);
 	
-	public IamAudit() {
-		DOMConfigurator.configure("log4j.xml");
-	}
+//	public IamAudit() {
+//		DOMConfigurator.configure("log4j.xml");
+//	}
 	
 	/**
 	 * Always audit message
