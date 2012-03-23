@@ -123,7 +123,7 @@ public class BillingServlet extends HttpServlet {
 	
 	private void addBillingForNewproject() throws IOException {
 		log.debug("New project requested");
-		out.println("New project requested");
+
 		/*
 		 * This will create a project in the database. Thus this method
 		 * needs to be called whenever a project is created, but only once,
@@ -133,7 +133,7 @@ public class BillingServlet extends HttpServlet {
 		List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageDataAndClear();
 		int counter = 0;
 		if (securePostDataList.size() == 0) {
-			out.println("No data with which to create a new project");
+			log.info("No data with which to create a new project");
 		}
 		else {
 			if (log.isInfoEnabled()) {
