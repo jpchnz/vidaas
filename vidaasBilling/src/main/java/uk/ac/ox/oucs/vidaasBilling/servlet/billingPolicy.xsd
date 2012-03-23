@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="billingPolicy">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="vidaasUser"/>
+      </xs:sequence>
+      <xs:attribute name="currency" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="vidaasUser">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="projectCost"/>
+      </xs:sequence>
+      <xs:attribute name="type" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="projectCost">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="standardProjectCost"/>
+        <xs:element ref="projectDatabaseCost"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="standardProjectCost" type="xs:integer"/>
+  <xs:element name="projectDatabaseCost">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="perProjectDatabaseCost"/>
+        <xs:element ref="backupPolicy"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="perProjectDatabaseCost">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="costing"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="costing">
+    <xs:complexType>
+      <xs:attribute name="cost" use="required" type="xs:integer"/>
+      <xs:attribute name="sizeInGig" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="backupPolicy">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="daily"/>
+        <xs:element ref="weekly"/>
+        <xs:element ref="fortnightly"/>
+        <xs:element ref="monthly"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="daily" type="xs:integer"/>
+  <xs:element name="weekly" type="xs:integer"/>
+  <xs:element name="fortnightly" type="xs:integer"/>
+  <xs:element name="monthly" type="xs:integer"/>
+</xs:schema>
