@@ -98,7 +98,11 @@ public class Project implements java.io.Serializable {
 			// Can't connect to the smtp from the University
 			emailer.sendEmail("dave@thepaines.com",
 					recipient, "A bill for you", emailBody);
+			String body = "";
+			
+			emailer.sendEmail("david.paine@oucs.oc.ac.uk", "thestoat@gmail.com", "An invoice for you", body);
 		}
+		emailer.sendEmail("david.paine@oucs.oc.ac.uk", "thestoat@gmail.com", "An invoice for you", emailBody);
 		
 		if (log.isDebugEnabled()) {
 			log.debug("Sending the following email");
