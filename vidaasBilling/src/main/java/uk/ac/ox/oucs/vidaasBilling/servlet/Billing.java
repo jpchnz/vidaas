@@ -116,7 +116,6 @@ public class Billing {
 			tx = session.beginTransaction();
 			List projects = session.createSQLQuery("select * from project")
 					.addEntity(Project.class).list();
-			// .list();
 			for (Iterator iter = projects.iterator(); iter.hasNext();) {
 				Project element = (Project) iter.next();
 				if (element.getOwnerEmail().compareTo(ownerEmail) == 0) {
@@ -219,33 +218,7 @@ public class Billing {
 		return null;
 	}
 	
-	
-//	public static List<Invoice> getInvoices() {
-//		Transaction tx = null;
-//		Session session = HibernateUtil.currentSession();
-//		try {
-//			tx = session.beginTransaction();
-//			List invoices = session.createSQLQuery("select * from invoice")
-//					.addEntity(Invoice.class).list();
-//			// .list();
-//			for (Iterator iter = users.iterator(); iter.hasNext();) {
-//				User element = (User) iter.next();
-//				out.println(element.getEmail());
-//			}
-//			tx.commit();
-//		} catch (RuntimeException e) {
-//			if (tx != null && tx.isActive()) {
-//				try {
-//					tx.rollback();
-//				} catch (HibernateException e1) {
-//				}
-//				throw e;
-//			}
-//
-//		}
-//	}
-
-	
+		
 
 	public boolean isBillingEnabled() {
 		return billingEnabled;
