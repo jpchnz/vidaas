@@ -13,11 +13,11 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.xml.DOMConfigurator;
 
+import uk.ac.ox.oucs.iam.interfaces.security.SendViaPost;
 import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.DuplicateKeyException;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.KeyNotFoundException;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.NewKeyException;
-import uk.ac.ox.oucs.iam.postsecurely.SendViaPost;
 import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
 
 public class ApplicationServletContextListener implements ServletContextListener {
@@ -96,7 +96,7 @@ public class ApplicationServletContextListener implements ServletContextListener
 		String postData = thisObject.prepareAndSendPublicKey(true);
 		SendViaPost post = new SendViaPost();
 		try {
-			post.sendPost("http://129.67.103.124:8081/iam/KeyUtilitiesServlet", postData, false);
+			post.sendSecurePost("http://129.67.103.124:8081/iam/KeyUtilitiesServlet", postData, false);
 		}
 		catch (IOException e) {
 			// TODO Auto-generated catch block
