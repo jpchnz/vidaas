@@ -23,7 +23,6 @@ import uk.ac.ox.oucs.iam.interfaces.utilities.SystemVars;
 import uk.ac.ox.oucs.vidaasBilling.model.Invoice;
 import uk.ac.ox.oucs.vidaasBilling.model.Project;
 import uk.ac.ox.oucs.vidaasBilling.model.Project.BillingFrequency;
-import uk.ac.ox.oucs.vidaasBilling.utilities.Emailer;
 
 @SuppressWarnings("serial")
 public class BillingServlet extends HttpServlet {
@@ -207,7 +206,11 @@ public class BillingServlet extends HttpServlet {
 
 	
 	/**
-	 * Look through all projects defined in the database and generate invoices for each of those that are due 
+	 * Look through all projects defined in the database and generate invoices for each of those that are due.
+	 * Currently, we do not check for a valid message before generating and sending invoices, so in
+	 * theory, anybody can do this. However, since the only invoices that are sent out are invoices that should be
+	 * sent out, this should not matter. In practice, this routing should be called once a day to ensure 
+	 * current invoices are sent.
 	 */
 	private void generateAndSendInvoices() throws FileNotFoundException {
 		log.debug("generateAndSendInvoices");
