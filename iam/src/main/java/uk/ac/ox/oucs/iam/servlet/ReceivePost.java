@@ -266,13 +266,13 @@ public class ReceivePost extends HttpServlet {
 					 */
 					String dataRequestor = data + "=" + request.getParameter(data);
 					if (dataRequestor.compareTo(ReceivePostedData.REQUEST_DATA_CODE) == 0) {
-						auditer.auditAlways("Request to gather all data");
+						auditer.auditAlways("Request to gather all data and then clear the stack");
 						clearStack = true;
 						manipulateSecurePostDataList(null);
 						return;
 					}
 					if (dataRequestor.compareTo(ReceivePostedData.REQUEST_DATA_CODE_DONT_CLEAR_STACK) == 0) {
-						auditer.auditAlways("Request to gather all data");
+						auditer.auditAlways("Request to gather all data but not clear the stack");
 						clearStack = false;
 						manipulateSecurePostDataList(null);
 						return;
@@ -325,7 +325,10 @@ public class ReceivePost extends HttpServlet {
 		log.debug("manipulateSecurePostDataList");
 		
 		if (dataItem == null) {
-			log.debug("manipulateSecurePostDataList");
+			if (log.isDebugEnabled()) {
+				log.debug("manipulateSecurePostDataList - collect items");
+				log.debug(String.format("We currently have %d items", securePostDataList.size()));
+			}
 			/*
 			 * The user has requested all current data - let's give it to them
 			 * and then clear the list
@@ -338,11 +341,11 @@ public class ReceivePost extends HttpServlet {
 			}
 		}
 		else {
+			securePostDataList.add(dataItem);
 			if (log.isDebugEnabled()) {
 				log.debug("manipulateSecurePostDataList - add item");
 				log.debug(String.format("We now have %d items", securePostDataList.size()));
 			}
-			securePostDataList.add(dataItem);
 		}
 	}
 	
