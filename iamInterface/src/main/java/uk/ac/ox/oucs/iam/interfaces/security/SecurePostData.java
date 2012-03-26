@@ -87,28 +87,33 @@ public class SecurePostData {
 				}
 				spd = new SecurePostData();
 			}
-			else if (s.startsWith(token_verified)) {
-				spd.setMessageHasBeenVerified(s.substring(token_verified.length()).equals("true"));
-			}
-			else if (s.startsWith(token_timeout)) {
-				spd.setMessageTimedOut(s.substring(token_timeout.length()).equals("true"));
-			}
-			else if (s.startsWith(token_bad_sig)) {
-				spd.setBadSig(s.substring(token_bad_sig.length()).equals("true"));
-			}
-			else if (s.startsWith(token_no_key)) {
-				spd.setNoPrivateKey(s.substring(token_no_key.length()).equals("true"));
-			}
-			else if (s.startsWith(token_originator_host)) {
-				spd.setOriginatorHost(s.substring(token_originator_host.length()));
-			}
-			else if (s.startsWith(token_destination_host)) {
-				spd.setIntendedDestination(s.substring(token_destination_host.length()));
-			}
 			else {
-				if (spd != null) {
-					String[] components = s.split("=");
-					spd.addPostParm(components[0], components[1]);
+				if (spd == null) {
+					spd = new SecurePostData();
+				}
+				if (s.startsWith(token_verified)) {
+					spd.setMessageHasBeenVerified(s.substring(token_verified.length()).equals("true"));
+				}
+				else if (s.startsWith(token_timeout)) {
+					spd.setMessageTimedOut(s.substring(token_timeout.length()).equals("true"));
+				}
+				else if (s.startsWith(token_bad_sig)) {
+					spd.setBadSig(s.substring(token_bad_sig.length()).equals("true"));
+				}
+				else if (s.startsWith(token_no_key)) {
+					spd.setNoPrivateKey(s.substring(token_no_key.length()).equals("true"));
+				}
+				else if (s.startsWith(token_originator_host)) {
+					spd.setOriginatorHost(s.substring(token_originator_host.length()));
+				}
+				else if (s.startsWith(token_destination_host)) {
+					spd.setIntendedDestination(s.substring(token_destination_host.length()));
+				}
+				else {
+					if (spd != null) {
+						String[] components = s.split("=");
+						spd.addPostParm(components[0], components[1]);
+					}
 				}
 			}
 		}
