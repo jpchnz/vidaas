@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
+
 
 /**
  * Helper class contains a list of a POST message that has been sent to the web server 
@@ -16,6 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 public class SecurePostData {
+	private static Logger log = Logger.getLogger(SecurePostData.class);
+	
 	private boolean messageHasBeenVerified = false;
 	private boolean messageTimedOut = false;
 	private boolean badSig = false;
@@ -34,6 +38,20 @@ public class SecurePostData {
 	
 		
 	public void printData(PrintWriter out) {
+		if (log.isDebugEnabled()) {
+			log.debug("printData");
+			log.debug(token_title_message);
+			log.debug(token_verified + messageHasBeenVerified);
+			log.debug(token_timeout + messageTimedOut);
+			log.debug(token_bad_sig + badSig);
+			log.debug(token_no_key + noPrivateKey);
+			log.debug(token_originator_host + originatorHost);
+			log.debug(token_destination_host + intendedDestination);
+			for (String s : postParms.values()) {
+				log.debug("\t"+s);
+			}
+		}
+		
 		out.println(token_title_message);
 		out.println(token_verified + messageHasBeenVerified);
 		out.println(token_timeout + messageTimedOut);

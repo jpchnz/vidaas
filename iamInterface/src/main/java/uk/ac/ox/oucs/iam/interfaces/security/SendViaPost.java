@@ -229,7 +229,8 @@ public class SendViaPost {
 			for (int i = 0; i < 1; i++) {
 				String r = post.sendSecurePost(
 						//"http://129.67.241.38/iam/ReceivePost",
-						"http://localhost:8081/iam/ReceivePost",
+//						"http://localhost:8081/iam/ReceivePost",
+						"http://129.67.241.38/vidaasBilling/BillingServlet",
 						String.format("name=freddy%d&password=bibble%d&anotherField=oh no larry%d",
 								new Random().nextInt(99999), new Random().nextInt(99999), new Random().nextInt(99999)));
 				System.out.println("Result:"+r);
