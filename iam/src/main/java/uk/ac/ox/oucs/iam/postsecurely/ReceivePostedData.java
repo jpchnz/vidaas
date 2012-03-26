@@ -12,6 +12,8 @@ import uk.ac.ox.oucs.iam.interfaces.security.SecurePostData;
 
 
 public class ReceivePostedData {
+	
+	@Deprecated
 	public static List<SecurePostData> getPendingMessageData(String urlString) throws IOException {
 		URL url = new URL(urlString);
 		URLConnection connection = url.openConnection();
