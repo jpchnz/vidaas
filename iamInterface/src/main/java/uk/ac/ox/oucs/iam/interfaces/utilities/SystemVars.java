@@ -30,5 +30,5 @@ public class SystemVars {
 	public static final String POST_COMMAND_NEW_DATA_AVAILABLE = "comeAndGetit";
 	
 	
-	public static final String locationOfKeyStore = "/home/oucs0153/keyStore/";
+	public static final String locationOfKeyStore = "/home/dave/keyStore/";
 }

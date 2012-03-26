@@ -9,10 +9,14 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.ox.oucs.iam.interfaces.utilities.SystemVars;
 
 
 public class ReceivePostedData {
+	private static Logger log = Logger.getLogger(ReceivePostedData.class);
+	
 	public static final String REQUEST_DATA_CODE = "requestCurrent=data";
 	public static final String REQUEST_DATA_CODE_DONT_CLEAR_STACK = "requestCurrent=dataNoClear";
 	
@@ -25,6 +29,7 @@ public class ReceivePostedData {
 	 * @throws IOException
 	 */
 	public static List<SecurePostData> getPendingMessageDataAndClear() throws IOException {
+		log.debug("getPendingMessageDataAndClear");
 		return getPendingMessageData(true);
 	}
 	
@@ -35,10 +40,15 @@ public class ReceivePostedData {
 	 * @throws IOException
 	 */
 	public static List<SecurePostData> getPendingMessageDataAndKeep() throws IOException {
+		log.debug("getPendingMessageDataAndKeep");
 		return getPendingMessageData(false);
 	}
 	
 	private static List<SecurePostData> getPendingMessageData(boolean clear) throws IOException {
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("About to post command to %s", SystemVars.ADDRESS_OF_IAM_WEBAPP_RECEIVER));
+		}
+		
 		URL url = new URL(SystemVars.ADDRESS_OF_IAM_WEBAPP_RECEIVER);
 		URLConnection connection = url.openConnection();
 		connection.setDoOutput(true);
