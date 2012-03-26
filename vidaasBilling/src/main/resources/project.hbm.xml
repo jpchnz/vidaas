@@ -34,5 +34,8 @@
         <property name="projectId" type="int">
             <column name="projectId" not-null="true" unique="true" />
         </property>
+        <property name="creationDate" type="date">
+            <column name="creationDate" not-null="true" />
+        </property>
     </class>
 </hibernate-mapping>
