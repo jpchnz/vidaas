@@ -1,6 +1,7 @@
 package uk.ac.ox.oucs.vidaasBilling.model;
 
 import java.io.FileNotFoundException;
+import java.util.Date;
 
 import javax.xml.bind.JAXBException;
 
@@ -25,10 +26,13 @@ public class Project implements java.io.Serializable {
 	public static enum BillingFrequency { monthly, annually, fiveYearly }; 
 	private String billingFrequency;
 	private int dayLastTimeBilled = 0, monthLastTimeBilled = 0, yearLastTimeBilled = 0;
+	private Date creationDate;
 	
 	
 	
-	public Project() {}
+	public Project() {
+		creationDate = new Date();
+	}
 	
 	
 	public int getId() {
@@ -150,5 +154,15 @@ public class Project implements java.io.Serializable {
 
 	public void setProjectId(int projectId) {
 		this.projectId = projectId;
+	}
+
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 }
