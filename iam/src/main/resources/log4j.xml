@@ -6,19 +6,34 @@
 
 	<!-- log all audit records to a separate file every day -->
 	<appender name="auditAppender" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="/tmp/audit2.log" />
+		<param name="file" value="/tmp/audit.log" />
 		<param name="datePattern" value="'.'yyyy-MM-dd" />
 		<param name="append" value="true" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d - %m%n" />
+			<param name="ConversionPattern" value="%d (%F:%L) - %m%n" />
+		</layout>
+	</appender>
+	
+	<appender name="normalAppender" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="/tmp/logFile.log" />
+		<param name="datePattern" value="'.'yyyy-MM-dd" />
+		<param name="append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %C{2} (%F:%L) - %m%n" />
 		</layout>
 	</appender>
 
 	<!-- LOGGER LIST -->
 	<!-- log all classes in org.developers package -->
-	<logger name="uk.ac.ox.oucs.iam">
+	<logger name="uk.ac.ox.oucs.iam.audit">
 		<!-- level info logs -->
 		<level value="DEBUG" />
 		<appender-ref ref="auditAppender" />
+	</logger>
+	
+	<logger name="uk.ac.ox.oucs.iam">
+		<!-- level info logs -->
+		<level value="DEBUG" />
+		<appender-ref ref="normalAppender" />
 	</logger>
 </log4j:configuration>
