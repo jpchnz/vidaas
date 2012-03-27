@@ -26,7 +26,7 @@ import uk.ac.ox.oucs.vidaasBilling.model.Project.BillingFrequency;
 
 @SuppressWarnings("serial")
 public class BillingServlet extends HttpServlet {
-	private static Logger log = Logger.getLogger("BillingServlet.debug");
+	private static Logger log = Logger.getLogger(BillingServlet.class);
 	private PrintWriter out;
 	private Billing billing = null;
 
