@@ -3,9 +3,11 @@ package uk.ac.ox.oucs.iam.servlet;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -242,14 +244,21 @@ public class ReceivePost extends HttpServlet {
 //						}
 						
 						URL url = new URL(securePostData.getIntendedDestination());
-						URLConnection connection = url.openConnection();
+						HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 						if (log.isDebugEnabled()) {
 							log.debug(String.format("About to post to %s", securePostData.getIntendedDestination()));
 							log.debug(String.format("Will use the following parms: %s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE));
 						}
 						connection.setDoOutput(true);
+						connection.setRequestMethod("POST");
+						String dataToSend = String.format("%s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE);
+						connection.setRequestProperty("Content-Length", "" + dataToSend.length());
 						OutputStreamWriter outsw = new OutputStreamWriter(connection.getOutputStream());
-						outsw.write(String.format("%s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE));
+						InputStream response = connection.getInputStream();
+						for( int c = response.read(); c != -1; c = response.read() ) 
+							log.debug( (char)c ); 
+						response.close();
+						outsw.write(dataToSend);
 						outsw.flush();
 						outsw.close();
 						log.debug("Message posted");
