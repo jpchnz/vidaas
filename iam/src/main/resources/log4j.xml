@@ -31,7 +31,22 @@
 		<appender-ref ref="auditAppender" />
 	</logger>
 	
-	<logger name="uk.ac.ox.oucs.iam">
+	<logger name="uk.ac.ox.oucs.iam.servlet">
+		<!-- level info logs -->
+		<level value="DEBUG" />
+		<appender-ref ref="normalAppender" />
+	</logger>
+	<logger name="uk.ac.ox.oucs.iam.security">
+		<!-- level info logs -->
+		<level value="DEBUG" />
+		<appender-ref ref="normalAppender" />
+	</logger>
+	<logger name="uk.ac.ox.oucs.iam.roles">
+		<!-- level info logs -->
+		<level value="DEBUG" />
+		<appender-ref ref="normalAppender" />
+	</logger>
+	<logger name="uk.ac.ox.oucs.iam.utilities">
 		<!-- level info logs -->
 		<level value="DEBUG" />
 		<appender-ref ref="normalAppender" />
