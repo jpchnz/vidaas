@@ -151,7 +151,7 @@ public class SignatureVerifier {
 					lTimestamp, now.getTime()));
 			log.debug(String.format("Max age of a message is %d seconds", maxMessageAgeSeconds));
 		}
-		if (((now.getTime() - lTimestamp) > maxMessageAgeSeconds)
+		if (((now.getTime() - lTimestamp) > maxMessageAgeSeconds*1000)
 				&& (lTimestamp != 0)) {
 			log.debug("Message is too old");
 			// Message is too old
