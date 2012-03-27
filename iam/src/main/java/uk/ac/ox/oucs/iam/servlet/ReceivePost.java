@@ -166,17 +166,19 @@ public class ReceivePost extends HttpServlet {
 									boolean verified = !sigVerifier.verifyTimestamp(timestamp);
 									log.debug("Time stamp too old = " + verified);
 									securePostData.setMessageTimedOut(verified);
+									if (log.isDebugEnabled()) {
 									log.debug("Let's check this:");
-									Date now = new Date();
-									log.debug("Calc: " + (now.getTime() - Long.parseLong(timestamp)) + " div by 1000 = " + (now.getTime() - Long.parseLong(timestamp))/1000);
-									log.debug("greater than 60?");
-									if (((now.getTime() - Long.parseLong(timestamp))/1000 > 60)
-											&& (Long.parseLong(timestamp) != 0)) {
-										// Message is too old
-										log.debug("old:" + (((now.getTime() - Long.parseLong(timestamp))/1000)));
-									} else {
-										// Message has not yet expired
-										log.debug("not old:" + ((now.getTime() - Long.parseLong(timestamp)/1000)));
+										Date now = new Date();
+										log.debug("Calc: " + (now.getTime() - Long.parseLong(timestamp)) + " div by 1000 = " + (now.getTime() - Long.parseLong(timestamp))/1000);
+										log.debug("greater than 60?");
+										if (((now.getTime() - Long.parseLong(timestamp))/1000 > 60)
+												&& (Long.parseLong(timestamp) != 0)) {
+											// Message is too old
+											log.debug("old:" + (((now.getTime() - Long.parseLong(timestamp))/1000)));
+										} else {
+											// Message has not yet expired
+											log.debug("not old:" + ((now.getTime() - Long.parseLong(timestamp)/1000)));
+										}
 									}
 								}
 								
@@ -305,6 +307,8 @@ public class ReceivePost extends HttpServlet {
 			}
 		}
 	}
+	
+	
 	
 
 
