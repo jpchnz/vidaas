@@ -11,6 +11,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Date;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 
 import uk.ac.ox.oucs.iam.interfaces.security.utilities.VidaasSignature;
 import uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils;
@@ -22,6 +23,7 @@ import uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils;
  * @author Ants
  */
 public class SignatureVerifier {
+	Logger log = Logger.getLogger(SignatureVerifier.class);
 	// The public key used to verify the digital signature.
 	private PublicKey publicKey;
 	private int maxMessageAgeSeconds = 60;
@@ -125,22 +127,38 @@ public class SignatureVerifier {
 	 * Determine if a message is too old based on its timestamp. A message is deemed to be
 	 * too old if it was generated more than maxMessageAgeSeconds seconds ago.
 	 * maxMessageAgeSeconds is currently 60.
-	 * @param timestamp A string representation of the number of milliseconds elapsed since 1970
+	 * @param timestamp A string representation of the number of milliseconds elapsed between message creation and 1970
 	 * @return true if the timestamp suggests the message was generated within the last (60) seconds,
 	 * 		i.e. the timestamp has been verified, else false
 	 */
 	public boolean verifyTimestamp(String timestamp) {
+		log.debug("Verifying string based timestamp");
 		return (verifyTimestamp(Long.parseLong(timestamp)));
 	}
 	
+	/**
+	 * Determine if a message is too old based on its timestamp. A message is deemed to be
+	 * too old if it was generated more than maxMessageAgeSeconds seconds ago.
+	 * maxMessageAgeSeconds is currently 60.
+	 * @param lTimestamp the number of milliseconds elapsed between message creation and 1970
+	 * @return true if the timestamp suggests the message was generated within the last (60) seconds,
+	 * 		i.e. the timestamp has been verified, else false
+	 */
 	public boolean verifyTimestamp(long lTimestamp) {
 		Date now = new Date();
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("Check if input timestamp (%d, args) is much less than current timestamp (%d) that would suggest the message is too old",
+					lTimestamp, now.getTime()));
+			log.debug(String.format("Max age of a message is %d seconds", maxMessageAgeSeconds));
+		}
 		if (((now.getTime() - lTimestamp) > maxMessageAgeSeconds)
 				&& (lTimestamp != 0)) {
+			log.debug("Message is too old");
 			// Message is too old
 			messageTooOld = true;
 		} else {
 			// Message has not yet expired
+			log.debug("Message is not too old");
 			messageTooOld = false;
 		}
 		return !messageTooOld;
