@@ -5,7 +5,6 @@
 <hibernate-mapping>
     <class name="uk.ac.ox.oucs.vidaasBilling.model.Project" 
         table="project" catalog="VidaasBilling">
- 
         <id name="id" type="int">
             <column name="id" />
             <generator class="identity" />

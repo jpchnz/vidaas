@@ -3,9 +3,12 @@ package uk.ac.ox.oucs.vidaasBilling.servlet;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.ServletException;
@@ -25,7 +28,7 @@ import uk.ac.ox.oucs.vidaasBilling.model.Project;
 import uk.ac.ox.oucs.vidaasBilling.model.Project.BillingFrequency;
 
 @SuppressWarnings("serial")
-public class BillingServlet extends HttpServlet {
+public class BillingServlet extends HttpServlet implements Serializable {
 	private static Logger log = Logger.getLogger(BillingServlet.class);
 	private PrintWriter out;
 	private Billing billing = null;
@@ -36,10 +39,19 @@ public class BillingServlet extends HttpServlet {
 
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log.debug("doGet");
+		log.debug("doGet starting ...");
 		
 		out = response.getWriter();
 		out.println("Billing subsystem is " + (billing.isBillingEnabled() ? "on" : "off"));
+		
+		
+		Map params = request.getParameterMap();
+		Iterator i = params.keySet().iterator();
+		while (i.hasNext()) {
+			String key = (String) i.next();
+			String value = ((String[]) params.get(key))[0];
+			log.debug(key + "=" + value);
+		}
 
 		String command = request.getParameter(SystemVars.POST_COMMAND_COMMAND_TOKEN);
 		if (command == null) {
@@ -58,7 +70,8 @@ public class BillingServlet extends HttpServlet {
 			 */
 			log.info("New data available to collect. Yay");
 			addBillingForNewproject();
-			generateAndSendInvoices();
+			out.println("Sorted");
+//			generateAndSendInvoices();
 		}
 		else if (command.compareToIgnoreCase(SystemVars.POST_COMMAND_NEW_PROJECT) == 0) {
 			addBillingForNewproject();
@@ -150,6 +163,7 @@ public class BillingServlet extends HttpServlet {
 							.parseInt(spd.getPostParms().get(SystemVars.POST_COMMAND_PROJECTID_TOKEN)));
 					p.setProjectSpace(Integer.parseInt(spd.getPostParms().get(
 							SystemVars.POST_COMMAND_PROJECTSPACE_TOKEN)));
+					p.setBillingFrequency(spd.getPostParms().get(SystemVars.POST_COMMAND_BILLINGFREQUENCY_TOKEN));
 					String billFreq = spd.getPostParms().get(SystemVars.POST_COMMAND_BILLINGFREQUENCY_TOKEN);
 					if (log.isDebugEnabled()) {
 						log.debug("Project name:" + p.getProjectName());
@@ -188,18 +202,18 @@ public class BillingServlet extends HttpServlet {
 				else {
 					log.info("Project not verified");
 				}
-				out.println("Item " + (counter + 1));
-				out.println("Originator for data " + (counter + 1) + " = " + spd.getOriginatorHost());
-				out.println("Timeout = " + spd.isMessageTimedOut());
-				out.println("Verified = " + spd.isMessageHasBeenVerified());
-				out.println("Bad sig = " + spd.isBadSig());
-				for (String s : spd.getPostParms().values()) {
-					out.println("\t" + spd.getPostParms().get(s) + "=" + s);
-				}
+//				out.println("Item " + (counter + 1));
+//				out.println("Originator for data " + (counter + 1) + " = " + spd.getOriginatorHost());
+//				out.println("Timeout = " + spd.isMessageTimedOut());
+//				out.println("Verified = " + spd.isMessageHasBeenVerified());
+//				out.println("Bad sig = " + spd.isBadSig());
+//				for (String s : spd.getPostParms().keySet()) {
+//					out.println("\t" + s + "=" + spd.getPostParms().get(s));
+//				}
 				counter++;
 			}
 			
-			generateAndSendInvoices();
+//			generateAndSendInvoices();
 			log.debug("Invoices sent");
 		}
 	}
@@ -393,7 +407,7 @@ public class BillingServlet extends HttpServlet {
 //			}
 			System.out.println("Send via post");
 			SendViaPost post = new SendViaPost();
-			for (int i = 0; i < 1; i++) {
+			for (int i = 0; i < 10; i++) {
 				String email = "a@a";
 				String projectName = "fred";
 				int projectSize = 100;
@@ -405,64 +419,82 @@ public class BillingServlet extends HttpServlet {
 				// "http://129.67.241.38/iam/ReceivePost",
 						//"http://82.71.34.134:8081/vidaasBilling/BillingServlet", 
 //						"http://129.67.103.124:8081/vidaasBilling/BillingServlet",
-						"http://localhost/vidaasBilling/BillingServlet",
+						"http://localhost:8081/vidaasBilling/BillingServlet",
 						String.format(
-								"%s=%s&%s=%s&%s=%s&%s=%d&%s=%s&%s=%d", SystemVars.POST_COMMAND_EMAIL_TOKEN, email,
+								"%s=%s&%s=%s&%s=%s&%s=%d&%s=%s&%s=%d&buffer=%s", SystemVars.POST_COMMAND_EMAIL_TOKEN, email,
 								SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_PROJECT,
-								SystemVars.POST_COMMAND_PROJECTNAME_TOKEN, projectName+":"+projectId,
+								SystemVars.POST_COMMAND_PROJECTNAME_TOKEN, projectName+projectId,
 								SystemVars.POST_COMMAND_PROJECTSPACE_TOKEN, projectSize,
 								SystemVars.POST_COMMAND_BILLINGFREQUENCY_TOKEN, BillingFrequency.monthly.toString(),
-								SystemVars.POST_COMMAND_PROJECTID_TOKEN, projectId));
+								SystemVars.POST_COMMAND_PROJECTID_TOKEN, projectId,
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
 				System.out.println("Result:\n" + r);
-				List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageDataAndKeep();
-				int counter = 0;
-				for (SecurePostData spd : securePostDataList) {
-					System.out.println("Item " + (counter + 1));
-					System.out.println("Originator for data " + (counter + 1) + " = " + spd.getOriginatorHost());
-					System.out.println("Timeout = " + spd.isMessageTimedOut());
-					System.out.println("Verified = " + spd.isMessageHasBeenVerified());
-					System.out.println("Bad sig = " + spd.isBadSig());
-					for (String s : spd.getPostParms().keySet()) {
-						System.out.println("\t" + s + "=" + spd.getPostParms().get(s));
-					}
-
-					// if (spd.isMessageHasBeenVerified()) {
-					// // We can go ahead and add this to the databases
-					// Project p = new Project();
-					// p.setOwnerEmail(spd.getPostParms().get(SystemVars.POST_COMMAND_EMAIL_TOKEN));
-					// p.setProjectName(spd.getPostParms().get(SystemVars.POST_COMMAND_PROJECTNAME_TOKEN));
-					// p.setProjectId(Integer
-					// .parseInt(spd.getPostParms().get(SystemVars.POST_COMMAND_PROJECTID_TOKEN)));
-					// p.setProjectSpace(Integer.parseInt(spd.getPostParms().get(
-					// SystemVars.POST_COMMAND_PROJECTSPACE_TOKEN)));
-					// String billFreq =
-					// spd.getPostParms().get(SystemVars.POST_COMMAND_BILLINGFREQUENCY_TOKEN);
-					// if (billFreq == null) {
-					// p.setBillingFrequency(BillingFrequency.annually.toString());
-					// }
-					// else {
-					// if
-					// (billFreq.compareToIgnoreCase(BillingFrequency.fiveYearly.toString())
-					// == 0) {
-					// p.setBillingFrequency(BillingFrequency.fiveYearly.toString());
-					// }
-					// else if
-					// (billFreq.compareToIgnoreCase(BillingFrequency.annually.toString())
-					// == 0) {
-					// p.setBillingFrequency(BillingFrequency.annually.toString());
-					// }
-					// else {
-					// p.setBillingFrequency(BillingFrequency.monthly.toString());
-					// }
-					// }
-					// Billing.create(p);
-					// // for (String s : spd.getPostParms().keySet()) {
-					// //
-					// System.out.println("\t"+s+"="+spd.getPostParms().get(s));
-					// // }
-					// }
-					counter++;
-				}
+//				List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageDataAndKeep();
+//				int counter = 0;
+//				for (SecurePostData spd : securePostDataList) {
+//					System.out.println("Item " + (counter + 1));
+//					System.out.println("Originator for data " + (counter + 1) + " = " + spd.getOriginatorHost());
+//					System.out.println("Timeout = " + spd.isMessageTimedOut());
+//					System.out.println("Verified = " + spd.isMessageHasBeenVerified());
+//					System.out.println("Bad sig = " + spd.isBadSig());
+//					System.out.println("Bad priv key = " + spd.isNoPrivateKey());
+//					
+//					for (String s : spd.getPostParms().keySet()) {
+//						System.out.println("\t" + s + "=" + spd.getPostParms().get(s));
+//					}
+//
+//					// if (spd.isMessageHasBeenVerified()) {
+//					// // We can go ahead and add this to the databases
+//					// Project p = new Project();
+//					// p.setOwnerEmail(spd.getPostParms().get(SystemVars.POST_COMMAND_EMAIL_TOKEN));
+//					// p.setProjectName(spd.getPostParms().get(SystemVars.POST_COMMAND_PROJECTNAME_TOKEN));
+//					// p.setProjectId(Integer
+//					// .parseInt(spd.getPostParms().get(SystemVars.POST_COMMAND_PROJECTID_TOKEN)));
+//					// p.setProjectSpace(Integer.parseInt(spd.getPostParms().get(
+//					// SystemVars.POST_COMMAND_PROJECTSPACE_TOKEN)));
+//					// String billFreq =
+//					// spd.getPostParms().get(SystemVars.POST_COMMAND_BILLINGFREQUENCY_TOKEN);
+//					// if (billFreq == null) {
+//					// p.setBillingFrequency(BillingFrequency.annually.toString());
+//					// }
+//					// else {
+//					// if
+//					// (billFreq.compareToIgnoreCase(BillingFrequency.fiveYearly.toString())
+//					// == 0) {
+//					// p.setBillingFrequency(BillingFrequency.fiveYearly.toString());
+//					// }
+//					// else if
+//					// (billFreq.compareToIgnoreCase(BillingFrequency.annually.toString())
+//					// == 0) {
+//					// p.setBillingFrequency(BillingFrequency.annually.toString());
+//					// }
+//					// else {
+//					// p.setBillingFrequency(BillingFrequency.monthly.toString());
+//					// }
+//					// }
+//					// Billing.create(p);
+//					// // for (String s : spd.getPostParms().keySet()) {
+//					// //
+//					// System.out.println("\t"+s+"="+spd.getPostParms().get(s));
+//					// // }
+//					// }
+//					counter++;
+//				}
+//				Thread.sleep(2000);
 			}
 		}
 		catch (Exception e) {
