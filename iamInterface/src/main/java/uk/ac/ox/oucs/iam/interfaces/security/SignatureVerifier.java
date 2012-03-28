@@ -54,6 +54,9 @@ public class SignatureVerifier {
 	 *             on any errors while reading the public key from disk
 	 */
 	public SignatureVerifier(String filePath) throws IOException, GeneralSecurityException {
+		if (log.isDebugEnabled()) {
+			log.debug("SignatureVerifier:" + filePath);
+		}
 		this.publicKey = (PublicKey) GeneralUtils.readObjectFromFile(filePath + ".pub");
 	}
 

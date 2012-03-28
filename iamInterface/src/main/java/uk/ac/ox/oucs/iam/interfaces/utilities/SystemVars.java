@@ -10,9 +10,9 @@ package uk.ac.ox.oucs.iam.interfaces.utilities;
 public class SystemVars {
 	public static final String ADDRESS_OF_IAM_WEBAPP = "http://129.67.241.38/iam/ProjectRoleServlet";
 	
-	public static final String ADDRESS_OF_IAM_WEBAPP_RECEIVER = "http://129.67.241.38/iam/ReceivePost";
+	public static final String ADDRESS_OF_IAM_WEBAPP_RECEIVER = "http://localhost:8081/iam/ReceivePost";
 	
-	public static final String ADDRESS_OF_VIDAAS_BILLING_APP = "http://129.67.241.38/vidaasBilling";
+	public static final String ADDRESS_OF_VIDAAS_BILLING_APP = "http://localhost:8081/vidaasBilling";
 	
 	
 	
