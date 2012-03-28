@@ -1,15 +1,19 @@
 package uk.ac.ox.oucs.iam.interfaces.security;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -63,16 +67,16 @@ public class SendViaPost {
 	 *             More than one private key found in the local key store. Only
 	 *             one private key may be present.
 	 */
-	public String sendSecurePost(String destinationIP, String postData) throws IOException, NewKeyException, KeyNotFoundException,
-			DuplicateKeyException {
+	public String sendSecurePost(String destinationIP, String postData) throws IOException, NewKeyException,
+			KeyNotFoundException, DuplicateKeyException {
 		this.destinationIP = destinationIP;
 		keyFile = GeneralUtils.provideBaseKeyPairName();
 		return sendSecurePost(postData);
 	}
 
 	// Testing only
-	public String sendSecurePost(String destinationIP, String postData, boolean encrypt) throws IOException, NewKeyException,
-			KeyNotFoundException, DuplicateKeyException {
+	public String sendSecurePost(String destinationIP, String postData, boolean encrypt) throws IOException,
+			NewKeyException, KeyNotFoundException, DuplicateKeyException {
 		this.destinationIP = destinationIP;
 		this.encrypt = encrypt;
 		keyFile = GeneralUtils.provideBaseKeyPairName();
@@ -84,11 +88,27 @@ public class SendViaPost {
 			log.debug(String.format("sendSecurePost(%s)", postData));
 			log.debug(String.format("Encrypt is %s and the dest ip is %s", encrypt, destinationIP));
 		}
+
+		String dataToPost = "";
+
+		/*
+		 * Here is the rub. We have post data here that we use to generate a
+		 * digital signature. However, the data is sent over the wire and
+		 * reconstructed at the servlet, but the servlet can't guarantee the
+		 * order in which it processes the parameters. If it gets the order
+		 * wrong, it won't be able to generate the correct message to validate
+		 * the signature. Thus we should send the data in alphabetical order so
+		 * that it can be reset to alphabetical order at the servlet.
+		 */
+		String[] dataToSort = postData.split("&");
+		GeneralUtils.sortStringBubble(dataToSort);
+		// Now reconstruct
+		postData = GeneralUtils.reconstructSortedData(dataToSort);
+
 		urlOfReceiveService = new URL(SystemVars.ADDRESS_OF_IAM_WEBAPP_RECEIVER);
 		messagePosted = false;
 		VidaasSignature vSig = null;
 
-		
 		if (encrypt) {
 			/*
 			 * The first thing we need to do is generate a signature. This
@@ -125,14 +145,25 @@ public class SendViaPost {
 				boolean debug = true;
 				if (debug) {
 					log.debug("Debug on - will check data before sending");
+					log.debug(String.format("Keyfile:%s", keyFile));
 					// Try to decode ...
 					SignatureVerifier sigVerifier = new SignatureVerifier(keyFile);
+
+					log.debug(String.format("Sig to verify:%s", vSig.getSignature()));
+
 					byte[] decodedBytes = sigVerifier.decodeAsByteArrayWithoutPosting(vSig.getSignature());
+					int a1 = decodedBytes[4];
+					int a2 = decodedBytes[27];
+					int a3 = decodedBytes[43];
+					log.debug(String.format("Decoded bytes length:%d (%d,%d,%d)", decodedBytes.length, decodedBytes[4],
+							decodedBytes[27], decodedBytes[43]));
+
 					if (sigVerifier.verifyDigitalSignature(decodedBytes, vSig.getOriginalMessage())) {
 						log.debug("All good so far");
 					}
 					else {
 						log.error("All bad so far - unable to verify sig");
+						System.exit(0);
 					}
 				}
 			}
@@ -142,12 +173,14 @@ public class SendViaPost {
 			}
 		}
 
-		connection = urlOfReceiveService.openConnection();
-		connection.setDoOutput(true);
-		log.debug("Connection opened");
+		if (connection == null) {
+			connection = urlOfReceiveService.openConnection();
+			connection.setDoOutput(true);
+			log.debug("Connection opened");
+			
+		}
 		out = new OutputStreamWriter(connection.getOutputStream());
 		log.debug("Stream writer prepared");
-		
 		/*
 		 * An example post with timestamp is
 		 * ?name=fred&ts=1323857454692&key=...&
@@ -157,16 +190,19 @@ public class SendViaPost {
 		 * BelrlIvqrCm6LObd%2B5yC%2BSA%3D%3D
 		 */
 		String keyBaseName = new File(keyFile).getName();
-		String dataToPost;
+
 		if (encrypt) {
 			if (vSig.isTimeStampInUse()) {
-				dataToPost = String.format("%s&%s=%s&%s=%s&%s=%s&%s=%s", postData, SignatureGenerator.KEYFILE_POST_ATTRIBUTE,
-						keyBaseName, SignatureGenerator.TIMESTAMP_POST_ATTRIBUTE, vSig.getTimestamp(), SignatureGenerator.DEST_IP, destinationIP,
+				dataToPost = String.format("%s&%s=%s&%s=%s&%s=%s&%s=%s", postData,
+						SignatureGenerator.KEYFILE_POST_ATTRIBUTE, keyBaseName,
+						SignatureGenerator.TIMESTAMP_POST_ATTRIBUTE, vSig.getTimestamp(), SignatureGenerator.DEST_IP,
+						URLEncoder.encode(destinationIP, "UTF-8"),// destinationIP,
 						SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature());
 			}
 			else {
 				dataToPost = String.format("%s&%s=%s&%s=%s&%s=%s", postData, SignatureGenerator.KEYFILE_POST_ATTRIBUTE,
-						keyBaseName, SignatureGenerator.DEST_IP, destinationIP, SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature());
+						keyBaseName, SignatureGenerator.DEST_IP, URLEncoder.encode(destinationIP, "UTF-8"),// destinationIP,
+						SignatureGenerator.SIGNATURE_POST_ATTRIBUTE, vSig.getSignature());
 			}
 		}
 		else {
@@ -174,18 +210,68 @@ public class SendViaPost {
 		}
 
 		log.debug("writing data ...");
-		out.write(dataToPost);
-		if (encrypt) {
-			auditer.auditSometimes(String.format("Sent post <%s> to host %s with timestamp %s", postData, destinationIP,
-					vSig.isTimeStampInUse()));
-		}
-		out.flush();
-		out.close();
-		messagePosted = true;
-		log.debug("Message posted");
-		getResult();
+
+		// String hostname = "hostname.com";
+		// int port = 8081;
+		// InetAddress addr = InetAddress.getByName("localhost");
+		// Socket socket = new Socket(addr, port);
+		// BufferedWriter wr = new BufferedWriter(new
+		// OutputStreamWriter(socket.getOutputStream(), "UTF8"));
+		// wr.write("POST /vidaasBilling/BillingServlet HTTP/1.0\r\n");
+		// wr.write("Content-Length: " + dataToPost.length() + "\r\n");
+		// wr.write("Content-Type: application/x-www-form-urlencoded\r\n");
+		// wr.write("\r\n");
+		//
+		// // Send data
+		// wr.write(URLEncoder.encode(dataToPost, "UTF-8"));
+		// wr.flush();
+		// BufferedReader rd = new BufferedReader(new
+		// InputStreamReader(socket.getInputStream()));
+		// String line;
+		// while ((line = rd.readLine()) != null) {
+		// String s = line;
+		// // Process line...
+		// }
+		// wr.close();
+		// rd.close();
+
+//		out.write(dataToPost);
+////		if (encrypt) {
+////			auditer.auditSometimes(String.format("Sent post <%s> to host %s with timestamp %s", postData,
+////					destinationIP, vSig.isTimeStampInUse()));
+////		}
+//		out.flush();
+//		
+//		messagePosted = true;
+//		log.debug("Message posted");
+//		//getResult();
+//		out.close();
+		sendAllData(dataToPost);
 
 		return dataToPost;
+	}
+	
+	
+	private void sendAllData(String data) {
+		try {
+		    // Send data
+		    URL url = new URL(SystemVars.ADDRESS_OF_IAM_WEBAPP_RECEIVER);
+		    URLConnection conn = url.openConnection();
+		    conn.setDoOutput(true);
+		    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+		    wr.write(data);
+		    wr.flush();
+
+		    // Get the response
+		    BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		    String line;
+		    while ((line = rd.readLine()) != null) {
+		        // Process line...
+		    }
+		    wr.close();
+		    rd.close();
+		} catch (Exception e) {
+		}
 	}
 
 	private String getResult() throws IOException {
@@ -211,35 +297,35 @@ public class SendViaPost {
 
 	public static void main(String[] args) {
 		try {
-//			System.out.println("Send via post");
-//			Date orig_stamp = new Date();
-////			System.out.println(orig_stamp.getTime());
-//			Thread.sleep(500);
-//			Date now = new Date();
-//			
-//			System.out.println((now.getTime() - orig_stamp.getTime()));
-//			if ( (now.getTime() - orig_stamp.getTime()) > (60 * 1000) ) {
-//				System.out.println("old");
-//			}
-//			else {
-//				System.out.println("Fine");
-//			}
-//			if (true) return;
+			// System.out.println("Send via post");
+			// Date orig_stamp = new Date();
+			// // System.out.println(orig_stamp.getTime());
+			// Thread.sleep(500);
+			// Date now = new Date();
+			//
+			// System.out.println((now.getTime() - orig_stamp.getTime()));
+			// if ( (now.getTime() - orig_stamp.getTime()) > (60 * 1000) ) {
+			// System.out.println("old");
+			// }
+			// else {
+			// System.out.println("Fine");
+			// }
+			// if (true) return;
 			SendViaPost post = new SendViaPost();
 			for (int i = 0; i < 1; i++) {
 				String r = post.sendSecurePost(
-						//"http://129.67.241.38/iam/ReceivePost",
-//						"http://localhost:8081/iam/ReceivePost",
+						// "http://129.67.241.38/iam/ReceivePost",
+						// "http://localhost:8081/iam/ReceivePost",
 						"http://129.67.241.38/vidaasBilling/BillingServlet",
 						String.format("name=freddy%d&password=bibble%d&anotherField=oh no larry%d",
 								new Random().nextInt(99999), new Random().nextInt(99999), new Random().nextInt(99999)));
-				System.out.println("Result:"+r);
+				System.out.println("Result:" + r);
 			}
 			List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageDataAndClear();
 			int counter = 0;
 			for (SecurePostData spd : securePostDataList) {
-				System.out.println("Item " + (counter+1));
-				System.out.println("Originator for data " + (counter+1) + " = " + spd.getOriginatorHost());
+				System.out.println("Item " + (counter + 1));
+				System.out.println("Originator for data " + (counter + 1) + " = " + spd.getOriginatorHost());
 				System.out.println("Timeout = " + spd.isMessageTimedOut());
 				System.out.println("Verified = " + spd.isMessageHasBeenVerified());
 				for (String s : spd.getPostParms().values()) {

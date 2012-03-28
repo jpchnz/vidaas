@@ -90,7 +90,7 @@ public class GeneralUtils {
 			keyPairName = id.toString();
 		}
 
-		return keyPairDirectory + File.separator + keyPairName;
+		return keyPairDirectory + keyPairName;
 	}
 
 	/**
@@ -180,20 +180,19 @@ public class GeneralUtils {
 
 		return o;
 	}
-	
-	
+
 	public static String readPublicKeyFromFileAndEncode(String filename) throws IOException {
 		String encodedPublicKey = "";
-		
+
 		PublicKey publicKey = (PublicKey) readObjectFromFile(filename);
-		
+
 		encodedPublicKey = new String(Base64.encodeBase64(publicKey.getEncoded()));
-		
+
 		return URLEncoder.encode(encodedPublicKey, "UTF-8");
 	}
-	
-	
-	public static void decodePublicKeyAndWriteToFile(String encodedPublicKey, String filename) throws NoSuchAlgorithmException, InvalidKeySpecException {
+
+	public static void decodePublicKeyAndWriteToFile(String encodedPublicKey, String filename)
+			throws NoSuchAlgorithmException, InvalidKeySpecException {
 		String algorithm = "DSA";
 		byte[] decodedKey = Base64.decodeBase64(encodedPublicKey);
 		EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(decodedKey);
@@ -201,11 +200,6 @@ public class GeneralUtils {
 		PublicKey newPublicKey = keyFactory.generatePublic(publicKeySpec);
 		GeneralUtils.writeObject(filename, newPublicKey);
 	}
-	
-	
-	
-	
-	
 
 	public static String readFileAsString(String filePath) throws java.io.IOException {
 		StringBuffer fileData = new StringBuffer(1000);
@@ -292,5 +286,35 @@ public class GeneralUtils {
 			return null;
 		}
 		return ip.getHostAddress();
+	}
+	
+	
+	public static String reconstructSortedData(String[] dataToSort) {
+		String postData = "";
+		for (String s : dataToSort) {
+			postData += s;
+			if (s.compareTo(dataToSort[dataToSort.length-1]) != 0) {
+				postData += "&";
+			}
+		}
+		return postData;
+	}
+	
+	public static void sortStringBubble(String x[]) {
+		int j;
+		boolean flag = true; // will determine when the sort is finished
+		String temp;
+
+		while (flag) {
+			flag = false;
+			for (j = 0; j < x.length - 1; j++) {
+				if (x[j].compareToIgnoreCase(x[j + 1]) > 0) { // ascending sort
+					temp = x[j];
+					x[j] = x[j + 1]; // swapping
+					x[j + 1] = temp;
+					flag = true;
+				}
+			}
+		}
 	}
 }
