@@ -26,6 +26,7 @@ import java.util.UUID;
 import org.apache.commons.codec.binary.Base64;
 
 import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
+import uk.ac.ox.oucs.iam.interfaces.utilities.SystemVars;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.DuplicateKeyException;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.KeyNotFoundException;
 
@@ -114,7 +115,7 @@ public class GeneralUtils {
 		}
 		catch (IOException e) {
 			//keyPairDirectory = File.separator + "tmp" + File.separator + "keyStore";
-			keyPairDirectory = File.separator + "home" + File.separator + "dave" + File.separator + "keyStore";
+			keyPairDirectory = SystemVars.locationOfKeyStore;
 		}
 		if (!new File(keyPairDirectory).exists()) {
 			if (!new File(keyPairDirectory).mkdirs()) {
