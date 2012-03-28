@@ -7,13 +7,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,7 +35,7 @@ import uk.ac.ox.oucs.iam.interfaces.utilities.SystemVars;
 import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
 
 @SuppressWarnings("serial")
-public class ReceivePost extends HttpServlet {
+public class ReceivePost extends HttpServlet implements Serializable {
 	private static Logger log = Logger.getLogger(ReceivePost.class);
 	private PrintWriter out;
 	public String keyFile = "";
@@ -52,31 +55,27 @@ public class ReceivePost extends HttpServlet {
 
 		out = response.getWriter();
 
-		checkRequest(request);
+		newCheckRequest(request);
 
-		out.flush();
+		// out.flush();
 		out.close();
 	}
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		out = response.getWriter();
 
-		checkRequest(request);
+		newCheckRequest(request);
 
-		out.flush();
+		// out.flush();
 		out.close();
 	}
+	
 
 	/**
 	 * Method that looks at the POST data sent to the application server. It
 	 * breaks down all the parameters, validates the encrypted data contained
 	 * within and builds a SecurePostData object with that data, adding it to an
 	 * internal list for local query.
-	 * 
-	 * Important. The &sig parameter should be the very last parameter sent. So
-	 * an example post could be
-	 * ?name=fred&ts=1323857454692&sig=MCwCFGKn7ucmYGTiIti5
-	 * %2B3QNOnjXSGbMAhRxAvm%2BelrlIvqrCm6LObd%2B5yC%2BSA%3D%3D
 	 * 
 	 * If the post command consists of REQUEST_DATA_CODE then data held is
 	 * provided to the caller and then cleared from memory If the post command
@@ -85,9 +84,260 @@ public class ReceivePost extends HttpServlet {
 	 * 
 	 * @param request
 	 */
+	private void newCheckRequest(HttpServletRequest request) {
+		log.debug("newCheckRequest");
+
+		String hostId = request.getRemoteAddr();
+		securePostData = new SecurePostData();
+		String messageToVerify = "";
+		String timestamp = "";
+		securePostData.setOriginatorHost(hostId);
+		auditer.auditSometimes("Post request received from " + hostId);
+
+		log.debug("Checking parms");
+		Map params = request.getParameterMap();
+		Iterator i = params.keySet().iterator();
+		String[] messages = new String[request.getParameterMap().size()];
+		int counter = 0;
+		
+		log.debug("Total number of parameters passed in:" + request.getParameterMap().size());
+
+		while (i.hasNext()) {
+			String key = (String) i.next();
+			String value = ((String[]) params.get(key))[0];
+			log.debug(key + "=" + value);
+
+			String dataRequestor = key + "=" + value;
+			if (dataRequestor.compareTo(ReceivePostedData.REQUEST_DATA_CODE) == 0) {
+				auditer.auditAlways("Request to gather all data and then clear the stack");
+				clearStack = true;
+				manipulateSecurePostDataList(null);
+				return;
+			}
+			else if (dataRequestor.compareTo(ReceivePostedData.REQUEST_DATA_CODE_DONT_CLEAR_STACK) == 0) {
+				auditer.auditAlways("Request to gather all data but not clear the stack");
+				clearStack = false;
+				manipulateSecurePostDataList(null);
+				return;
+			}
+
+			/*
+			 * This message is not a signature. We should therefore add it to
+			 * the data we used to generate the signature, unless it is a
+			 * timestamp In which case we need to extract it
+			 */
+			if (key.compareTo(SignatureGenerator.TIMESTAMP_POST_ATTRIBUTE) == 0) {
+				timestamp = value;
+			}
+			else if (key.compareTo(SignatureGenerator.KEYFILE_POST_ATTRIBUTE) == 0) {
+				keyFile = value;
+				auditer.auditSometimes(String.format("Using key %s for host %s", keyFile, hostId));
+			}
+			else if (key.compareTo(SignatureGenerator.DEST_IP) == 0) {
+				String destIp = value;
+				securePostData.setIntendedDestination(destIp);
+				auditer.auditSometimes(String.format("Destination IP is %s", destIp));
+			}
+			else if (key.compareTo(SignatureGenerator.SIGNATURE_POST_ATTRIBUTE) != 0) {
+				messages[counter] = key + "=" + value;
+				securePostData.addPostParm(key, messages[counter]);
+				log.debug("Adding:" + messages[counter]);
+				counter++;
+			}
+		}
+
+		log.debug("Initial data parse finished. Now look at the signature ...");
+		i = params.keySet().iterator();
+		while (i.hasNext()) {
+			String key = (String) i.next();
+			String value = ((String[]) params.get(key))[0];
+			if (key.compareTo(SignatureGenerator.SIGNATURE_POST_ATTRIBUTE) == 0) {
+				/*
+				 * A digital signature has been sent, which is expected. Verify
+				 * this.
+				 */
+				try {
+					keyDir = GeneralUtils.provideKeyPairDirectory();
+
+					File publicKey = new File(keyDir + keyFile + KeyServices.publicKeyNameExtension);
+					if (!publicKey.exists()) {
+						log.error("Unable to get at the public key:" + publicKey.getAbsolutePath());
+						securePostData.setNoPrivateKey(true);
+					}
+					else {
+						if (log.isDebugEnabled()) {
+							log.debug("Using public key:" + publicKey.getAbsolutePath());
+						}
+						try {
+							/*
+							 * When the message is POSTed here, the signature is
+							 * generated from that message. Thus we need to
+							 * build the message and check that the expected
+							 * signature is present.
+							 * 
+							 * Remember, the sender generates the signature
+							 * using their private key. The receiver (here)
+							 * generates the signature using the sender's public
+							 * key. If the sigs are the same, we know the
+							 * message has not been tampered with (since the sig
+							 * is generated using the message) and, since we
+							 * have used the sender's public key to generate the
+							 * sig, we can guarantee that the message did indeed
+							 * come from the sender.
+							 */
+							for (int index = counter - 1; index > -1; index--) {
+								// for (int index = 0; index < counter; index++)
+								// {
+								messageToVerify += messages[index];
+								if (index != 0) {
+									// if (index != (counter - 1)) {
+									messageToVerify += "&";
+								}
+							}
+							log.debug("About to split " + messageToVerify);
+							String[] dataToSort = messageToVerify.split("&");
+							uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils.sortStringBubble(dataToSort);
+							messageToVerify = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils
+									.reconstructSortedData(dataToSort);
+							log.debug(messageToVerify);
+							String signature = value;
+
+							SignatureVerifier sigVerifier = new SignatureVerifier(keyDir + keyFile);
+
+							if (log.isDebugEnabled()) {
+								log.debug(String.format("About to verify message <%s> using signature <%s>",
+										messageToVerify, signature));
+								log.debug(String.format("Keyfile to be used is " + keyDir + keyFile));
+								log.debug(String.format("Sig is " + signature));
+							}
+							byte[] decodedBytes = sigVerifier.decodeAsByteArray(signature);
+
+							if (log.isDebugEnabled()) {
+								log.debug(String.format("Decoded length:%s", decodedBytes.length));
+								log.debug(String.format("Decoded bytes length:%d (%d,%d,%d)", decodedBytes.length,
+										decodedBytes[4], decodedBytes[27], decodedBytes[43]));
+								log.debug("Verify:" + messageToVerify);
+							}
+
+							if (timestamp == "") {
+								out.println("Verify with no timestamp");
+								securePostData.setMessageHasBeenVerified(sigVerifier.verifyDigitalSignature(
+										decodedBytes, messageToVerify));
+							}
+							else {
+								log.debug("Verify with timestamp");
+								securePostData.setMessageHasBeenVerified(sigVerifier.verifyDigitalSignature(
+										decodedBytes, messageToVerify + "_" + timestamp));
+								boolean verified = !sigVerifier.verifyTimestamp(timestamp);
+								log.debug("Time stamp too old = " + verified);
+								securePostData.setMessageTimedOut(verified);
+							}
+
+							if (securePostData.isMessageHasBeenVerified() && !securePostData.isMessageTimedOut()) {
+								securePostData.setMessageHasBeenVerified(true);
+								String validatedMessage = String.format(
+										"Post request from %s validated with the following parameters:\n", hostId);
+								for (String s : securePostData.getPostParms().values()) {
+									validatedMessage += "\t" + s + "\n";
+								}
+								auditer.auditSometimes(validatedMessage);
+								log.debug(validatedMessage);
+							}
+							else {
+								auditer.auditAlways("Message has not been verified");
+								if (securePostData.isMessageTimedOut()) {
+									auditer.auditAlways("The message is considered too old:"
+											+ getAllCallerDetails(request));
+									securePostData.setMessageTimedOut(true);
+									log.debug("Message too old");
+								}
+								if (!securePostData.isMessageHasBeenVerified()) {
+									auditer.auditAlways("Bad verification:" + getAllCallerDetails(request));
+									securePostData.setBadSig(true);
+									log.debug("Bad verification");
+								}
+							}
+						} catch (Exception e1) {
+							log.debug("Exception trying to verify the data:" + e1.getMessage());
+							auditer.auditAlways("Bad signature:" + getAllCallerDetails(request));
+							securePostData.setBadSig(true);
+						}
+					}
+				} catch (IOException e2) {
+					e2.printStackTrace();
+					log.debug("Unable to get at the public key");
+					securePostData.setNoPrivateKey(true);
+				}
+				manipulateSecurePostDataList(securePostData);
+				if (log.isDebugEnabled()) {
+					log.debug("Bad signature:" + securePostData.isBadSig());
+					log.debug("Verified:" + securePostData.isMessageHasBeenVerified());
+					log.debug("Timeout:" + securePostData.isMessageTimedOut());
+					log.debug("Priv key:" + securePostData.isNoPrivateKey());
+				}
+
+				/*
+				 * We can now send a little tickle to the intended recipient
+				 * telling them that there is data waiting for them
+				 */
+				log.debug("About to send notification");
+				try {
+					// SendViaPost svp = new SendViaPost();
+					// String result =
+					// svp.sendSecurePost(securePostData.getIntendedDestination(),
+					// String.format("%s=%s",
+					// SystemVars.POST_COMMAND_COMMAND_TOKEN,
+					// SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE),
+					// false);
+					// if (log.isDebugEnabled()) {
+					// log.debug(String.format("got result from post: %s",
+					// result));
+					// }
+
+					URL url = new URL(securePostData.getIntendedDestination());
+					URLConnection connection = url.openConnection();
+					if (log.isDebugEnabled()) {
+						log.debug(String.format("About to post to %s", securePostData.getIntendedDestination()));
+						log.debug(String.format("Will use the following parms: %s=%s",
+								SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE));
+					}
+					connection.setDoOutput(true);
+					String dataToSend = String.format("%s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN,
+							SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE);
+//					connection.setRequestProperty("Content-Length", "" + dataToSend.length());
+					OutputStreamWriter outsw = new OutputStreamWriter(connection.getOutputStream());
+					outsw.write(dataToSend);
+					outsw.flush();
+					outsw.close();
+					
+					BufferedReader in = null;
+					String result = "";
+
+					in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+					String decodedString;
+
+					while ((decodedString = in.readLine()) != null) {
+						result += decodedString + "\n";
+						log.debug(result);
+					}
+					in.close();
+
+					log.debug("Message posted");
+				} catch (Exception ex) {
+					log.error("Exception trying to notify " + securePostData.getIntendedDestination());
+					log.error(ex);
+				}
+
+				break;
+			}
+		}
+	}
+
+	@Deprecated
 	private void checkRequest(HttpServletRequest request) {
 		log.debug("checkRequest");
-		
+
 		String messageToVerify = "";
 		String timestamp = "";
 		int counter = 0;
@@ -115,13 +365,15 @@ public class ReceivePost extends HttpServlet {
 					try {
 						keyDir = GeneralUtils.provideKeyPairDirectory();
 
-						File publicKey = new File(keyDir + File.separator + keyFile
-								+ KeyServices.publicKeyNameExtension);
+						File publicKey = new File(keyDir + keyFile + KeyServices.publicKeyNameExtension);
 						if (!publicKey.exists()) {
-							log.debug("Unable to get at the public key");
+							log.error("Unable to get at the public key:" + publicKey.getAbsolutePath());
 							securePostData.setNoPrivateKey(true);
 						}
 						else {
+							if (log.isDebugEnabled()) {
+								log.debug("Using public key:" + publicKey.getAbsolutePath());
+							}
 							try {
 								/*
 								 * When the message is POSTed here, the
@@ -139,23 +391,35 @@ public class ReceivePost extends HttpServlet {
 								 * generate the sig, we can guarantee that the
 								 * message did indeed come from the sender.
 								 */
-//								for (int index = counter - 1; index > -1; index--) {
-								for (int index = 0; index < counter; index++) {
+								for (int index = counter - 1; index > -1; index--) {
+									// for (int index = 0; index < counter;
+									// index++) {
 									messageToVerify += messages[index];
-//									if (index != 0) {
-									if (index != (counter-1)) {
+									if (index != 0) {
+										// if (index != (counter - 1)) {
 										messageToVerify += "&";
 									}
 								}
 
-								log.debug("About to verify message...<" + messageToVerify + ">");
 								String signature = request.getParameter(data);
 
-								SignatureVerifier sigVerifier = new SignatureVerifier(keyDir + File.separator + keyFile);
-								log.debug(keyDir + File.separator + keyFile);
+								SignatureVerifier sigVerifier = new SignatureVerifier(keyDir + keyFile);
+
+								if (log.isDebugEnabled()) {
+									log.debug(String.format("About to verify message <%s> using signature <%s>",
+											messageToVerify, signature));
+									log.debug(String.format("Keyfile to be used is " + keyDir + keyFile));
+									log.debug(String.format("Sig is " + signature));
+								}
 								byte[] decodedBytes = sigVerifier.decodeAsByteArray(signature);
-								//out.println(decodedBytes[0] +" "+ decodedBytes[10]+" "+ decodedBytes[20]);
-								log.debug("Verify:" + messageToVerify);
+
+								if (log.isDebugEnabled()) {
+									log.debug(String.format("Decoded length:%s", decodedBytes.length));
+									log.debug(String.format("Decoded bytes length:%d (%d,%d,%d)", decodedBytes.length,
+											decodedBytes[4], decodedBytes[27], decodedBytes[43]));
+									log.debug("Verify:" + messageToVerify);
+								}
+
 								if (timestamp == "") {
 									out.println("Verify with no timestamp");
 									securePostData.setMessageHasBeenVerified(sigVerifier.verifyDigitalSignature(
@@ -169,21 +433,24 @@ public class ReceivePost extends HttpServlet {
 									log.debug("Time stamp too old = " + verified);
 									securePostData.setMessageTimedOut(verified);
 									if (log.isDebugEnabled()) {
-									log.debug("Let's check this:");
+										log.debug("Let's check this:");
 										Date now = new Date();
-										log.debug("Calc: " + (now.getTime() - Long.parseLong(timestamp)) + " div by 1000 = " + (now.getTime() - Long.parseLong(timestamp))/1000);
+										log.debug("Calc: " + (now.getTime() - Long.parseLong(timestamp))
+												+ " div by 1000 = " + (now.getTime() - Long.parseLong(timestamp))
+												/ 1000);
 										log.debug("greater than 60?");
-										if (((now.getTime() - Long.parseLong(timestamp))/1000 > 60)
+										if (((now.getTime() - Long.parseLong(timestamp)) / 1000 > 60)
 												&& (Long.parseLong(timestamp) != 0)) {
 											// Message is too old
-											log.debug("old:" + (((now.getTime() - Long.parseLong(timestamp))/1000)));
-										} else {
+											log.debug("old:" + (((now.getTime() - Long.parseLong(timestamp)) / 1000)));
+										}
+										else {
 											// Message has not yet expired
-											log.debug("not old:" + ((now.getTime() - Long.parseLong(timestamp)/1000)));
+											log.debug("not old:" + ((now.getTime() - Long.parseLong(timestamp) / 1000)));
 										}
 									}
 								}
-								
+
 								if (securePostData.isMessageHasBeenVerified() && !securePostData.isMessageTimedOut()) {
 									securePostData.setMessageHasBeenVerified(true);
 									String validatedMessage = String.format(
@@ -208,62 +475,75 @@ public class ReceivePost extends HttpServlet {
 										log.debug("Bad verification");
 									}
 								}
-							}
-							catch (Exception e1) {
+							} catch (Exception e1) {
 								log.debug("Exception trying to verify the data:" + e1.getMessage());
 								auditer.auditAlways("Bad signature:" + getAllCallerDetails(request));
 								securePostData.setBadSig(true);
 							}
 						}
-					}
-					catch (IOException e2) {
+					} catch (IOException e2) {
 						e2.printStackTrace();
 						log.debug("Unable to get at the public key");
 						securePostData.setNoPrivateKey(true);
 					}
 					manipulateSecurePostDataList(securePostData);
 					if (log.isDebugEnabled()) {
-						log.debug("Sig:"+securePostData.isBadSig());
-						log.debug("Verified:"+securePostData.isMessageHasBeenVerified());
-						log.debug("Timeout:"+securePostData.isMessageTimedOut());
-						log.debug("Priv key:"+securePostData.isNoPrivateKey());
+						log.debug("Bad signature:" + securePostData.isBadSig());
+						log.debug("Verified:" + securePostData.isMessageHasBeenVerified());
+						log.debug("Timeout:" + securePostData.isMessageTimedOut());
+						log.debug("Priv key:" + securePostData.isNoPrivateKey());
 					}
-					
+
 					/*
-					 * We can now send a little tickle to the intended recipient telling them that
-					 * there is data waiting for them 
+					 * We can now send a little tickle to the intended recipient
+					 * telling them that there is data waiting for them
 					 */
 					log.debug("About to send notification");
 					try {
-//						SendViaPost svp = new SendViaPost();
-//						String result = svp.sendSecurePost(securePostData.getIntendedDestination(),
-//								String.format("%s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE),
-//								false);
-//						if (log.isDebugEnabled()) {
-//							log.debug(String.format("got result from post: %s", result));
-//						}
-						
+						// SendViaPost svp = new SendViaPost();
+						// String result =
+						// svp.sendSecurePost(securePostData.getIntendedDestination(),
+						// String.format("%s=%s",
+						// SystemVars.POST_COMMAND_COMMAND_TOKEN,
+						// SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE),
+						// false);
+						// if (log.isDebugEnabled()) {
+						// log.debug(String.format("got result from post: %s",
+						// result));
+						// }
+
 						URL url = new URL(securePostData.getIntendedDestination());
-						HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+						HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 						if (log.isDebugEnabled()) {
 							log.debug(String.format("About to post to %s", securePostData.getIntendedDestination()));
-							log.debug(String.format("Will use the following parms: %s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE));
+							log.debug(String.format("Will use the following parms: %s=%s",
+									SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE));
 						}
 						connection.setDoOutput(true);
 						connection.setRequestMethod("POST");
-						String dataToSend = String.format("%s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE);
+						String dataToSend = String.format("%s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN,
+								SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE);
 						connection.setRequestProperty("Content-Length", "" + dataToSend.length());
 						OutputStreamWriter outsw = new OutputStreamWriter(connection.getOutputStream());
-						InputStream response = connection.getInputStream();
-						for( int c = response.read(); c != -1; c = response.read() ) 
-							log.debug( (char)c ); 
-						response.close();
 						outsw.write(dataToSend);
 						outsw.flush();
 						outsw.close();
+						InputStream response = connection.getInputStream();
+						String output = "";
+						for (int c = response.read(); c != -1; c = response.read()) {
+							if (c == '\n') {
+								log.debug(output);
+								output = "";
+							}
+							else {
+								output += (char) c;
+							}
+						}
+
+						response.close();
+
 						log.debug("Message posted");
-					}
-					catch (Exception ex) {
+					} catch (Exception ex) {
 						log.error("Exception trying to notify " + securePostData.getIntendedDestination());
 						log.error(ex);
 					}
@@ -316,10 +596,6 @@ public class ReceivePost extends HttpServlet {
 			}
 		}
 	}
-	
-	
-	
-
 
 	private String getAllCallerDetails(HttpServletRequest request) {
 		return String.format("Remote host:%s, Referer:%s, remoteHost:%s, user agent:%s", request.getRemoteAddr(),
@@ -336,7 +612,7 @@ public class ReceivePost extends HttpServlet {
 	 */
 	private synchronized void manipulateSecurePostDataList(SecurePostData dataItem) {
 		log.debug("manipulateSecurePostDataList");
-		
+
 		if (dataItem == null) {
 			if (log.isDebugEnabled()) {
 				log.debug("manipulateSecurePostDataList - collect items");
@@ -344,12 +620,13 @@ public class ReceivePost extends HttpServlet {
 			}
 			/*
 			 * The user has requested all current data - let's give it to them
-			 * and then clear the list
+			 * and then potentially clear the list
 			 */
 			for (SecurePostData spd : securePostDataList) {
 				spd.printData(out);
 			}
 			if (clearStack) {
+				log.info("List being cleared");
 				securePostDataList.clear();
 			}
 		}
@@ -361,7 +638,7 @@ public class ReceivePost extends HttpServlet {
 			}
 		}
 	}
-	
+
 	public static void main(String[] args) throws IOException {
 		URL url = new URL("http://129.67.103.124:8081/iam/ProjectRoleServlet");
 		URLConnection connection = url.openConnection();
@@ -370,11 +647,11 @@ public class ReceivePost extends HttpServlet {
 		outsw.write(String.format("getRoles=true"));
 		outsw.flush();
 		BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-	    String line;
-	    while ((line = rd.readLine()) != null) {
-	       System.out.println(line);
-	    }
-	    rd.close();
+		String line;
+		while ((line = rd.readLine()) != null) {
+			System.out.println(line);
+		}
+		rd.close();
 		outsw.close();
 		System.out.println("Done");
 	}
