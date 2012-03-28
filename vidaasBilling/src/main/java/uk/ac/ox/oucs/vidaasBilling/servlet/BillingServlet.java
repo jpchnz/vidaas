@@ -407,7 +407,7 @@ public class BillingServlet extends HttpServlet implements Serializable {
 //			}
 			System.out.println("Send via post");
 			SendViaPost post = new SendViaPost();
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 1; i++) {
 				String email = "a@a";
 				String projectName = "fred";
 				int projectSize = 100;
@@ -421,28 +421,13 @@ public class BillingServlet extends HttpServlet implements Serializable {
 //						"http://129.67.103.124:8081/vidaasBilling/BillingServlet",
 						"http://localhost:8081/vidaasBilling/BillingServlet",
 						String.format(
-								"%s=%s&%s=%s&%s=%s&%s=%d&%s=%s&%s=%d&buffer=%s", SystemVars.POST_COMMAND_EMAIL_TOKEN, email,
+								"%s=%s&%s=%s&%s=%s&%s=%d&%s=%s&%s=%d", SystemVars.POST_COMMAND_EMAIL_TOKEN, email,
 								SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_PROJECT,
 								SystemVars.POST_COMMAND_PROJECTNAME_TOKEN, projectName+projectId,
 								SystemVars.POST_COMMAND_PROJECTSPACE_TOKEN, projectSize,
 								SystemVars.POST_COMMAND_BILLINGFREQUENCY_TOKEN, BillingFrequency.monthly.toString(),
-								SystemVars.POST_COMMAND_PROJECTID_TOKEN, projectId,
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
-								"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
-				System.out.println("Result:\n" + r);
+								SystemVars.POST_COMMAND_PROJECTID_TOKEN, projectId));
+				System.out.println("Result:" + projectId + "\n" + r);
 //				List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageDataAndKeep();
 //				int counter = 0;
 //				for (SecurePostData spd : securePostDataList) {
