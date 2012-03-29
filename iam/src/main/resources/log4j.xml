@@ -19,7 +19,7 @@
 		<param name="datePattern" value="'.'yyyy-MM-dd" />
 		<param name="append" value="true" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d %C{2} (%F:%L) - %m%n" />
+			<param name="ConversionPattern" value="%d %C{3} (%F:%L) - %m%n" />
 		</layout>
 	</appender>
 
