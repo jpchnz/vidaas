@@ -5,14 +5,20 @@
 <hibernate-configuration>
 	<session-factory>
 		<property name="connection.url">jdbc:mysql://localhost/VidaasBilling?autoReconnect=true</property>
-		<property name="connection.username">root</property>
+		<property name="connection.username">vidaasBilling</property>
 		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
 		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
-		<property name="connection.password">karate</property>
+		<property name="connection.password">P4uPr8pahe6e</property>
 		<property name="transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
 		<property name="current_session_context_class">thread</property>
 		<property name="hibernate.show_sql">false</property>
-		<property name="hibernate.hbm2ddl.auto">create</property>
+		<property name="hibernate.hbm2ddl.auto">update</property>
+		<property name="c3p0.min_size">5</property>
+		<property name="c3p0.max_size">20</property>
+		<property name="c3p0.timeout">1800</property>
+		<property name="c3p0.max_statements">50</property>
+		<property name="hibernate.c3p0.idle_test_period">3000</property>
+		<property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
 		<mapping resource="project.hbm.xml" />
 		<mapping resource="invoice.hbm.xml" />
 
