@@ -418,8 +418,8 @@ public class BillingServlet extends HttpServlet implements Serializable {
 				String r = post.sendSecurePost(
 				// "http://129.67.241.38/iam/ReceivePost",
 						//"http://82.71.34.134:8081/vidaasBilling/BillingServlet", 
-//						"http://129.67.103.124:8081/vidaasBilling/BillingServlet",
-						"http://localhost:8081/vidaasBilling/BillingServlet",
+						"http://129.67.103.124:8081/vidaasBilling/BillingServlet",
+//						"http://localhost:8081/vidaasBilling/BillingServlet",
 						String.format(
 								"%s=%s&%s=%s&%s=%s&%s=%d&%s=%s&%s=%d", SystemVars.POST_COMMAND_EMAIL_TOKEN, email,
 								SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_PROJECT,
