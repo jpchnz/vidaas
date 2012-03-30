@@ -24,6 +24,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 
 import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
 import uk.ac.ox.oucs.iam.interfaces.utilities.SystemVars;
@@ -31,6 +32,9 @@ import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.DuplicateKeyException;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.KeyNotFoundException;
 
 public class GeneralUtils {
+	private static Logger log = Logger.getLogger(GeneralUtils.class);
+	
+	
 	/**
 	 * Utility to provide the local key pair name. I wrote this because it may
 	 * be that the initial naming convention for keys is changed, and this
@@ -102,6 +106,8 @@ public class GeneralUtils {
 	 * @throws IOException
 	 */
 	public static String provideKeyPairDirectory() throws IOException {
+		log.debug("provideKeyPairDirectory");
+		
 		String keyPairDirectory = null;// /tmp/keyStore
 		String keyDataText = null;
 		try {
@@ -114,8 +120,10 @@ public class GeneralUtils {
 			}
 		}
 		catch (IOException e) {
+			log.warn("Unable to get at key store");
 			//keyPairDirectory = File.separator + "tmp" + File.separator + "keyStore";
 			keyPairDirectory = SystemVars.locationOfKeyStore;
+			log.info("Using " + keyPairDirectory);
 		}
 		if (!new File(keyPairDirectory).exists()) {
 			if (!new File(keyPairDirectory).mkdirs()) {
