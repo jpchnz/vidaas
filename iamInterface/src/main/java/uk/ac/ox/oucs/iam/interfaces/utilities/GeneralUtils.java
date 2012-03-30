@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -21,15 +22,54 @@ import java.security.PublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.DuplicateKeyException;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.KeyNotFoundException;
 
 public class GeneralUtils {
+	public static String sendStandardHttpPost(String destination, String key, String data) throws IllegalStateException, IOException {
+		List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(1);
+		nameValuePair.add(new BasicNameValuePair(key, data));
+		return sendStandardHttpPost(destination, nameValuePair);
+	}
+	
+	public static String sendStandardHttpPost(String destination, List<NameValuePair> nameValuePairs) throws IllegalStateException, IOException {
+		String result = "";
+		
+		HttpClient client = new DefaultHttpClient();
+		HttpPost post = new HttpPost(destination);
+		post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+		HttpResponse response = client.execute(post);
+		BufferedReader rd = new BufferedReader(new InputStreamReader(
+				response.getEntity().getContent()));
+		String decodedString;
+
+		boolean firstLine = true;
+		while ((decodedString = rd.readLine()) != null) {
+			if (firstLine) {
+				firstLine = false;
+				continue;
+			}
+			result += decodedString + "\n";
+		}
+		
+		return result;
+	}
+	
+	
 	/**
 	 * Utility to provide the local key pair name. I wrote this because it may
 	 * be that the initial naming convention for keys is changed, and this
