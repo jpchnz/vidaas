@@ -3,17 +3,13 @@ package uk.ac.ox.oucs.iam.servlet;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -299,34 +295,44 @@ public class ReceivePost extends HttpServlet implements Serializable {
 					// result));
 					// }
 
-					URL url = new URL(securePostData.getIntendedDestination());
-					URLConnection connection = url.openConnection();
-					if (log.isDebugEnabled()) {
-						log.debug(String.format("About to post to %s", securePostData.getIntendedDestination()));
-						log.debug(String.format("Will use the following parms: %s=%s",
-								SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE));
-					}
-					connection.setDoOutput(true);
-					String dataToSend = String.format("%s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN,
-							SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE);
-//					connection.setRequestProperty("Content-Length", "" + dataToSend.length());
-					OutputStreamWriter outsw = new OutputStreamWriter(connection.getOutputStream());
-					outsw.write(dataToSend);
-					outsw.flush();
-					outsw.close();
-					
-					BufferedReader in = null;
+					boolean test = true;
 					String result = "";
-
-					in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-					String decodedString;
-
-					while ((decodedString = in.readLine()) != null) {
-						result += decodedString + "\n";
-						log.debug(result);
+					if (test) {
+						result = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils.sendStandardHttpPost(SystemVars.ADDRESS_OF_IAM_WEBAPP_RECEIVER, "requestCurrent", "data");
+						if (log.isDebugEnabled()) {
+							log.debug("Got result: " + result);
+						}
 					}
-					in.close();
+					else {
+						URL url = new URL(securePostData.getIntendedDestination());
+						URLConnection connection = url.openConnection();
+						if (log.isDebugEnabled()) {
+							log.debug(String.format("About to post to %s", securePostData.getIntendedDestination()));
+							log.debug(String.format("Will use the following parms: %s=%s",
+									SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE));
+						}
+						connection.setDoOutput(true);
+						String dataToSend = String.format("%s=%s", SystemVars.POST_COMMAND_COMMAND_TOKEN,
+								SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE);
+	//					connection.setRequestProperty("Content-Length", "" + dataToSend.length());
+						OutputStreamWriter outsw = new OutputStreamWriter(connection.getOutputStream());
+						outsw.write(dataToSend);
+						outsw.flush();
+						outsw.close();
+						
+						BufferedReader in = null;
+						
+	
+						in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+	
+						String decodedString;
+	
+						while ((decodedString = in.readLine()) != null) {
+							result += decodedString + "\n";
+							log.debug(result);
+						}
+						in.close();
+					}
 
 					log.debug("Message posted");
 				} catch (Exception ex) {
