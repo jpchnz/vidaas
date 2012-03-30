@@ -2,7 +2,6 @@ package uk.ac.ox.oucs.vidaasBilling.servlet;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,7 +29,7 @@ import uk.ac.ox.oucs.vidaasBilling.model.Project.BillingFrequency;
 @SuppressWarnings("serial")
 public class BillingServlet extends HttpServlet implements Serializable {
 	private static Logger log = Logger.getLogger(BillingServlet.class);
-	private PrintWriter out;
+//	private PrintWriter out;
 	private Billing billing = null;
 
 	public BillingServlet() throws JAXBException, FileNotFoundException {
@@ -41,16 +40,19 @@ public class BillingServlet extends HttpServlet implements Serializable {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		log.debug("doGet starting ...");
 		
-		out = response.getWriter();
-		out.println("Billing subsystem is " + (billing.isBillingEnabled() ? "on" : "off"));
+//		out = response.getWriter();
+//		out.println("Billing subsystem is " + (billing.isBillingEnabled() ? "on" : "off"));
 		
-		
-		Map params = request.getParameterMap();
-		Iterator i = params.keySet().iterator();
-		while (i.hasNext()) {
-			String key = (String) i.next();
-			String value = ((String[]) params.get(key))[0];
-			log.debug(key + "=" + value);
+		if (log.isDebugEnabled()) {
+			Map params = request.getParameterMap();
+			Iterator i = params.keySet().iterator();
+			log.debug(String.format("Logging %d input parameters", request.getParameterMap().size()));
+			while (i.hasNext()) {
+				String key = (String) i.next();
+				String value = ((String[]) params.get(key))[0];
+				log.debug(key + "=" + value);
+			}
+			log.debug("Input parameters logged");
 		}
 
 		String command = request.getParameter(SystemVars.POST_COMMAND_COMMAND_TOKEN);
@@ -59,7 +61,7 @@ public class BillingServlet extends HttpServlet implements Serializable {
 			return;
 		}
 		if (command.compareToIgnoreCase("status") == 0) {
-			out.println("All well, master");
+//			out.println("All well, master");
 		}
 		else if (command.compareToIgnoreCase(SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE) == 0) {
 			/*
@@ -70,7 +72,7 @@ public class BillingServlet extends HttpServlet implements Serializable {
 			 */
 			log.info("New data available to collect. Yay");
 			addBillingForNewproject();
-			out.println("Sorted");
+//			out.println("Sorted");
 //			generateAndSendInvoices();
 		}
 		else if (command.compareToIgnoreCase(SystemVars.POST_COMMAND_NEW_PROJECT) == 0) {
@@ -92,8 +94,8 @@ public class BillingServlet extends HttpServlet implements Serializable {
 			log.debug("Invoices generated");
 		}
 
-		out.flush();
-		out.close();
+//		out.flush();
+//		out.close();
 	}
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -418,8 +420,8 @@ public class BillingServlet extends HttpServlet implements Serializable {
 				String r = post.sendSecurePost(
 				// "http://129.67.241.38/iam/ReceivePost",
 						//"http://82.71.34.134:8081/vidaasBilling/BillingServlet", 
-						"http://129.67.103.124:8081/vidaasBilling/BillingServlet",
-//						"http://localhost:8081/vidaasBilling/BillingServlet",
+//						"http://129.67.103.124:8081/vidaasBilling/BillingServlet",
+						"http://localhost:8081/vidaasBilling/BillingServlet",
 						String.format(
 								"%s=%s&%s=%s&%s=%s&%s=%d&%s=%s&%s=%d", SystemVars.POST_COMMAND_EMAIL_TOKEN, email,
 								SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_PROJECT,

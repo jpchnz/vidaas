@@ -22,7 +22,7 @@ public class HibernateUtil {
 //	private static final SessionFactory sessionFactory;
 
 	static {
-		log.error("init of HibernateUtil");
+		log.debug("init of HibernateUtil");
 		try {
 			// Create the SessionFactory
 			Configuration configuration = new Configuration();
