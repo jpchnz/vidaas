@@ -328,7 +328,6 @@ public class GeneralUtils {
 		return ip.getHostAddress();
 	}
 	
-	
 	public static String reconstructSortedData(String[] dataToSort) {
 		String postData = "";
 		for (String s : dataToSort) {
@@ -338,23 +337,5 @@ public class GeneralUtils {
 			}
 		}
 		return postData;
-	}
-	
-	public static void sortStringBubble(String x[]) {
-		int j;
-		boolean flag = true; // will determine when the sort is finished
-		String temp;
-
-		while (flag) {
-			flag = false;
-			for (j = 0; j < x.length - 1; j++) {
-				if (x[j].compareToIgnoreCase(x[j + 1]) > 0) { // ascending sort
-					temp = x[j];
-					x[j] = x[j + 1]; // swapping
-					x[j + 1] = temp;
-					flag = true;
-				}
-			}
-		}
 	}
 }
