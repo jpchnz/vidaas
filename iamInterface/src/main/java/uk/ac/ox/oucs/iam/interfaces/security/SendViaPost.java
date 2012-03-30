@@ -1,19 +1,16 @@
 package uk.ac.ox.oucs.iam.interfaces.security;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -101,7 +98,7 @@ public class SendViaPost {
 		 * that it can be reset to alphabetical order at the servlet.
 		 */
 		String[] dataToSort = postData.split("&");
-		GeneralUtils.sortStringBubble(dataToSort);
+		Arrays.sort(dataToSort);
 		// Now reconstruct
 		postData = GeneralUtils.reconstructSortedData(dataToSort);
 
@@ -271,6 +268,7 @@ public class SendViaPost {
 		    wr.close();
 		    rd.close();
 		} catch (Exception e) {
+			System.out.println(e);
 		}
 	}
 

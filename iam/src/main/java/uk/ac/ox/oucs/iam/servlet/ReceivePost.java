@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -192,9 +193,24 @@ public class ReceivePost extends HttpServlet implements Serializable {
 							}
 							log.debug("About to split " + messageToVerify);
 							String[] dataToSort = messageToVerify.split("&");
-							uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils.sortStringBubble(dataToSort);
-							messageToVerify = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils
-									.reconstructSortedData(dataToSort);
+//							if (log.isDebugEnabled()) {
+//								log.debug(String.format("Split into %d items", dataToSort.length));
+//								for (String s : dataToSort) {
+//									log.debug(s);
+//								}
+//							}
+//							log.debug("Try a different sort");
+							Arrays.sort(dataToSort);
+							if (log.isDebugEnabled()) {
+								log.debug(String.format("Split into %d items", dataToSort.length));
+								for (String s : dataToSort) {
+									log.debug(s);
+								}
+							}
+//							uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils.sortStringBubble(dataToSort);
+							log.debug("Data has been sorted");
+							messageToVerify = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils.reconstructSortedData(dataToSort);
+							log.debug("Data has been reconstructed");
 							log.debug(messageToVerify);
 							String signature = value;
 
@@ -225,7 +241,10 @@ public class ReceivePost extends HttpServlet implements Serializable {
 								securePostData.setMessageHasBeenVerified(sigVerifier.verifyDigitalSignature(
 										decodedBytes, messageToVerify + "_" + timestamp));
 								boolean verified = !sigVerifier.verifyTimestamp(timestamp);
-								log.debug("Time stamp too old = " + verified);
+								if (log.isDebugEnabled()) {
+									log.debug(String.format("Timestamp is %stoo old", verified ? "" : "not "));
+								}
+								
 								securePostData.setMessageTimedOut(verified);
 							}
 
@@ -295,10 +314,12 @@ public class ReceivePost extends HttpServlet implements Serializable {
 					// result));
 					// }
 
-					boolean test = true;
+					boolean useApacheHttpPost = true;
 					String result = "";
-					if (test) {
-						result = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils.sendStandardHttpPost(SystemVars.ADDRESS_OF_IAM_WEBAPP_RECEIVER, "requestCurrent", "data");
+					if (useApacheHttpPost) {
+						log.debug("About to send post request to " + securePostData.getIntendedDestination());
+						result = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils.sendStandardHttpPost(securePostData.getIntendedDestination(),
+								SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE);
 						if (log.isDebugEnabled()) {
 							log.debug("Got result: " + result);
 						}
@@ -344,6 +365,9 @@ public class ReceivePost extends HttpServlet implements Serializable {
 			}
 		}
 	}
+	
+	
+	
 
 	private String getAllCallerDetails(HttpServletRequest request) {
 		return String.format("Remote host:%s, Referer:%s, remoteHost:%s, user agent:%s", request.getRemoteAddr(),
