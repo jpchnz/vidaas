@@ -10,6 +10,7 @@ import java.net.URL;
  * @author dave
  *
  */
+@Deprecated
 public class DatabaseAuthentication {
 	private RolePoster rolePoster;
 

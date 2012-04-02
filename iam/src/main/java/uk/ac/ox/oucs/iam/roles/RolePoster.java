@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 
+@Deprecated
 public class RolePoster {
 	private OutputStreamWriter out;
 	private String postData;
