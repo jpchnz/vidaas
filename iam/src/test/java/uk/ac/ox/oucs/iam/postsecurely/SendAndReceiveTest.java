@@ -10,6 +10,7 @@ import org.junit.Test;
 import uk.ac.ox.oucs.iam.GlobalTestVars;
 import uk.ac.ox.oucs.iam.interfaces.security.SecurePostData;
 import uk.ac.ox.oucs.iam.interfaces.security.SendViaPost;
+import uk.ac.ox.oucs.iam.security.postsecurely.ReceivePostedData;
 
 
 /**
