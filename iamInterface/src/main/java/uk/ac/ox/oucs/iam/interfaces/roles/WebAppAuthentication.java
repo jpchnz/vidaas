@@ -4,6 +4,14 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+
+/**
+ * A class to process role based queries for web application operations.
+ * Currently, the only operations here are to create or delete web applications.
+ * 
+ * @author dave
+ *
+ */
 public class WebAppAuthentication  {
 	private RolePoster rolePoster;
 
