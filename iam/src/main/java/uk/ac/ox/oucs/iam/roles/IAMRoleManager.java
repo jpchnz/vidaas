@@ -5,6 +5,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 
+/**
+ * The gateway to the role management functions.
+ * @author dave
+ *
+ */
 public class IAMRoleManager {
 	private RolePoster rolePoster;	
 	private DatabaseAuthentication databaseAuthentication;

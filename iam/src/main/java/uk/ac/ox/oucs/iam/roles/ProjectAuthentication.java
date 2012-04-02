@@ -3,6 +3,12 @@ package uk.ac.ox.oucs.iam.roles;
 import java.io.IOException;
 import java.net.URL;
 
+
+/**
+ * A class to process role based queries for project operations.
+ * @author dave
+ *
+ */
 public class ProjectAuthentication  {
 	private RolePoster rolePoster;
 

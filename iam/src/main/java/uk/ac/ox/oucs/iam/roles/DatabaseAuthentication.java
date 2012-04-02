@@ -3,6 +3,13 @@ package uk.ac.ox.oucs.iam.roles;
 import java.io.IOException;
 import java.net.URL;
 
+
+/**
+ * A class to process role based queries for database operations. 
+ * Currently, the only database operation is to add or remove database data.
+ * @author dave
+ *
+ */
 public class DatabaseAuthentication {
 	private RolePoster rolePoster;
 
