@@ -2,12 +2,14 @@ package uk.ac.ox.oucs.iam.interfaces.roles;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
-
-import uk.ac.ox.oucs.iam.interfaces.utilities.SystemVars;
 
 
-
+/**
+ * The gateway to the role management functions.
+ * 
+ * @author dave
+ *
+ */
 public class IAMRoleManager {
 	private RolePoster rolePoster;	
 	private DatabaseAuthentication databaseAuthentication;
@@ -17,7 +19,13 @@ public class IAMRoleManager {
 	
 	private static IAMRoleManager instance = null;
 
-	public static IAMRoleManager getInstance() throws MalformedURLException {
+	/**
+	 * Provides an instance of the IAMRoleManager class, instantiating it
+	 * if it has not yet been created.
+	 * @return
+	 * @throws MalformedURLException
+	 */
+	public synchronized static IAMRoleManager getInstance() throws MalformedURLException {
 		if (instance == null) {
 			instance = new IAMRoleManager();
 		}
@@ -61,6 +69,11 @@ public class IAMRoleManager {
 	}
 	
 	
+	/**
+	 * Allows the caller to deretmine which role has been designated project owner
+	 * @return the name of the project owner role - typically "Owner"
+	 * @throws IOException
+	 */
 	public String getOwnerRole() throws IOException {
 		String ret =  rolePoster.sendPost("getOwnerRole=true").replaceAll("\n", "");
 		if (ret.compareTo("true") == 0) {

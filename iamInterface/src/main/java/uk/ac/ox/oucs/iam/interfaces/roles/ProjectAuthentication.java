@@ -4,6 +4,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+
+/**
+ * A class to process role based queries for project operations.
+ * @author dave
+ *
+ */
 public class ProjectAuthentication  {
 	private RolePoster rolePoster;
 
