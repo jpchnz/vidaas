@@ -9,6 +9,7 @@ import java.net.URL;
  * @author dave
  *
  */
+@Deprecated
 public class ProjectAuthentication  {
 	private RolePoster rolePoster;
 
