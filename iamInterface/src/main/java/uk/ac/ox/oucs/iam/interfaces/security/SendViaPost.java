@@ -10,10 +10,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 
 import uk.ac.ox.oucs.iam.interfaces.security.audit.IamAudit;
@@ -25,6 +28,15 @@ import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.DuplicateKeyException;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.KeyNotFoundException;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.NewKeyException;
 
+
+/**
+ * Class designed to http post data to a remote server. This class
+ * will wrapper the data with a security layer thus adding authorisation, authentication and
+ * message timeout.
+ * 
+ * @author dave
+ *
+ */
 public class SendViaPost {
 	Logger log = Logger.getLogger(SendViaPost.class);
 	private URL urlOfReceiveService;
@@ -126,6 +138,20 @@ public class SendViaPost {
 					 */
 					throw new KeyNotFoundException();
 				}
+				
+				if (SystemVars.useMysql) {
+					log.info("We have needed to generate a new key. Before we continue" +
+							"processing, we should send details of the public key to the remote" +
+							"server");
+					List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
+					log.info("Have keyfile " + keyFile);
+					nameValuePair.add(new BasicNameValuePair(SystemVars.POST_COMMAND_PROVIDE_UUID_OF_PUBLIC_KEY, keyFile));
+					nameValuePair.add(new BasicNameValuePair(SystemVars.POST_COMMAND_PROVIDE_PUBLIC_KEY, keyFile));
+//					String result = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils.sendStandardHttpPost(
+//							securePostData.getIntendedDestination(), SystemVars.POST_COMMAND_COMMAND_TOKEN,
+//							SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE);
+				}
+				
 				throw new NewKeyException(keyFile);
 			}
 			if (!privateKey.exists()) {
