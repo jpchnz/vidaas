@@ -40,6 +40,12 @@ public class Emailer {
 						.getProperty("mail.from"), fMailServerConfig
 						.getProperty("mail.password")));
 		MimeMessage message = new MimeMessage(session);
+		
+		
+		/*
+		 * Take a look at local class TextConversion that fomrs the start of a reoutine
+		 * to convert text to pdf
+		 */
 		try {
 			// the "from" address may be set in code, or set in the
 			// config file under "mail.from" ; here, the latter style is used
