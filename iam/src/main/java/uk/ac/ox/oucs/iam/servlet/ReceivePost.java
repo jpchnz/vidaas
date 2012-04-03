@@ -31,14 +31,13 @@ import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
 import uk.ac.ox.oucs.iam.interfaces.utilities.SystemVars;
 import uk.ac.ox.oucs.iam.security.utilities.GeneralUtils;
 
-
 /**
- * Receive a secure post from a client, check whether the message is
- * authorised and authentic and then ping the required
- * recipient with a message enabling them to obtain details of the message.
+ * Receive a secure post from a client, check whether the message is authorised
+ * and authentic and then ping the required recipient with a message enabling
+ * them to obtain details of the message.
  * 
  * @author dave
- *
+ * 
  */
 @SuppressWarnings("serial")
 public class ReceivePost extends HttpServlet implements Serializable {
@@ -77,7 +76,6 @@ public class ReceivePost extends HttpServlet implements Serializable {
 		// out.flush();
 		out.close();
 	}
-	
 
 	/**
 	 * Method that looks at the POST data sent to the application server. It
@@ -103,16 +101,45 @@ public class ReceivePost extends HttpServlet implements Serializable {
 		auditer.auditSometimes("Post request received from " + hostId);
 
 		log.debug("Checking parms");
+		if (SystemVars.useMysql) {
+			String pubKeyUuid = request.getParameter(SystemVars.POST_COMMAND_PROVIDE_UUID_OF_PUBLIC_KEY);
+			if ((pubKeyUuid != null) && (pubKeyUuid.length() != 0)) {
+				log.info("Message to provide public key for remote host");
+				keyFileName = request.getParameter(SignatureGenerator.KEYFILE_POST_ATTRIBUTE);
+				if ((keyFileName == null) && (keyFileName.length() == 0)) {
+					log.error("Bad input - no key file name");
+					return;
+				}
+				if ((hostId == null) || (hostId.length() == 0)) {
+					log.error("Bad input - no sending ip");
+					return;
+				}
+				String publicKey = request.getParameter(SystemVars.POST_COMMAND_PROVIDE_PUBLIC_KEY);
+				if ((publicKey == null) || (publicKey.length() == 0)) {
+					log.error("Bad input - no public key");
+					return;
+				}
+
+				// We have a new public key. Add to the db.
+				uk.ac.ox.oucs.iam.servlet.model.PublicKey key = new uk.ac.ox.oucs.iam.servlet.model.PublicKey();
+				key.setKey(publicKey);
+				key.setOwnerIp(hostId);
+				key.setUuid(keyFileName);
+
+				AccessDB.create(key); // Add the key to the database
+				return;
+			}
+		}
+
 		Map params = request.getParameterMap();
 		Iterator i = params.keySet().iterator();
 		String[] messages = new String[request.getParameterMap().size()];
 		int counter = 0;
-		
+
 		if (log.isDebugEnabled()) {
 			log.debug("Total number of parameters passed in:" + request.getParameterMap().size());
 		}
 
-		
 		// Loop through all parameters
 		while (i.hasNext()) {
 			String key = (String) i.next();
@@ -133,7 +160,6 @@ public class ReceivePost extends HttpServlet implements Serializable {
 				return;
 			}
 
-			
 			/*
 			 * This message is not a signature. We should therefore add it to
 			 * the data we used to generate the signature, unless it is a
@@ -141,16 +167,17 @@ public class ReceivePost extends HttpServlet implements Serializable {
 			 */
 			if (key.compareTo(SignatureGenerator.TIMESTAMP_POST_ATTRIBUTE) == 0) {
 				/*
-				 * A timestamp has been passed with the message. We can use this to
-				 * check the message is not too old.
+				 * A timestamp has been passed with the message. We can use this
+				 * to check the message is not too old.
 				 */
 				timestamp = value;
 			}
 			else if (key.compareTo(SignatureGenerator.KEYFILE_POST_ATTRIBUTE) == 0) {
 				/*
-				 * This is the uuid name of the private key used to produce the digital signature
-				 * of the message. The corresponding public key should be local to this service,
-				 * and use of that should verify the validity of the signature.
+				 * This is the uuid name of the private key used to produce the
+				 * digital signature of the message. The corresponding public
+				 * key should be local to this service, and use of that should
+				 * verify the validity of the signature.
 				 */
 				keyFileName = value;
 				auditer.auditSometimes(String.format("Using key %s for host %s", keyFileName, hostId));
@@ -176,13 +203,12 @@ public class ReceivePost extends HttpServlet implements Serializable {
 			}
 		}
 
-		
 		/*
-		 * Now we have built up a list of messages intended for the recipient. We can
-		 * look at the digital signature associated with the message and validate it.
-		 * Since we cannot decrypt the digital signature (we only have the public
-		 * key here, not the private key), all we can do is encrypt the key again and check 
-		 * that the signature is ok.
+		 * Now we have built up a list of messages intended for the recipient.
+		 * We can look at the digital signature associated with the message and
+		 * validate it. Since we cannot decrypt the digital signature (we only
+		 * have the public key here, not the private key), all we can do is
+		 * encrypt the key again and check that the signature is ok.
 		 */
 		log.debug("Initial data parse finished. Now look at the signature ...");
 		i = params.keySet().iterator();
@@ -195,8 +221,24 @@ public class ReceivePost extends HttpServlet implements Serializable {
 			if (key.compareTo(SignatureGenerator.SIGNATURE_POST_ATTRIBUTE) == 0) {
 				/*
 				 * A digital signature has been sent, which is expected. Verify
-				 * this.
+				 * this. How we do so depends on if the key is located in a file
+				 * in the file system or database
 				 */
+				boolean ableToAccessPublicKey = false;
+				if (SystemVars.useMysql) {
+					uk.ac.ox.oucs.iam.servlet.model.PublicKey localKey = AccessDB.getKey(keyFileName);
+					if (localKey != null) {
+						ableToAccessPublicKey = true;
+					}
+				}
+				else {
+					try {
+						keyDir = GeneralUtils.provideKeyPairDirectory();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				try {
 					keyDir = GeneralUtils.provideKeyPairDirectory();
 
@@ -232,13 +274,14 @@ public class ReceivePost extends HttpServlet implements Serializable {
 									messageToVerify += "&";
 								}
 							}
-							
-							
+
 							/*
-							 * In order to verify the signature is correct, we need to generate it
-							 * in exactly the same way as it was generated by the originator, and
-							 * thus clearly the order of parameters is crucial. By convention,
-							 * We sort the parameters alphabetically.
+							 * In order to verify the signature is correct, we
+							 * need to generate it in exactly the same way as it
+							 * was generated by the originator, and thus clearly
+							 * the order of parameters is crucial. By
+							 * convention, We sort the parameters
+							 * alphabetically.
 							 */
 							log.debug("About to split " + messageToVerify);
 							String[] dataToSort = messageToVerify.split("&");
@@ -250,9 +293,9 @@ public class ReceivePost extends HttpServlet implements Serializable {
 								}
 							}
 
-							
 							log.debug("Data has been sorted");
-							messageToVerify = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils.reconstructSortedData(dataToSort);
+							messageToVerify = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils
+									.reconstructSortedData(dataToSort);
 							log.debug("Data has been reconstructed");
 							log.debug(messageToVerify);
 							String signature = value;
@@ -274,7 +317,7 @@ public class ReceivePost extends HttpServlet implements Serializable {
 								log.debug("Verify:" + messageToVerify);
 							}
 
-							if ( (timestamp == null) || (timestamp.length() == 0) ) {
+							if ((timestamp == null) || (timestamp.length() == 0)) {
 								log.warn("Verify with no timestamp");
 								securePostData.setMessageHasBeenVerified(sigVerifier.verifyDigitalSignature(
 										decodedBytes, messageToVerify));
@@ -287,7 +330,7 @@ public class ReceivePost extends HttpServlet implements Serializable {
 								if (log.isDebugEnabled()) {
 									log.debug(String.format("Timestamp is %stoo old", verified ? "" : "not "));
 								}
-								
+
 								securePostData.setMessageTimedOut(verified);
 							}
 
@@ -337,7 +380,7 @@ public class ReceivePost extends HttpServlet implements Serializable {
 						log.debug("Timeout:" + securePostData.isMessageTimedOut());
 						log.debug("Priv key:" + securePostData.isNoPrivateKey());
 					}
-					
+
 					log.debug("About to send notification");
 				}
 
@@ -345,14 +388,15 @@ public class ReceivePost extends HttpServlet implements Serializable {
 				 * We can now send a little tickle to the intended recipient
 				 * telling them that there is data waiting for them
 				 */
-				
+
 				try {
 					boolean useApacheHttpPost = true;
 					String result = "";
 					if (useApacheHttpPost) {
 						log.debug("About to send post request to " + securePostData.getIntendedDestination());
-						result = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils.sendStandardHttpPost(securePostData.getIntendedDestination(),
-								SystemVars.POST_COMMAND_COMMAND_TOKEN, SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE);
+						result = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils.sendStandardHttpPost(
+								securePostData.getIntendedDestination(), SystemVars.POST_COMMAND_COMMAND_TOKEN,
+								SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE);
 						if (log.isDebugEnabled()) {
 							log.debug("Got result: " + result);
 						}
@@ -372,14 +416,13 @@ public class ReceivePost extends HttpServlet implements Serializable {
 						outsw.write(dataToSend);
 						outsw.flush();
 						outsw.close();
-						
+
 						BufferedReader in = null;
-						
-	
+
 						in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-	
+
 						String decodedString;
-	
+
 						while ((decodedString = in.readLine()) != null) {
 							result += decodedString + "\n";
 							log.debug(result);
@@ -394,16 +437,13 @@ public class ReceivePost extends HttpServlet implements Serializable {
 				}
 
 				/*
-				 * We don't need to stay in the loop any longer since we have processed all
-				 * data now. 
+				 * We don't need to stay in the loop any longer since we have
+				 * processed all data now.
 				 */
 				break;
 			}
 		}
 	}
-	
-	
-	
 
 	private String getAllCallerDetails(HttpServletRequest request) {
 		return String.format("Remote host:%s, Referer:%s, remoteHost:%s, user agent:%s", request.getRemoteAddr(),
