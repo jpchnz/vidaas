@@ -3,12 +3,15 @@ package uk.ac.ox.oucs.iam.servlet;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -20,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
 import uk.ac.ox.oucs.iam.audit.IamAudit;
@@ -91,7 +95,8 @@ public class ReceivePost extends HttpServlet implements Serializable {
 	 * @param request
 	 */
 	private void newCheckRequest(HttpServletRequest request) {
-		log.debug("newCheckRequest");
+		log.debug("newCheckRequest is here ...");
+		
 
 		String hostId = request.getRemoteAddr();
 		securePostData = new SecurePostData();
@@ -102,14 +107,17 @@ public class ReceivePost extends HttpServlet implements Serializable {
 
 		log.debug("Checking parms");
 		if (SystemVars.useMysql) {
+			log.debug("MySql in use");
+			
 			String pubKeyUuid = request.getParameter(SystemVars.POST_COMMAND_PROVIDE_UUID_OF_PUBLIC_KEY);
 			if ((pubKeyUuid != null) && (pubKeyUuid.length() != 0)) {
 				log.info("Message to provide public key for remote host");
-				keyFileName = request.getParameter(SignatureGenerator.KEYFILE_POST_ATTRIBUTE);
-				if ((keyFileName == null) && (keyFileName.length() == 0)) {
-					log.error("Bad input - no key file name");
-					return;
-				}
+//				keyFileName = request.getParameter(SignatureGenerator.KEYFILE_POST_ATTRIBUTE);
+//				log.debug("1");
+//				if ((keyFileName == null) || (keyFileName.length() == 0)) {
+//					log.error("Bad input - no key file name");
+//					return;
+//				}log.debug("1");
 				if ((hostId == null) || (hostId.length() == 0)) {
 					log.error("Bad input - no sending ip");
 					return;
@@ -119,14 +127,25 @@ public class ReceivePost extends HttpServlet implements Serializable {
 					log.error("Bad input - no public key");
 					return;
 				}
+				
+				uk.ac.ox.oucs.iam.servlet.model.IamPublicKey keytest = new uk.ac.ox.oucs.iam.servlet.model.IamPublicKey();
+				keytest.setActualKey("WW");
+				keytest.setOwnerIp("WWW");
+				keytest.setUuid("QQQ");
+
+				log.debug("Adding test key to database");
+				AccessDB.create(keytest); // Add the key to the database
+				log.debug("Test key added");
 
 				// We have a new public key. Add to the db.
-				uk.ac.ox.oucs.iam.servlet.model.PublicKey key = new uk.ac.ox.oucs.iam.servlet.model.PublicKey();
-				key.setKey(publicKey);
+				uk.ac.ox.oucs.iam.servlet.model.IamPublicKey key = new uk.ac.ox.oucs.iam.servlet.model.IamPublicKey();
+				key.setActualKey(publicKey);
 				key.setOwnerIp(hostId);
-				key.setUuid(keyFileName);
+				key.setUuid(pubKeyUuid);
 
+				log.debug("Adding key to database");
 				AccessDB.create(key); // Add the key to the database
+				log.debug("Key added");
 				return;
 			}
 		}
@@ -224,151 +243,175 @@ public class ReceivePost extends HttpServlet implements Serializable {
 				 * this. How we do so depends on if the key is located in a file
 				 * in the file system or database
 				 */
-				boolean ableToAccessPublicKey = false;
+
+				/*
+				 * When the message is POSTed here, the signature is generated
+				 * from that message. Thus we need to build the message and
+				 * check that the expected signature is present.
+				 * 
+				 * Remember, the sender generates the signature using their
+				 * private key. The receiver (here) generates the signature
+				 * using the sender's public key. If the sigs are the same, we
+				 * know the message has not been tampered with (since the sig is
+				 * generated using the message) and, since we have used the
+				 * sender's public key to generate the sig, we can guarantee
+				 * that the message did indeed come from the sender.
+				 */
+				securePostData.setNoPrivateKey(true);
+				SignatureVerifier sigVerifier = null;
 				if (SystemVars.useMysql) {
-					uk.ac.ox.oucs.iam.servlet.model.PublicKey localKey = AccessDB.getKey(keyFileName);
+					uk.ac.ox.oucs.iam.servlet.model.IamPublicKey localKey = AccessDB.getKey(keyFileName);
 					if (localKey != null) {
-						ableToAccessPublicKey = true;
+						/*
+						 * Now let's extract the key from the database. The key
+						 * itself will be URL encoded as it was for transit, so
+						 * we need to decode it.
+						 * 
+						 * When the key is sent, we 
+						 * 1. encode base64 
+						 * 2. url encode
+						 * 
+						 * Thus to get the key back we
+						 * 
+						 * 2. url decode 
+						 * 2. decode base 64
+						 */
+						String urlDecodedKey;
+						try {
+							urlDecodedKey = URLDecoder.decode(localKey.getActualKey(), "UTF-8");
+							byte[] keyArray = Base64.decodeBase64(urlDecodedKey);
+							sigVerifier = new SignatureVerifier(keyArray);
+							securePostData.setNoPrivateKey(false);
+						} catch (Exception e) {
+							log.debug("Exception trying to verify the data:" + e.getMessage());
+							auditer.auditAlways("Bad signature:" + getAllCallerDetails(request));
+							securePostData.setBadSig(true);
+						}
+					}
+					else {
+						log.error("No public key available");
 					}
 				}
 				else {
 					try {
 						keyDir = GeneralUtils.provideKeyPairDirectory();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						File publicKey = new File(keyDir + keyFileName + KeyServices.publicKeyNameExtension);
+						if (!publicKey.exists()) {
+							log.error("Unable to get at the public key:" + publicKey.getAbsolutePath());
+						}
+						else {
+							if (log.isDebugEnabled()) {
+								log.debug("Using public key:" + publicKey.getAbsolutePath());
+							}
+							securePostData.setNoPrivateKey(false);
+							sigVerifier = new SignatureVerifier(keyDir + keyFileName);
+						}
+					} catch (Exception e) {
+						log.debug("Exception trying to verify the data:" + e.getMessage());
+						auditer.auditAlways("Bad signature:" + getAllCallerDetails(request));
+						securePostData.setBadSig(true);
 					}
 				}
-				try {
-					keyDir = GeneralUtils.provideKeyPairDirectory();
+				if (sigVerifier != null) {
+					log.debug("About to process data with public key");
+					for (int index = counter - 1; index > -1; index--) {
+						messageToVerify += messages[index];
+						if (index != 0) {
+							messageToVerify += "&";
+						}
+					}
+					/*
+					 * In order to verify the signature is correct, we need to
+					 * generate it in exactly the same way as it was generated
+					 * by the originator, and thus clearly the order of
+					 * parameters is crucial. By convention, We sort the
+					 * parameters alphabetically.
+					 */
+					log.debug("About to split " + messageToVerify);
+					String[] dataToSort = messageToVerify.split("&");
+					Arrays.sort(dataToSort);
 
-					File publicKey = new File(keyDir + keyFileName + KeyServices.publicKeyNameExtension);
-					if (!publicKey.exists()) {
-						log.error("Unable to get at the public key:" + publicKey.getAbsolutePath());
-						securePostData.setNoPrivateKey(true);
+					if (log.isDebugEnabled()) {
+						log.debug(String.format("Split into %d items", dataToSort.length));
+						for (String s : dataToSort) {
+							log.debug(s);
+						}
+					}
+
+					log.debug("Data has been sorted");
+					messageToVerify = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils
+							.reconstructSortedData(dataToSort);
+					log.debug("Data has been reconstructed");
+					log.debug(messageToVerify);
+					String signature = value;
+
+					if (log.isDebugEnabled()) {
+						log.debug(String.format("About to verify message <%s> using signature <%s>", messageToVerify,
+								signature));
+						log.debug(String.format("Keyfile to be used is " + keyDir + keyFileName));
+						log.debug(String.format("Sig is " + signature));
+					}
+					byte[] decodedBytes = sigVerifier.decodeAsByteArray(signature);
+
+					if (log.isDebugEnabled()) {
+						log.debug(String.format("Decoded length:%s", decodedBytes.length));
+						log.debug(String.format("Decoded bytes length:%d (%d,%d,%d)", decodedBytes.length,
+								decodedBytes[4], decodedBytes[27], decodedBytes[43]));
+						log.debug("Verify:" + messageToVerify);
+					}
+
+					if ((timestamp == null) || (timestamp.length() == 0)) {
+						log.warn("Verify with no timestamp");
+						try {
+							securePostData.setMessageHasBeenVerified(sigVerifier.verifyDigitalSignature(decodedBytes,
+									messageToVerify));
+						} catch (GeneralSecurityException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 					else {
-						if (log.isDebugEnabled()) {
-							log.debug("Using public key:" + publicKey.getAbsolutePath());
-						}
+						log.debug("Verify with timestamp");
 						try {
-							/*
-							 * When the message is POSTed here, the signature is
-							 * generated from that message. Thus we need to
-							 * build the message and check that the expected
-							 * signature is present.
-							 * 
-							 * Remember, the sender generates the signature
-							 * using their private key. The receiver (here)
-							 * generates the signature using the sender's public
-							 * key. If the sigs are the same, we know the
-							 * message has not been tampered with (since the sig
-							 * is generated using the message) and, since we
-							 * have used the sender's public key to generate the
-							 * sig, we can guarantee that the message did indeed
-							 * come from the sender.
-							 */
-							for (int index = counter - 1; index > -1; index--) {
-								messageToVerify += messages[index];
-								if (index != 0) {
-									messageToVerify += "&";
-								}
-							}
-
-							/*
-							 * In order to verify the signature is correct, we
-							 * need to generate it in exactly the same way as it
-							 * was generated by the originator, and thus clearly
-							 * the order of parameters is crucial. By
-							 * convention, We sort the parameters
-							 * alphabetically.
-							 */
-							log.debug("About to split " + messageToVerify);
-							String[] dataToSort = messageToVerify.split("&");
-							Arrays.sort(dataToSort);
-							if (log.isDebugEnabled()) {
-								log.debug(String.format("Split into %d items", dataToSort.length));
-								for (String s : dataToSort) {
-									log.debug(s);
-								}
-							}
-
-							log.debug("Data has been sorted");
-							messageToVerify = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils
-									.reconstructSortedData(dataToSort);
-							log.debug("Data has been reconstructed");
-							log.debug(messageToVerify);
-							String signature = value;
-
-							SignatureVerifier sigVerifier = new SignatureVerifier(keyDir + keyFileName);
-
-							if (log.isDebugEnabled()) {
-								log.debug(String.format("About to verify message <%s> using signature <%s>",
-										messageToVerify, signature));
-								log.debug(String.format("Keyfile to be used is " + keyDir + keyFileName));
-								log.debug(String.format("Sig is " + signature));
-							}
-							byte[] decodedBytes = sigVerifier.decodeAsByteArray(signature);
-
-							if (log.isDebugEnabled()) {
-								log.debug(String.format("Decoded length:%s", decodedBytes.length));
-								log.debug(String.format("Decoded bytes length:%d (%d,%d,%d)", decodedBytes.length,
-										decodedBytes[4], decodedBytes[27], decodedBytes[43]));
-								log.debug("Verify:" + messageToVerify);
-							}
-
-							if ((timestamp == null) || (timestamp.length() == 0)) {
-								log.warn("Verify with no timestamp");
-								securePostData.setMessageHasBeenVerified(sigVerifier.verifyDigitalSignature(
-										decodedBytes, messageToVerify));
-							}
-							else {
-								log.debug("Verify with timestamp");
-								securePostData.setMessageHasBeenVerified(sigVerifier.verifyDigitalSignature(
-										decodedBytes, messageToVerify + "_" + timestamp));
-								boolean verified = !sigVerifier.verifyTimestamp(timestamp);
-								if (log.isDebugEnabled()) {
-									log.debug(String.format("Timestamp is %stoo old", verified ? "" : "not "));
-								}
-
-								securePostData.setMessageTimedOut(verified);
-							}
-
-							if (securePostData.isMessageHasBeenVerified() && !securePostData.isMessageTimedOut()) {
-								securePostData.setMessageHasBeenVerified(true);
-								String validatedMessage = String.format(
-										"Post request from %s validated with the following parameters:\n", hostId);
-								for (String s : securePostData.getPostParms().values()) {
-									validatedMessage += "\t" + s + "\n";
-								}
-								auditer.auditSometimes(validatedMessage);
-								log.debug(validatedMessage);
-							}
-							else {
-								auditer.auditAlways("Message has not been verified");
-								if (securePostData.isMessageTimedOut()) {
-									auditer.auditAlways("The message is considered too old:"
-											+ getAllCallerDetails(request));
-									securePostData.setMessageTimedOut(true);
-									log.debug("Message too old");
-								}
-								if (!securePostData.isMessageHasBeenVerified()) {
-									auditer.auditAlways("Bad verification:" + getAllCallerDetails(request));
-									securePostData.setBadSig(true);
-									log.debug("Bad verification");
-								}
-							}
-						} catch (Exception e1) {
-							log.debug("Exception trying to verify the data:" + e1.getMessage());
-							auditer.auditAlways("Bad signature:" + getAllCallerDetails(request));
-							securePostData.setBadSig(true);
+							securePostData.setMessageHasBeenVerified(sigVerifier.verifyDigitalSignature(decodedBytes,
+									messageToVerify + "_" + timestamp));
+						} catch (GeneralSecurityException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
+						boolean verified = !sigVerifier.verifyTimestamp(timestamp);
+						if (log.isDebugEnabled()) {
+							log.debug(String.format("Timestamp is %stoo old", verified ? "" : "not "));
+						}
+
+						securePostData.setMessageTimedOut(verified);
 					}
-				} catch (IOException e2) {
-					e2.printStackTrace();
-					log.debug("Unable to get at the public key");
-					securePostData.setNoPrivateKey(true);
 				}
+
+				if (securePostData.isMessageHasBeenVerified() && !securePostData.isMessageTimedOut()) {
+					securePostData.setMessageHasBeenVerified(true);
+					String validatedMessage = String.format(
+							"Post request from %s validated with the following parameters:\n", hostId);
+					for (String s : securePostData.getPostParms().values()) {
+						validatedMessage += "\t" + s + "\n";
+					}
+					auditer.auditSometimes(validatedMessage);
+					log.debug(validatedMessage);
+				}
+				else {
+					auditer.auditAlways("Message has not been verified");
+					if (securePostData.isMessageTimedOut()) {
+						auditer.auditAlways("The message is considered too old:" + getAllCallerDetails(request));
+						securePostData.setMessageTimedOut(true);
+						log.debug("Message too old");
+					}
+					if (!securePostData.isMessageHasBeenVerified()) {
+						auditer.auditAlways("Bad verification:" + getAllCallerDetails(request));
+						securePostData.setBadSig(true);
+						log.debug("Bad verification");
+					}
+				}
+
 				manipulateSecurePostDataList(securePostData);
 				if (log.isDebugEnabled()) {
 					if (securePostData.isMessageHasBeenVerified()) {
