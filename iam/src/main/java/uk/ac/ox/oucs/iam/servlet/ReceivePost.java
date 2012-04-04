@@ -3,7 +3,6 @@ package uk.ac.ox.oucs.iam.servlet;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -65,7 +64,7 @@ public class ReceivePost extends HttpServlet implements Serializable {
 
 		out = response.getWriter();
 
-		newCheckRequest(request);
+		checkRequest(request);
 
 		// out.flush();
 		out.close();
@@ -75,7 +74,7 @@ public class ReceivePost extends HttpServlet implements Serializable {
 		log.debug("doPost");
 		out = response.getWriter();
 
-		newCheckRequest(request);
+		checkRequest(request);
 
 		// out.flush();
 		out.close();
@@ -92,9 +91,13 @@ public class ReceivePost extends HttpServlet implements Serializable {
 	 * consists of REQUEST_DATA_CODE_DONT_CLEAR_STACK then data held is provided
 	 * to the caller but NOT cleared from memory
 	 * 
+	 * TODO
+	 * SystemVars.useMysql is set to false. The idea is to collect all public keys
+	 * (they will be POSTed to this service) and put them in the local database for future reference.
+	 * 
 	 * @param request
 	 */
-	private void newCheckRequest(HttpServletRequest request) {
+	private void checkRequest(HttpServletRequest request) {
 		log.debug("newCheckRequest is here ...");
 		
 
@@ -146,6 +149,10 @@ public class ReceivePost extends HttpServlet implements Serializable {
 				log.debug("Adding key to database");
 				AccessDB.create(key); // Add the key to the database
 				log.debug("Key added");
+				
+				/*
+				 * This will be an individual request. We can now exit.
+				 */
 				return;
 			}
 		}
@@ -488,6 +495,12 @@ public class ReceivePost extends HttpServlet implements Serializable {
 		}
 	}
 
+	
+	/**
+	 * Get information on caller
+	 * @param request the HttpServletRequest request object
+	 * @return a String containing details of the caller.
+	 */
 	private String getAllCallerDetails(HttpServletRequest request) {
 		return String.format("Remote host:%s, Referer:%s, remoteHost:%s, user agent:%s", request.getRemoteAddr(),
 				request.getHeader("referer"), request.getHeader("host"), request.getHeader("user-agent"));
