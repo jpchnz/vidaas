@@ -1,0 +1,3 @@
+grant CREATE,INSERT,DELETE,UPDATE,SELECT on iam.* to iamUser@localhost;
+set password for iamUser@localhost = password('tABabr4t');
+flush privileges;
