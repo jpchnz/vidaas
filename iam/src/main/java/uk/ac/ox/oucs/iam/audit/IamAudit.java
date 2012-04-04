@@ -6,6 +6,12 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.Loader;
 import org.apache.log4j.xml.DOMConfigurator;
 
+
+/**
+ * Audit class
+ * @author dave
+ *
+ */
 public class IamAudit {
 	Logger log = Logger.getLogger(IamAudit.class);
 	
