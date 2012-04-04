@@ -16,13 +16,21 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.security.Key;
 import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
 
@@ -67,6 +75,72 @@ public class GeneralUtils {
 		}
 		
 		return result;
+	}
+	
+	
+	/**
+	 * Get a key pair from the keystore
+	 * @param keystore
+	 * @param alias
+	 * @param password
+	 * @return
+	 */
+	public static KeyPair getPrivateKey(KeyStore keystore, String alias, char[] password) {
+	    try {
+	        // Get private key
+	        Key key = keystore.getKey(alias, password);
+	        if (key instanceof PrivateKey) {
+	            // Get certificate of public key
+	            java.security.cert.Certificate cert = keystore.getCertificate(alias);
+
+	            // Get public key
+	            PublicKey publicKey = cert.getPublicKey();
+
+	            // Return a key pair
+	            return new KeyPair(publicKey, (PrivateKey)key);
+	        }
+	    } catch (UnrecoverableKeyException e) {
+	    } catch (NoSuchAlgorithmException e) {
+	    } catch (KeyStoreException e) {
+	    }
+	    return null;
+	}
+	
+	public static KeyStore loadKeyStore() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		InputStream inputStream = classLoader.getResourceAsStream(SystemVars.keyStoreFileName);
+//		log.debug(inputStream == null ? "NULL" : "NOT NULL");
+		InputStream inputStream2 = classLoader.getResourceAsStream("/"+SystemVars.keyStoreFileName);
+		inputStream = GeneralUtils.class.getClassLoader().getResourceAsStream(SystemVars.keyStoreFileName);
+	      
+		//File f = new File(new String(u));
+		if (inputStream == null) {
+			// We have not found the keystore - let's create it anew
+			return prepareNewKeyStore();
+		}
+	    KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+	    keystore.load(inputStream, SystemVars.temporaryKeystorePassword.toCharArray());
+	    
+	    return keystore;
+	}
+	
+	
+	public static KeyStore prepareNewKeyStore() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+		KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+		
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//		InputStream inputStream = classLoader.getResourceAsStream(SystemVars.keyStoreFileName);
+	    FileOutputStream fos = new FileOutputStream("/tmp/tt");
+
+		// Load the keystore
+	    ks.load(null, null);
+
+		
+		ks.store(fos, SystemVars.temporaryKeystorePassword.toCharArray() );  
+	    
+		
+		fos.close();
+	    return ks;
 	}
 	
 	
@@ -158,7 +232,8 @@ public class GeneralUtils {
 		if (!new File(keyPairDirectory).exists()) {
 			if (!new File(keyPairDirectory).mkdirs()) {
 				// Cannot create folder to hold keys
-				throw new IOException();
+				throw new IOException(String.format("Cannot create folder to hold keys - permissions problem with folder %s, or maybe the folder doesn't exist?",
+						keyPairDirectory));
 			}
 		}
 
@@ -337,5 +412,22 @@ public class GeneralUtils {
 			}
 		}
 		return postData;
+	}
+	
+	
+	public static void main(String[] args) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+		KeyStore ks = loadKeyStore();
+		
+		// List the aliases
+	    Enumeration e = ks.aliases();
+	    for (; e.hasMoreElements(); ) {
+	        String alias = (String)e.nextElement();
+
+	        // Does alias refer to a private key?
+	        boolean b = ks.isKeyEntry(alias);
+
+	        // Does alias refer to a trusted certificate?
+	        b = ks.isCertificateEntry(alias);
+	    }
 	}
 }

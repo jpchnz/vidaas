@@ -3,6 +3,7 @@ package uk.ac.ox.oucs.iam.interfaces.security;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
@@ -10,6 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
+import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -119,45 +121,89 @@ public class SendViaPost {
 		VidaasSignature vSig = null;
 
 		if (encrypt) {
+			boolean havePrivateKey = false;
 			/*
-			 * The first thing we need to do is generate a signature. This
-			 * should be a specific file in a specific, read-only location.
+			 * Let's get the private key.
 			 */
-			File privateKey = new File(keyFile + KeyServices.privateKeyNameExtension);
-			if (!privateKey.exists()) {
-				log.info("Private key does not exist - creating this now.");
-				try {
-					auditer.auditAlways("Local keys do not exist so will be created");
-					new KeyServices(keyFile, true, algorithm);
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-					/*
-					 * This is really bad. Without the ability to create keys we
-					 * can't do anything.
-					 */
-					throw new KeyNotFoundException();
-				}
+			if (SystemVars.useMysql) {
+				// Get the key from the keystore. 
+				boolean gotKeyFromKeystore = false;
 				
-				if (SystemVars.useMysql) {
-					log.info("We have needed to generate a new key. Before we continue" +
-							"processing, we should send details of the public key to the remote" +
-							"server");
-					List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
-					log.info("Have keyfile " + keyFile);
-					nameValuePair.add(new BasicNameValuePair(SystemVars.POST_COMMAND_PROVIDE_UUID_OF_PUBLIC_KEY, keyFile));
-					nameValuePair.add(new BasicNameValuePair(SystemVars.POST_COMMAND_PROVIDE_PUBLIC_KEY, keyFile));
-//					String result = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils.sendStandardHttpPost(
-//							securePostData.getIntendedDestination(), SystemVars.POST_COMMAND_COMMAND_TOKEN,
-//							SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE);
-				}
+				KeyPair keyPair = GeneralUtils.getPrivateKey(null,
+						SystemVars.keyStoreAlias,
+						SystemVars.temporaryKeystorePassword.toCharArray());
 				
-				throw new NewKeyException(keyFile);
+				if (!gotKeyFromKeystore) {
+				log.info("We have needed to generate a new key. Before we continue" +
+						"processing, we should send details of the public key to the remote" +
+						"server");
+				List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
+				log.info("Have keyfile " + keyFile);
+				nameValuePair.add(new BasicNameValuePair(SystemVars.POST_COMMAND_PROVIDE_UUID_OF_PUBLIC_KEY, keyFile));
+				
+				Object o = GeneralUtils.readObjectFromFile(keyFile);
+				String s = o.toString();
+				String encodedString = URLEncoder.encode(s, "UTF-8");
+				nameValuePair.add(new BasicNameValuePair(SystemVars.POST_COMMAND_PROVIDE_PUBLIC_KEY, encodedString));
+//				String result = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils.sendStandardHttpPost(
+//						securePostData.getIntendedDestination(), SystemVars.POST_COMMAND_COMMAND_TOKEN,
+//						SystemVars.POST_COMMAND_NEW_DATA_AVAILABLE);
+				}
 			}
-			if (!privateKey.exists()) {
+			else {
+				
+				
+				
+				
+				
+				/*
+				 * The first thing we need to do is generate a signature. This
+				 * should be a specific file in a specific, read-only location.
+				 */
+				File privateKey = new File(keyFile + KeyServices.privateKeyNameExtension);
+				if (privateKey.exists()) {
+					havePrivateKey = true;
+				}
+				else {
+					log.info("Private key does not exist - creating this now.");
+					try {
+						auditer.auditAlways("Local keys do not exist so will be created");
+						new KeyServices(keyFile, true, algorithm);
+						havePrivateKey = true;
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+						/*
+						 * This is really bad. Without the ability to create keys we
+						 * can't do anything.
+						 */
+						throw new KeyNotFoundException();
+					}
+				}
+			}
+
+			if (!havePrivateKey) {
 				log.debug("Can't find or create private key. This is bad - sorry it didn't work out");
-				return null;
+				throw new KeyNotFoundException();
 			}
+			
+			
+//			List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
+//			log.info("Have keyfile " + keyFile);
+//			nameValuePair.add(new BasicNameValuePair(SystemVars.POST_COMMAND_PROVIDE_UUID_OF_PUBLIC_KEY, keyFile));
+//			
+//			Object o = GeneralUtils.readObjectFromFile(keyFile + KeyServices.publicKeyNameExtension);
+//			String s = o.toString();
+//			String encodedString = URLEncoder.encode(s, "UTF-8");
+//			nameValuePair.add(new BasicNameValuePair(SystemVars.POST_COMMAND_PROVIDE_PUBLIC_KEY, encodedString));
+//			String result = uk.ac.ox.oucs.iam.interfaces.utilities.GeneralUtils.sendStandardHttpPost(
+//					destinationIP, nameValuePair);
+//			
+//			
+//			String otherData = SystemVars.POST_COMMAND_PROVIDE_PUBLIC_KEY + "=" + encodedString + "&" +
+//					SystemVars.POST_COMMAND_PROVIDE_UUID_OF_PUBLIC_KEY + "=" + keyFile;
+//			sendAllData(otherData);
+			
 
 			// Now we generate a signature object
 			try {
