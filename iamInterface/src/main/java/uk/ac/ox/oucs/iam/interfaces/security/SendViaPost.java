@@ -94,6 +94,40 @@ public class SendViaPost {
 		return sendSecurePost(postData);
 	}
 
+	
+	
+	/**
+	 * This is the main routine to send encrypted (by default) data to 
+	 * SystemVars.ADDRESS_OF_IAM_WEBAPP_RECEIVER (which is responsible for
+	 * validation and verification of the posted data). 
+	 * 
+	 * Thus this will sort the postData string alphabetically and generate a
+	 * digital signature from that and timestamp. (It is important to sort
+	 * alphabetically so that the recipient service can also sort alphabetically
+	 * and generate a matching signature for verification). The method will also
+	 * append the name of the key file used to perform encryptions so that the 
+	 * recipient knows which key to use to check validity.
+	 * 
+	 * Currently a key pair is used - the private key is used to generate the
+	 * signature. If the key pair doesn't exist, a new one is generated and a
+	 * NewKeyException is thrown - the public key should then be sent to the 
+	 * recipient and then the process repeated.
+	 * 
+	 * TODO
+	 * The public and private keys should be held in a local keystore. If they are
+	 * not present in the keystore then they should be generated, added to the 
+	 * keystore and the public key posted to the recipient, which should receive the public key 
+	 * and simply add it to its local database. Once this has been sent, this function should wait
+	 * for a confirmation (or, in a simple circumstance, just wait a moment) and then continue 
+	 * POSTing the data.
+	 * 
+	 * 
+	 * @param postData A string of data to post, eg "a=b&c=d"
+	 * @return The result
+	 * @throws IOException
+	 * @throws NewKeyException
+	 * @throws KeyNotFoundException
+	 */
 	private String sendSecurePost(String postData) throws IOException, NewKeyException, KeyNotFoundException {
 		if (log.isDebugEnabled()) {
 			log.debug(String.format("sendSecurePost(%s)", postData));
@@ -120,13 +154,21 @@ public class SendViaPost {
 		messagePosted = false;
 		VidaasSignature vSig = null;
 
+		
+		/*
+		 * The default is to encrypt data
+		 */
 		if (encrypt) {
 			boolean havePrivateKey = false;
 			/*
 			 * Let's get the private key.
 			 */
 			if (SystemVars.useMysql) {
-				// Get the key from the keystore. 
+				/* 
+				 * TODO
+				 * This is a work in progress. Currently this is switched off.
+				 * Get the key from the keystore. 
+				 */
 				boolean gotKeyFromKeystore = false;
 				
 				KeyPair keyPair = GeneralUtils.getPrivateKey(null,
@@ -151,11 +193,6 @@ public class SendViaPost {
 				}
 			}
 			else {
-				
-				
-				
-				
-				
 				/*
 				 * The first thing we need to do is generate a signature. This
 				 * should be a specific file in a specific, read-only location.
@@ -188,6 +225,8 @@ public class SendViaPost {
 			}
 			
 			
+			
+			// The following is used for testing
 //			List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
 //			log.info("Have keyfile " + keyFile);
 //			nameValuePair.add(new BasicNameValuePair(SystemVars.POST_COMMAND_PROVIDE_UUID_OF_PUBLIC_KEY, keyFile));
@@ -211,7 +250,7 @@ public class SendViaPost {
 				signature.setUseMessageExpiry(true);
 				vSig = signature.signMessageAndEncode(postData);
 
-				boolean debug = true;
+				boolean debug = true; // Set this on to check data can be validated before sending it.
 				if (debug) {
 					log.debug("Debug on - will check data before sending");
 					log.debug(String.format("Keyfile:%s", keyFile));
@@ -279,48 +318,15 @@ public class SendViaPost {
 		}
 
 		log.debug("writing data ...");
-
-		// String hostname = "hostname.com";
-		// int port = 8081;
-		// InetAddress addr = InetAddress.getByName("localhost");
-		// Socket socket = new Socket(addr, port);
-		// BufferedWriter wr = new BufferedWriter(new
-		// OutputStreamWriter(socket.getOutputStream(), "UTF8"));
-		// wr.write("POST /vidaasBilling/BillingServlet HTTP/1.0\r\n");
-		// wr.write("Content-Length: " + dataToPost.length() + "\r\n");
-		// wr.write("Content-Type: application/x-www-form-urlencoded\r\n");
-		// wr.write("\r\n");
-		//
-		// // Send data
-		// wr.write(URLEncoder.encode(dataToPost, "UTF-8"));
-		// wr.flush();
-		// BufferedReader rd = new BufferedReader(new
-		// InputStreamReader(socket.getInputStream()));
-		// String line;
-		// while ((line = rd.readLine()) != null) {
-		// String s = line;
-		// // Process line...
-		// }
-		// wr.close();
-		// rd.close();
-
-//		out.write(dataToPost);
-////		if (encrypt) {
-////			auditer.auditSometimes(String.format("Sent post <%s> to host %s with timestamp %s", postData,
-////					destinationIP, vSig.isTimeStampInUse()));
-////		}
-//		out.flush();
-//		
-//		messagePosted = true;
-//		log.debug("Message posted");
-//		//getResult();
-//		out.close();
 		sendAllData(dataToPost);
 
 		return dataToPost;
 	}
 	
-	
+	/**
+	 * Send the data via POST command
+	 * @param data The data to POST, typically encrypted
+	 */
 	private void sendAllData(String data) {
 		try {
 		    // Send data
@@ -344,6 +350,7 @@ public class SendViaPost {
 		}
 	}
 
+	@Deprecated
 	private String getResult() throws IOException {
 		if (!messagePosted) {
 			return "No data";
