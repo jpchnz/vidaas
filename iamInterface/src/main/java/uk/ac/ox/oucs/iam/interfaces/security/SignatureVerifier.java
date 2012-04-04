@@ -41,7 +41,7 @@ public class SignatureVerifier {
 		super();
 		initPublicKey(publicKeyBytes);
 	}
-
+	
 	/**
 	 * Create a signature verifier, using the public key in the given file
 	 * 
