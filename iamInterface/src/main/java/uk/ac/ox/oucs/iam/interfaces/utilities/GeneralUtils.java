@@ -55,11 +55,11 @@ import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.KeyNotFoundException;
  */
 public class GeneralUtils {
 	/**
-	 * Send a POST command using the HttpPost helpter class from Apache 
-	 * @param destination
-	 * @param key
-	 * @param data
-	 * @return
+	 * Send a POST command using the HttpPost helper class from Apache with a single parameter value (a=b)
+	 * @param destination Destination IP
+	 * @param key single key to be sent as parameter (key=data)
+	 * @param data single data to be sent as parameter (key=data)
+	 * @return the response from the destination
 	 * @throws IllegalStateException
 	 * @throws IOException
 	 */
@@ -69,6 +69,15 @@ public class GeneralUtils {
 		return sendStandardHttpPost(destination, nameValuePair);
 	}
 	
+	
+	/**
+	 * Send a POST command using the HttpPost helper class from Apache  with multiple parameter values (a=b&c=d)
+	 * @param destination destination Destination IP
+	 * @param nameValuePairs a list of name/value pairs to be sent as parameters
+	 * @return the response from the destination
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
 	public static String sendStandardHttpPost(String destination, List<NameValuePair> nameValuePairs) throws IllegalStateException, IOException {
 		String result = "";
 		
@@ -95,6 +104,8 @@ public class GeneralUtils {
 	
 	/**
 	 * Get a key pair from the keystore
+	 * TODO - in dev
+	 * 
 	 * @param keystore
 	 * @param alias
 	 * @param password
@@ -121,6 +132,16 @@ public class GeneralUtils {
 	    return null;
 	}
 	
+	/**
+	 * Load the key stor
+	 * TODO - in dev
+	 * 
+	 * @return
+	 * @throws KeyStoreException
+	 * @throws NoSuchAlgorithmException
+	 * @throws CertificateException
+	 * @throws IOException
+	 */
 	public static KeyStore loadKeyStore() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		InputStream inputStream = classLoader.getResourceAsStream(SystemVars.keyStoreFileName);
@@ -139,7 +160,16 @@ public class GeneralUtils {
 	    return keystore;
 	}
 	
-	
+	/**
+	 * Prepare a new key store
+	 * TODO - in dev
+	 * 
+	 * @return
+	 * @throws KeyStoreException
+	 * @throws NoSuchAlgorithmException
+	 * @throws CertificateException
+	 * @throws IOException
+	 */
 	public static KeyStore prepareNewKeyStore() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
 		
@@ -259,6 +289,9 @@ public class GeneralUtils {
 
 		return keyPairDirectory;
 	}
+	
+	
+	
 
 	/**
 	 * Copy a file
@@ -311,6 +344,14 @@ public class GeneralUtils {
 		return o;
 	}
 
+	
+	
+	/**
+	 * Create an URL encoded PublicKey object 
+	 * @param filename the file containing the key
+	 * @return The URL encoded key
+	 * @throws IOException
+	 */
 	public static String readPublicKeyFromFileAndEncode(String filename) throws IOException {
 		String encodedPublicKey = "";
 
@@ -321,6 +362,16 @@ public class GeneralUtils {
 		return URLEncoder.encode(encodedPublicKey, "UTF-8");
 	}
 
+	
+	
+	/**
+	 * Decode an encoded key and write to file
+	 * 
+	 * @param encodedPublicKey the encoded key to process
+	 * @param filename the name of the file to write the unencoded key to
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
+	 */
 	public static void decodePublicKeyAndWriteToFile(String encodedPublicKey, String filename)
 			throws NoSuchAlgorithmException, InvalidKeySpecException {
 		String algorithm = "DSA";
@@ -331,6 +382,14 @@ public class GeneralUtils {
 		GeneralUtils.writeObject(filename, newPublicKey);
 	}
 
+	
+	/**
+	 * Read a file to a string
+	 * 
+	 * @param filePath the file to read
+	 * @return the contents of a file as a String
+	 * @throws java.io.IOException
+	 */
 	public static String readFileAsString(String filePath) throws java.io.IOException {
 		StringBuffer fileData = new StringBuffer(1000);
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
@@ -368,6 +427,12 @@ public class GeneralUtils {
 		}
 	}
 
+	
+	/**
+	 * Append data to a file, creating the file if it doesn't exist
+	 * @param fileName the file to append data to
+	 * @param data the data to append
+	 */
 	public static void appendStringToFile(String fileName, String data) {
 		try {
 			// ask user for file name to write to
@@ -399,6 +464,8 @@ public class GeneralUtils {
 		return hostname;
 	}
 
+	
+	
 	/**
 	 * Get the local host IP address
 	 * 
@@ -418,11 +485,18 @@ public class GeneralUtils {
 		return ip.getHostAddress();
 	}
 	
-	public static String reconstructSortedData(String[] dataToSort) {
+	
+	/**
+	 * Concatenate data into a String as a POST parameter. This this function will add the appropriate
+	 * '&' characters, so that a=b,c=d will be concatenated to a=b&c=d
+	 * @param dataToConcatenate the resultant concatenation that can be used as a POST parameter
+	 * @return
+	 */
+	public static String reconstructSortedData(String[] dataToConcatenate) {
 		String postData = "";
-		for (String s : dataToSort) {
+		for (String s : dataToConcatenate) {
 			postData += s;
-			if (s.compareTo(dataToSort[dataToSort.length-1]) != 0) {
+			if (s.compareTo(dataToConcatenate[dataToConcatenate.length-1]) != 0) {
 				postData += "&";
 			}
 		}
