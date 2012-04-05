@@ -47,7 +47,22 @@ import uk.ac.ox.oucs.iam.interfaces.security.keys.KeyServices;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.DuplicateKeyException;
 import uk.ac.ox.oucs.iam.interfaces.utilities.exceptions.KeyNotFoundException;
 
+/**
+ * A class containing general static utilities
+ * 
+ * @author dave
+ *
+ */
 public class GeneralUtils {
+	/**
+	 * Send a POST command using the HttpPost helpter class from Apache 
+	 * @param destination
+	 * @param key
+	 * @param data
+	 * @return
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
 	public static String sendStandardHttpPost(String destination, String key, String data) throws IllegalStateException, IOException {
 		List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(1);
 		nameValuePair.add(new BasicNameValuePair(key, data));
