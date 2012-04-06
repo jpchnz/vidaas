@@ -3,6 +3,8 @@ package uk.ac.ox.oucs.vidaas.session;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -603,6 +605,17 @@ public class NavigationController {
 
 		List<ProjectDatabase> list = new ArrayList<ProjectDatabase>(
 				tempProjectDatabaseSet);
+		
+		 Collections.sort(list, new Comparator(){
+			 
+	            public int compare(Object o1, Object o2) {
+	            	ProjectDatabase p1 = (ProjectDatabase) o1;
+	            	ProjectDatabase p2 = (ProjectDatabase) o2;
+	               return p1.getDatabaseId().compareTo(p2.getDatabaseId());
+	            }
+	 
+	        });
+		 
 		return list;
 		// currentDataspace
 	}
