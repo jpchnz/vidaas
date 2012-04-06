@@ -106,12 +106,13 @@
 				</s:link>
 			</h:form>
 
-			<a4j:form id="databaseButtonForm">
+			<a4j:form id="databaseButtonForm" ajaxSubmit="true">
 				<div class="actionButtons"><a4j:commandButton
 					action="#{navigationController.setCurrentDatabase(_database.databaseId)}"
 					id="dropDatabaseButton" value="Delete database" style="float:left"
 					reRender="dropDatabaseFormInclude"
-					oncomplete="javascript:Richfaces.showModalPanel('#{createController.authorisedToDropDatabase()}');">
+					oncomplete="javascript:Richfaces.showModalPanel('#{createController.authorisedToDropDatabase(_database.databaseId)}');">
+						<f:param name="databaseIDValue" value="#{_database.databaseId}" />
 					<!--  
 							<rich:componentControl for="dropDatabasePanel"
 								attachTo="dropDatabaseButton" operation="show" event="onclick" />
