@@ -583,7 +583,10 @@ public class CreateController {
 	}
 	
 	
-	public String authorisedToDropDatabase() {
+	public String authorisedToDropDatabase(Integer currentDatabaseIdValue) {
+		System.out.println(" authorisedToDropDatabase(Integer currentDatabaseIdValue) " + currentDatabaseIdValue);
+		
+		((NavigationController) Contexts.getSessionContext().get("navigationController")).setCurrentDatabase(currentDatabaseIdValue);
 		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
 		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
 		
@@ -827,8 +830,8 @@ backupDatabaseConfirmationMessage = "The live database: '"
 			((NavigationController) Contexts.getSessionContext().get(
 					"navigationController")).testDatabaseConfirmation();
 		} else {
-restoreDatabaseConfirmationMessage = "The live database: '"
-				+ newProjectDatabase.getDatabaseName() + "' is successfully restored.";
+restoreDatabaseConfirmationMessage = "The database: '"
+				+ newProjectDatabase.getDatabaseName() + "' is successfully copied as a live database..";
 			
 			((NavigationController) Contexts.getSessionContext().get(
 					"navigationController")).restoreDatabaseConfirmation();
