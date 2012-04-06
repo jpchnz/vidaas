@@ -63,7 +63,7 @@
 			</h:panelGroup>
 	<!--		 -->
 		</h:panelGrid>
-		<div class="actionButtons"><a4j:commandButton
+		<div class="actionButtons"><a4j:commandButton reRender="datbasesDataGrid, dropDatabaseFormInclude, homeMainPanel"
 			id="dropDatabaseCancelButton" value="Cancel" style="float:left">
 			<rich:componentControl for="dropDatabasePanel"
 				attachTo="dropDatabaseCancelButton" operation="hide" event="onclick" />
