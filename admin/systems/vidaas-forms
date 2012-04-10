@@ -7,7 +7,7 @@ vidaas_node_type=project
 vidaas_branch=trunk
 
 # revision of vidaas code (default HEAD)
-vidaas_source_revision=935
+vidaas_source_revision=940
 
 # install shibboleth (true/false)
 vidaas_shib=false
