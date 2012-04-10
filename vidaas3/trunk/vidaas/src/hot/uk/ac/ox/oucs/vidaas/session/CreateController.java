@@ -583,10 +583,8 @@ public class CreateController {
 	}
 	
 	
-	public String authorisedToDropDatabase(Integer currentDatabaseIdValue) {
-		System.out.println(" authorisedToDropDatabase(Integer currentDatabaseIdValue) " + currentDatabaseIdValue);
+	public String authorisedToDropDatabase() {
 		
-		((NavigationController) Contexts.getSessionContext().get("navigationController")).setCurrentDatabase(currentDatabaseIdValue);
 		Project currentProject = ((Project) Contexts.getSessionContext().get("currentProject"));
 		String currentRole = (((NavigationController) Contexts.getSessionContext().get("navigationController")).setAndGetUserRoleByEmail(currentProject.getUserProjects(), currentProject.getProjectId()));
 		
