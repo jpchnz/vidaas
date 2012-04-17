@@ -14,3 +14,8 @@ Once the service is running, it will accept authenticated REST instructions to p
 Billing will then record this information in its local (MySQL) database (through a Hibernate interface). At regular intervals (or on demand), the system can generate invoices and email them to project owners. It keeps track of all invoices generated and all details about those invoices, so that if a process is started to generate invoices and then that process is re-run, no new invoices will be generated (unless in the intervening time a new project was created, of course).
 
 One of the details about a project that is known is the billing frequency. Thus if Billing is configured to bill every month, it will not send out invoices to project owners if the project has been set up to be billed yearly or 5-yearly.
+
+
+==Note==
+
+The authenticated REST instructions are presented via the iam component, which is itself a separate web component that verifies the authenticity and authority of the entity trying to communicate with Billing and provides not only means to allow Billing to access that information but also details on the authenticity of the message itself, such as whether it has been timed out, etc. This can be used for auditing purposes.
