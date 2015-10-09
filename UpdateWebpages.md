@@ -1,0 +1,119 @@
+# Introduction #
+
+This are instructions for developers who would like to use a VM to do some development work (e.g update webpages, test a certain version/patch, etc.)
+
+## Setup ##
+
+  * Create the image a usual
+  * Create a user for developer
+  * Update permissions
+    * Add this user to the vidaas group
+    * chmod 775 $JBOSS\_HOME/server/default/deploy/
+    * chmod g+w $JBOSS\_HOME/server/default/deploy/vidaas
+  * Install sudo if jboss restart required
+
+add this to your /etc/sudoers , add users to VIDAAS\_DEV
+```
+User_Alias      VIDAAS_DEV = vidaas
+Cmnd_Alias      JBOSS51 = /etc/init.d/jboss51
+VIDAAS_DEV      ALL = NOPASSWD: JBOSS51
+```
+
+# Editing Files #
+
+## Using google code ##
+
+Use the editor provided by google code by following this URL
+[Googlecode-repository](https://code.google.com/p/vidaas/source/browse/#svn%2Fvidaas3%2Ftrunk%2Fvidaas%2FWebContent)
+
+## Using subversion on any computer of your choice ##
+
+Get your username password from [here](https://code.google.com/p/vidaas/source/checkout)
+
+Initial checkout to your own machine:
+```
+svn co https://vidaas.googlecode.com/svn/vidaas3/trunk/
+```
+
+To update go into the same directory and run:
+```
+svn up
+```
+
+To save your changes:
+```
+svn commit
+```
+
+## Use subversion on the server / VM ##
+
+Do exactly as in described under the heading above
+
+To build the .war file do the following
+```
+cd ~/trunk/vidaas/
+mvn package
+```
+
+To clean the build environment (this forces a full rebuild when running mvn package)
+```
+cd ~/trunk/vidaas/
+mvn clean
+```
+
+to deploy
+```
+cd ~/trunk/vidaas
+cp -r target/vidaas-0.3/ /opt/jboss/server/default/deploy/
+```
+
+to undeploy
+```
+rm -rf /opt/jboss/server/default/deploy/vidaas-0.3/
+```
+
+## To edit files directly ##
+
+You have to deploy the webapp first as described above, then
+
+```
+cd /opt/jboss/server/default/deploy/vidaas-0.3/
+```
+where you can edit files directly.
+
+for example if you change theme.css
+```
+vi /opt/jboss/server/default/deploy/vidaas-0.3/stylesheet/theme.css
+```
+
+copy it back into the repository using
+```
+cp /opt/jboss/server/default/deploy/vidaas-0.3/stylesheet/theme.css ~/trunk/vidaas/WebContent/stylesheet/theme.css
+```
+
+check the changes, and make sure there are no other changes then your own
+```
+cd ~/trunk/vidaas
+svn diff
+```
+
+and if you see the expected change you can commit it to the repository using
+```
+svn commit
+```
+
+## Restart jboss ##
+
+```
+sudo /etc/init.d/jboss51 stop
+tail -F /opt/jboss/server/default/log/server.log   #wait till shutdown complete then press Ctrl-C
+sudo /etc/init.d/jboss51 start
+#you can use the same command as above to look at the log file to see check server startup has completed
+```
+
+## If you get error pages ##
+
+  * Please report the error via email or the issue tracker
+  * After the problem is fixed go to your working copy (your computer, server, ..)
+    * run svn up and mvn package as describe above
+    * redeploy the app to the server as described above

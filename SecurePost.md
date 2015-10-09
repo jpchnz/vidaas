@@ -1,0 +1,66 @@
+#instructions for using secure post for VIDaaS
+
+# Introduction #
+
+Secure Post provides a level of authentication and authorisation to post data. This should make it a lot harder to intercept a command, alter it and then send on to the recipient, a method that could, in theory, compromise the integrity of VIDaaS.
+
+Among other things, posted data includes a machine generated time stamp so that old messages are no longer allowed.
+
+# Setup #
+
+The iam project should be build and then hosted on a server. During build, there can be an issue with junit tests, since they need the test server running before they will work. Thus build using
+mvn package -Dmaven.test.skip=true
+
+# Testing the installation #
+
+One deployed you can see a sample page using an URL like:
+
+http://129.67.241.38/iam/
+
+This just gives a warm feeling that something has happened (assuming you don't get a 404).
+
+# Using VIDaaS Secure Post #
+
+To prepare to use Secure Post is straightforward. Simply create a Maven dependency on iamInterface (and an Eclipse dependency too, if you like)
+
+How to use Secure Post depends on whether you are sending or receiving data.
+
+## Sending Data ##
+
+Simply instantiate the object via:
+```
+SendViaPost post = new SendViaPost();
+```
+and then send the command to be posted thus:
+```
+post.sendSecurePost(recipient url, formatted data);
+```
+## Receiving Data ##
+
+A data recipient can simply periodically poll for data and either take and then clear the stack of message items or take and preserve them. The format of the receive command is:
+
+```
+List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageDataAndClear();
+```
+or
+```
+List<SecurePostData> securePostDataList = ReceivePostedData.getPendingMessageDataAndKeep();
+```
+depending on whether the messages should be kept or removed from the server once returned.
+
+This will provide a list of SecurePostData objects that may be parsed to collect the data. The interesting part of the SecurePostData object is the following:
+
+```
+boolean messageHasBeenVerified = false;
+boolean messageTimedOut = false;
+boolean badSig = false;
+boolean noPrivateKey = false;
+String originatorHost = null;
+List<String> postParms = new ArrayList<String>();
+```
+
+The postParms list always contains the information that was intended for the service. However, it has been verified as being authentic if and only if
+```
+messageHasBeenVerified == true
+```
+if any of the other booleans are true, then messageHasBeenVerified will be false and the message will not have been deemed authentic. The reasons are obvious. originatorHost will contain the IP of the host sending the original command. this may be used for audit purposes.

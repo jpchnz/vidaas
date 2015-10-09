@@ -1,0 +1,29 @@
+# Introduction #
+
+We will no longer continue to work on this and use OVF to roll out VMs instead. This might still be useful if we want to create a demo live CD.
+
+# Details #
+
+Install `live-build`
+
+```
+apt-get install live-build
+```
+
+check out the current config using
+
+```
+svn co https://vidaas.googlecode.com/svn/installer/trunk
+```
+
+and build the image using as superuser
+
+```
+lb build
+```
+
+the resulting image can be booted as
+
+```
+kvm -cdrom binary-hybrid.iso
+```

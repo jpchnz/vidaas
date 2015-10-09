@@ -1,0 +1,235 @@
+# Introduction #
+
+These instructions are now obsolete and replaced by installation scripts.
+
+# Details #
+
+## Check/fix common VMware image issues ##
+
+  * check sources.list (e.g. remove `deb cdrom` entries)
+  * change root password (or force customisation in vmware)
+  * create new ssh key
+  * use partition created for home in /var (if image has default debian layout)
+  * update hosts.allow and hosts.deny (if only NSMS hosts are allowed)
+  * check vmware customization completed successfully
+  * remove mtp-status on virtual machines
+
+```
+rm /etc/ssh/ssh_host_*
+dpkg-reconfigure openssh-server
+
+apt-get remove mpt-status
+```
+
+## local mail (optional) ##
+```
+DEBIAN_FRONTEND=noninteractive apt-get -y install nullmailer
+echo vidaas-hosts@ <OUCS RT SERVER> > /etc/nullmailer/adminaddr
+echo smtp.ox.ac.uk > /etc/nullmailer/remotes
+```
+
+apticron (optional needs local mail)
+
+```
+apt-get install apticron
+```
+
+## general stuff (optional) ##
+
+```
+apt-get install less vim unzip
+```
+
+## Runtime setup ##
+
+```
+apt-get install postgresql mysql-server libmysql-java libpg-java
+adduser --system --home /opt/VIDaaSData --disabled-login --group vidaas --shell /bin/bash
+```
+
+Configure [PostgreSQL](PostgreSQL.md)
+
+Install [JBossBuild](JBossBuild.md)
+
+This makes development easier but is not suggested for production.
+```
+chown -R vidaas:vidaas $JBOSS_HOME
+ln -s $JBOSS_HOME /opt/jboss
+```
+
+Currently, there is the possibility of using MySQL and/or PostgreSQL for the underlying database services. To aid with testing (and partly due to historical reasons), MySQL is used on the Controller Node and PostgreSQL is used on the Project Node (for relational database data). Thus, both PostgreSQL and MySql need to be configured. First, create a new PostgreSQL user (sudamihAdmin) and then have it own a new database, sudamihtestdb. Then create a new MySql database (vidaas\_v3).
+
+```
+su postgres
+createuser -U postgres -s -E -P sudamihAdmin
+#dropuser sudamihAdmin
+
+createdb  -O sudamihAdmin -E UTF8 sudamihtestdb #-U sudamihAdmin
+
+#dropdb sudamihtestdb
+
+mysql -u root -p
+mysql> create database vidaas_v3;
+#drop database vidaas_v3;
+
+mkdir /opt/VIDaaSData  #to be removed, reported as issue#18
+```
+
+## Build vidaas ##
+Build requirements
+
+```
+apt-get install openjdk-6-jdk maven2 subversion
+```
+
+Build ViDaaS
+```
+su vidaas
+svn checkout https://vidaas.googlecode.com/svn/vidaas3/trunk
+cd trunk/vidaas
+vi src/hot/uk/ac/ox/oucs/vidaas/manager/sudamih.properties #update uk.ac.ox.oucs.sudamih.adminUserNamePW reported as issue#44
+mvn package
+```
+
+## Deployment ##
+
+Two files are required for deployment and need to be copied to the $JBOSS\_HOME/server/default/deploy directory.
+```
+cp resources/vidaas-ds.xml $JBOSS_HOME/server/default/deploy
+cp target/vidaas-0.3.war $JBOSS_HOME/server/default/deploy
+cp resources/vidaas-service.xml $JBOSS_HOME/server/default/deploy #serverURL has to be updated but this parameter will be removed
+```
+
+## Re-deployment (only when database schema changes) ##
+
+  * /etc/init.d/jboss51 stop
+  * Drop and create the mysql database (see above)
+  * Remove all .war file from the deploy directory
+  * get a new copy of seam and patch it
+    * https://vidaas.googlecode.com/svn/vidaas3/trunk/seam/vidaas-seam.patch
+  * delete /opt/VIDaaSData/project**_* Continue with "Deployment" section above_
+
+
+---
+
+Example vidaas3-ds.xml (replace $PASSWORD$ with your mysql password chosen earlier)
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+   
+   <local-tx-datasource>
+      <jndi-name>vidaasDatasource</jndi-name>
+      <use-java-context>true</use-java-context>
+      <connection-url>jdbc:mysql://localhost:3306/vidaas_v3</connection-url>
+      <driver-class>com.mysql.jdbc.Driver</driver-class>
+      <user-name>root</user-name>
+      <password>$PASSWORD$</password>
+   </local-tx-datasource>
+    
+</datasources>
+```
+
+---
+
+Example vidaas-service.xml (doesn't need changing, maybe remove from docs?)
+```
+<mbean code="org.jboss.varia.property.SystemPropertiesService" name="jboss.util:type=Service,name=VIDaaSProperties">
+  <attribute name="Properties">
+    seamLocaion=/opt/seam/
+    serverLocation=/opt/jboss/
+    serverURL=http://163.1.13.219:8080/
+    VIDaaSDataLocation=/opt/VIDaaSData
+    jdbcDriverJar=/usr/share/java/postgresql.jar
+ </attribute>
+</mbean>
+```
+
+---
+
+The database drivers need to be installed to JBoss using the following instructions:**
+
+```
+su vidaas
+cd $JBOSS_HOME/server/default/lib/
+ln -s /usr/share/java/mysql.jar mysql.jar
+ln -s /usr/share/java/postgresql.jar postgresql.jar
+mkdir /opt/DatabaseDrivers/
+cd /opt/DatabaseDrivers/
+ln -s /usr/share/java/postgresql.jar postgresql.jar
+```
+
+---
+
+Seam-gen requires ant
+```
+apt-get install ant
+```
+
+Seam needs to be installed (for seam gen)
+```
+wget http://downloads.sourceforge.net/project/jboss/JBoss%20Seam/2.2.2.Final/jboss-seam-2.2.2.Final.tar.gz
+install into /opt/seam (or symlink)
+cp seam/VIDaaS-SeamScript.sh /opt/seam #will be replaced with patch
+cp seam/build.properties /opt/seam/seam-gen/
+```
+
+TODO: write instructions to patch seam
+
+
+---
+
+JBoss is now ready to be started
+```
+$JBOSS_HOME/bin/run.sh
+```
+
+Assuming JBoss is using standard configuration, it is now possible to view the Vidaas home page by navigating a browser to
+```
+http://localhost:8080/vidaas-0.3/
+```
+
+
+---
+
+
+## Example Apache mod\_jk config ##
+
+apt-get install apache2 libapache2-mod-jk
+
+run in shell
+```
+cd /etc/apache2/mods-enabled && ln -s ../mods-available/rewrite.load rewrite.load
+cd /etc/apache2/mods-enabled && ln -s ../mods-available/jk.load jk.load
+cd /etc/apache2/mods-enabled && ln -s ../mods-available/jk.conf jk.conf
+```
+
+add to global apache config
+```
+JkWorkerProperty worker.list=vidaas
+JkWorkerProperty worker.vidaas.port=8009
+```
+
+add to vhost
+```
+        #redirect docroot
+        RewriteEngine on
+        RewriteRule ^/$ /vidaas-0.3/ [R]
+
+        #mount vidaas
+        JkMount /vidaas-0.3/ vidaas
+        JkMount /vidaas-0.3/* vidaas
+```
+
+restart apache
+```
+service apache2 restart
+```
+
+# Cleanup tasks #
+
+## fix permissions ##
+
+```
+chmod 640 $JBOSS_HOME/server/default/deploy/vidaas-ds.xml
+chmod 640 $JBOSS_HOME/server/default/deploy/vidaas-0.3/WEB-INF/classes/uk/ac/ox/oucs/vidaas/manager/sudamih.properties
+```

@@ -1,0 +1,60 @@
+# Introduction #
+
+ODBC drivers can be found here: http://www.postgresql.org/ftp/odbc/versions/msi/
+
+
+
+# Server Settings #
+
+Update listen\_addresses in postgresql.conf
+
+```
+listen_addresses = '0.0.0.0'
+```
+
+Add an entry for this database in pg\_hba.conf. For example
+
+```
+host  projectname_databasename   username  12.34.56.67/32   md5
+```
+
+# Client Settings #
+
+## Driver Installation ##
+
+Download the ODBC driver required for your system and install it. Ideally use the 64-bit version on a 64-bit windows system.
+
+If you installed a 32-bit driver on a 64-bit windows system use
+
+```
+%WINDIR%\SysWOW64\odbcad32.exe
+```
+
+to create the DNS. Otherwise use the control panel applet or run
+
+```
+%WINDIR%\System32\odbcad32.exe
+```
+
+on the command line.
+
+## Create Datasource ##
+
+Open the "ODCB Data Source Administrator" and choose the tab "System DSN" and press "Add.."
+
+Choose the PostreSQL Unicode driver you previously installed and press "Finish".
+
+https://vidaas.googlecode.com/svn/wiki/odbc.PNG
+
+  * **Data Source**: Data Source Name (DSN) any name you like. This name will be used in Access to refer to this database link.
+  * **Database**: Database name from server. Format: `projectname_databasename`
+  * **Server**: Hostname which contains your database
+  * **User Name**: Your ViDaaS username
+  * **Description**: Any description you like
+  * **SSL Mode**: Set to "require"
+  * **Port**: 5432
+  * **Password**: Your ViDaaS password
+
+Press "Test". A dialog box with the message "Connection successful" should appear. Close the box by pressing "OK".
+
+Then press "Save".

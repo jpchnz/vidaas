@@ -1,0 +1,19 @@
+# Introduction #
+
+The billing system has been written to be as flexible as possible in its operation so that it may be adopted for other projects without too much effort.
+
+It is distributed as a web archive (.war) file that can easily be served via a lightweight application server such as Apache Tomcat.
+
+
+# Details #
+
+Once the service is running, it will accept authenticated REST instructions to perform operations. This "secure POST" instruction will typically be a command informing the Billing system that a new project has been created (or updated or deleted), who the project owner is and information on the project, such as its size.
+
+Billing will then record this information in its local (MySQL) database (through a Hibernate interface). At regular intervals (or on demand), the system can generate invoices and email them to project owners. It keeps track of all invoices generated and all details about those invoices, so that if a process is started to generate invoices and then that process is re-run, no new invoices will be generated (unless in the intervening time a new project was created, of course).
+
+One of the details about a project that is known is the billing frequency. Thus if Billing is configured to bill every month, it will not send out invoices to project owners if the project has been set up to be billed yearly or 5-yearly.
+
+
+## Note ##
+
+The authenticated REST instructions are presented via the iam component, which is itself a separate web component that verifies the authenticity and authority of the entity trying to communicate with Billing and provides not only means to allow Billing to access that information but also details on the authenticity of the message itself, such as whether it has been timed out, etc. This can be used for auditing purposes.

@@ -1,0 +1,37 @@
+# Introduction #
+
+Steps to create an image using vmware
+
+## Essential image ##
+
+  * Install minimal debian using netinst image
+  * update/upgrade and reboot if a new kernel was installed
+
+## Minimal image ##
+This image forms the basis of all other images (project node, vm node, backup node, etc.)
+
+as root
+```
+cd
+apt-get install subversion
+svn checkout https://vidaas.googlecode.com/svn/admin
+sh admin/scripts/image-minimal
+```
+
+## Prepared image ##
+
+Time consuming tasks which make sense to be part of the image
+
+as root
+```
+sh admin/scripts/image-prepared
+```
+
+as vidaas
+```
+cd /opt
+wget -O jboss-5.1.0.GA-jdk6.zip http://downloads.sourceforge.net/project/jboss/JBoss/JBoss-5.1.0.GA/jboss-5.1.0.GA-jdk6.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fjboss%2Ffiles%2FJBoss%2FJBoss-5.1.0.GA%2F
+wget http://downloads.sourceforge.net/project/jboss/JBoss%20Seam/2.2.2.Final/jboss-seam-2.2.2.Final.tar.gz
+cd
+
+```

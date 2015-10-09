@@ -1,0 +1,73 @@
+# Migration from VIDaaS to ORDS #
+
+The purpose of this document is to give rough estimate to migrate existing VIDaaS application running on JBoss 5.1 to ORDS running on JBoss 7.1. The migration to the latest server is not straight forward exercise due to recent changes in various underlying technologies.
+
+The following features of ORDS application are user facing Web front end and each of them will require **JSF 2, RichFaces 4.x, Weld**.
+
+| **Functionality** 			| **Status** 	|   **Current Dependency** 						|  **Potential Technologies** 						| **Migration Time** |
+|:---------------------|:------------|:-------------------------------|:----------------------------------|:-------------------|
+| User Registration 			| Implemented 	| JSF 1.2, RichFaces 3.3, Seam 2.2, MySQL 5, Hibernate, JBoss 5.1	|JSF 2, RichFaces 4.x, Weld, MySQL 5, Hibernate, JBoss 7.1		| 1 1/2 weeks	       |
+| Create  and Manage Project		| Implemented  | JSF 1.2, RichFaces 3.3, Seam 2.2, MySQL 5, Hibernate, JBoss 5.1 	|JSF 2, RichFaces 4.x, Weld, MySQL 5, Hibernate, JBoss 7.1		| 2 weeks 	          |
+| Create  and Manage Database 		| Implemented  | JSF 1.2, RichFaces 3.3, Seam 2.2, MySQL 5, PostgreSQL 8, JBoss 5.1	|JSF 2, RichFaces 4.x, Weld, MySQL 5, PostgreSQL 8, JBoss 7.1		| 2 weeks 	          |
+| Create and Manage Database  Versions | Implemented  | JSF 1.2, RichFaces 3.3, Seam 2.2, MySQL 5, PostgreSQL 8, JBoss 5.1 	|JSF 2, RichFaces 4.x, Weld, MySQL 5, PostgreSQL 8, JBoss 7.1		| 2 weeks 	          |
+| Import SQL Database 	(access)	| Implemented  | JSF 1.2, RichFaces 3.3, Seam 2.2, MySQL 5, PostgreSQL 8, Jackcess 	|JSF 2, RichFaces 4.x, Weld, MySQL 5, PostgreSQL 8, JBoss 7.1		| 1/2 week 	         |
+| Import SQL Database 	(csv)		| TBD		       |   									                    |JSF 2, RichFaces 4.x, Weld, MySQL 5, PostgreSQL 8, JBoss 7.1		| 2-3 weeks 	        |
+| Export SQL Database 	(csv)		| Partial	    | JSF 1.2, RichFaces 3.3, Seam 2.2, PostgreSQL 8 			|JSF 2, RichFaces 4.x, Weld, PostgreSQL 8				| 1 week 	           |
+| Create Database via Web		| Partial	    | JSF 1.2, RichFaces 3.3, Seam 2.2, PostgreSQL 8, jQuery, JBoss 5.1	|JSF 2, RichFaces 4.x, Weld, PostgreSQL 8, JBoss 7.1			| 1 week	            |
+| Edit Database via Web		| TBD		       |  									                     |JSF 2, RichFaces 4.x, Weld, MySQL 5, Hibernate, JBoss 7.1		| 2 weeks 	          |
+| Edit Database via console		| TBD		       |  									                     |JSF 2, RichFaces 4.x, Weld, MySQL 5, Hibernate, JBoss 7.1		| ? weeks 	          |
+| Create  Web Application		| Implemented  | JSF 1.2, RichFaces 3.3, Seam 2.2, PostgreSQL 8, Hibernate, JBoss 5.1	|JSF 2, RichFaces 4.x, Weld, PostgreSQL 8, Hibernate, JBoss 7.1	| 2-3 weeks 	        |
+| SQL Query Builder			 | Partial	    | JSF 1.2, RichFaces 3.3, Seam 2.2, Hibernate, jQuery, JBoss 5.1	|JSF 2, RichFaces 4.x, Weld, Hibernate, jQuery, JBoss 7.1		| 5-6 weeks 	        |
+| XML Query Builder			 | TBD		       |  									                     |JSF 2, RichFaces 4.x, Weld, Hibernate, jQuery, JBoss 7.1		| 3-4 weeks 	        |
+| Admin Interface			   | TBD		       |  									                     |JSF 2, RichFaces 4.x, Weld, MySQL 5, Hibernate, jQuery, JBoss 7.1	| 3-4 weeks	         |
+| Restful Interface			 | TBD		       |  									                     |JSF 2, RichFaces 4.x, Weld, RestEasy, MySQL 5, Hibernate, JBoss 7.1	| 3-4 weeks 	        |
+| VMWare Integration			| TBD		       |  (Integration **ONLY** if such functionality exists)			|JSF 2, RichFaces 4.x, Weld, RestEasy, JBoss 7.1			| 2 weeks 	          |
+| Security & Roles			  | TBD		       |  (Integration **ONLY** if such functionality exists)			|JSF 2, RichFaces 4.x, Weld, RestEasy, Hibernate, JBoss 7.1		| 2 weeks 	          |
+| Payment				          | TBD		       |  (Integration **ONLY** if such functionality exists)			|JSF 2, RichFaces 4.x, Weld, RestEasy, MySQL 5, Hibernate, JBoss 7.1	| 3-4 weeks 	        |
+| Miscellaneous stuff			| 		          |  									                     |JSF 2, RichFaces 4.x, Weld, RestEasy,MySQL 5, Hibernate, JBoss 7.1	| 2 weeks 	          |
+| **Total**				        | 		          |   									                    |						                	            | 39-45 weeks        |
+
+| Metadata Repository with Customized	| TBD		|  (Deployment, Integration an Testing with open source repository)    |JSF 2, RichFaces 4.x, Weld, RestEasy, SWORD, jQuery, JBoss 7.1	|  ---- weeks 	|
+|:------------------------------------|:-----|:---------------------------------------------------------------------|:--------------------------------------------------------------|:-------------|
+|            Front End                 |              |  (EPrints or Fedora Commons or DSpace etc)                           |                                                                      |              |
+|Support for multimedia audio/video	  | TBD		|  Needs to be evaluated and design a system to help user search, view |                                                              	|  ---- weeks 	|
+|         files and various formats    |              |  update multimedia content                                           |                                                                      |              |
+|Support for geospatial data   	      | TBD		|  Needs to evaluate various standards and design a system to display  |                                                              	|  ---- weeks 	|
+|                                      |              |  such information in user friendly and interactive way               |                                                                      |              |
+
+# Details of Existing Technologies Used #
+
+Following are different frameworks and technologies used for VIDaaS
+  * JBoss 5.1 (release date: 23-05-2009)
+  * JBoss Seam 2.2 (release date: 27.04.2011)
+  * RichFaces 3.3.3.Final (release date: 06-04-2010)
+  * Java Server Faces 1.2 (release date: 01-03-2011)
+
+Oracle released major update of their Java Enterprise Editions 6 specifications in December 2009. These were specifications and open source community and other vendors were supposed to implement these specifications. Major implementations of JEE 6 specifications by various open source communities and vendors were only available from mid 2011. JBoss 7.0 is compliant to JEE 6 specifications and was released on 17-08-2011.
+
+Due to major changes in JEE 6, frameworks and technologies used in VIDaaS applications are not compatible with the latest specifications. The migration of VIDaaS from JBoss 5.1 to JBoss 7.x requires update of underlying frameworks and technologies which itself results in major re-engineering of the whole application.
+
+# Preview of the VIDaaS #
+
+VIDaaS application is composed of three tiers:
+  * Web tier i.e. Web Interface available from browser
+  * Business tier i.e. application specific logic
+  * Backend tier i.e. database management, data interface creation, database conversion etc.
+
+# Migration Requirements #
+
+The latest version of JBoss 7.x is not compatible with Seam 2.2 and VIDaaS in the current form is not deployable to JBoss 7.x. The latest implementation of Seam compatible to JEE 6 is called Weld (formerly known as Seam 3.0). Weld is also the reference implementation of new specification Contexts and Dependency Injection (CDI).
+Similarly, JBoss 7.x is more aligned with latest specification of Java Server Faces 2.0 and internally uses different implementation from JBoss 5.1.
+Meanwhile RichFaces also had a major release 4.x, compatible with Java Server Faces 2.0 and JEE 6.
+
+The migration of VIDaaS will requires update of all those frameworks, configuring of new components and testing. The major advantage of Seam 2.2 was an umbrella framework wrapping various implementations as one-stop-solution. In the migration each tool will require manual integration and testing which can lead to potential integration issues.
+
+  * Web tier extensively uses tag libraries (utility html tags) i.e.  ` <s:validateAll>, <s:link>, <s:button> ` etc. These utility tags are not available in the latest implementation of the Weld and we will need to find out other open source implementations providing the similar functionality. The ajaxification of Web tier is via RichFaces 3.3.3.Final which provides lot of out of box tags, widgets and gadgets. These tags are the major part of user interface but unfortunately they are not compatible with the latest Java Server Faces 2.0. Those tags are not available in the latest release of RichFaces 4.x or their use is changed significantly. Web Tier upgrade to JSF 2.0 best case scenario 3-4 weeks (replacement tag libraries available and integrated smoothly). Worse case scenario 4-6 weeks if the above mentioned libraries needs in-house implementation or integration is not smooth enough. Both cases will require learning, research and experimentation. The update of Web tier will also include update of all forms and underlying database to new metadata circulated in the month of February 2012.
+
+  * Business tier needs major update. As mentioned earlier Seam 2.2 is not compatible either with JEE 6 or JBoss 7 and needs to be completely replaced with Weld (Seam 3.x). Seam 2.2 uses proprietary annotations for the dependency injection of objects. These objects in Seam 2.2 have their own life cycles managed by the container and the framework  and are not compatible with JEE 6 particularly CDI (http://jcp.org/en/jsr/summary?id=299). This migration is major task and will require learning new specification and technology. I will suggest to move JEE 6 at this time of migration so there will not be any need for major updates in next few years. Migrating the VIDaaS/ORDS to JEE 5 may be tempting as it will require less effort but in few months time the whole exercise will need to be repeated for JEE 6. CDI is bit new technology and familiarizing with the latest specification will require major learning and will be time consuming. Developing simple applications in new framework is different thing but developing production ready application is entirely different. Moving to CDI is important to avoid any future vendor lock for dependency injection and in future Weld can be replaced by any other framework compliant with JEE 6 and the application will be portable to other servers with minimum efforts (at least in theory). Migrating the business layer into new technology will be most time consuming bit and will require easily 8 weeks.
+
+  * Backend tier requires minimum update as most of the logic is independent of technologies used for Web tier and Business tiers. The only work required will be for the data interface generation. The data interface generation is one of the major deliverable of the VIDaaS/ORDS. Currently data interface generation is done by tools available within JBoss Seam 2.2 (i.e. seam-gen). Our aim was to use JBoss Seam tools as black box, but during VIDaaS we end up modifying the tool and will be the case for ORDS too. The ORDS team may decide to use other framework or tools for data interface generation and that will require testing, integration and may also evaluation. Currently we use JBoss Seam tools to generate data interface with default settings which are targetted for JBoss 5.1 server. If we carry on using JBoss Seam tools for data interfaces then it will require modifying the tool so the generated data interface can be deployed either on JBoss 7 or Tomcat 7. It will take nearly 2 weeks to update tools for the target server. Currently JBoss Seam 3.x doesn't include tool useful for data interface generation.
+
+  * Miscellaneous stuff needs to be implemented or integrated with the whole application. The SQL Designer Component requires integration with the whole application and the SQL Query Builder (advanced) needs to be implemented. The VIDaaS has support of basic SQL Query Builder already integrated with the generated data interface. The development and improvement of both tools will require lot of efforts. The SQL Designer is build in JavaScript and the Query Builder will be preferably built in JavaScript so both can be reused in other projects. The efforts to build an advanced Query Builder can be easily 5 - 6 weeks or more depending on number of features and their complexities. Tighter integration of SQL Designer will require 2 weeks. VIDaaS still needs to implement monitoring interface so users can monitor size of thier projects and databases. Payment interface is missing and is required so user can view their payments history, future schedules etc. Both interfaces will require 5- 6 weeks provided there is backend mechanism to collect such information. In total this miscellaneous stuff will take 12-14 weeks. The XML Query Builder for XML database was also proposed to query the XML structure for documents stored in the XML database. The work is required to be done on this front from scratch.
+
+  * Internal Repository, one of the project deliverable was to register users project and database metadata to any external or local data repository. During the project there was not enough time to investigate particularly there was not such repository available. A local searchable repository will be required for ORDS. Development/Installation and Deployable of local repository will require further efforts and will be needed to integrate with the ORDS.

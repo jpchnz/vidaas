@@ -1,0 +1,78 @@
+# Introduction #
+
+JBoss 6 can be built using maven without any difficulties.
+
+JBoss 5.1 can be downloaded (binary and source) but it's not possible to build it since dependencies are no longer publicly available.
+
+
+# JBoss 6 #
+
+JBoss6
+straightforward maven based build
+
+```
+wget http://download.jboss.org/jbossas/6.1/jboss-as-distribution-6.1.0.Final-src.zip
+unzip jboss-as-distribution-6.1.0.Final-src.zip
+export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/
+cd jboss-6.1.0.Final-src
+./build.sh  #(sets up env and then runs `mvn install` (default) or `mvn $MVN_GOAL`)
+```
+
+
+the application server directory `JBOSS_HOME` ends up in `jboss-6.1.0.Final-src/build/target/jboss-6.1.0.Final/`. Once suggestion would be to relocate this to a more generic directory, for example
+
+```
+mv jboss-6.1.0.Final-src/build/target/jboss-6.1.0.Final /opt
+ln -fs /opt/jboss-6.1.0.Final /opt/jboss
+```
+
+# Jboss 5.1 #
+
+## download ##
+
+```
+cd /opt
+wget -O jboss-5.1.0.GA-jdk6.zip http://downloads.sourceforge.net/project/jboss/JBoss/JBoss-5.1.0.GA/jboss-5.1.0.GA-jdk6.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fjboss%2Ffiles%2FJBoss%2FJBoss-5.1.0.GA%2F
+unzip jboss-5.1.0.GA-jdk6.zip
+rm jboss-5.1.0.GA-jdk6.zip
+rm -rf $JBOSS_HOME/server/default/deploy/*war
+rm -rf $JBOSS_HOME/server/default/deploy/management/
+```
+
+## build ##
+
+This is how far I got, but some dependencies are no longer available on the internet.
+
+`export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/`
+
+install the following missing jars from the binary distribution:
+
+```
+mvn install:install-file -DgroupId=org.jboss.bootstrap -DartifactId=jboss-bootstrap -Dversion=1.0.0-Beta-3 -Dpackaging=jar -Dfile=../jboss-5.1.0.GA/lib/jboss-bootstrap.jar
+mvn install:install-file -DgroupId=org.jboss.logbridge -DartifactId=jboss-logbridge -Dversion=1.0.0.GA -Dpackaging=jar -Dfile=../jboss-5.1.0.GA/lib/jboss-logbridge.jar
+mvn install:install-file -DgroupId=org.jboss -DartifactId=jboss-common-core -Dversion=2.2.14.GA -Dpackaging=jar -Dfile=../jboss-5.1.0.GA/lib/jboss-common-core.jar
+mvn install:install-file -DgroupId=org.jboss.integration -DartifactId=jboss-classloading-spi -Dversion=5.1.0.GA -Dpackaging=jar -Dfile=../jboss-5.1.0.GA/lib/jboss-classloading-spi.jar
+wget https://repository.jboss.org/nexus/content/repositories/thirdparty-uploads/apache-xerces/xml-apis/2.9.1/xml-apis-2.9.1.jar
+mvn install:install-file -DgroupId=apache-xerces -DartifactId=xml-apis -Dversion=2.9.1 -Dpackaging=jar -Dfile=xml-apis-2.9.1.jar
+rm xml-apis-2.9.1.jar
+
+wget https://oss.sonatype.org/content/repositories/JBoss/1.0.2.GA/jboss-server-manager-1.0.2.GA.jar
+mvn install:install-file -DgroupId=org.jboss -DartifactId=jbossxb -Dversion=2.0.1.GA -Dpackaging=jar -Dfile=jboss-server-manager-1.0.2.GA.jar
+rm jboss-server-manager-1.0.2.GA.jar
+
+
+mvn install:install-file -DgroupId=org.jboss.jbossas -DartifactId=jboss-server-manager -Dversion=1.0.2.GA -Dpackaging=jar -Dfile=
+
+mvn install:install-file -DgroupId=org.jboss -DartifactId=jbossxb -Dversion=2.0.1.GA -Dpackaging=jar -Dfile=
+
+
+https://oss.sonatype.org/content/repositories/JBoss
+
+mvn package
+```
+
+# Hardening #
+
+## JMX Console etc. ##
+
+http://community.jboss.org/wiki/SecureTheJmxConsole

@@ -1,0 +1,13 @@
+Instructions are for Mac System
+export DYLD_LIBRARY_PATH=/opt/Oracle_DB-XML/dbxml-2.5.16/install/lib/
+
+Instructions are for Linux System
+LD_LIBRARY_PATH=/opt/Oracle_DB_XML/dbxml-2.5.16/install/lib
+export LD_LIBRARY_PATH
+
+In order for JBoss to pick the required changes add
+-Djava.library.path=/opt/OracleBDB-XML/dbxml-2.5.16/install/lib/
+
+to appropriate script. 
+For JBoss 7 it is standalone.sh or domain.sh. 
+

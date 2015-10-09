@@ -1,0 +1,4 @@
+VIDaaS (Virtual Infrastructure with Database as a Service) is a project of two halves. The 'DaaS' part will develop software that enables people to build, edit, search, and share databases online; the 'VI' part involves the development of an infrastructure enabling the DaaS to function within a cloud computing environment.
+
+UPDATE (September 2012):
+Due to some security issues with the JBoss 5 platform that the DaaS was originally developed to run on, we are now undertaking a major software migration. The source code in this repository is therefore 'legacy'. We will place the new code in the public domain once it has reached a suitable level of maturity. Watch this space for further developments

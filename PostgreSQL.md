@@ -1,0 +1,26 @@
+# Introduction #
+
+Once PostgreSQL has been installed there is a small amount of configuration that will need to be done. **Note** while the following discussion will get the job done and allow VIDaaS to work with PostgreSQL, it is by no means a complete instruction set. PostfgreSQL should actually be configured in accordance with site security policies.
+
+
+# Details #
+
+If the version of PostgreSQL is 
+
+&lt;x&gt;
+
+ then the following file needs to be edited
+
+```
+/etc/postgresql/<x>/main/pg_hba.conf
+```
+
+This file deals with how clients are able to connect with the PostgreSQL server. Seek out the local host line and ensure it looks thus:
+
+```
+host	all	all	127.0.0.1/32	md5
+```
+
+This will require the client to supply an MD5-encrypted password for authentication.
+
+Then restart PostgreSQL using /etc/init.d/postgres restart
